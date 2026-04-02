@@ -2,6 +2,7 @@
 
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2FAgoraIO-Conversational-AI%2Fagent-server-sdk-ts)
 [![npm shield](https://img.shields.io/npm/v/agora-agent-server-sdk)](https://www.npmjs.com/package/agora-agent-server-sdk)
+[![codecov](https://codecov.io/gh/AgoraIO-Conversational-AI/agent-server-sdk-ts/graph/badge.svg)](https://codecov.io/gh/AgoraIO-Conversational-AI/agent-server-sdk-ts)
 
 The Agora Conversational AI SDK provides convenient access to the Agora Conversational AI APIs, 
 enabling you to build voice-powered AI agents with support for both cascading flows (ASR -> LLM -> TTS) 
@@ -69,6 +70,44 @@ const agentSessionId = await session.start();
 // Your server receives that request and calls session.stop().
 await session.stop();
 ```
+
+### Presets and reseller models
+
+Agora exposes `preset` on the session start request, so AgentKit treats presets as a session concern as well. That keeps the high-level wrapper aligned with the REST API and lets the same `Agent` be reused across sessions with different preset mixes or `pipelineId` values.
+
+You can pass presets explicitly:
+
+```typescript
+import { AgentPresets } from 'agora-agent-server-sdk';
+
+const session = agent.createSession(client, {
+  channel: 'support-room-123',
+  agentUid: '1',
+  remoteUids: ['100'],
+  preset: [
+    AgentPresets.asr.deepgramNova3,
+    AgentPresets.llm.openaiGpt5Mini,
+    AgentPresets.tts.minimaxSpeech26Turbo,
+  ],
+});
+```
+
+Or let AgentKit infer preset-backed reseller models from your vendor config when you omit credentials:
+
+```typescript
+import { Agent, DeepgramSTT, OpenAI, OpenAITTS } from 'agora-agent-server-sdk';
+
+const presetAgent = new Agent({ instructions: 'Be concise.' })
+  .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
+  .withLlm(new OpenAI({ model: 'gpt-5-mini', temperature: 0.3 }))
+  .withTts(new OpenAITTS({ voice: 'alloy' }));
+
+// AgentKit sends:
+// preset: "deepgram_nova_3,openai_gpt_5_mini,openai_tts_1"
+// and keeps the remaining asr/llm/tts settings as overrides.
+```
+
+If you choose a model outside the supported reseller preset list, TypeScript requires you to provide the corresponding vendor API key.
 
 ### Session lifecycle
 
