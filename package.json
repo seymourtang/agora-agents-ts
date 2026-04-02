@@ -40,7 +40,9 @@
         "build:esm": "tsc --project ./tsconfig.esm.json && node scripts/rename-to-esm-files.js dist/esm",
         "test": "vitest",
         "test:unit": "vitest --project unit",
-        "test:wire": "vitest --project wire"
+        "test:wire": "vitest --project wire",
+        "test:coverage": "vitest run --coverage",
+        "test:coverage:unit": "vitest run --project unit --coverage"
     },
     "dependencies": {
         "agora-token": "^2.0.5"
@@ -49,6 +51,7 @@
         "webpack": "^5.97.1",
         "ts-loader": "^9.5.1",
         "vitest": "^3.2.4",
+        "@vitest/coverage-v8": "^3.2.4",
         "msw": "2.11.2",
         "@types/node": "^20.19.0",
         "typescript": "~5.7.2",
