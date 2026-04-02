@@ -77,8 +77,14 @@ export type GoogleTTSSampleRate = 8000 | 16000 | 22050 | 24000 | 44100 | 48000;
 
 /**
  * Sample rate required by HeyGen avatars (24kHz only).
+ * @deprecated HeyGen has been renamed to LiveAvatar. Use {@link LiveAvatarSampleRate} instead.
  */
 export type HeyGenSampleRate = 24000;
+
+/**
+ * Sample rate required by LiveAvatar avatars (24kHz only). Formerly HeyGen.
+ */
+export type LiveAvatarSampleRate = 24000;
 
 /**
  * Sample rate required by Akool avatars (16kHz only).

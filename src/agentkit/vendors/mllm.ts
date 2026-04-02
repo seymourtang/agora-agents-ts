@@ -98,6 +98,100 @@ export class OpenAIRealtime extends BaseMLLM {
 }
 
 /**
+ * Constructor options for Google Gemini Live (direct API, non-Vertex AI).
+ */
+export interface GeminiLiveOptions {
+    /** Google API key */
+    apiKey: string;
+    /** Model name (e.g., 'gemini-live-2.5-flash') */
+    model: string;
+    /** System instructions for the model */
+    instructions?: string;
+    /** Voice name (e.g., 'Aoede', 'Charon') */
+    voice?: string;
+    /** Agent greeting message */
+    greetingMessage?: string;
+    /** Input modalities (e.g., ['audio'], ['audio', 'text']) */
+    inputModalities?: string[];
+    /** Output modalities (e.g., ['text', 'audio']) */
+    outputModalities?: string[];
+    /** Conversation messages for short-term memory */
+    messages?: Record<string, unknown>[];
+    /** Additional MLLM parameters passed directly to the model */
+    additionalParams?: Record<string, unknown>;
+    /** Predefined tools available to the model (e.g., ['_publish_message']) */
+    predefinedTools?: string[];
+    /** Message played on failure */
+    failureMessage?: string;
+    /** Maximum conversation history length */
+    maxHistory?: number;
+}
+
+/**
+ * Google Gemini Live MLLM vendor (direct API, non-Vertex AI).
+ *
+ * Uses a Google API key. For Vertex AI / ADC credentials use {@link VertexAI} instead.
+ *
+ * @example
+ * ```typescript
+ * const mllm = new GeminiLive({
+ *   apiKey: process.env.GOOGLE_API_KEY,
+ *   model: 'gemini-live-2.5-flash',
+ *   greetingMessage: 'Hello! Gemini is listening.',
+ * });
+ *
+ * const agent = new Agent({
+ *   name: 'gemini-assistant',
+ *   advancedFeatures: { enable_mllm: true },
+ * }).withMllm(mllm);
+ * ```
+ */
+export class GeminiLive extends BaseMLLM {
+    private readonly options: GeminiLiveOptions;
+
+    constructor(options: GeminiLiveOptions) {
+        super();
+        this.options = options;
+    }
+
+    toConfig(): MllmConfig {
+        const {
+            apiKey,
+            model,
+            instructions,
+            voice,
+            greetingMessage,
+            inputModalities,
+            outputModalities,
+            messages,
+            additionalParams,
+        } = this.options;
+
+        return {
+            vendor: "gemini",
+            // "openai" describes the request/response protocol used by the backend,
+            // not the underlying vendor. All MLLM vendors use it.
+            style: "openai",
+            api_key: apiKey,
+            params: {
+                // additionalParams spread first so that explicit fields always win.
+                ...additionalParams,
+                model,
+                ...(instructions && { instructions }),
+                ...(voice && { voice }),
+                ...(messages && { messages }),
+            },
+            ...(greetingMessage && { greeting_message: greetingMessage }),
+            ...(inputModalities && { input_modalities: inputModalities }),
+            ...(outputModalities && { output_modalities: outputModalities }),
+            ...(this.options.predefinedTools && { predefined_tools: this.options.predefinedTools }),
+            ...(this.options.failureMessage && { failure_message: this.options.failureMessage }),
+            ...(this.options.maxHistory !== undefined && { max_history: this.options.maxHistory }),
+        };
+    }
+}
+
+/**
  * Constructor options for Google Gemini Live (Vertex AI).
  */
 export interface VertexAIOptions {
