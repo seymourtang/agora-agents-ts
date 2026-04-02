@@ -1,5 +1,6 @@
 export type { GetAgentsRequest } from "./GetAgentsRequest.js";
 export type { GetHistoryAgentsRequest } from "./GetHistoryAgentsRequest.js";
+export type { GetTurnsAgentsRequest } from "./GetTurnsAgentsRequest.js";
 export type { InterruptAgentsRequest } from "./InterruptAgentsRequest.js";
 export type { ListAgentsRequest } from "./ListAgentsRequest.js";
 export type { SpeakAgentsRequest } from "./SpeakAgentsRequest.js";

@@ -46,6 +46,17 @@ export interface StartAgentsRequest {
     appid: string;
     /** The unique identifier of the agent. The same identifier cannot be used repeatedly. */
     name: string;
+    /**
+     * A comma-separated string of one or more presets. Each preset provides a predefined configuration for ASR, LLM, and TTS. You can specify a preset for any or all of ASR, LLM, and TTS. When a preset is specified, you do not need to provide the endpoint URL, API key, or model for the preset providers. Use the `asr`, `llm`, and `tts` fields to configure additional settings.
+     *
+     * Available presets:
+     * - ASR: `deepgram_nova_2`, `deepgram_nova_3`
+     * - LLM: `openai_gpt_4o_mini`, `openai_gpt_4_1_mini`, `openai_gpt_5_nano`, `openai_gpt_5_mini`
+     * - TTS: `minimax_speech_2_6_turbo`, `minimax_speech_2_8_turbo`, `openai_tts_1`
+     */
+    preset?: string;
+    /** The unique ID of a published agent in AI Studio. When provided, the saved agent configuration is used as the base configuration. Any fields specified in `properties` override the corresponding agent settings. When you specify a `pipeline_id`, the `asr`, `tts`, and `llm` fields in `properties` are optional. */
+    pipeline_id?: string;
     /** Configuration details of the agent. */
     properties: StartAgentsRequest.Properties;
 }
@@ -81,7 +92,7 @@ export namespace StartAgentsRequest {
         tts?: Agora.Tts;
         /** Large language model (LLM) configuration. */
         llm?: Properties.Llm;
-        /** Multimodal Large Language Model (MLLM) configuration for real-time audio and text processing. MLLM is an exclusive alternative to the standard `asr` + `llm` + `tts` pipeline. */
+        /** Multimodal Large Language Model (MLLM) configuration for real-time audio and text processing. `mllm` is an exclusive alternative to the standard `asr` + `llm` + `tts` pipeline. */
         mllm?: Properties.Mllm;
         /** Avatar configuration. */
         avatar?: Properties.Avatar;
@@ -136,9 +147,7 @@ export namespace StartAgentsRequest {
          * Advanced features configuration.
          */
         export interface AdvancedFeatures {
-            /** Whether to enable the intelligent interruption handling function (AIVAD). This feature is currently available only for English. Deprecated. Use `turn_detection.config.end_of_speech.mode.semantic` instead. */
-            enable_aivad?: boolean;
-            /** Enable Multimodal Large Language Model. Enabling MLLM automatically disables ASR, LLM, and TTS. When you set this parameter to true, `enable_aivad` is also disabled. */
+            /** Enable Multimodal Large Language Model for voice-to-voice processing. Enabling MLLM automatically disables ASR, LLM, and TTS since the MLLM handles end-to-end voice processing directly. See `turn_detection.type` for turn detection options available with MLLM. */
             enable_mllm?: boolean;
             /** Whether to enable the Signaling (RTM) service. When enabled, the agent can combine the capabilities provided by Signaling to implement advanced functions, such as delivering custom information. Before enabling the Signaling service, make sure the token includes both RTC and RTM privileges. */
             enable_rtm?: boolean;
@@ -325,7 +334,7 @@ export namespace StartAgentsRequest {
         }
 
         /**
-         * Multimodal Large Language Model (MLLM) configuration for real-time audio and text processing. MLLM is an exclusive alternative to the standard `asr` + `llm` + `tts` pipeline.
+         * Multimodal Large Language Model (MLLM) configuration for real-time audio and text processing. `mllm` is an exclusive alternative to the standard `asr` + `llm` + `tts` pipeline.
          */
         export interface Mllm {
             /** The MLLM WebSocket URL for real-time communication. */
@@ -352,7 +361,8 @@ export namespace StartAgentsRequest {
             /**
              * MLLM provider. Currently supports:
              * - `openai`: OpenAI Realtime API
-             * - `vertexai`: Use this for Google Gemini Live
+             * - `gemini`: Google Gemini Live
+             * - `vertexai`: Google Gemini Live (Vertex AI)
              */
             vendor?: Mllm.Vendor;
             /**
@@ -366,10 +376,12 @@ export namespace StartAgentsRequest {
             /**
              * MLLM provider. Currently supports:
              * - `openai`: OpenAI Realtime API
-             * - `vertexai`: Use this for Google Gemini Live
+             * - `gemini`: Google Gemini Live
+             * - `vertexai`: Google Gemini Live (Vertex AI)
              */
             export const Vendor = {
                 Openai: "openai",
+                Gemini: "gemini",
                 Vertexai: "vertexai",
             } as const;
             export type Vendor = (typeof Vendor)[keyof typeof Vendor];
@@ -384,7 +396,8 @@ export namespace StartAgentsRequest {
             /**
              * Avatar vendor. Supports the following values:
              * - `akool`: Akool (Beta)
-             * - `heygen`: HeyGen (Beta)
+             * - `liveavatar`: LiveAvatar (Beta)
+             * - `anam`: Anam (Beta)
              */
             vendor?: Avatar.Vendor;
             /** The configuration parameters for the avatar vendor. See [AI Avatar Overview](https://docs.agora.io/en/conversational-ai/models/avatar/overview) for details. */
@@ -395,10 +408,17 @@ export namespace StartAgentsRequest {
             /**
              * Avatar vendor. Supports the following values:
              * - `akool`: Akool (Beta)
-             * - `heygen`: HeyGen (Beta)
+             * - `liveavatar`: LiveAvatar (Beta)
+             * - `anam`: Anam (Beta)
              */
             export const Vendor = {
                 Akool: "akool",
+                /**
+                 * LiveAvatar (Beta) — formerly HeyGen */
+                Liveavatar: "liveavatar",
+                Anam: "anam",
+                /**
+                 * Deprecated: HeyGen has renamed to LiveAvatar. Use `liveavatar` instead. */
                 Heygen: "heygen",
             } as const;
             export type Vendor = (typeof Vendor)[keyof typeof Vendor];
@@ -529,7 +549,7 @@ export namespace StartAgentsRequest {
                         /**
                          * Voice processing strategy when the agent is interacting:
                          * - `append`: Human voice does not interrupt the agent. The agent processes the human voice input after the current interaction ends.
-                         * - `ignored`: The agent ignores human voice input and discards it without storing in context.
+                         * - `ignore`: The agent ignores human voice input and discards it without storing in context.
                          */
                         strategy?: DisabledConfig.Strategy;
                     }
@@ -538,11 +558,11 @@ export namespace StartAgentsRequest {
                         /**
                          * Voice processing strategy when the agent is interacting:
                          * - `append`: Human voice does not interrupt the agent. The agent processes the human voice input after the current interaction ends.
-                         * - `ignored`: The agent ignores human voice input and discards it without storing in context.
+                         * - `ignore`: The agent ignores human voice input and discards it without storing in context.
                          */
                         export const Strategy = {
                             Append: "append",
-                            Ignored: "ignored",
+                            Ignore: "ignore",
                         } as const;
                         export type Strategy = (typeof Strategy)[keyof typeof Strategy];
                     }
@@ -588,6 +608,7 @@ export namespace StartAgentsRequest {
                      */
                     export interface SemanticConfig {
                         silence_duration_ms?: number;
+                        /** Maximum wait time in milliseconds. Use `-1` for no timeout. The maximum time to wait for semantic determination. After timeout, the conversation end is determined based on the current state. */
                         max_wait_ms?: number;
                     }
                 }
