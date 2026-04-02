@@ -254,6 +254,56 @@ describe("PhoneNumbersClient", () => {
         expect(response).toEqual(undefined);
     });
 
+    test("add returns AgoraError on 4xx", async () => {
+        const server = mockServerPool.createServer();
+        const client = new AgoraClient({
+            maxRetries: 0,
+            username: "test",
+            password: "test",
+            authorization: "test",
+            environment: server.baseUrl,
+        });
+
+        server
+            .mockEndpoint()
+            .post("/v2/phone-numbers")
+            .respondWith()
+            .statusCode(422)
+            .jsonBody({ message: "invalid phone number" })
+            .build();
+
+        await expect(
+            client.phoneNumbers.add({
+                provider: "byo",
+                phone_number: "invalid",
+                label: "Test",
+                inbound: true,
+                outbound: false,
+            }),
+        ).rejects.toMatchObject({ statusCode: 422 });
+    });
+
+    test("get returns AgoraError on 5xx", async () => {
+        const server = mockServerPool.createServer();
+        const client = new AgoraClient({
+            maxRetries: 0,
+            username: "test",
+            password: "test",
+            authorization: "test",
+            environment: server.baseUrl,
+        });
+
+        server
+            .mockEndpoint()
+            .get("/v2/phone-numbers/+1bad")
+            .respondWith()
+            .statusCode(500)
+            .jsonBody({ message: "internal error" })
+            .build();
+
+        await expect(client.phoneNumbers.get({ phone_number: "+1bad" })).rejects.toMatchObject({ statusCode: 500 });
+    });
+
     test("update", async () => {
         const server = mockServerPool.createServer();
         const client = new AgoraClient({

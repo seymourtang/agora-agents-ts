@@ -355,6 +355,116 @@ describe("AgentsClient", () => {
         });
     });
 
+    test("getTurns", async () => {
+        const server = mockServerPool.createServer();
+        const client = new AgoraClient({
+            maxRetries: 0,
+            username: "test",
+            password: "test",
+            environment: server.baseUrl,
+        });
+
+        const rawResponseBody = {
+            turns: [
+                {
+                    agent_id: "agentId",
+                    channel: "channel_name",
+                    turn_id: 1,
+                    start: { start_at: 1737111452000, type: "voice_input" },
+                    end: { end_at: 1737111453500, type: "ok" },
+                    metrics: { e2e_latency_ms: 320 },
+                },
+            ],
+        };
+        server
+            .mockEndpoint()
+            .get("/v2/projects/appid/agents/agentId/turns")
+            .respondWith()
+            .statusCode(200)
+            .jsonBody(rawResponseBody)
+            .build();
+
+        const response = await client.agents.getTurns({
+            appid: "appid",
+            agentId: "agentId",
+        });
+        expect(response).toEqual(rawResponseBody);
+    });
+
+    test("start returns AgoraError on 4xx", async () => {
+        const server = mockServerPool.createServer();
+        const client = new AgoraClient({
+            maxRetries: 0,
+            username: "test",
+            password: "test",
+            environment: server.baseUrl,
+        });
+
+        server
+            .mockEndpoint()
+            .post("/v2/projects/appid/join")
+            .respondWith()
+            .statusCode(400)
+            .jsonBody({ message: "bad request" })
+            .build();
+
+        await expect(
+            client.agents.start({
+                appid: "appid",
+                name: "test",
+                properties: { channel: "c", token: "t", agent_rtc_uid: "1", remote_rtc_uids: ["2"] },
+            }),
+        ).rejects.toMatchObject({ statusCode: 400 });
+    });
+
+    test("start returns AgoraError on 5xx", async () => {
+        const server = mockServerPool.createServer();
+        const client = new AgoraClient({
+            maxRetries: 0,
+            username: "test",
+            password: "test",
+            environment: server.baseUrl,
+        });
+
+        server
+            .mockEndpoint()
+            .post("/v2/projects/appid/join")
+            .respondWith()
+            .statusCode(500)
+            .jsonBody({ message: "internal error" })
+            .build();
+
+        await expect(
+            client.agents.start({
+                appid: "appid",
+                name: "test",
+                properties: { channel: "c", token: "t", agent_rtc_uid: "1", remote_rtc_uids: ["2"] },
+            }),
+        ).rejects.toMatchObject({ statusCode: 500 });
+    });
+
+    test("get returns AgoraError on 404", async () => {
+        const server = mockServerPool.createServer();
+        const client = new AgoraClient({
+            maxRetries: 0,
+            username: "test",
+            password: "test",
+            environment: server.baseUrl,
+        });
+
+        server
+            .mockEndpoint()
+            .get("/v2/projects/appid/agents/missing-agent")
+            .respondWith()
+            .statusCode(404)
+            .jsonBody({ message: "not found" })
+            .build();
+
+        await expect(
+            client.agents.get({ appid: "appid", agentId: "missing-agent" }),
+        ).rejects.toMatchObject({ statusCode: 404 });
+    });
+
     test("interrupt", async () => {
         const server = mockServerPool.createServer();
         const client = new AgoraClient({

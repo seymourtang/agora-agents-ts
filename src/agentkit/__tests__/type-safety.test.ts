@@ -1,11 +1,11 @@
 /**
  * Type safety demonstrations for sample rate enforcement.
- * 
+ *
  * This file demonstrates compile-time type checking for:
  * 1. Invalid sample rates (e.g., 25000 Hz)
  * 2. Avatar/TTS sample rate mismatches (e.g., 16kHz TTS + HeyGen 24kHz avatar)
  * 3. Valid configurations that compile successfully
- * 
+ *
  * To verify type checking works:
  * 1. Uncomment sections marked with @ts-expect-error
  * 2. Run: npm run build
@@ -13,7 +13,10 @@
  */
 
 import { Agent } from "../Agent.js";
+import { OpenAI } from "../vendors/llm.js";
+import { DeepgramSTT } from "../vendors/stt.js";
 import { ElevenLabsTTS, MicrosoftTTS, CartesiaTTS, OpenAITTS } from "../vendors/tts.js";
+import { MiniMaxTTS } from "../vendors/tts.js";
 import { HeyGenAvatar, AkoolAvatar } from "../vendors/avatar.js";
 
 // ============================================
@@ -29,14 +32,14 @@ function validExample1(): Agent<24000> {
                 modelId: "eleven_flash_v2_5",
                 voiceId: "test",
                 sampleRate: 24000,
-            })
+            }),
         )
         .withAvatar(
             new HeyGenAvatar({
                 apiKey: "test",
                 quality: "high",
                 agoraUid: "12345",
-            })
+            }),
         );
 }
 
@@ -49,12 +52,12 @@ function validExample2(): Agent<16000> {
                 modelId: "eleven_flash_v2_5",
                 voiceId: "test",
                 sampleRate: 16000,
-            })
+            }),
         )
         .withAvatar(
             new AkoolAvatar({
                 apiKey: "test",
-            })
+            }),
         );
 }
 
@@ -67,14 +70,14 @@ function validExample3(): Agent<24000> {
                 region: "eastus",
                 voiceName: "en-US-JennyNeural",
                 sampleRate: 24000,
-            })
+            }),
         )
         .withAvatar(
             new HeyGenAvatar({
                 apiKey: "test",
                 quality: "high",
                 agoraUid: "12345",
-            })
+            }),
         );
 }
 
@@ -85,14 +88,14 @@ function validExample4(): Agent<24000> {
             new OpenAITTS({
                 apiKey: "test",
                 voice: "alloy",
-            })
+            }),
         )
         .withAvatar(
             new HeyGenAvatar({
                 apiKey: "test",
                 quality: "high",
                 agoraUid: "12345",
-            })
+            }),
         );
 }
 
@@ -104,14 +107,39 @@ function validExample5(): Agent<16000> {
                 apiKey: "test",
                 voiceId: "test",
                 sampleRate: 16000,
-            })
+            }),
         )
         .withAvatar(
             new AkoolAvatar({
                 apiKey: "test",
-            })
+            }),
         );
 }
+
+// Preset-backed reseller models may omit credentials.
+new DeepgramSTT({ model: "nova-3" });
+new OpenAI({ model: "gpt-5-mini" });
+new OpenAITTS({ voice: "alloy" });
+new MiniMaxTTS({
+    groupId: "group",
+    model: "speech-2.6-turbo",
+    voiceId: "voice",
+    url: "wss://example.com",
+});
+
+// @ts-expect-error Missing apiKey is only allowed for preset-backed Deepgram models.
+new DeepgramSTT({ model: "enhanced" });
+// @ts-expect-error Missing apiKey is only allowed for preset-backed OpenAI models.
+new OpenAI({ model: "gpt-4o" });
+// @ts-expect-error Missing apiKey is only allowed for the openai_tts_1 preset model.
+new OpenAITTS({ voice: "alloy", model: "tts-1-hd" });
+// @ts-expect-error Missing key is only allowed for supported MiniMax preset models.
+new MiniMaxTTS({
+    groupId: "group",
+    model: "speech-02-turbo",
+    voiceId: "voice",
+    url: "wss://example.com",
+});
 
 // ============================================
 // ❌ INVALID: Sample rate mismatches
@@ -239,7 +267,7 @@ function edgeCase1() {
             apiKey: "test",
             quality: "high",
             agoraUid: "12345",
-        })
+        }),
     );
 }
 
@@ -251,7 +279,7 @@ function edgeCase2() {
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
             sampleRate: 16000,
-        })
+        }),
     );
 }
 
@@ -264,7 +292,7 @@ function edgeCase3(): Agent<24000> {
                 modelId: "eleven_flash_v2_5",
                 voiceId: "test",
                 sampleRate: 24000,
-            })
+            }),
         )
         .withInstructions("Updated instructions")
         .withGreeting("Hello!")
@@ -273,7 +301,7 @@ function edgeCase3(): Agent<24000> {
                 apiKey: "test",
                 quality: "high",
                 agoraUid: "12345",
-            })
+            }),
         );
 }
 
@@ -288,7 +316,7 @@ function typeInference1() {
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
             sampleRate: 24000,
-        })
+        }),
     );
 
     // Verify: Type should be Agent<24000>
@@ -303,7 +331,7 @@ function typeInference2() {
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
             sampleRate: 16000,
-        })
+        }),
     );
 
     // Verify: Type should be Agent<16000>
@@ -316,7 +344,7 @@ function typeInference3() {
         new OpenAITTS({
             apiKey: "test",
             voice: "alloy",
-        })
+        }),
     );
 
     // Verify: OpenAI is fixed at 24kHz, so type should be Agent<24000>

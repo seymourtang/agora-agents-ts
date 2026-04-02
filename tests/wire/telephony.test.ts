@@ -276,6 +276,57 @@ describe("TelephonyClient", () => {
         });
     });
 
+    test("call returns AgoraError on 4xx", async () => {
+        const server = mockServerPool.createServer();
+        const client = new AgoraClient({
+            maxRetries: 0,
+            username: "test",
+            password: "test",
+            authorization: "test",
+            environment: server.baseUrl,
+        });
+
+        server
+            .mockEndpoint()
+            .post("/v2/projects/appid/call")
+            .respondWith()
+            .statusCode(400)
+            .jsonBody({ message: "invalid sip config" })
+            .build();
+
+        await expect(
+            client.telephony.call({
+                appid: "appid",
+                name: "test",
+                sip: { to_number: "+1", from_number: "+2", rtc_uid: "1", rtc_token: "t" },
+                properties: { channel: "c", token: "t", agent_rtc_uid: "1", remote_rtc_uids: ["2"] },
+            }),
+        ).rejects.toMatchObject({ statusCode: 400 });
+    });
+
+    test("get returns AgoraError on 5xx", async () => {
+        const server = mockServerPool.createServer();
+        const client = new AgoraClient({
+            maxRetries: 0,
+            username: "test",
+            password: "test",
+            authorization: "test",
+            environment: server.baseUrl,
+        });
+
+        server
+            .mockEndpoint()
+            .get("/v2/projects/appid/calls/broken-agent")
+            .respondWith()
+            .statusCode(500)
+            .jsonBody({ message: "internal error" })
+            .build();
+
+        await expect(
+            client.telephony.get({ appid: "appid", agent_id: "broken-agent" }),
+        ).rejects.toMatchObject({ statusCode: 500 });
+    });
+
     test("hangup", async () => {
         const server = mockServerPool.createServer();
         const client = new AgoraClient({
