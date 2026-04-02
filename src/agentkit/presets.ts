@@ -39,6 +39,36 @@ export type OpenAITtsPresetModel = (typeof OpenAITtsPresetModels)[number];
 export type MiniMaxPresetModel = (typeof MiniMaxPresetModels)[number];
 
 type PresetCategory = "asr" | "llm" | "tts";
+type AsrInference = {
+    category: "asr";
+    preset: AsrPreset;
+    stripModel: boolean;
+};
+type LlmInference = {
+    category: "llm";
+    preset: LlmPreset;
+    stripModel: boolean;
+    stripDefaultUrl: boolean;
+};
+type OpenAITtsInference = {
+    category: "tts";
+    preset: typeof AgentPresets.tts.openaiTts1;
+    vendor: "openai";
+    stripModel: boolean;
+};
+type MiniMaxTtsInference = {
+    category: "tts";
+    preset: TtsPreset;
+    vendor: "minimax";
+    stripModel: boolean;
+};
+type TtsInference = OpenAITtsInference | MiniMaxTtsInference;
+type PresetInference = AsrInference | LlmInference | TtsInference;
+type InferenceMap = {
+    asr?: AsrInference;
+    llm?: LlmInference;
+    tts?: TtsInference;
+};
 
 const OPENAI_CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions";
 const deepgramModelToPreset: Record<string, AsrPreset> = {
@@ -84,101 +114,109 @@ function omitUndefinedKeys<T extends Record<string, unknown>>(value: T): T | und
     return Object.keys(next).length > 0 ? next : undefined;
 }
 
-function inferAsrPreset(asr?: Agora.StartAgentsRequest.Properties.Asr): AsrPreset | undefined {
+function inferAsrPreset(asr?: Agora.StartAgentsRequest.Properties.Asr): AsrInference | undefined {
     if (!asr || asr.vendor !== "deepgram" || asr.params?.api_key) return undefined;
-    return deepgramModelToPreset[normalizeModelName(asr.params?.model) ?? ""];
+    const preset = deepgramModelToPreset[normalizeModelName(asr.params?.model) ?? ""];
+    if (!preset) return undefined;
+    return {
+        category: "asr",
+        preset,
+        stripModel: true,
+    };
 }
 
-function inferLlmPreset(llm?: Agora.StartAgentsRequest.Properties.Llm): LlmPreset | undefined {
+function inferLlmPreset(llm?: Agora.StartAgentsRequest.Properties.Llm): LlmInference | undefined {
     if (!llm || llm.api_key) return undefined;
     if (llm.vendor && llm.vendor !== "openai") return undefined;
     if (llm.url && llm.url !== OPENAI_CHAT_COMPLETIONS_URL) return undefined;
-    return openAiModelToPreset[normalizeModelName(llm.params?.model) ?? ""];
+    const preset = openAiModelToPreset[normalizeModelName(llm.params?.model) ?? ""];
+    if (!preset) return undefined;
+    return {
+        category: "llm",
+        preset,
+        stripModel: true,
+        stripDefaultUrl: true,
+    };
 }
 
-function inferTtsPreset(tts?: Agora.Tts): TtsPreset | undefined {
+function inferTtsPreset(tts?: Agora.Tts): TtsInference | undefined {
     if (!tts) return undefined;
     if (tts.vendor === "openai") {
         if ((tts.params as unknown as Record<string, unknown> | undefined)?.api_key) return undefined;
         const model = normalizeModelName(tts.params?.model) ?? "tts-1";
-        return model === "tts-1" ? AgentPresets.tts.openaiTts1 : undefined;
+        if (model !== "tts-1") return undefined;
+        return {
+            category: "tts",
+            preset: AgentPresets.tts.openaiTts1,
+            vendor: "openai",
+            stripModel: true,
+        };
     }
     if (tts.vendor === "minimax") {
         if (tts.params?.key) return undefined;
-        return minimaxModelToPreset[normalizeModelName(tts.params?.model) ?? ""];
+        const preset = minimaxModelToPreset[normalizeModelName(tts.params?.model) ?? ""];
+        if (!preset) return undefined;
+        return {
+            category: "tts",
+            preset,
+            vendor: "minimax",
+            stripModel: true,
+        };
     }
     return undefined;
 }
 
 function stripInferredPresetFields(
     properties: Agora.StartAgentsRequest.Properties,
-    inferredPresets: AgentPreset[],
+    inferred: InferenceMap,
 ): Agora.StartAgentsRequest.Properties {
-    const inferredCategories = new Set(inferredPresets.map(getPresetCategory).filter(Boolean));
-
     let asr = properties.asr;
-    if (asr && inferredCategories.has("asr")) {
-        const inferredPreset = inferAsrPreset(asr);
+    const asrInference = inferred.asr;
+    if (asr && asrInference) {
         asr = {
             ...asr,
             params: omitUndefinedKeys({
                 ...asr.params,
                 api_key: undefined,
-                model:
-                    inferredPreset &&
-                    deepgramModelToPreset[normalizeModelName(asr.params?.model) ?? ""] === inferredPreset
-                        ? undefined
-                        : asr.params?.model,
+                model: asrInference.stripModel ? undefined : asr.params?.model,
             }),
         };
     }
 
     let llm = properties.llm;
-    if (llm && inferredCategories.has("llm")) {
-        const inferredPreset = inferLlmPreset(llm);
+    const llmInference = inferred.llm;
+    if (llm && llmInference) {
         const { url: llmUrl, ...llmRest } = llm;
         llm = {
             ...llmRest,
             api_key: undefined,
-            url: llmUrl && llmUrl !== OPENAI_CHAT_COMPLETIONS_URL ? llmUrl : undefined,
+            url: llmInference.stripDefaultUrl ? undefined : llmUrl,
             params: omitUndefinedKeys({
                 ...llm.params,
-                model:
-                    inferredPreset &&
-                    openAiModelToPreset[normalizeModelName(llm.params?.model) ?? ""] === inferredPreset
-                        ? undefined
-                        : llm.params?.model,
+                model: llmInference.stripModel ? undefined : llm.params?.model,
             }),
         } as unknown as Agora.StartAgentsRequest.Properties.Llm;
     }
 
     let tts = properties.tts;
-    if (tts && inferredCategories.has("tts")) {
-        const inferredPreset = inferTtsPreset(tts);
-        if (tts.vendor === "openai") {
+    const ttsInference = inferred.tts;
+    if (tts && ttsInference) {
+        if (ttsInference.vendor === "openai" && tts.vendor === "openai") {
             tts = {
                 ...tts,
                 params: omitUndefinedKeys({
                     ...tts.params,
                     api_key: undefined,
-                    model:
-                        inferredPreset === AgentPresets.tts.openaiTts1 &&
-                        (normalizeModelName(tts.params?.model) ?? "tts-1") === "tts-1"
-                            ? undefined
-                            : tts.params?.model,
+                    model: ttsInference.stripModel ? undefined : tts.params?.model,
                 }) as typeof tts.params,
             };
-        } else if (tts.vendor === "minimax") {
+        } else if (ttsInference.vendor === "minimax" && tts.vendor === "minimax") {
             tts = {
                 ...tts,
                 params: omitUndefinedKeys({
                     ...tts.params,
                     key: undefined,
-                    model:
-                        inferredPreset &&
-                        minimaxModelToPreset[normalizeModelName(tts.params?.model) ?? ""] === inferredPreset
-                            ? undefined
-                            : tts.params?.model,
+                    model: ttsInference.stripModel ? undefined : tts.params?.model,
                 }) as unknown as typeof tts.params,
             };
         }
@@ -198,23 +236,24 @@ export function resolveSessionPresets(args: {
 }): { preset?: string; properties: Agora.StartAgentsRequest.Properties } {
     const explicitPresets = parsePresetInput(args.preset);
     const explicitCategories = new Set(explicitPresets.map(getPresetCategory).filter(Boolean));
-    const inferredPresets: AgentPreset[] = [];
+    const inferred: InferenceMap = {};
 
     if (!explicitCategories.has("asr")) {
-        const preset = inferAsrPreset(args.properties.asr);
-        if (preset) inferredPresets.push(preset);
+        const result = inferAsrPreset(args.properties.asr);
+        if (result) inferred.asr = result;
     }
     if (!explicitCategories.has("llm")) {
-        const preset = inferLlmPreset(args.properties.llm);
-        if (preset) inferredPresets.push(preset);
+        const result = inferLlmPreset(args.properties.llm);
+        if (result) inferred.llm = result;
     }
     if (!explicitCategories.has("tts")) {
-        const preset = inferTtsPreset(args.properties.tts);
-        if (preset) inferredPresets.push(preset);
+        const result = inferTtsPreset(args.properties.tts);
+        if (result) inferred.tts = result;
     }
+    const inferredPresets = Object.values(inferred).map((result) => result.preset);
 
     return {
         preset: normalizePresetInput([...explicitPresets, ...inferredPresets]),
-        properties: stripInferredPresetFields(args.properties, inferredPresets),
+        properties: stripInferredPresetFields(args.properties, inferred),
     };
 }
