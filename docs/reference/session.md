@@ -77,6 +77,12 @@ Fetch the conversation history for this session.
 
 - Requires a valid `agentId` (i.e., `start()` must have been called)
 
+### `getTurns(): Promise<ConversationTurns>`
+
+Fetch turn-by-turn analytics for this session, including start/end events and latency metrics.
+
+- Requires a valid `agentId` (i.e., `start()` must have been called)
+
 ### `getInfo(): Promise<SessionInfo>`
 
 Fetch current agent metadata from the API.

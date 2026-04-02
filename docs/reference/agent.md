@@ -158,6 +158,8 @@ createSession(
 | `expiresIn` | `number` | No | Token lifetime in seconds (default: `86400` = 24 h, Agora max). Only applies when the token is auto-generated. Use `ExpiresIn.hours()` or `ExpiresIn.minutes()` for clarity. Valid range: 1–86400. |
 | `idleTimeout` | `number` | No | Seconds before auto-exit if no audio (0 = disabled) |
 | `enableStringUid` | `boolean` | No | Use string UIDs instead of numeric |
+| `preset` | `string` | No | Comma-separated preset IDs to use as the base ASR/LLM/TTS configuration |
+| `pipelineId` | `string` | No | Published AI Studio pipeline ID to use as the base configuration |
 | `debug` | `boolean` | No | Log API requests to console |
 
 ## `toProperties(opts): StartAgentsRequest.Properties`
