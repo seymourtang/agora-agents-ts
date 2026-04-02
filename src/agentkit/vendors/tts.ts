@@ -5,6 +5,7 @@
 import { BaseTTS } from "./base.js";
 import type { ElevenLabsSampleRate, GoogleTTSSampleRate, MicrosoftSampleRate, CartesiaSampleRate } from "./base.js";
 import type { TtsConfig } from "../types.js";
+import type { MiniMaxPresetModel, OpenAITtsPresetModel } from "../presets.js";
 
 /**
  * Constructor options for ElevenLabs TTS.
@@ -61,7 +62,19 @@ export class ElevenLabsTTS<SR extends ElevenLabsSampleRate = ElevenLabsSampleRat
     }
 
     toConfig(): TtsConfig {
-        const { key, modelId, voiceId, baseUrl, sampleRate, optimizeStreamingLatency, stability, similarityBoost, style, useSpeakerBoost, skipPatterns } = this.options;
+        const {
+            key,
+            modelId,
+            voiceId,
+            baseUrl,
+            sampleRate,
+            optimizeStreamingLatency,
+            stability,
+            similarityBoost,
+            style,
+            useSpeakerBoost,
+            skipPatterns,
+        } = this.options;
 
         return {
             vendor: "elevenlabs",
@@ -141,9 +154,9 @@ export class MicrosoftTTS<SR extends MicrosoftSampleRate = MicrosoftSampleRate> 
 /**
  * Constructor options for OpenAI TTS.
  */
-export interface OpenAITTSOptions {
-    /** OpenAI API key */
-    apiKey: string;
+type OpenAITTSCommonOptions = {
+    /** OpenAI API key. Optional only for the `tts-1` reseller preset path. */
+    apiKey?: string;
     /** Voice name (e.g., 'alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer') */
     voice: string;
     /** Model name (e.g., 'tts-1', 'tts-1-hd') */
@@ -154,11 +167,20 @@ export interface OpenAITTSOptions {
     speed?: number;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
-}
+};
+
+export type OpenAITTSOptions =
+    | (OpenAITTSCommonOptions & {
+          apiKey: string;
+      })
+    | (Omit<OpenAITTSCommonOptions, "model"> & {
+          apiKey?: undefined;
+          model?: OpenAITtsPresetModel;
+      });
 
 /**
  * OpenAI TTS vendor.
- * 
+ *
  * Note: OpenAI TTS is fixed at 24kHz and does not support changing the sample rate.
  *
  * @example
@@ -184,7 +206,7 @@ export class OpenAITTS extends BaseTTS<24000> {
         return {
             vendor: "openai",
             params: {
-                api_key: apiKey,
+                ...(apiKey && { api_key: apiKey }),
                 voice,
                 ...(model && { model }),
                 ...(responseFormat && { response_format: responseFormat }),
@@ -508,9 +530,9 @@ export class FishAudioTTS extends BaseTTS {
 /**
  * Constructor options for MiniMax TTS.
  */
-export interface MiniMaxTTSOptions {
-    /** MiniMax API key */
-    key: string;
+type MiniMaxTTSCommonOptions = {
+    /** MiniMax API key. Optional only for AgentKit-supported reseller preset models. */
+    key?: string;
     /** MiniMax group identifier */
     groupId: string;
     /** TTS model (e.g., 'speech-02-turbo') */
@@ -521,7 +543,19 @@ export interface MiniMaxTTSOptions {
     url: string;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
-}
+};
+
+export type MiniMaxTTSOptions =
+    | (MiniMaxTTSCommonOptions & {
+          key: string;
+      })
+    | (Omit<MiniMaxTTSCommonOptions, "model" | "groupId" | "voiceId" | "url"> & {
+          key?: undefined;
+          model: MiniMaxPresetModel;
+          groupId?: string;
+          voiceId?: string;
+          url?: string;
+      });
 
 /**
  * MiniMax TTS vendor.
@@ -551,12 +585,12 @@ export class MiniMaxTTS extends BaseTTS {
         return {
             vendor: "minimax",
             params: {
-                key,
-                group_id: groupId,
+                ...(key && { key }),
+                ...(groupId && { group_id: groupId }),
                 model,
-                voice_setting: { voice_id: voiceId },
-                url,
-            },
+                ...(voiceId && { voice_setting: { voice_id: voiceId } }),
+                ...(url && { url }),
+            } as unknown as import("../types.js").MinimaxTtsParams,
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         };
     }

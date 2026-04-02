@@ -80,7 +80,7 @@ console.log(rawResponse.headers["X-My-Header"]);
 Configure the logger via client options:
 
 ```typescript
-import { AgoraClient, logging } from "agora-agent-sdk";
+import { AgoraClient, logging } from "agora-agent-server-sdk";
 
 const client = new AgoraClient({
   area: Area.US,
@@ -129,7 +129,7 @@ The SDK works in:
 Provide a custom `fetcher` for unsupported environments:
 
 ```typescript
-import { AgoraClient } from "agora-agent-sdk";
+import { AgoraClient } from "agora-agent-server-sdk";
 
 const client = new AgoraClient({
   area: Area.US,

@@ -11,7 +11,7 @@ description: The Agent builder — configure an AI agent with LLM, TTS, STT, and
 ## Constructor options
 
 ```typescript
-import { Agent } from 'agora-agent-sdk';
+import { Agent } from 'agora-agent-server-sdk';
 
 const agent = new Agent({
   name: 'my-assistant',
@@ -94,7 +94,7 @@ const session = agent.createSession(client, {
 Because every method returns a new instance, you can create a base agent and derive variations:
 
 ```typescript
-import { Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-sdk';
+import { Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
 
 const base = new Agent({ instructions: 'You are helpful.' })
   .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))

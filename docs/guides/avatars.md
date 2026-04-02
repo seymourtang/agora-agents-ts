@@ -22,7 +22,7 @@ Avatars require the TTS audio to be at a specific sample rate. If you use the wr
 The `Agent` class tracks the TTS sample rate as a type parameter. When you call `.withAvatar()`, TypeScript checks that the TTS sample rate type matches the avatar's required rate. If they don't match, you get a compile error:
 
 ```typescript
-import { Agent, ElevenLabsTTS, HeyGenAvatar } from 'agora-agent-sdk';
+import { Agent, ElevenLabsTTS, HeyGenAvatar } from 'agora-agent-server-sdk';
 
 // This works — ElevenLabs at 24kHz matches HeyGen's requirement
 const good = new Agent({ name: 'avatar-agent' })
@@ -67,7 +67,7 @@ import {
   ElevenLabsTTS,
   DeepgramSTT,
   HeyGenAvatar,
-} from 'agora-agent-sdk';
+} from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,
@@ -111,7 +111,7 @@ import {
   ElevenLabsTTS,
   DeepgramSTT,
   AkoolAvatar,
-} from 'agora-agent-sdk';
+} from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,

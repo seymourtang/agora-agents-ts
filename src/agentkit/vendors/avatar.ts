@@ -6,7 +6,7 @@
  */
 
 import { BaseAvatar } from "./base.js";
-import type { HeyGenSampleRate, AkoolSampleRate } from "./base.js";
+import type { HeyGenSampleRate, LiveAvatarSampleRate, AkoolSampleRate } from "./base.js";
 import type { AvatarConfig } from "../types.js";
 
 /**
@@ -36,32 +36,12 @@ export interface HeyGenAvatarOptions {
 /**
  * HeyGen Avatar vendor.
  *
+ * @deprecated HeyGen has been renamed to LiveAvatar. Use {@link LiveAvatarAvatar} instead.
+ * This class emits `vendor: "heygen"` for backward compatibility. New deployments
+ * should use `LiveAvatarAvatar` which emits `vendor: "liveavatar"`.
+ *
  * ⚠️ IMPORTANT: HeyGen avatars ONLY support audio with a sample rate of 24,000 Hz.
  * You must configure your TTS with a 24kHz sample rate or the request will fail.
- *
- * @example
- * ```typescript
- * import { Agent, HeyGenAvatar, ElevenLabsTTS } from 'agora-agent-sdk';
- *
- * const avatar = new HeyGenAvatar({
- *   apiKey: process.env.HEYGEN_API_KEY,
- *   quality: 'high',
- *   agoraUid: '12345',
- *   avatarId: 'avatar-id',
- * });
- *
- * // Make sure TTS uses 24kHz sample rate for HeyGen
- * const tts = new ElevenLabsTTS({
- *   key: process.env.ELEVENLABS_API_KEY,
- *   modelId: 'eleven_flash_v2_5',
- *   voiceId: 'voice-id',
- *   sampleRate: 24000, // Required for HeyGen
- * });
- *
- * const agent = new Agent({ name: 'avatar-assistant' })
- *   .withTts(tts)
- *   .withAvatar(avatar);
- * ```
  *
  * @see https://docs.agora.io/en/conversational-ai/models/avatar/heygen
  */
@@ -143,7 +123,7 @@ export interface AkoolAvatarOptions {
  *
  * @example
  * ```typescript
- * import { Agent, AkoolAvatar, ElevenLabsTTS } from 'agora-agent-sdk';
+ * import { Agent, AkoolAvatar, ElevenLabsTTS } from 'agora-agent-server-sdk';
  *
  * const avatar = new AkoolAvatar({
  *   apiKey: process.env.AKOOL_API_KEY,
@@ -195,6 +175,165 @@ export class AkoolAvatar extends BaseAvatar<AkoolSampleRate> {
                 ...additionalParams,
                 api_key: apiKey,
                 ...(avatarId && { avatar_id: avatarId }),
+            },
+        };
+    }
+}
+
+// =============================================================================
+// LiveAvatar (formerly HeyGen)
+// =============================================================================
+
+/**
+ * Constructor options for LiveAvatar (formerly HeyGen).
+ */
+export type LiveAvatarAvatarOptions = HeyGenAvatarOptions;
+
+/**
+ * LiveAvatar avatar vendor (formerly HeyGen).
+ *
+ * ⚠️ IMPORTANT: LiveAvatar ONLY supports audio with a sample rate of 24,000 Hz.
+ * You must configure your TTS with a 24kHz sample rate or the request will fail.
+ *
+ * @example
+ * ```typescript
+ * import { Agent, LiveAvatarAvatar, ElevenLabsTTS } from 'agora-agent-server-sdk';
+ *
+ * const avatar = new LiveAvatarAvatar({
+ *   apiKey: process.env.LIVEAVATAR_API_KEY,
+ *   quality: 'high',
+ *   agoraUid: '12345',
+ *   avatarId: 'avatar-id',
+ * });
+ *
+ * const tts = new ElevenLabsTTS({
+ *   apiKey: process.env.ELEVENLABS_API_KEY,
+ *   modelId: 'eleven_flash_v2_5',
+ *   voiceId: 'voice-id',
+ *   sampleRate: 24000, // Required for LiveAvatar
+ * });
+ *
+ * const agent = new Agent({ name: 'avatar-assistant' })
+ *   .withTts(tts)
+ *   .withAvatar(avatar);
+ * ```
+ *
+ * @see https://docs.agora.io/en/conversational-ai/models/avatar/overview
+ */
+export class LiveAvatarAvatar extends BaseAvatar<LiveAvatarSampleRate> {
+    private readonly options: LiveAvatarAvatarOptions;
+
+    /**
+     * LiveAvatar requires TTS sample rate of 24,000 Hz.
+     */
+    readonly requiredSampleRate = 24000 as const;
+
+    constructor(options: LiveAvatarAvatarOptions) {
+        super();
+        this.options = options;
+
+        if (!options.apiKey) {
+            throw new Error("LiveAvatar requires apiKey");
+        }
+        if (!options.agoraUid) {
+            throw new Error("LiveAvatar requires agoraUid");
+        }
+    }
+
+    toConfig(): AvatarConfig {
+        const {
+            apiKey,
+            quality,
+            agoraUid,
+            agoraToken,
+            avatarId,
+            disableIdleTimeout,
+            activityIdleTimeout,
+            enable = true,
+            additionalParams,
+        } = this.options;
+
+        return {
+            enable,
+            vendor: "liveavatar",
+            params: {
+                ...additionalParams,
+                api_key: apiKey,
+                quality,
+                agora_uid: agoraUid,
+                ...(agoraToken && { agora_token: agoraToken }),
+                ...(avatarId && { avatar_id: avatarId }),
+                ...(disableIdleTimeout !== undefined && { disable_idle_timeout: disableIdleTimeout }),
+                ...(activityIdleTimeout !== undefined && { activity_idle_timeout: activityIdleTimeout }),
+            },
+        };
+    }
+}
+
+// =============================================================================
+// Anam
+// =============================================================================
+
+/**
+ * Constructor options for Anam Avatar.
+ */
+export interface AnamAvatarOptions {
+    /** Anam API key */
+    apiKey: string;
+    /** Anam persona ID */
+    personaId?: string;
+    /** Enable avatar (default: true) */
+    enable?: boolean;
+    /** Additional vendor-specific parameters */
+    additionalParams?: Record<string, unknown>;
+}
+
+/**
+ * Anam Avatar vendor (Beta).
+ *
+ * @example
+ * ```typescript
+ * import { Agent, AnamAvatar } from 'agora-agent-server-sdk';
+ *
+ * const avatar = new AnamAvatar({
+ *   apiKey: process.env.ANAM_API_KEY,
+ *   personaId: 'persona-id',
+ * });
+ *
+ * const agent = new Agent({ name: 'avatar-assistant' })
+ *   .withAvatar(avatar);
+ * ```
+ *
+ * @see https://docs.agora.io/en/conversational-ai/models/avatar/overview
+ */
+export class AnamAvatar extends BaseAvatar<number> {
+    private readonly options: AnamAvatarOptions;
+
+    /**
+     * Anam does not enforce a specific TTS sample rate. Consult Anam documentation
+     * for the sample rate supported by your chosen persona.
+     */
+    readonly requiredSampleRate = 0 as number;
+
+    constructor(options: AnamAvatarOptions) {
+        super();
+        this.options = options;
+
+        if (!options.apiKey) {
+            throw new Error("Anam avatar requires apiKey");
+        }
+    }
+
+    toConfig(): AvatarConfig {
+        const { apiKey, personaId, enable = true, additionalParams } = this.options;
+
+        return {
+            enable,
+            vendor: "anam",
+            params: {
+                ...additionalParams,
+                api_key: apiKey,
+                ...(personaId && { persona_id: personaId }),
             },
         };
     }

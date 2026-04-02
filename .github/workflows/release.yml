@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write   # create GitHub Release
+      id-token: write   # npm provenance attestation
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6

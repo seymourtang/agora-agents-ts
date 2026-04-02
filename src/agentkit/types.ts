@@ -9,6 +9,7 @@ import type {
     ListAgentsResponse,
     GetAgentsResponse,
     GetHistoryAgentsResponse,
+    GetTurnsAgentsResponse,
     SpeakAgentsRequest,
     Tts,
     MicrosoftTts as MicrosoftTtsType,
@@ -36,6 +37,7 @@ import type {
     SarvamTts as SarvamTtsType,
     SarvamTtsParams as SarvamTtsParamsType,
 } from "../api/index.js";
+import type { PresetInput } from "./presets.js";
 
 // =============================================================================
 // Core Configuration Types
@@ -44,21 +46,21 @@ import type {
 /** LLM request style (openai, gemini, anthropic, dify) */
 export type LlmStyle = StartAgentsRequest.Properties.Llm.Style;
 
-/** 
+/**
  * STT/ASR (Speech-to-Text) configuration with vendor-specific typed parameters.
  * This discriminated union provides type safety and auto-complete for vendor params.
  * When using shorthand strings or minimal configs, the untyped variant is available.
  */
 export type SttConfig =
-    | { vendor: 'speechmatics'; language?: string; params: SpeechmaticsParams }
-    | { vendor: 'deepgram'; language?: string; params?: DeepgramParams }
-    | { vendor: 'microsoft'; language?: string; params: MicrosoftAsrParams }
-    | { vendor: 'openai'; language?: string; params: OpenAiAsrParams }
-    | { vendor: 'google'; language?: string; params: GoogleAsrParams }
-    | { vendor: 'amazon'; language?: string; params: AmazonAsrParams }
-    | { vendor: 'assemblyai'; language?: string; params?: AssemblyAiParams }
-    | { vendor: 'ares'; language?: string; params?: AresParams }
-    | { vendor: 'sarvam'; language?: string; params?: SarvamAsrParams }
+    | { vendor: "speechmatics"; language?: string; params: SpeechmaticsParams }
+    | { vendor: "deepgram"; language?: string; params?: DeepgramParams }
+    | { vendor: "microsoft"; language?: string; params: MicrosoftAsrParams }
+    | { vendor: "openai"; language?: string; params: OpenAiAsrParams }
+    | { vendor: "google"; language?: string; params: GoogleAsrParams }
+    | { vendor: "amazon"; language?: string; params: AmazonAsrParams }
+    | { vendor: "assemblyai"; language?: string; params?: AssemblyAiParams }
+    | { vendor: "ares"; language?: string; params?: AresParams }
+    | { vendor: "sarvam"; language?: string; params?: SarvamAsrParams }
     | StartAgentsRequest.Properties.Asr; // Fallback for shorthand/untyped configs
 
 /** STT vendor (ares, microsoft, deepgram, openai, etc.) */
@@ -97,13 +99,16 @@ export type StartOfSpeechMode = StartAgentsRequest.Properties.TurnDetection.Conf
 export type StartOfSpeechVadConfig = StartAgentsRequest.Properties.TurnDetection.Config.StartOfSpeech.VadConfig;
 
 /** Keyword trigger config for SoS detection (`start_of_speech.keywords_config`) */
-export type StartOfSpeechKeywordsConfig = StartAgentsRequest.Properties.TurnDetection.Config.StartOfSpeech.KeywordsConfig;
+export type StartOfSpeechKeywordsConfig =
+    StartAgentsRequest.Properties.TurnDetection.Config.StartOfSpeech.KeywordsConfig;
 
 /** Disabled mode config for SoS detection (`start_of_speech.disabled_config`) */
-export type StartOfSpeechDisabledConfig = StartAgentsRequest.Properties.TurnDetection.Config.StartOfSpeech.DisabledConfig;
+export type StartOfSpeechDisabledConfig =
+    StartAgentsRequest.Properties.TurnDetection.Config.StartOfSpeech.DisabledConfig;
 
 /** Voice processing strategy when SoS is disabled: `"append"` | `"ignored"` */
-export type StartOfSpeechDisabledConfigStrategy = StartAgentsRequest.Properties.TurnDetection.Config.StartOfSpeech.DisabledConfig.Strategy;
+export type StartOfSpeechDisabledConfigStrategy =
+    StartAgentsRequest.Properties.TurnDetection.Config.StartOfSpeech.DisabledConfig.Strategy;
 
 /** End of Speech (EoS) detection configuration (`turn_detection.config.end_of_speech`) */
 export type EndOfSpeechConfig = StartAgentsRequest.Properties.TurnDetection.Config.EndOfSpeech;
@@ -189,7 +194,8 @@ export type FillerWordsContent = StartAgentsRequest.Properties.FillerWords.Conte
 export type FillerWordsContentStaticConfig = StartAgentsRequest.Properties.FillerWords.Content.StaticConfig;
 
 /** Filler word selection rule: `"shuffle"` | `"round_robin"` */
-export type FillerWordsContentSelectionRule = StartAgentsRequest.Properties.FillerWords.Content.StaticConfig.SelectionRule;
+export type FillerWordsContentSelectionRule =
+    StartAgentsRequest.Properties.FillerWords.Content.StaticConfig.SelectionRule;
 
 /** Custom business labels attached to the agent (returned in notification callbacks) */
 export type Labels = Record<string, string>;
@@ -237,6 +243,10 @@ export interface SessionOptions {
     idleTimeout?: number;
     /** Whether to use string UIDs */
     enableStringUid?: boolean;
+    /** Preset IDs to use as the base ASR/LLM/TTS configuration for this session */
+    preset?: PresetInput;
+    /** Published AI Studio pipeline ID to use as the base configuration for this session */
+    pipelineId?: string;
     /**
      * Token lifetime in seconds (default: 86400 = 24 hours, Agora maximum).
      * Only applies when the SDK auto-generates a token (i.e. no `token` is provided).
@@ -271,6 +281,12 @@ export type ConversationTurn = GetHistoryAgentsResponse.Contents.Item;
 
 /** Conversation role */
 export type ConversationRole = GetHistoryAgentsResponse.Contents.Item.Role;
+
+/** Conversation turn analytics response */
+export type ConversationTurns = GetTurnsAgentsResponse;
+
+/** Conversation turn analytics item */
+export type ConversationSessionTurn = GetTurnsAgentsResponse.Turns.Item;
 
 // =============================================================================
 // Say/Speak Types
@@ -408,10 +424,10 @@ interface BaseLlmConfig {
  * This discriminated union provides type safety and auto-complete based on the style.
  */
 export type LlmConfig =
-    | (BaseLlmConfig & { style: 'openai'; params: OpenAiLlmParams })
-    | (BaseLlmConfig & { style: 'gemini'; params: GeminiLlmParams })
-    | (BaseLlmConfig & { style: 'anthropic'; params: AnthropicLlmParams })
-    | (BaseLlmConfig & { style: 'dify'; params: DifyLlmParams })
+    | (BaseLlmConfig & { style: "openai"; params: OpenAiLlmParams })
+    | (BaseLlmConfig & { style: "gemini"; params: GeminiLlmParams })
+    | (BaseLlmConfig & { style: "anthropic"; params: AnthropicLlmParams })
+    | (BaseLlmConfig & { style: "dify"; params: DifyLlmParams })
     | (BaseLlmConfig & { style?: undefined; params?: Record<string, unknown> })
     | StartAgentsRequest.Properties.Llm; // Fallback for shorthand configs
 

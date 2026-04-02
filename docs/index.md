@@ -6,7 +6,7 @@ description: The Agora Conversational AI TypeScript SDK — install, concepts, a
 
 # Agora Conversational AI TypeScript SDK
 
-The `agora-agent-sdk` package lets you build real-time voice AI agents on the [Agora Conversational AI](https://docs.agora.io/en/conversational-ai/overview) platform. Create agents that listen, think, and speak — powered by any combination of LLM, TTS, and STT providers.
+The `agora-agent-server-sdk` package lets you build real-time voice AI agents on the [Agora Conversational AI](https://docs.agora.io/en/conversational-ai/overview) platform. Create agents that listen, think, and speak — powered by any combination of LLM, TTS, and STT providers.
 
 ## Two conversation flows
 
@@ -28,7 +28,7 @@ The agentkit layer is built on top of the generated core. You can drop down to t
 ## Install
 
 ```sh
-npm install agora-agent-sdk
+npm install agora-agent-server-sdk
 ```
 
 ## Documentation

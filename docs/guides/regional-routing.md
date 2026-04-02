@@ -11,7 +11,7 @@ The `AgoraClient` uses a domain pool to route API requests to the nearest Agora 
 ## Area enum
 
 ```typescript
-import { Area } from 'agora-agent-sdk';
+import { Area } from 'agora-agent-server-sdk';
 ```
 
 | Value | Region |
@@ -24,7 +24,7 @@ import { Area } from 'agora-agent-sdk';
 Pass the area when creating the client:
 
 ```typescript
-import { AgoraClient, Area } from 'agora-agent-sdk';
+import { AgoraClient, Area } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.EU,
@@ -57,7 +57,7 @@ Note: `Area.CN` uses `sd-rtn.com` as the primary suffix (optimized for Chinese m
 If a request fails, call `client.nextRegion()` to cycle to the next domain prefix, then retry:
 
 ```typescript
-import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-sdk';
+import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.EU,

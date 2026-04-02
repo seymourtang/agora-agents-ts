@@ -9,10 +9,12 @@ import type { AvatarConfig as BaseAvatarConfig } from './types.js';
 
 /**
  * HeyGen-specific avatar configuration.
- * 
+ *
+ * @deprecated HeyGen has been renamed to LiveAvatar. Use {@link LiveAvatarAvatarConfig} instead.
+ *
  * ⚠️ IMPORTANT: HeyGen avatars ONLY support audio with a sample rate of 24,000 Hz.
  * You must configure your TTS with a 24kHz sample rate or the request will fail.
- * 
+ *
  * @see https://docs.agora.io/en/conversational-ai/models/avatar/heygen
  */
 export interface HeyGenAvatarConfig {
@@ -33,6 +35,53 @@ export interface HeyGenAvatarConfig {
     disable_idle_timeout?: boolean;
     /** Idle timeout in seconds (default: 120, only applies if disable_idle_timeout is false) */
     activity_idle_timeout?: number;
+    [key: string]: unknown;
+  };
+}
+
+/**
+ * LiveAvatar-specific avatar configuration (formerly HeyGen).
+ *
+ * ⚠️ IMPORTANT: LiveAvatar ONLY supports audio with a sample rate of 24,000 Hz.
+ * You must configure your TTS with a 24kHz sample rate or the request will fail.
+ *
+ * @see https://docs.agora.io/en/conversational-ai/models/avatar/overview
+ */
+export interface LiveAvatarAvatarConfig {
+  enable?: boolean;
+  vendor: 'liveavatar';
+  params: {
+    /** API key for LiveAvatar authentication (required) */
+    api_key: string;
+    /** Video quality: "high" (720p), "medium" (480p), or "low" (360p) (required) */
+    quality: 'low' | 'medium' | 'high';
+    /** RTC UID for the avatar (must be unique in the channel) (required) */
+    agora_uid: string;
+    /** RTC token for avatar authentication (optional) */
+    agora_token?: string;
+    /** Avatar ID (optional) */
+    avatar_id?: string;
+    /** Whether to disable idle timeout (default: false) */
+    disable_idle_timeout?: boolean;
+    /** Idle timeout in seconds (default: 120, only applies if disable_idle_timeout is false) */
+    activity_idle_timeout?: number;
+    [key: string]: unknown;
+  };
+}
+
+/**
+ * Anam-specific avatar configuration (Beta).
+ *
+ * @see https://docs.agora.io/en/conversational-ai/models/avatar/overview
+ */
+export interface AnamAvatarConfig {
+  enable?: boolean;
+  vendor: 'anam';
+  params: {
+    /** API key for Anam authentication (required) */
+    api_key: string;
+    /** Anam persona ID (optional) */
+    persona_id?: string;
     [key: string]: unknown;
   };
 }
@@ -74,23 +123,40 @@ export interface GenericAvatarConfig {
  * Discriminated union of all avatar configurations.
  * TypeScript will enforce vendor-specific constraints based on the vendor field.
  */
-export type StrictAvatarConfig = 
-  | HeyGenAvatarConfig 
-  | AkoolAvatarConfig 
+export type StrictAvatarConfig =
+  | HeyGenAvatarConfig
+  | LiveAvatarAvatarConfig
+  | AkoolAvatarConfig
+  | AnamAvatarConfig
   | GenericAvatarConfig;
 
 /**
- * Helper type guard to check if an avatar config is for HeyGen
+ * Helper type guard to check if an avatar config is for HeyGen.
+ * @deprecated Use {@link isLiveAvatarAvatar} for new code.
  */
 export function isHeyGenAvatar(config: StrictAvatarConfig): config is HeyGenAvatarConfig {
   return config.vendor === 'heygen';
 }
 
 /**
- * Helper type guard to check if an avatar config is for Akool
+ * Helper type guard to check if an avatar config is for LiveAvatar (formerly HeyGen).
+ */
+export function isLiveAvatarAvatar(config: StrictAvatarConfig): config is LiveAvatarAvatarConfig {
+  return config.vendor === 'liveavatar';
+}
+
+/**
+ * Helper type guard to check if an avatar config is for Akool.
  */
 export function isAkoolAvatar(config: StrictAvatarConfig): config is AkoolAvatarConfig {
   return config.vendor === 'akool';
+}
+
+/**
+ * Helper type guard to check if an avatar config is for Anam.
+ */
+export function isAnamAvatar(config: StrictAvatarConfig): config is AnamAvatarConfig {
+  return config.vendor === 'anam';
 }
 
 /**
@@ -101,29 +167,32 @@ export function isAkoolAvatar(config: StrictAvatarConfig): config is AkoolAvatar
  * @throws {Error} If the configuration is invalid
  */
 export function validateAvatarConfig(config: StrictAvatarConfig): void {
-  if (isHeyGenAvatar(config)) {
-    // Validate required fields
+  const validQualities = ['low', 'medium', 'high'];
+
+  if (isHeyGenAvatar(config) || isLiveAvatarAvatar(config)) {
+    const label = isHeyGenAvatar(config) ? 'HeyGen' : 'LiveAvatar';
     if (!config.params.api_key) {
-      throw new Error('HeyGen avatar requires api_key');
+      throw new Error(`${label} avatar requires api_key`);
     }
     if (!config.params.quality) {
-      throw new Error('HeyGen avatar requires quality (low, medium, or high)');
+      throw new Error(`${label} avatar requires quality (low, medium, or high)`);
     }
     if (!config.params.agora_uid) {
-      throw new Error('HeyGen avatar requires agora_uid');
+      throw new Error(`${label} avatar requires agora_uid`);
     }
-    
-    // Validate quality values
-    const validQualities = ['low', 'medium', 'high'];
     if (!validQualities.includes(config.params.quality)) {
       throw new Error(
-        `Invalid quality for HeyGen: ${config.params.quality}. ` +
+        `Invalid quality for ${label}: ${config.params.quality}. ` +
         `Must be one of: ${validQualities.join(', ')}`
       );
     }
   } else if (isAkoolAvatar(config)) {
     if (!config.params.api_key) {
       throw new Error('Akool avatar requires api_key');
+    }
+  } else if (isAnamAvatar(config)) {
+    if (!config.params.api_key) {
+      throw new Error('Anam avatar requires api_key');
     }
   }
 }
@@ -158,13 +227,14 @@ export function validateTtsSampleRate(
   avatarConfig: StrictAvatarConfig,
   ttsSampleRate: number
 ): void {
-  if (isHeyGenAvatar(avatarConfig)) {
+  if (isHeyGenAvatar(avatarConfig) || isLiveAvatarAvatar(avatarConfig)) {
     if (ttsSampleRate !== 24000) {
+      const label = isHeyGenAvatar(avatarConfig) ? 'HeyGen' : 'LiveAvatar';
       throw new Error(
-        `HeyGen avatars ONLY support 24,000 Hz sample rate. ` +
+        `${label} avatars ONLY support 24,000 Hz sample rate. ` +
         `Your TTS is configured with ${ttsSampleRate} Hz. ` +
         `Please update your TTS configuration to use 24kHz sample rate. ` +
-        `See: https://docs.agora.io/en/conversational-ai/models/avatar/heygen`
+        `See: https://docs.agora.io/en/conversational-ai/models/avatar/overview`
       );
     }
   } else if (isAkoolAvatar(avatarConfig)) {

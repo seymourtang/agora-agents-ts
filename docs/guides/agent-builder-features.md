@@ -32,7 +32,7 @@ import {
   OpenAI,
   ElevenLabsTTS,
   DeepgramSTT,
-} from 'agora-agent-sdk';
+} from 'agora-agent-server-sdk';
 
 const agent = new Agent({
   name: 'sal-assistant',
@@ -55,7 +55,7 @@ const agent = new Agent({
 Enable MLLM, RTM, SAL, or tools:
 
 ```typescript
-import { Agent } from 'agora-agent-sdk';
+import { Agent } from 'agora-agent-server-sdk';
 
 // MLLM mode (see mllm-flow guide)
 const mllmAgent = new Agent()
@@ -76,7 +76,7 @@ const toolsAgent = new Agent()
 Configure silence handling, farewell behavior, and data channel:
 
 ```typescript
-import { Agent } from 'agora-agent-sdk';
+import { Agent } from 'agora-agent-server-sdk';
 
 const agent = new Agent({ name: 'params-agent' })
   .withLlm(/* ... */)
@@ -231,7 +231,7 @@ import {
   OpenAI,
   ElevenLabsTTS,
   DeepgramSTT,
-} from 'agora-agent-sdk';
+} from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,

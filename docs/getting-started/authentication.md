@@ -13,7 +13,7 @@ The `AgoraClient` supports three authentication modes. App credentials is the re
 The SDK auto-generates a short-lived ConvoAI token per API call using your `appId` and `appCertificate`. No Customer Secret required.
 
 ```typescript
-import { AgoraClient, Area } from 'agora-agent-sdk';
+import { AgoraClient, Area } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,
@@ -29,7 +29,7 @@ This is the simplest setup. The generated token is scoped to a single App ID and
 Generate the token yourself (for example using `generateConvoAIToken`) and pass it directly. This gives you full control over the token lifecycle.
 
 ```typescript
-import { AgoraClient, Area, generateConvoAIToken } from 'agora-agent-sdk';
+import { AgoraClient, Area, generateConvoAIToken } from 'agora-agent-server-sdk';
 
 const token = generateConvoAIToken({
   appId: 'your-app-id',
@@ -52,7 +52,7 @@ const client = new AgoraClient({
 Use credentials from **Agora Console → Developer Toolkit → RESTful API**. This grants account-wide access — avoid for new projects.
 
 ```typescript
-import { AgoraClient, Area } from 'agora-agent-sdk';
+import { AgoraClient, Area } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,
@@ -78,7 +78,7 @@ The client exposes the resolved mode via `client.authMode` (returns `"app-creden
 When the SDK auto-generates a token (app credentials mode, or session without a pre-built `token`), the default lifetime is **86400 seconds (24 hours)** — the Agora maximum. You can customise this via `expiresIn` on `SessionOptions`:
 
 ```typescript
-import { Agent, ExpiresIn } from 'agora-agent-sdk';
+import { Agent, ExpiresIn } from 'agora-agent-server-sdk';
 
 const session = agent.createSession(client, {
   channel: 'room-123',

@@ -21,7 +21,7 @@ MLLM mode requires `advancedFeatures: { enable_mllm: true }` in the `Agent` cons
 ## Example: OpenAI Realtime
 
 ```typescript
-import { AgoraClient, Area, Agent, OpenAIRealtime } from 'agora-agent-sdk';
+import { AgoraClient, Area, Agent, OpenAIRealtime } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,
@@ -56,7 +56,7 @@ await session.stop();
 ## Example: Vertex AI (Gemini Live)
 
 ```typescript
-import { AgoraClient, Area, Agent, VertexAI } from 'agora-agent-sdk';
+import { AgoraClient, Area, Agent, VertexAI } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,

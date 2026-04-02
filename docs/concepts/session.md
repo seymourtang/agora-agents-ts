@@ -18,6 +18,8 @@ const session = agent.createSession(client, {
 });
 ```
 
+Presets are also configured at session creation time. That matches the underlying Agora start/join API, where presets are applied to a specific agent run rather than to the reusable `Agent` definition.
+
 ## State machine
 
 A session progresses through these states:
@@ -56,6 +58,39 @@ All interaction methods require the session to be in the `running` state.
 | `on(event, handler)` | `void` | Subscribe to a session event. |
 | `off(event, handler)` | `void` | Unsubscribe from a session event. |
 
+## Presets, inferred presets, and BYOK
+
+AgentKit supports three ways to use reseller-backed models:
+
+- Pass `preset` directly in `createSession(...)` when you want explicit control over the base reseller stack.
+- Use supported preset-backed vendor models without credentials and let AgentKit infer the matching preset automatically.
+- Use the same models with your own vendor credentials when you want BYOK instead.
+
+Examples:
+
+```typescript
+const explicitPresetSession = agent.createSession(client, {
+  channel: 'my-room',
+  agentUid: '1',
+  remoteUids: ['100'],
+  preset: 'deepgram_nova_3,openai_gpt_5_mini,openai_tts_1',
+});
+```
+
+```typescript
+const inferredPresetAgent = new Agent({ instructions: 'Be concise.' })
+  .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
+  .withLlm(new OpenAI({ model: 'gpt-5-mini' }))
+  .withTts(new OpenAITTS({ voice: 'alloy' }));
+```
+
+Supported inferred preset models:
+
+- Deepgram STT: `nova-2`, `nova-3`
+- OpenAI LLM: `gpt-4o-mini`, `gpt-4.1-mini`, `gpt-5-nano`, `gpt-5-mini`
+- OpenAI TTS: `tts-1`
+- MiniMax TTS: `speech-2.6-turbo`, `speech-2.8-turbo`
+
 ### SayOptions
 
 | Field | Type | Description |
@@ -74,7 +109,7 @@ All interaction methods require the session to be in the `running` state.
 ### Example: listening for events
 
 ```typescript
-import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-sdk';
+import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,

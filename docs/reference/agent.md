@@ -7,7 +7,7 @@ description: Full API reference for the Agent builder class.
 # Agent Reference
 
 ```typescript
-import { Agent } from 'agora-agent-sdk';
+import { Agent } from 'agora-agent-server-sdk';
 ```
 
 ## Constructor
@@ -158,7 +158,20 @@ createSession(
 | `expiresIn` | `number` | No | Token lifetime in seconds (default: `86400` = 24 h, Agora max). Only applies when the token is auto-generated. Use `ExpiresIn.hours()` or `ExpiresIn.minutes()` for clarity. Valid range: 1–86400. |
 | `idleTimeout` | `number` | No | Seconds before auto-exit if no audio (0 = disabled) |
 | `enableStringUid` | `boolean` | No | Use string UIDs instead of numeric |
+| `preset` | `string \| AgentPreset[]` | No | Session-level preset IDs to use as the base ASR/LLM/TTS configuration. Accepts either a comma-separated string or an array of exported `AgentPresets.*` values. |
+| `pipelineId` | `string` | No | Published AI Studio pipeline ID to use as the base configuration |
 | `debug` | `boolean` | No | Log API requests to console |
+
+`preset` is session-scoped because the underlying Agora start/join API applies presets per session, not per reusable `Agent` definition.
+
+When you omit credentials for supported reseller-backed vendor models, AgentKit also infers the matching session preset automatically:
+
+- Deepgram STT: `nova-2`, `nova-3`
+- OpenAI LLM: `gpt-4o-mini`, `gpt-4.1-mini`, `gpt-5-nano`, `gpt-5-mini`
+- OpenAI TTS: `tts-1`
+- MiniMax TTS: `speech-2.6-turbo`, `speech-2.8-turbo`
+
+If you provide your own vendor API key for those same models, AgentKit keeps the request in BYOK mode and does not infer a preset.
 
 ## `toProperties(opts): StartAgentsRequest.Properties`
 

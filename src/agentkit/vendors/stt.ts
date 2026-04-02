@@ -4,6 +4,7 @@
 
 import { BaseSTT } from "./base.js";
 import type { SttConfig } from "../types.js";
+import type { DeepgramPresetModel } from "../presets.js";
 
 /**
  * Constructor options for Speechmatics STT.
@@ -61,8 +62,8 @@ export class SpeechmaticsSTT extends BaseSTT {
 /**
  * Constructor options for Deepgram STT.
  */
-export interface DeepgramSTTOptions {
-    /** Deepgram API key */
+type DeepgramSTTCommonOptions = {
+    /** Deepgram API key. Optional only for the `nova-2` and `nova-3` reseller preset path. */
     apiKey?: string;
     /** Model to use (e.g., 'nova-2', 'enhanced', 'base') */
     model?: string;
@@ -74,7 +75,16 @@ export interface DeepgramSTTOptions {
     punctuation?: boolean;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
-}
+};
+
+export type DeepgramSTTOptions =
+    | (DeepgramSTTCommonOptions & {
+          apiKey: string;
+      })
+    | (Omit<DeepgramSTTCommonOptions, "model"> & {
+          apiKey?: undefined;
+          model: DeepgramPresetModel;
+      });
 
 /**
  * Deepgram STT vendor.
@@ -89,11 +99,11 @@ export interface DeepgramSTTOptions {
  * ```
  */
 export class DeepgramSTT extends BaseSTT {
-    private readonly options: DeepgramSTTOptions;
+    private readonly options: DeepgramSTTCommonOptions;
 
-    constructor(options: DeepgramSTTOptions = {}) {
+    constructor(options?: DeepgramSTTOptions) {
         super();
-        this.options = options;
+        this.options = options ?? {};
     }
 
     toConfig(): SttConfig {

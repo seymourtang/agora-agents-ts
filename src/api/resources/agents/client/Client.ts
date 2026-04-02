@@ -398,6 +398,89 @@ export class AgentsClient {
     }
 
     /**
+     * Query conversation turn information for a conversational AI agent session.
+     *
+     * After a conversation with the agent ends, use this endpoint to query the conversation turn information, including the start information, end information, and performance metrics of each conversation turn.
+     *
+     * You can query sessions within the last 7 days.
+     *
+     * @param {Agora.GetTurnsAgentsRequest} request
+     * @param {AgentsClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @example
+     *     await client.agents.getTurns({
+     *         appid: "appid",
+     *         agentId: "agentId"
+     *     })
+     */
+    public getTurns(
+        request: Agora.GetTurnsAgentsRequest,
+        requestOptions?: AgentsClient.RequestOptions,
+    ): core.HttpResponsePromise<Agora.GetTurnsAgentsResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__getTurns(request, requestOptions));
+    }
+
+    private async __getTurns(
+        request: Agora.GetTurnsAgentsRequest,
+        requestOptions?: AgentsClient.RequestOptions,
+    ): Promise<core.WithRawResponse<Agora.GetTurnsAgentsResponse>> {
+        const { appid, agentId } = request;
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            this._options?.headers,
+            mergeOnlyDefinedHeaders({
+                Authorization: await this._getAuthorizationHeader(),
+                ...(await this._getCustomAuthorizationHeaders()),
+            }),
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
+                    environments.AgoraEnvironment.Default,
+                `v2/projects/${core.url.encodePathParam(appid)}/agents/${core.url.encodePathParam(agentId)}/turns`,
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: requestOptions?.queryParams,
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return { data: _response.body as Agora.GetTurnsAgentsResponse, rawResponse: _response.rawResponse };
+        }
+
+        if (_response.error.reason === "status-code") {
+            throw new errors.AgoraError({
+                statusCode: _response.error.statusCode,
+                body: _response.error.body,
+                rawResponse: _response.rawResponse,
+            });
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.AgoraError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.AgoraTimeoutError(
+                    "Timeout exceeded when calling GET /v2/projects/{appid}/agents/{agentId}/turns.",
+                );
+            case "unknown":
+                throw new errors.AgoraError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
      * Stop the specified conversational agent instance.
      *
      * @param {Agora.StopAgentsRequest} request

@@ -6,7 +6,7 @@ description: Typed vendor classes for LLM, TTS, STT, MLLM, and Avatar providers.
 
 # Vendors
 
-Each vendor is a typed class that validates options at construction time and serializes to the wire format for the Agora API. Import all vendors from `agora-agent-sdk`.
+Each vendor is a typed class that validates options at construction time and serializes to the wire format for the Agora API. Import all vendors from `agora-agent-server-sdk`.
 
 ## LLM vendors
 
@@ -18,7 +18,7 @@ Each vendor is a typed class that validates options at construction time and ser
 | `Gemini` | Google Gemini | `apiKey`, `model`, `url?`, `maxHistory?` |
 
 ```typescript
-import { OpenAI } from 'agora-agent-sdk';
+import { OpenAI } from 'agora-agent-server-sdk';
 
 const llm = new OpenAI({
   apiKey: 'your-openai-key',
@@ -44,7 +44,7 @@ const llm = new OpenAI({
 | `SarvamTTS` | Sarvam AI | Not configurable via constructor |
 
 ```typescript
-import { ElevenLabsTTS } from 'agora-agent-sdk';
+import { ElevenLabsTTS } from 'agora-agent-server-sdk';
 
 const tts = new ElevenLabsTTS({
   key: 'your-elevenlabs-key',
@@ -71,7 +71,7 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 | `SarvamSTT` | Sarvam AI | `apiKey`, `language` |
 
 ```typescript
-import { DeepgramSTT } from 'agora-agent-sdk';
+import { DeepgramSTT } from 'agora-agent-server-sdk';
 
 const stt = new DeepgramSTT({
   apiKey: 'your-deepgram-key',
@@ -90,7 +90,7 @@ MLLM (Multimodal LLM) vendors handle audio end-to-end — no separate STT or TTS
 | `VertexAI` | Google Gemini Live | `model`, `projectId`, `location`, `adcCredentialsString`, `voice?`, `greetingMessage?` |
 
 ```typescript
-import { OpenAIRealtime } from 'agora-agent-sdk';
+import { OpenAIRealtime } from 'agora-agent-server-sdk';
 
 const mllm = new OpenAIRealtime({
   apiKey: 'your-openai-key',

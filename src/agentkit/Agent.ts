@@ -29,7 +29,7 @@ import { AgentSession } from "./AgentSession.js";
 
 /**
  * Configuration options for creating an Agent.
- * 
+ *
  * Use the fluent builder methods (.withLlm(), .withTts(), .withStt(), .withMllm())
  * to configure vendor settings after construction.
  */
@@ -66,12 +66,12 @@ export interface AgentOptions {
 
 /**
  * Agent class representing a reusable agent configuration.
- * 
+ *
  * @template TTSSampleRate - The TTS sample rate literal type (tracked for avatar compatibility)
  *
  * @example
  * ```typescript
- * import { Agent, OpenAI, MicrosoftTTS, DeepgramSTT } from 'agora-agent-sdk';
+ * import { Agent, OpenAI, MicrosoftTTS, DeepgramSTT } from 'agora-agent-server-sdk';
  *
  * // Use the fluent builder pattern to configure vendors
  * const agent = new Agent({ instructions: 'You are helpful.' })
@@ -138,7 +138,7 @@ export class Agent<TTSSampleRate extends number = number> {
 
     /**
      * Returns a new Agent with the specified LLM vendor.
-     * 
+     *
      * @param vendor - LLM vendor instance (e.g., new OpenAI({ apiKey: '...', model: 'gpt-4' }))
      */
     withLlm(vendor: BaseLLM): Agent<TTSSampleRate> {
@@ -149,9 +149,9 @@ export class Agent<TTSSampleRate extends number = number> {
 
     /**
      * Returns a new Agent with the specified TTS vendor.
-     * 
+     *
      * The sample rate type is tracked for compile-time avatar compatibility checking.
-     * 
+     *
      * @template SR - Sample rate literal type
      * @param vendor - TTS vendor instance (e.g., new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', sampleRate: 24000 }))
      * @returns Agent with tracked sample rate type
@@ -167,13 +167,13 @@ export class Agent<TTSSampleRate extends number = number> {
 
     /**
      * Returns a new Agent with the specified STT vendor.
-     * 
+     *
      * @param vendor - STT vendor instance (e.g., new SpeechmaticsSTT({ apiKey: '...', language: 'en' }))
-     * 
+     *
      * @example
      * ```typescript
-     * import { SpeechmaticsSTT } from 'agora-agent-sdk';
-     * 
+     * import { SpeechmaticsSTT } from 'agora-agent-server-sdk';
+     *
      * agent.withStt(new SpeechmaticsSTT({
      *   apiKey: 'your-key',
      *   language: 'en',
@@ -188,7 +188,7 @@ export class Agent<TTSSampleRate extends number = number> {
 
     /**
      * Returns a new Agent with the specified MLLM vendor.
-     * 
+     *
      * @param vendor - MLLM vendor instance (e.g., new VertexAI({ model: '...', projectId: '...', ... }))
      */
     withMllm(vendor: BaseMLLM): Agent<TTSSampleRate> {
@@ -199,22 +199,22 @@ export class Agent<TTSSampleRate extends number = number> {
 
     /**
      * Returns a new Agent with the specified Avatar vendor.
-     * 
+     *
      * ⚠️ IMPORTANT: Different avatar vendors require specific TTS sample rates:
      * - HeyGen: Requires 24,000 Hz (24kHz)
      * - Akool: Requires 16,000 Hz (16kHz)
-     * 
+     *
      * This method enforces sample rate compatibility at compile time. If you configure
      * a TTS with 16kHz and try to add a HeyGen avatar (which needs 24kHz), TypeScript
      * will show a compile error.
-     * 
+     *
      * @template RequiredSR - Required sample rate for the avatar
      * @param vendor - Avatar vendor instance (e.g., new HeyGenAvatar({ apiKey: '...', quality: 'high', ... }))
-     * 
+     *
      * @example
      * ```typescript
-     * import { HeyGenAvatar, ElevenLabsTTS } from 'agora-agent-sdk';
-     * 
+     * import { HeyGenAvatar, ElevenLabsTTS } from 'agora-agent-server-sdk';
+     *
      * const agent = new Agent({ name: 'avatar-assistant' })
      *   .withTts(new ElevenLabsTTS({
      *     key: '...',
@@ -229,10 +229,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *   }));
      * ```
      */
-    withAvatar<RequiredSR extends number>(
-        this: Agent<RequiredSR>,
-        vendor: BaseAvatar<RequiredSR>
-    ): Agent<RequiredSR> {
+    withAvatar<RequiredSR extends number>(this: Agent<RequiredSR>, vendor: BaseAvatar<RequiredSR>): Agent<RequiredSR> {
         // No cast needed: _clone() returns Agent<TTSSampleRate>, and since
         // `this: Agent<RequiredSR>`, TTSSampleRate = RequiredSR here.
         const newAgent = this._clone();
@@ -573,16 +570,23 @@ export class Agent<TTSSampleRate extends number = number> {
      * the SDK generate one automatically. The generated token includes both RTC
      * and RTM privileges (required for RTM-enabled sessions).
      */
-    toProperties(opts: {
-        channel: string;
-        agentUid: string;
-        remoteUids: string[];
-        idleTimeout?: number;
-        enableStringUid?: boolean;
-    } & (
-        | { token: string; appId?: undefined; appCertificate?: undefined }
-        | { token?: undefined; appId: string; appCertificate: string; expiresIn?: number }
-    )): Agora.StartAgentsRequest.Properties {
+    toProperties(
+        opts: {
+            channel: string;
+            agentUid: string;
+            remoteUids: string[];
+            idleTimeout?: number;
+            enableStringUid?: boolean;
+            /**
+             * Skip the LLM and TTS required-field guards. Set this when `preset` or
+             * `pipeline_id` is in use — those fields supply the vendor config server-side.
+             */
+            skipVendorValidation?: boolean;
+        } & (
+            | { token: string; appId?: undefined; appCertificate?: undefined }
+            | { token?: undefined; appId: string; appCertificate: string; expiresIn?: number }
+        ),
+    ): Agora.StartAgentsRequest.Properties {
         let token: string;
         if (opts.token) {
             token = opts.token;
@@ -613,7 +617,7 @@ export class Agent<TTSSampleRate extends number = number> {
         // callers only need to set advancedFeatures.enable_rtm: true.
         const resolvedParameters =
             this._advancedFeatures?.enable_rtm && !this._parameters?.data_channel
-                ? { ...this._parameters, data_channel: 'rtm' as const }
+                ? { ...this._parameters, data_channel: "rtm" as const }
                 : this._parameters;
 
         const base = {
@@ -655,23 +659,26 @@ export class Agent<TTSSampleRate extends number = number> {
             return { ...base, mllm: mllmConfig };
         }
 
-        if (!this._tts) {
-            throw new Error("TTS configuration is required. Use withTts() to set it.");
+        if (!opts.skipVendorValidation) {
+            if (!this._tts) {
+                throw new Error("TTS configuration is required. Use withTts() to set it.");
+            }
+            if (!this._llm) {
+                throw new Error("LLM configuration is required. Use withLlm() to set it.");
+            }
         }
 
-        if (!this._llm) {
-            throw new Error("LLM configuration is required. Use withLlm() to set it.");
-        }
-
-        const llmConfig: Agora.StartAgentsRequest.Properties.Llm = {
-            ...this._llm,
-            system_messages: this._instructions
-                ? [{ role: "system", content: this._instructions }]
-                : this._llm.system_messages,
-            greeting_message: this._greeting ?? this._llm.greeting_message,
-            failure_message: this._failureMessage ?? this._llm.failure_message,
-            max_history: this._maxHistory ?? this._llm.max_history,
-        };
+        const llmConfig: Agora.StartAgentsRequest.Properties.Llm | undefined = this._llm
+            ? {
+                  ...this._llm,
+                  system_messages: this._instructions
+                      ? [{ role: "system", content: this._instructions }]
+                      : this._llm.system_messages,
+                  greeting_message: this._greeting ?? this._llm.greeting_message,
+                  failure_message: this._failureMessage ?? this._llm.failure_message,
+                  max_history: this._maxHistory ?? this._llm.max_history,
+              }
+            : undefined;
 
         return { ...base, llm: llmConfig, tts: this._tts, asr: this._stt };
     }

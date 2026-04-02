@@ -10,15 +10,17 @@ import type { AgentsClient } from "../api/resources/agents/client/Client.js";
 import type * as Agora from "../api/index.js";
 import { AgoraError } from "../errors/index.js";
 import { Agent } from "./Agent.js";
-import type {
-    ConversationHistory,
-    SayOptions,
-    AgentConfigUpdate,
-    SessionInfo,
-} from "./types.js";
-import { validateTtsSampleRate, validateAvatarConfig, isHeyGenAvatar, isAkoolAvatar } from "./avatar-types.js";
+import type { ConversationHistory, ConversationTurns, SayOptions, AgentConfigUpdate, SessionInfo } from "./types.js";
+import {
+    validateTtsSampleRate,
+    validateAvatarConfig,
+    isHeyGenAvatar,
+    isLiveAvatarAvatar,
+    isAkoolAvatar,
+} from "./avatar-types.js";
 import type { AgoraAuthMode } from "../AgoraPoolClient.js";
 import { generateConvoAIToken, ExpiresIn as ExpiresInHelper } from "./token.js";
+import { resolveSessionPresets, type PresetInput } from "./presets.js";
 
 /**
  * Event types that can be emitted by AgentSession.
@@ -56,6 +58,10 @@ export interface AgentSessionOptions {
     idleTimeout?: number;
     /** Whether to use string UIDs */
     enableStringUid?: boolean;
+    /** Preset IDs to use as the base ASR/LLM/TTS configuration for this session */
+    preset?: PresetInput;
+    /** Published AI Studio pipeline ID to use as the base configuration for this session */
+    pipelineId?: string;
     /**
      * Token lifetime in seconds (default: 86400 = 24 hours, Agora maximum).
      * Only applies when the SDK auto-generates a token (i.e. no `token` is provided).
@@ -78,7 +84,7 @@ export interface AgentSessionOptions {
  *
  * @example
  * ```typescript
- * import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-sdk';
+ * import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
  *
  * const client = new AgoraClient({
  *   area: Area.US,
@@ -115,6 +121,8 @@ export class AgentSession {
     private readonly _remoteUids: string[];
     private readonly _idleTimeout?: number;
     private readonly _enableStringUid?: boolean;
+    private readonly _preset?: PresetInput;
+    private readonly _pipelineId?: string;
     private readonly _expiresIn?: number;
     private readonly _debug?: boolean;
     private readonly _authMode: AgoraAuthMode;
@@ -135,6 +143,8 @@ export class AgentSession {
         this._remoteUids = options.remoteUids;
         this._idleTimeout = options.idleTimeout;
         this._enableStringUid = options.enableStringUid;
+        this._preset = options.preset;
+        this._pipelineId = options.pipelineId;
         this._expiresIn = options.expiresIn;
         this._debug = options.debug;
         this._warn = options.warn ?? ((msg) => console.warn(msg));
@@ -157,7 +167,7 @@ export class AgentSession {
         if (!this._appCertificate) {
             throw new Error(
                 "appCertificate is required for app-credentials auth mode. " +
-                "Pass appCertificate when creating AgoraClient."
+                    "Pass appCertificate when creating AgoraClient.",
             );
         }
         const token = generateConvoAIToken({
@@ -199,13 +209,13 @@ export class AgentSession {
 
     /**
      * Direct access to the underlying Fern-generated AgentsClient.
-     * 
+     *
      * Use this to access any new endpoints that Fern generates without
      * waiting for agentkit method updates. New endpoints are immediately
      * available via this property.
-     * 
+     *
      * Note: You'll need to pass appid and agentId manually when using raw methods.
-     * 
+     *
      * @example
      * ```typescript
      * // Access new endpoints directly
@@ -222,10 +232,10 @@ export class AgentSession {
 
     /**
      * Validates avatar and TTS configuration before starting.
-     * 
+     *
      * This catches common misconfigurations like using the wrong TTS sample rate
      * for a specific avatar vendor (e.g., HeyGen requires 24kHz, Akool requires 16kHz).
-     * 
+     *
      * @throws {Error} If configuration is invalid
      */
     private _validateAvatarConfig(): void {
@@ -239,33 +249,38 @@ export class AgentSession {
         }
 
         // Validate avatar config structure
-        if (isHeyGenAvatar(avatar) || isAkoolAvatar(avatar)) {
+        if (isHeyGenAvatar(avatar) || isLiveAvatarAvatar(avatar) || isAkoolAvatar(avatar)) {
             validateAvatarConfig(avatar);
         }
 
         // Validate TTS sample rate against avatar requirements
         // Note: tts can be a string (shorthand) or an object with params
         // sample_rate may not exist on all TTS vendor params, so we check dynamically
-        const ttsParams = tts && typeof tts !== 'string' ? tts.params : undefined;
-        const sampleRate = ttsParams && 'sample_rate' in ttsParams 
-            ? (ttsParams as { sample_rate?: number }).sample_rate 
-            : undefined;
-        
-        if (typeof sampleRate === 'number') {
-            if (isHeyGenAvatar(avatar) || isAkoolAvatar(avatar)) {
+        const ttsParams = tts && typeof tts !== "string" ? tts.params : undefined;
+        const sampleRate =
+            ttsParams && "sample_rate" in ttsParams ? (ttsParams as { sample_rate?: number }).sample_rate : undefined;
+
+        if (typeof sampleRate === "number") {
+            if (isHeyGenAvatar(avatar) || isLiveAvatarAvatar(avatar) || isAkoolAvatar(avatar)) {
                 validateTtsSampleRate(avatar, sampleRate);
             }
         } else if (isHeyGenAvatar(avatar)) {
             // HeyGen requires explicit 24kHz - warn if not set
             this._warn(
-                'Warning: HeyGen avatar detected but TTS sample_rate is not explicitly set. ' +
-                'HeyGen requires 24,000 Hz. Please ensure your TTS provider is configured for 24kHz.'
+                "Warning: HeyGen avatar detected but TTS sample_rate is not explicitly set. " +
+                    "HeyGen requires 24,000 Hz. Please ensure your TTS provider is configured for 24kHz.",
+            );
+        } else if (isLiveAvatarAvatar(avatar)) {
+            // LiveAvatar requires explicit 24kHz - warn if not set
+            this._warn(
+                "Warning: LiveAvatar avatar detected but TTS sample_rate is not explicitly set. " +
+                    "LiveAvatar requires 24,000 Hz. Please ensure your TTS provider is configured for 24kHz.",
             );
         } else if (isAkoolAvatar(avatar)) {
             // Akool requires explicit 16kHz - warn if not set
             this._warn(
-                'Warning: Akool avatar detected but TTS sample_rate is not explicitly set. ' +
-                'Akool requires 16,000 Hz. Please ensure your TTS provider is configured for 16kHz.'
+                "Warning: Akool avatar detected but TTS sample_rate is not explicitly set. " +
+                    "Akool requires 16,000 Hz. Please ensure your TTS provider is configured for 16kHz.",
             );
         }
     }
@@ -290,7 +305,7 @@ export class AgentSession {
         if (!this._token && !this._appCertificate) {
             throw new Error(
                 "Cannot auto-generate RTC token: appCertificate is required when a pre-built token is not provided. " +
-                "Pass appCertificate when creating AgoraClient, or supply a pre-built token via the session options."
+                    "Pass appCertificate when creating AgoraClient, or supply a pre-built token via the session options.",
             );
         }
 
@@ -316,21 +331,30 @@ export class AgentSession {
                 remoteUids: this._remoteUids,
                 idleTimeout: this._idleTimeout,
                 enableStringUid: this._enableStringUid,
+                // When a preset or pipeline_id is supplied, ASR/LLM/TTS vendor
+                // config is optional — the backend fills it from the preset/pipeline.
+                skipVendorValidation: !!(this._preset || this._pipelineId),
                 ...tokenOpts,
+            });
+            const resolved = resolveSessionPresets({
+                preset: this._preset,
+                properties,
             });
 
             const request: Agora.StartAgentsRequest = {
                 appid: this._appId,
                 name: this._name,
-                properties,
+                preset: resolved.preset,
+                pipeline_id: this._pipelineId,
+                properties: resolved.properties,
             };
 
             if (this._debug) {
-                console.log('[Agora Debug] Starting agent session...');
-                if ('getCurrentURL' in this._client && typeof this._client.getCurrentURL === 'function') {
-                    console.log('[Agora Debug] API Endpoint:', this._client.getCurrentURL());
+                console.log("[Agora Debug] Starting agent session...");
+                if ("getCurrentURL" in this._client && typeof this._client.getCurrentURL === "function") {
+                    console.log("[Agora Debug] API Endpoint:", this._client.getCurrentURL());
                 }
-                console.log('[Agora Debug] Request:', JSON.stringify(request, null, 2));
+                console.log("[Agora Debug] Request:", JSON.stringify(request, null, 2));
             }
 
             const response = await this._client.agents.start(request, { headers: this._convoAIHeaders() });
@@ -349,7 +373,7 @@ export class AgentSession {
 
     /**
      * Stop the agent session.
-     * 
+     *
      * If the agent has already stopped (e.g., crashed or timed out),
      * this method will succeed silently rather than throwing an error.
      */
@@ -365,10 +389,13 @@ export class AgentSession {
         this._status = "stopping";
 
         try {
-            await this._client.agents.stop({
-                appid: this._appId,
-                agentId: this._agentId,
-            }, { headers: this._convoAIHeaders() });
+            await this._client.agents.stop(
+                {
+                    appid: this._appId,
+                    agentId: this._agentId,
+                },
+                { headers: this._convoAIHeaders() },
+            );
 
             this._status = "stopped";
             this._emit("stopped", { agentId: this._agentId });
@@ -379,7 +406,7 @@ export class AgentSession {
                 this._emit("stopped", { agentId: this._agentId });
                 return; // Don't throw - agent is already stopped
             }
-            
+
             this._status = "error";
             this._emit("error", error);
             throw error;
@@ -401,13 +428,16 @@ export class AgentSession {
             throw new Error("No agent ID available");
         }
 
-        await this._client.agents.speak({
-            appid: this._appId,
-            agentId: this._agentId,
-            text,
-            priority: options?.priority,
-            interruptable: options?.interruptable,
-        }, { headers: this._convoAIHeaders() });
+        await this._client.agents.speak(
+            {
+                appid: this._appId,
+                agentId: this._agentId,
+                text,
+                priority: options?.priority,
+                interruptable: options?.interruptable,
+            },
+            { headers: this._convoAIHeaders() },
+        );
     }
 
     /**
@@ -422,10 +452,13 @@ export class AgentSession {
             throw new Error("No agent ID available");
         }
 
-        await this._client.agents.interrupt({
-            appid: this._appId,
-            agentId: this._agentId,
-        }, { headers: this._convoAIHeaders() });
+        await this._client.agents.interrupt(
+            {
+                appid: this._appId,
+                agentId: this._agentId,
+            },
+            { headers: this._convoAIHeaders() },
+        );
     }
 
     /**
@@ -442,11 +475,14 @@ export class AgentSession {
             throw new Error("No agent ID available");
         }
 
-        await this._client.agents.update({
-            appid: this._appId,
-            agentId: this._agentId,
-            properties: config,
-        }, { headers: this._convoAIHeaders() });
+        await this._client.agents.update(
+            {
+                appid: this._appId,
+                agentId: this._agentId,
+                properties: config,
+            },
+            { headers: this._convoAIHeaders() },
+        );
     }
 
     /**
@@ -459,10 +495,32 @@ export class AgentSession {
             throw new Error("No agent ID available");
         }
 
-        return this._client.agents.getHistory({
-            appid: this._appId,
-            agentId: this._agentId,
-        }, { headers: this._convoAIHeaders() });
+        return this._client.agents.getHistory(
+            {
+                appid: this._appId,
+                agentId: this._agentId,
+            },
+            { headers: this._convoAIHeaders() },
+        );
+    }
+
+    /**
+     * Get turn-by-turn analytics and timing details for this session.
+     *
+     * @returns The session's conversation turns
+     */
+    async getTurns(): Promise<ConversationTurns> {
+        if (!this._agentId) {
+            throw new Error("No agent ID available");
+        }
+
+        return this._client.agents.getTurns(
+            {
+                appid: this._appId,
+                agentId: this._agentId,
+            },
+            { headers: this._convoAIHeaders() },
+        );
     }
 
     /**
@@ -475,10 +533,13 @@ export class AgentSession {
             throw new Error("No agent ID available");
         }
 
-        return this._client.agents.get({
-            appid: this._appId,
-            agentId: this._agentId,
-        }, { headers: this._convoAIHeaders() });
+        return this._client.agents.get(
+            {
+                appid: this._appId,
+                agentId: this._agentId,
+            },
+            { headers: this._convoAIHeaders() },
+        );
     }
 
     /**
@@ -518,7 +579,7 @@ export class AgentSession {
                     handler(data);
                 } catch (err) {
                     this._warn(
-                        `Unhandled error in '${event}' event handler: ${err instanceof Error ? err.message : String(err)}`
+                        `Unhandled error in '${event}' event handler: ${err instanceof Error ? err.message : String(err)}`,
                     );
                 }
             }
