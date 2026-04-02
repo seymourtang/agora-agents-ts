@@ -28,6 +28,15 @@ new OpenAI(options: OpenAIOptions)
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters (overrides `model` in params) |
 
+For supported reseller preset models, `apiKey` is optional:
+
+- `gpt-4o-mini`
+- `gpt-4.1-mini`
+- `gpt-5-nano`
+- `gpt-5-mini`
+
+If `apiKey` is omitted for one of those models, AgentKit infers the matching session preset. If `apiKey` is provided, AgentKit uses standard BYOK behavior instead.
+
 ### AzureOpenAI
 
 ```typescript
@@ -134,6 +143,8 @@ Fixed at 24kHz — no configurable sample rate.
 | `speed` | `number` | No | Speech speed multiplier |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
+`apiKey` is optional only for the reseller-backed `tts-1` preset path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit infers `openai_tts_1`. If provided, the request stays in BYOK mode.
+
 ### CartesiaTTS
 
 ```typescript
@@ -159,9 +170,16 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `HumeAITTS` | `key`, `configId?` |
 | `RimeTTS` | `key`, `speaker`, `modelId?`, `lang?`, `samplingRate?`, `speedAlpha?` |
 | `FishAudioTTS` | `key`, `referenceId` |
-| `MiniMaxTTS` | `key`, `groupId`, `model`, `voiceId`, `url` |
+| `MiniMaxTTS` | `key?`, `groupId`, `model`, `voiceId`, `url` |
 | `MurfTTS` | `key`, `voiceId`, `style?` |
 | `SarvamTTS` | `key`, `speaker`, `targetLanguageCode` |
+
+For `MiniMaxTTS`, `key` is optional only for reseller-backed models:
+
+- `speech-2.6-turbo`
+- `speech-2.8-turbo`
+
+If `key` is omitted for one of those models, AgentKit infers the matching session preset. If `key` is provided, AgentKit uses BYOK.
 
 ---
 
@@ -170,17 +188,19 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 ### DeepgramSTT
 
 ```typescript
-new DeepgramSTT(options?: DeepgramSTTOptions)
+new DeepgramSTT(options: DeepgramSTTOptions)
 ```
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `apiKey` | `string` | No | Deepgram API key |
+| `apiKey` | `string` | No | Deepgram API key. Optional only for `nova-2` and `nova-3` reseller preset usage. |
 | `model` | `string` | No | Model (e.g., `'nova-2'`, `'enhanced'`) |
 | `language` | `string` | No | Language code (e.g., `'en-US'`) |
 | `smartFormat` | `boolean` | No | Enable smart formatting |
 | `punctuation` | `boolean` | No | Enable punctuation |
 | `additionalParams` | `Record<string, unknown>` | No | Additional vendor params |
+
+If `apiKey` is omitted for `nova-2` or `nova-3`, AgentKit infers the matching Deepgram reseller preset. For all other Deepgram models, TypeScript requires `apiKey`.
 
 ### Other STT vendors
 

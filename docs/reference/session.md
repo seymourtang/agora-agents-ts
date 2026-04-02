@@ -42,6 +42,7 @@ Start the agent session. Validates avatar/TTS configuration, sends the start req
 - Transitions: `idle` / `stopped` / `error` → `starting` → `running`
 - Throws if called in `starting`, `running`, or `stopping` state
 - Throws if avatar config is invalid (wrong TTS sample rate)
+- Resolves explicit `preset` values and also infers reseller presets from supported vendor configs when credentials are omitted
 
 ### `stop(): Promise<void>`
 
@@ -131,3 +132,20 @@ await session.raw.someNewEndpoint({
 ```
 
 You must pass `appid` and `agentId` manually when using raw methods.
+
+## Presets and BYOK
+
+`preset` lives on the session because Agora applies presets when the agent joins a channel.
+
+AgentKit supports both explicit presets and BYOK:
+
+- Pass `preset` directly on `agent.createSession(...)` when you want to choose the base reseller configuration yourself.
+- Provide vendor credentials for preset-capable models when you want full BYOK behavior.
+- Omit credentials for supported reseller models when you want AgentKit to infer the matching preset automatically.
+
+Supported inferred preset models:
+
+- Deepgram STT: `nova-2`, `nova-3`
+- OpenAI LLM: `gpt-4o-mini`, `gpt-4.1-mini`, `gpt-5-nano`, `gpt-5-mini`
+- OpenAI TTS: `tts-1`
+- MiniMax TTS: `speech-2.6-turbo`, `speech-2.8-turbo`
