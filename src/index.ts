@@ -15,7 +15,9 @@ export {
     generateRtcToken,
     generateConvoAIToken,
     isHeyGenAvatar,
+    isLiveAvatarAvatar,
     isAkoolAvatar,
+    isAnamAvatar,
     validateAvatarConfig,
     validateTtsSampleRate,
     toBaseAvatarConfig,
@@ -55,10 +57,13 @@ export {
     SarvamSTT,
     // MLLM vendors
     OpenAIRealtime,
+    GeminiLive,
     VertexAI,
     // Avatar vendors
     HeyGenAvatar,
+    LiveAvatarAvatar,
     AkoolAvatar,
+    AnamAvatar,
 } from "./agentkit/index.js";
 export type {
     AgentsClient,
@@ -74,6 +79,7 @@ export type {
     MicrosoftSampleRate,
     CartesiaSampleRate,
     HeyGenSampleRate,
+    LiveAvatarSampleRate,
     AkoolSampleRate,
     // Clean type aliases
     LlmConfig,
@@ -132,12 +138,16 @@ export type {
     ConversationHistory,
     ConversationTurn,
     ConversationRole,
+    ConversationTurns,
+    ConversationSessionTurn,
     SayOptions,
     SpeakPriority,
     // Strict avatar config types
     StrictAvatarConfig,
     HeyGenAvatarConfig,
+    LiveAvatarAvatarConfig,
     AkoolAvatarConfig,
+    AnamAvatarConfig,
     GenericAvatarConfig,
     // TTS vendor parameter types
     MicrosoftTts,
@@ -191,7 +201,10 @@ export type {
     AresSTTOptions,
     SarvamSTTOptions,
     OpenAIRealtimeOptions,
+    GeminiLiveOptions,
     VertexAIOptions,
     HeyGenAvatarOptions,
+    LiveAvatarAvatarOptions,
     AkoolAvatarOptions,
+    AnamAvatarOptions,
 } from "./agentkit/index.js";

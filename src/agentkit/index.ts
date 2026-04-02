@@ -99,6 +99,8 @@ export type {
     ConversationHistory,
     ConversationTurn,
     ConversationRole,
+    ConversationTurns,
+    ConversationSessionTurn,
     // Say/Speak types
     SayOptions,
     SpeakPriority,
@@ -133,20 +135,32 @@ export type {
 export type {
     StrictAvatarConfig,
     HeyGenAvatarConfig,
+    LiveAvatarAvatarConfig,
     AkoolAvatarConfig,
+    AnamAvatarConfig,
     GenericAvatarConfig,
 } from "./avatar-types.js";
 
 export {
     isHeyGenAvatar,
+    isLiveAvatarAvatar,
     isAkoolAvatar,
+    isAnamAvatar,
     validateAvatarConfig,
     validateTtsSampleRate,
     toBaseAvatarConfig,
 } from "./avatar-types.js";
 
 // Base vendor classes
-export { BaseLLM, BaseTTS, BaseSTT, BaseMLLM, BaseAvatar, type BaseLlmOptions, type GoogleTTSSampleRate } from "./vendors/base.js";
+export {
+    BaseLLM,
+    BaseTTS,
+    BaseSTT,
+    BaseMLLM,
+    BaseAvatar,
+    type BaseLlmOptions,
+    type GoogleTTSSampleRate,
+} from "./vendors/base.js";
 
 // Sample rate types
 export type {
@@ -155,6 +169,7 @@ export type {
     MicrosoftSampleRate,
     CartesiaSampleRate,
     HeyGenSampleRate,
+    LiveAvatarSampleRate,
     AkoolSampleRate,
 } from "./vendors/base.js";
 
@@ -222,9 +237,14 @@ export type {
 } from "./vendors/stt.js";
 
 // MLLM vendor classes
-export { OpenAIRealtime, VertexAI } from "./vendors/mllm.js";
-export type { OpenAIRealtimeOptions, VertexAIOptions } from "./vendors/mllm.js";
+export { OpenAIRealtime, GeminiLive, VertexAI } from "./vendors/mllm.js";
+export type { OpenAIRealtimeOptions, GeminiLiveOptions, VertexAIOptions } from "./vendors/mllm.js";
 
 // Avatar vendor classes
-export { HeyGenAvatar, AkoolAvatar } from "./vendors/avatar.js";
-export type { HeyGenAvatarOptions, AkoolAvatarOptions } from "./vendors/avatar.js";
+export { HeyGenAvatar, LiveAvatarAvatar, AkoolAvatar, AnamAvatar } from "./vendors/avatar.js";
+export type {
+    HeyGenAvatarOptions,
+    LiveAvatarAvatarOptions,
+    AkoolAvatarOptions,
+    AnamAvatarOptions,
+} from "./vendors/avatar.js";

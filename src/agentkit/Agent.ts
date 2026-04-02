@@ -579,6 +579,11 @@ export class Agent<TTSSampleRate extends number = number> {
         remoteUids: string[];
         idleTimeout?: number;
         enableStringUid?: boolean;
+        /**
+         * Skip the LLM and TTS required-field guards. Set this when `preset` or
+         * `pipeline_id` is in use — those fields supply the vendor config server-side.
+         */
+        skipVendorValidation?: boolean;
     } & (
         | { token: string; appId?: undefined; appCertificate?: undefined }
         | { token?: undefined; appId: string; appCertificate: string; expiresIn?: number }
@@ -655,23 +660,26 @@ export class Agent<TTSSampleRate extends number = number> {
             return { ...base, mllm: mllmConfig };
         }
 
-        if (!this._tts) {
-            throw new Error("TTS configuration is required. Use withTts() to set it.");
+        if (!opts.skipVendorValidation) {
+            if (!this._tts) {
+                throw new Error("TTS configuration is required. Use withTts() to set it.");
+            }
+            if (!this._llm) {
+                throw new Error("LLM configuration is required. Use withLlm() to set it.");
+            }
         }
 
-        if (!this._llm) {
-            throw new Error("LLM configuration is required. Use withLlm() to set it.");
-        }
-
-        const llmConfig: Agora.StartAgentsRequest.Properties.Llm = {
-            ...this._llm,
-            system_messages: this._instructions
-                ? [{ role: "system", content: this._instructions }]
-                : this._llm.system_messages,
-            greeting_message: this._greeting ?? this._llm.greeting_message,
-            failure_message: this._failureMessage ?? this._llm.failure_message,
-            max_history: this._maxHistory ?? this._llm.max_history,
-        };
+        const llmConfig: Agora.StartAgentsRequest.Properties.Llm | undefined = this._llm
+            ? {
+                  ...this._llm,
+                  system_messages: this._instructions
+                      ? [{ role: "system", content: this._instructions }]
+                      : this._llm.system_messages,
+                  greeting_message: this._greeting ?? this._llm.greeting_message,
+                  failure_message: this._failureMessage ?? this._llm.failure_message,
+                  max_history: this._maxHistory ?? this._llm.max_history,
+              }
+            : undefined;
 
         return { ...base, llm: llmConfig, tts: this._tts, asr: this._stt };
     }
