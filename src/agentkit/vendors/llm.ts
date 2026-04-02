@@ -4,13 +4,14 @@
 
 import { BaseLLM, type BaseLlmOptions } from "./base.js";
 import type { LlmConfig } from "../types.js";
+import type { OpenAIPresetModel } from "../presets.js";
 
 /**
  * Constructor options for OpenAI LLM.
  */
-export interface OpenAIOptions extends BaseLlmOptions {
-    /** OpenAI API key */
-    apiKey: string;
+type OpenAICommonOptions = BaseLlmOptions & {
+    /** OpenAI API key. Optional only for AgentKit-supported reseller preset models. */
+    apiKey?: string;
     /** Model name (e.g., 'gpt-4o-mini', 'gpt-4', 'gpt-3.5-turbo') */
     model: string;
     /** API endpoint URL (defaults to OpenAI's standard endpoint) */
@@ -33,7 +34,16 @@ export interface OpenAIOptions extends BaseLlmOptions {
     inputModalities?: string[];
     /** Additional LLM parameters */
     params?: Record<string, unknown>;
-}
+};
+
+export type OpenAIOptions =
+    | (OpenAICommonOptions & {
+          apiKey: string;
+      })
+    | (Omit<OpenAICommonOptions, "model"> & {
+          apiKey?: undefined;
+          model: OpenAIPresetModel;
+      });
 
 /**
  * OpenAI LLM vendor (and OpenAI-compatible APIs).
@@ -72,7 +82,7 @@ export class OpenAI extends BaseLLM {
 
         return {
             url: url ?? "https://api.openai.com/v1/chat/completions",
-            api_key: apiKey,
+            ...(apiKey && { api_key: apiKey }),
             // model is the default; params entries extend it; named fields win.
             params: {
                 model,
@@ -246,7 +256,20 @@ export class Anthropic extends BaseLLM {
     }
 
     toConfig(): LlmConfig {
-        const { apiKey, model, url, maxHistory, maxTokens, temperature, topP, systemMessages, greetingMessage, failureMessage, inputModalities, params } = this.options;
+        const {
+            apiKey,
+            model,
+            url,
+            maxHistory,
+            maxTokens,
+            temperature,
+            topP,
+            systemMessages,
+            greetingMessage,
+            failureMessage,
+            inputModalities,
+            params,
+        } = this.options;
 
         return {
             url: url ?? "https://api.anthropic.com/v1/messages",
@@ -326,7 +349,21 @@ export class Gemini extends BaseLLM {
     }
 
     toConfig(): LlmConfig {
-        const { apiKey, model, url, maxHistory, temperature, topP, topK, maxOutputTokens, systemMessages, greetingMessage, failureMessage, inputModalities, params } = this.options;
+        const {
+            apiKey,
+            model,
+            url,
+            maxHistory,
+            temperature,
+            topP,
+            topK,
+            maxOutputTokens,
+            systemMessages,
+            greetingMessage,
+            failureMessage,
+            inputModalities,
+            params,
+        } = this.options;
 
         return {
             url: url ?? "https://generativelanguage.googleapis.com/v1beta/models",

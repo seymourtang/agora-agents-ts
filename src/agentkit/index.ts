@@ -24,6 +24,18 @@ export { Agent } from "./Agent.js";
 export type { AgentOptions } from "./Agent.js";
 
 export { AgentSession } from "./AgentSession.js";
+export { AgentPresets, normalizePresetInput } from "./presets.js";
+export type {
+    AgentPreset,
+    AsrPreset,
+    LlmPreset,
+    TtsPreset,
+    PresetInput,
+    DeepgramPresetModel,
+    OpenAIPresetModel,
+    OpenAITtsPresetModel,
+    MiniMaxPresetModel,
+} from "./presets.js";
 
 // Token generation
 export { generateRtcToken, generateConvoAIToken, ExpiresIn } from "./token.js";

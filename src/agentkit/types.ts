@@ -37,6 +37,7 @@ import type {
     SarvamTts as SarvamTtsType,
     SarvamTtsParams as SarvamTtsParamsType,
 } from "../api/index.js";
+import type { PresetInput } from "./presets.js";
 
 // =============================================================================
 // Core Configuration Types
@@ -242,8 +243,8 @@ export interface SessionOptions {
     idleTimeout?: number;
     /** Whether to use string UIDs */
     enableStringUid?: boolean;
-    /** Comma-separated preset IDs to use as the base ASR/LLM/TTS configuration for this session */
-    preset?: string;
+    /** Preset IDs to use as the base ASR/LLM/TTS configuration for this session */
+    preset?: PresetInput;
     /** Published AI Studio pipeline ID to use as the base configuration for this session */
     pipelineId?: string;
     /**

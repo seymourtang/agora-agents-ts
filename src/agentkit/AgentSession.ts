@@ -11,9 +11,16 @@ import type * as Agora from "../api/index.js";
 import { AgoraError } from "../errors/index.js";
 import { Agent } from "./Agent.js";
 import type { ConversationHistory, ConversationTurns, SayOptions, AgentConfigUpdate, SessionInfo } from "./types.js";
-import { validateTtsSampleRate, validateAvatarConfig, isHeyGenAvatar, isLiveAvatarAvatar, isAkoolAvatar } from "./avatar-types.js";
+import {
+    validateTtsSampleRate,
+    validateAvatarConfig,
+    isHeyGenAvatar,
+    isLiveAvatarAvatar,
+    isAkoolAvatar,
+} from "./avatar-types.js";
 import type { AgoraAuthMode } from "../AgoraPoolClient.js";
 import { generateConvoAIToken, ExpiresIn as ExpiresInHelper } from "./token.js";
+import { resolveSessionPresets, type PresetInput } from "./presets.js";
 
 /**
  * Event types that can be emitted by AgentSession.
@@ -51,8 +58,8 @@ export interface AgentSessionOptions {
     idleTimeout?: number;
     /** Whether to use string UIDs */
     enableStringUid?: boolean;
-    /** Comma-separated preset IDs to use as the base ASR/LLM/TTS configuration for this session */
-    preset?: string;
+    /** Preset IDs to use as the base ASR/LLM/TTS configuration for this session */
+    preset?: PresetInput;
     /** Published AI Studio pipeline ID to use as the base configuration for this session */
     pipelineId?: string;
     /**
@@ -114,7 +121,7 @@ export class AgentSession {
     private readonly _remoteUids: string[];
     private readonly _idleTimeout?: number;
     private readonly _enableStringUid?: boolean;
-    private readonly _preset?: string;
+    private readonly _preset?: PresetInput;
     private readonly _pipelineId?: string;
     private readonly _expiresIn?: number;
     private readonly _debug?: boolean;
@@ -329,13 +336,17 @@ export class AgentSession {
                 skipVendorValidation: !!(this._preset || this._pipelineId),
                 ...tokenOpts,
             });
+            const resolved = resolveSessionPresets({
+                preset: this._preset,
+                properties,
+            });
 
             const request: Agora.StartAgentsRequest = {
                 appid: this._appId,
                 name: this._name,
-                preset: this._preset,
+                preset: resolved.preset,
                 pipeline_id: this._pipelineId,
-                properties,
+                properties: resolved.properties,
             };
 
             if (this._debug) {
