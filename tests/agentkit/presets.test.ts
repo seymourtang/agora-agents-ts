@@ -1,10 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import {
-    AgentPresets,
-    normalizePresetInput,
-    resolveSessionPresets,
-} from "../../src/agentkit/presets";
+import { AgentPresets, normalizePresetInput, resolveSessionPresets } from "../../src/agentkit/presets";
 
 describe("AgentPresets constants", () => {
     test("preset values match expected strings", () => {
@@ -27,15 +23,13 @@ describe("normalizePresetInput", () => {
     });
 
     test("returns a comma-joined string for a string input", () => {
-        expect(normalizePresetInput("deepgram_nova_3,openai_gpt_4o_mini")).toBe(
-            "deepgram_nova_3,openai_gpt_4o_mini",
-        );
+        expect(normalizePresetInput("deepgram_nova_3,openai_gpt_4o_mini")).toBe("deepgram_nova_3,openai_gpt_4o_mini");
     });
 
     test("returns a joined string for an array input", () => {
-        expect(
-            normalizePresetInput([AgentPresets.asr.deepgramNova3, AgentPresets.llm.openaiGpt4oMini]),
-        ).toBe("deepgram_nova_3,openai_gpt_4o_mini");
+        expect(normalizePresetInput([AgentPresets.asr.deepgramNova3, AgentPresets.llm.openaiGpt4oMini])).toBe(
+            "deepgram_nova_3,openai_gpt_4o_mini",
+        );
     });
 
     test("trims and filters empty entries", () => {
@@ -193,6 +187,17 @@ describe("resolveSessionPresets", () => {
             },
         });
         expect(azureVendor.preset).toBeUndefined();
+
+        const customVendor = resolveSessionPresets({
+            properties: {
+                channel: "c",
+                token: "t",
+                agent_rtc_uid: "1",
+                remote_rtc_uids: ["2"],
+                llm: { vendor: "custom", params: { model: "gpt-4o-mini" } },
+            },
+        });
+        expect(customVendor.preset).toBeUndefined();
     });
 
     test("does not infer TTS preset when key present for minimax", () => {

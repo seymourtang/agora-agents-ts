@@ -261,6 +261,7 @@ describe("stt vendor mappings", () => {
             language: undefined,
             params: { model: "nova-2" },
         });
+        expect(new DeepgramSTT().toConfig()).toEqual({ vendor: "deepgram", language: undefined, params: {} });
         expect(
             new MicrosoftSTT({
                 key: "key",
@@ -409,6 +410,10 @@ describe("tts vendor mappings", () => {
         ).toMatchObject({
             vendor: "minimax",
             params: { group_id: "group", model: "speech-2.6-turbo", url: "wss://example.com" },
+        });
+        expect(new MiniMaxTTS({ model: "speech-2.8-turbo" }).toConfig()).toMatchObject({
+            vendor: "minimax",
+            params: { model: "speech-2.8-turbo" },
         });
         expect(new SarvamTTS({ key: "key", speaker: "anushka", targetLanguageCode: "en-IN" }).toConfig()).toMatchObject(
             {

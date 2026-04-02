@@ -91,7 +91,8 @@ function inferAsrPreset(asr?: Agora.StartAgentsRequest.Properties.Asr): AsrPrese
 
 function inferLlmPreset(llm?: Agora.StartAgentsRequest.Properties.Llm): LlmPreset | undefined {
     if (!llm || llm.api_key) return undefined;
-    if (llm.vendor === "azure" || (llm.url && llm.url !== OPENAI_CHAT_COMPLETIONS_URL)) return undefined;
+    if (llm.vendor && llm.vendor !== "openai") return undefined;
+    if (llm.url && llm.url !== OPENAI_CHAT_COMPLETIONS_URL) return undefined;
     return openAiModelToPreset[normalizeModelName(llm.params?.model) ?? ""];
 }
 
@@ -139,7 +140,7 @@ function stripInferredPresetFields(
         llm = {
             ...llmRest,
             api_key: undefined,
-            ...(llmUrl && llmUrl !== OPENAI_CHAT_COMPLETIONS_URL && { url: llmUrl }),
+            url: llmUrl && llmUrl !== OPENAI_CHAT_COMPLETIONS_URL ? llmUrl : undefined,
             params: omitUndefinedKeys({
                 ...llm.params,
                 model:
@@ -148,7 +149,7 @@ function stripInferredPresetFields(
                         ? undefined
                         : llm.params?.model,
             }),
-        };
+        } as unknown as Agora.StartAgentsRequest.Properties.Llm;
     }
 
     let tts = properties.tts;

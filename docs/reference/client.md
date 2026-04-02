@@ -9,7 +9,7 @@ description: AgoraClient constructor options and public methods.
 `AgoraClient` extends the Fern-generated base client with domain pool support for regional URL cycling and three authentication modes.
 
 ```typescript
-import { AgoraClient, Area } from 'agora-agent-sdk';
+import { AgoraClient, Area } from 'agora-agent-server-sdk';
 ```
 
 ## Constructor

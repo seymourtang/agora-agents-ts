@@ -18,7 +18,7 @@ import {
   OpenAI,
   ElevenLabsTTS,
   DeepgramSTT,
-} from 'agora-agent-sdk';
+} from 'agora-agent-server-sdk';
 
 // 1. Create the client — app-credentials mode auto-generates tokens
 const client = new AgoraClient({

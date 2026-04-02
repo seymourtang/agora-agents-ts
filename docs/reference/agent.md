@@ -7,7 +7,7 @@ description: Full API reference for the Agent builder class.
 # Agent Reference
 
 ```typescript
-import { Agent } from 'agora-agent-sdk';
+import { Agent } from 'agora-agent-server-sdk';
 ```
 
 ## Constructor

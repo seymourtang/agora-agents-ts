@@ -549,9 +549,12 @@ export type MiniMaxTTSOptions =
     | (MiniMaxTTSCommonOptions & {
           key: string;
       })
-    | (Omit<MiniMaxTTSCommonOptions, "model"> & {
+    | (Omit<MiniMaxTTSCommonOptions, "model" | "groupId" | "voiceId" | "url"> & {
           key?: undefined;
           model: MiniMaxPresetModel;
+          groupId?: string;
+          voiceId?: string;
+          url?: string;
       });
 
 /**
@@ -583,10 +586,10 @@ export class MiniMaxTTS extends BaseTTS {
             vendor: "minimax",
             params: {
                 ...(key && { key }),
-                group_id: groupId,
+                ...(groupId && { group_id: groupId }),
                 model,
-                voice_setting: { voice_id: voiceId },
-                url,
+                ...(voiceId && { voice_setting: { voice_id: voiceId } }),
+                ...(url && { url }),
             } as unknown as import("../types.js").MinimaxTtsParams,
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         };

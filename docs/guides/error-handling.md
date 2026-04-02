@@ -9,7 +9,7 @@ description: Handle API errors with AgoraError and subclasses.
 When the API returns a non-success status code (4xx or 5xx response), a subclass of `AgoraError` is thrown.
 
 ```typescript
-import { AgoraError } from "agora-agent-sdk";
+import { AgoraError } from "agora-agent-server-sdk";
 
 try {
   await client.agents.start(...);

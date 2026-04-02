@@ -7,7 +7,7 @@ description: Full API reference for the AgentSession class.
 # AgentSession Reference
 
 ```typescript
-import { AgentSession } from 'agora-agent-sdk';
+import { AgentSession } from 'agora-agent-server-sdk';
 ```
 
 Create sessions via [`agent.createSession()`](./agent.md) — not by calling the constructor directly.

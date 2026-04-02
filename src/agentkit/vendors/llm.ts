@@ -40,9 +40,11 @@ export type OpenAIOptions =
     | (OpenAICommonOptions & {
           apiKey: string;
       })
-    | (Omit<OpenAICommonOptions, "model"> & {
+    | (Omit<OpenAICommonOptions, "model" | "url" | "vendor"> & {
           apiKey?: undefined;
           model: OpenAIPresetModel;
+          url?: undefined;
+          vendor?: undefined;
       });
 
 /**

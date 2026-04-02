@@ -26,7 +26,7 @@ import {
   OpenAI,
   ElevenLabsTTS,
   DeepgramSTT,
-} from 'agora-agent-sdk';
+} from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,
@@ -75,7 +75,7 @@ await session.stop();
 For advanced use cases where you need full control over the request body:
 
 ```typescript
-import { AgoraClient, Area, generateRtcToken } from 'agora-agent-sdk';
+import { AgoraClient, Area, generateRtcToken } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,
@@ -149,7 +149,7 @@ import {
   AzureOpenAI,
   MicrosoftTTS,
   MicrosoftSTT,
-} from 'agora-agent-sdk';
+} from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.EU,

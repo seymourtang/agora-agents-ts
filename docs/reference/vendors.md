@@ -6,7 +6,7 @@ description: Constructor options for all LLM, TTS, STT, MLLM, and Avatar vendor 
 
 # Vendor Reference
 
-All vendor classes are imported from `agora-agent-sdk`.
+All vendor classes are imported from `agora-agent-server-sdk`.
 
 ## LLM vendors
 
@@ -18,7 +18,7 @@ new OpenAI(options: OpenAIOptions)
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `apiKey` | `string` | Yes | OpenAI API key |
+| `apiKey` | `string` | Usually | OpenAI API key |
 | `model` | `string` | Yes | Model name (e.g., `'gpt-4o-mini'`, `'gpt-4'`) |
 | `url` | `string` | No | API endpoint URL (default: `https://api.openai.com/v1/chat/completions`) |
 | `maxHistory` | `number` | No | Max conversation history to cache |
@@ -35,7 +35,7 @@ For supported reseller preset models, `apiKey` is optional:
 - `gpt-5-nano`
 - `gpt-5-mini`
 
-If `apiKey` is omitted for one of those models, AgentKit infers the matching session preset. If `apiKey` is provided, AgentKit uses standard BYOK behavior instead.
+If `apiKey` is omitted for one of those models, AgentKit infers the matching session preset. This no-key branch is only available with the default OpenAI endpoint and without a custom vendor hint. If `apiKey` is provided, AgentKit uses standard BYOK behavior instead.
 
 ### AzureOpenAI
 
@@ -136,7 +136,7 @@ Fixed at 24kHz — no configurable sample rate.
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `apiKey` | `string` | Yes | OpenAI API key |
+| `apiKey` | `string` | Usually | OpenAI API key |
 | `voice` | `string` | Yes | Voice name (`'alloy'`, `'echo'`, `'fable'`, `'onyx'`, `'nova'`, `'shimmer'`) |
 | `model` | `string` | No | Model name (e.g., `'tts-1'`, `'tts-1-hd'`) |
 | `responseFormat` | `string` | No | Audio format (e.g., `'pcm'`) |
@@ -170,7 +170,7 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `HumeAITTS` | `key`, `configId?` |
 | `RimeTTS` | `key`, `speaker`, `modelId?`, `lang?`, `samplingRate?`, `speedAlpha?` |
 | `FishAudioTTS` | `key`, `referenceId` |
-| `MiniMaxTTS` | `key?`, `groupId`, `model`, `voiceId`, `url` |
+| `MiniMaxTTS` | `key?`, `groupId?`, `model`, `voiceId?`, `url?` |
 | `MurfTTS` | `key`, `voiceId`, `style?` |
 | `SarvamTTS` | `key`, `speaker`, `targetLanguageCode` |
 
@@ -179,7 +179,7 @@ For `MiniMaxTTS`, `key` is optional only for reseller-backed models:
 - `speech-2.6-turbo`
 - `speech-2.8-turbo`
 
-If `key` is omitted for one of those models, AgentKit infers the matching session preset. If `key` is provided, AgentKit uses BYOK.
+If `key` is omitted for one of those models, AgentKit infers the matching session preset. In that preset-backed path, `groupId`, `voiceId`, and `url` are optional overrides rather than required fields. If `key` is provided, AgentKit uses BYOK.
 
 ---
 

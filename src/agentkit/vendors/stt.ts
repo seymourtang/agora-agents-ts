@@ -99,11 +99,11 @@ export type DeepgramSTTOptions =
  * ```
  */
 export class DeepgramSTT extends BaseSTT {
-    private readonly options: DeepgramSTTOptions;
+    private readonly options: DeepgramSTTCommonOptions;
 
-    constructor(options: DeepgramSTTOptions) {
+    constructor(options?: DeepgramSTTOptions) {
         super();
-        this.options = options;
+        this.options = options ?? {};
     }
 
     toConfig(): SttConfig {

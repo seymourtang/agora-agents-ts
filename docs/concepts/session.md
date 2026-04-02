@@ -109,7 +109,7 @@ Supported inferred preset models:
 ### Example: listening for events
 
 ```typescript
-import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-sdk';
+import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,

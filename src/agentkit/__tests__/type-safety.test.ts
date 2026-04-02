@@ -120,17 +120,19 @@ function validExample5(): Agent<16000> {
 new DeepgramSTT({ model: "nova-3" });
 new OpenAI({ model: "gpt-5-mini" });
 new OpenAITTS({ voice: "alloy" });
+new OpenAI({ apiKey: "test", model: "gpt-5-mini", vendor: "custom" });
 new MiniMaxTTS({
-    groupId: "group",
     model: "speech-2.6-turbo",
-    voiceId: "voice",
-    url: "wss://example.com",
 });
 
 // @ts-expect-error Missing apiKey is only allowed for preset-backed Deepgram models.
 new DeepgramSTT({ model: "enhanced" });
 // @ts-expect-error Missing apiKey is only allowed for preset-backed OpenAI models.
 new OpenAI({ model: "gpt-4o" });
+// @ts-expect-error Missing apiKey cannot be combined with a custom vendor hint.
+new OpenAI({ model: "gpt-5-mini", vendor: "custom" });
+// @ts-expect-error Missing apiKey cannot be combined with a custom URL.
+new OpenAI({ model: "gpt-5-mini", url: "https://proxy.example.com/chat" });
 // @ts-expect-error Missing apiKey is only allowed for the openai_tts_1 preset model.
 new OpenAITTS({ voice: "alloy", model: "tts-1-hd" });
 // @ts-expect-error Missing key is only allowed for supported MiniMax preset models.

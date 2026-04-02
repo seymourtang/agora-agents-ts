@@ -123,7 +123,7 @@ export interface AkoolAvatarOptions {
  *
  * @example
  * ```typescript
- * import { Agent, AkoolAvatar, ElevenLabsTTS } from 'agora-agent-sdk';
+ * import { Agent, AkoolAvatar, ElevenLabsTTS } from 'agora-agent-server-sdk';
  *
  * const avatar = new AkoolAvatar({
  *   apiKey: process.env.AKOOL_API_KEY,
@@ -197,7 +197,7 @@ export type LiveAvatarAvatarOptions = HeyGenAvatarOptions;
  *
  * @example
  * ```typescript
- * import { Agent, LiveAvatarAvatar, ElevenLabsTTS } from 'agora-agent-sdk';
+ * import { Agent, LiveAvatarAvatar, ElevenLabsTTS } from 'agora-agent-server-sdk';
  *
  * const avatar = new LiveAvatarAvatar({
  *   apiKey: process.env.LIVEAVATAR_API_KEY,
@@ -293,7 +293,7 @@ export interface AnamAvatarOptions {
  *
  * @example
  * ```typescript
- * import { Agent, AnamAvatar } from 'agora-agent-sdk';
+ * import { Agent, AnamAvatar } from 'agora-agent-server-sdk';
  *
  * const avatar = new AnamAvatar({
  *   apiKey: process.env.ANAM_API_KEY,
