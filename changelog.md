@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v1.3.0] — 2026-04-02
+
+### Added
+
+- `AgentSession.getTurns()` for high-level turn analytics access without dropping to `session.raw`.
+- Session-level `preset` and `pipelineId` support with automatic reseller preset inference for supported Deepgram, OpenAI, and MiniMax models.
+- AgentKit preset constants for discoverable session preset composition.
+
+### Changed
+
+- `AgentSession.start()` now normalizes preset input and resolves inferred presets before sending the request to the low-level SDK.
+- AgentKit MLLM wrappers now mirror the generated low-level MLLM contract and no longer expose unsupported wrapper-only fields.
+- AgentKit TTS wrappers now mirror the generated low-level TTS contract and no longer expose unsupported wrapper-only fields.
+- README and vendor reference docs now describe the low-level SDK as a 1:1 match for the Agora REST API and link to the current CI and coverage badges.
+
+### Fixed
+
+- Preset stripping now uses a single structured inference pass instead of re-deriving presets inside the transform step.
+- OpenAI, Deepgram, and MiniMax preset-backed session paths now preserve BYOK behavior while inferring reseller presets only when credentials are omitted.
+
 ## [v1.2.0] — 2026-03-27
 
 ### Fixed
