@@ -27,7 +27,7 @@ import {
   Agent,
   ExpiresIn,
   OpenAI,
-  ElevenLabsTTS,
+  OpenAITTS,
   DeepgramSTT,
 } from 'agora-agent-server-sdk';
 
@@ -43,17 +43,10 @@ const agent = new Agent({
   greeting: 'Hello! How can I help you today?',
   maxHistory: 10,
 })
-  // Configure Agent flow: STT → LLM → TTS → (optional) Avatar
-  .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', language: 'en-US' }))
-  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
-  .withTts(
-    new ElevenLabsTTS({
-      key: 'your-elevenlabs-key',
-      modelId: 'eleven_flash_v2_5',
-      voiceId: 'your-voice-id',
-      sampleRate: 24000,
-    }),
-  );
+  // Configure Agent flow: STT → LLM → TTS (no vendor API keys required for this setup)
+  .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
+  .withLlm(new OpenAI({ model: 'gpt-5-mini', temperature: 0.3 }))
+  .withTts(new OpenAITTS({ voice: 'alloy' }));
 // .withAvatar(new HeyGenAvatar({ ... })) // optional
 
 const session = agent.createSession(client, {
@@ -72,9 +65,13 @@ const agentSessionId = await session.start();
 await session.stop();
 ```
 
+This setup works without vendor API keys. If you use other models or custom vendor endpoints, provide vendor credentials explicitly (BYOK).
+
 ### Presets and reseller models
 
 Agora exposes `preset` on the session start request, so AgentKit treats presets as a session concern as well. That keeps the high-level wrapper aligned with the REST API and lets the same `Agent` be reused across sessions with different preset mixes or `pipelineId` values.
+
+See Agora preset documentation: https://docs.agora.io/en/conversational-ai/develop/presets
 
 You can pass presets explicitly:
 
