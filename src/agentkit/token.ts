@@ -9,7 +9,7 @@
  * The `agora-token` library handles the JWT signing.
  */
 
-import { RtcTokenBuilder, RtcRole } from "agora-token";
+import agoraToken from "agora-token";
 
 const DEFAULT_EXPIRY_SECONDS = 86400;
 const MAX_EXPIRY_SECONDS = 86400;
@@ -92,7 +92,7 @@ export interface GenerateTokenOptions {
     appCertificate: string;
     channel: string;
     uid: number;
-    role?: typeof RtcRole.PUBLISHER | typeof RtcRole.SUBSCRIBER;
+    role?: number;
     expirySeconds?: number;
 }
 
@@ -104,12 +104,12 @@ export interface GenerateTokenOptions {
  */
 export function generateRtcToken(opts: GenerateTokenOptions): string {
     const expiry = opts.expirySeconds ?? DEFAULT_EXPIRY_SECONDS;
-    return RtcTokenBuilder.buildTokenWithUid(
+    return agoraToken.RtcTokenBuilder.buildTokenWithUid(
         opts.appId,
         opts.appCertificate,
         opts.channel,
         opts.uid,
-        opts.role ?? RtcRole.PUBLISHER,
+        opts.role ?? agoraToken.RtcRole.PUBLISHER,
         expiry,
         expiry,
     );
@@ -121,7 +121,7 @@ export interface GenerateRtcTokenWithAccountOptions {
     channel: string;
     /** String account identity — used when enableStringUid is true */
     account: string;
-    role?: typeof RtcRole.PUBLISHER | typeof RtcRole.SUBSCRIBER;
+    role?: number;
     expirySeconds?: number;
 }
 
@@ -136,12 +136,12 @@ export interface GenerateRtcTokenWithAccountOptions {
  */
 export function generateRtcTokenWithAccount(opts: GenerateRtcTokenWithAccountOptions): string {
     const expiry = opts.expirySeconds ?? DEFAULT_EXPIRY_SECONDS;
-    return RtcTokenBuilder.buildTokenWithUserAccount(
+    return agoraToken.RtcTokenBuilder.buildTokenWithUserAccount(
         opts.appId,
         opts.appCertificate,
         opts.channel,
         opts.account,
-        opts.role ?? RtcRole.PUBLISHER,
+        opts.role ?? agoraToken.RtcRole.PUBLISHER,
         expiry,
         expiry,
     );
@@ -180,12 +180,12 @@ export function generateConvoAIToken(opts: GenerateConvoAITokenOptions): string 
     // Per Agora docs, privilegeExpire=0 means "expires immediately", which is invalid.
     // When omitted or 0, use the same value as tokenExpire.
     const privilegeExpire = (opts.privilegeExpire ?? 0) === 0 ? tokenExpire : opts.privilegeExpire!;
-    return RtcTokenBuilder.buildTokenWithRtm(
+    return agoraToken.RtcTokenBuilder.buildTokenWithRtm(
         opts.appId,
         opts.appCertificate,
         opts.channelName,
         opts.account,
-        RtcRole.PUBLISHER,
+        agoraToken.RtcRole.PUBLISHER,
         tokenExpire,
         privilegeExpire,
     );
