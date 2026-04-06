@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v1.3.1] — 2026-04-06
+
+### Fixed
+
+- ESM release output now rewrites multiline re-exports/imports correctly during `.js` -> `.mjs` conversion, including the top-level AgentKit re-export path.
+- Added `scripts/verify-esm-imports.js` and wired it into `build:esm` to fail builds when `dist/esm/**/*.mjs` contains broken relative `.js` specifiers that should resolve to `.mjs`.
+- ESM token generation path now imports `agora-token` through CJS interop (`default` import) instead of fragile named ESM imports, preventing runtime import failures in strict ESM environments.
+
 ## [v1.3.0] — 2026-04-02
 
 ### Added

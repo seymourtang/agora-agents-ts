@@ -1,6 +1,6 @@
 {
     "name": "agora-agent-server-sdk",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "private": false,
     "repository": "github:AgoraIO-Conversational-AI/agent-server-sdk-ts",
     "type": "commonjs",
@@ -37,7 +37,7 @@
         "check:fix": "biome check --fix --unsafe --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
         "build": "pnpm build:cjs && pnpm build:esm",
         "build:cjs": "tsc --project ./tsconfig.cjs.json",
-        "build:esm": "tsc --project ./tsconfig.esm.json && node scripts/rename-to-esm-files.js dist/esm",
+        "build:esm": "tsc --project ./tsconfig.esm.json && node scripts/rename-to-esm-files.js dist/esm && node scripts/verify-esm-imports.js dist/esm",
         "test": "vitest",
         "test:unit": "vitest --project unit",
         "test:wire": "vitest --project wire",

@@ -9,6 +9,10 @@ const extensionMap = {
 };
 const oldExtensions = Object.keys(extensionMap);
 
+function escapeRegex(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 async function findFiles(rootPath) {
     const files = [];
 
@@ -35,13 +39,15 @@ async function findFiles(rootPath) {
 }
 
 async function updateFiles(files) {
-    const updatedFiles = [];
+    let updatedCount = 0;
     for (const file of files) {
         const updated = await updateFileContents(file);
-        updatedFiles.push(updated);
+        if (updated) {
+            updatedCount++;
+        }
     }
 
-    console.log(`Updated imports in ${updatedFiles.length} files.`);
+    console.log(`Updated imports in ${updatedCount} files.`);
 }
 
 async function updateFileContents(file) {
@@ -50,13 +56,17 @@ async function updateFileContents(file) {
     let newContent = content;
     // Update each extension type defined in the map
     for (const [oldExt, newExt] of Object.entries(extensionMap)) {
+        const escapedOldExt = escapeRegex(oldExt);
         // Handle static imports/exports
-        const staticRegex = new RegExp(`(import|export)(.+from\\s+['"])(\\.\\.?\\/[^'"]+)(\\${oldExt})(['"])`, "g");
-        newContent = newContent.replace(staticRegex, `$1$2$3${newExt}$5`);
+        const staticRegex = new RegExp(
+            `((?:import|export)[\\s\\S]*?from\\s+['"])(\\.\\.?\\/[^'"]+?)(${escapedOldExt})(['"])`,
+            "g",
+        );
+        newContent = newContent.replace(staticRegex, `$1$2${newExt}$4`);
 
         // Handle dynamic imports (yield import, await import, regular import())
         const dynamicRegex = new RegExp(
-            `(yield\\s+import|await\\s+import|import)\\s*\\(\\s*['"](\\.\\.\?\\/[^'"]+)(\\${oldExt})['"]\\s*\\)`,
+            `(yield\\s+import|await\\s+import|import)\\s*\\(\\s*['"](\\.\\.?\\/[^'"]+?)(${escapedOldExt})['"]\\s*\\)`,
             "g",
         );
         newContent = newContent.replace(dynamicRegex, `$1("$2${newExt}")`);
