@@ -37,11 +37,19 @@ jobs:
         id: changelog
         run: |
           VERSION="${GITHUB_REF_NAME}"
-          NOTES=$(awk -v ver="## [${VERSION}]" '
-            index($0, ver) == 1 { found=1; next }
-            found && /^## / { exit }
+          PLAIN_VERSION="${VERSION#v}"
+          NOTES=$(awk -v vtag="$VERSION" -v plain="$PLAIN_VERSION" '
+            $0 ~ ("^## \\[" vtag "\\]") || $0 ~ ("^## \\[" plain "\\]") { found=1; next }
+            found && /^## \[/ { exit }
             found { print }
           ' changelog.md)
+
+          if [ -z "$(echo "$NOTES" | tr -d '[:space:]')" ]; then
+            echo "Failed to extract changelog notes for tag: $VERSION"
+            echo "Expected a section like: ## [$VERSION] or ## [$PLAIN_VERSION]"
+            exit 1
+          fi
+
           echo "notes<<EOF" >> "$GITHUB_OUTPUT"
           echo "$NOTES" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
