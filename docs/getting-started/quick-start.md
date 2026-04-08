@@ -1,100 +1,91 @@
 ---
 sidebar_position: 3
 title: Quick Start
-description: Build and run your first Agora Conversational AI agent in TypeScript.
+description: Build and run your first Agora Conversational AI agent in TypeScript with token auth and presets.
 ---
 
 # Quick Start
 
-Build a voice assistant that joins an Agora channel, listens to a user via Deepgram STT, responds with OpenAI, and speaks back with ElevenLabs TTS.
+This guide uses the recommended onboarding path:
+
+- `authToken` for REST API authentication
+- `preset` for Agora-managed ASR, LLM, and TTS
+- a channel join `token` for the RTC session
+- no vendor API keys in application code
 
 ## Full example
 
 ```typescript
-import {
-  AgoraClient,
-  Area,
-  Agent,
-  OpenAI,
-  ElevenLabsTTS,
-  DeepgramSTT,
-} from 'agora-agent-server-sdk';
+import { Agent, AgentPresets, AgoraClient, Area } from 'agora-agent-server-sdk';
 
-// 1. Create the client — app-credentials mode auto-generates tokens
-const client = new AgoraClient({
-  area: Area.US,
-  appId: 'your-app-id',
-  appCertificate: 'your-app-certificate',
-});
+async function main(): Promise<void> {
+  // Provision these in your backend. The SDK expects raw token values.
+  const restAuthToken = process.env.AGORA_REST_AUTH_TOKEN!;
+  const rtcJoinToken = process.env.AGORA_RTC_JOIN_TOKEN!;
 
-// 2. Define the agent — immutable builder, safe to reuse across sessions
-const agent = new Agent({
-  name: 'my-assistant',
-  instructions: 'You are a helpful voice assistant. Keep responses concise.',
-  greeting: 'Hello! How can I help you today?',
-  maxHistory: 20,
-})
-  .withLlm(new OpenAI({
-    apiKey: 'your-openai-key',
-    model: 'gpt-4o-mini',
-  }))
-  .withTts(new ElevenLabsTTS({
-    key: 'your-elevenlabs-key',
-    modelId: 'eleven_flash_v2_5',
-    voiceId: 'your-voice-id',
-    sampleRate: 24000,
-  }))
-  .withStt(new DeepgramSTT({
-    apiKey: 'your-deepgram-key',
-    model: 'nova-2',
-    language: 'en-US',
-  }));
+  // Token auth for REST API calls.
+  const client = new AgoraClient({
+    area: Area.US,
+    appId: 'your-app-id',
+    appCertificate: 'your-app-certificate',
+    authToken: restAuthToken,
+  });
 
-// 3. Create a session — connects the agent to a specific channel
-const session = agent.createSession(client, {
-  channel: 'my-room',
-  agentUid: '1',
-  remoteUids: ['100'],
-  idleTimeout: 120,
-});
+  // Agent-level behavior lives here. Vendor selection comes from presets below.
+  const agent = new Agent({
+    name: 'support-assistant',
+    instructions: 'You are a concise support voice assistant.',
+    greeting: 'Hello! How can I help you today?',
+    maxHistory: 10,
+  });
 
-// 4. Listen for events
-session.on('started', ({ agentId }) => {
-  console.log('Agent started:', agentId);
-});
+  const session = agent.createSession(client, {
+    channel: 'support-room-123',
+    agentUid: '1',
+    remoteUids: ['100'],
+    token: rtcJoinToken,
+    idleTimeout: 120,
+    preset: [
+      AgentPresets.asr.deepgramNova3,
+      AgentPresets.llm.openaiGpt5Mini,
+      AgentPresets.tts.openaiTts1,
+    ],
+  });
 
-session.on('error', (err) => {
-  console.error('Session error:', err);
-});
+  const agentSessionId = await session.start();
+  console.log('Agent started:', agentSessionId);
 
-// 5. Start the session — the agent joins the channel and begins listening
-const agentId = await session.start();
+  await session.say('Thanks for calling Agora support.');
+  await session.stop();
+}
 
-// 6. Use the session — instruct the agent to speak, or interrupt it
-await session.say('Let me tell you about our product.');
-await session.interrupt();
-
-// 7. Stop the session — the agent leaves the channel
-await session.stop();
+void main();
 ```
 
-## Step-by-step
+## What this does
 
-1. **Create the client** — `AgoraClient` handles authentication and regional routing. App credentials mode is recommended; see [Authentication](./authentication.md) for alternatives.
+1. `AgoraClient` uses `authToken` for REST API authentication.
+2. `Agent` holds reusable behavior such as instructions, greeting, and history settings.
+3. `preset` tells Agora which managed ASR, LLM, and TTS vendors to run.
+4. `token` on the session is the RTC join token used when the agent enters the channel.
+5. `session.start()` starts the agent and returns the unique agent session ID.
 
-2. **Define the agent** — `Agent` is an immutable configuration object. Each `.withLlm()`, `.withTts()`, `.withStt()` call returns a new `Agent` instance. You can reuse one agent across multiple sessions.
+## When to use BYOK instead
 
-3. **Create a session** — `agent.createSession(client, options)` returns an `AgentSession` bound to a specific channel. The `remoteUids` array lists the RTC UIDs the agent should listen to.
+Use presets when you want the fastest path to a working agent.
 
-4. **Start the session** — `session.start()` sends the start request to the Agora API. The agent joins the channel and begins processing audio. Returns the `agentId`.
+Use BYOK when you need to:
 
-5. **Interact** — `session.say(text)` makes the agent speak. `session.interrupt()` stops current speech. `session.update(config)` changes the agent config mid-session.
+- supply your own vendor API keys
+- use models outside the preset catalog
+- point at custom vendor endpoints
+- manage vendor-specific parameters directly
 
-6. **Stop the session** — `session.stop()` cleanly shuts down the agent.
+See [BYOK Guide](../guides/byok.md).
 
 ## Next steps
 
-- [MLLM Flow](../guides/mllm-flow.md) — use OpenAI Realtime or Gemini Live for end-to-end audio
-- [Avatar Integration](../guides/avatars.md) — attach a HeyGen or Akool avatar
-- [Regional Routing](../guides/regional-routing.md) — configure area and failover
-- [Agent Reference](../reference/agent.md) — full API for the builder pattern
+- [Authentication](./authentication.md)
+- [BYOK Guide](../guides/byok.md)
+- [MLLM Flow](../guides/mllm-flow.md)
+- [Agent Reference](../reference/agent.md)

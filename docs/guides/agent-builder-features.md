@@ -237,6 +237,7 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({
@@ -272,6 +273,7 @@ const session = agent.createSession(client, {
   channel: 'demo-room',
   agentUid: '1',
   remoteUids: ['100'],
+  token: 'your-rtc-join-token',
   idleTimeout: 120,
 });
 

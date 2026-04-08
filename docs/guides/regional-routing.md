@@ -30,6 +30,7 @@ const client = new AgoraClient({
   area: Area.EU,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
 });
 ```
 
@@ -63,6 +64,7 @@ const client = new AgoraClient({
   area: Area.EU,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({ name: 'failover-demo', instructions: 'You are helpful.' })
@@ -74,6 +76,7 @@ const session = agent.createSession(client, {
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],
+  token: 'your-rtc-join-token',
 });
 
 try {

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: MLLM Flow (Multimodal)
-description: Use OpenAI Realtime or Vertex AI Gemini Live for end-to-end audio processing.
+description: Use OpenAI Realtime or Gemini Live for end-to-end audio processing.
 ---
 
 # MLLM Flow (Multimodal)
@@ -27,6 +27,7 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({
@@ -44,6 +45,7 @@ const session = agent.createSession(client, {
   channel: 'realtime-room',
   agentUid: '1',
   remoteUids: ['100'],
+  token: 'your-rtc-join-token',
 });
 
 const agentId = await session.start();
@@ -53,25 +55,24 @@ console.log('Realtime agent running:', agentId);
 await session.stop();
 ```
 
-## Example: Vertex AI (Gemini Live)
+## Example: Gemini Live
 
 ```typescript
-import { AgoraClient, Area, Agent, VertexAI } from 'agora-agent-server-sdk';
+import { AgoraClient, Area, Agent, GeminiLive } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({
   name: 'gemini-assistant',
   advancedFeatures: { enable_mllm: true },
-}).withMllm(new VertexAI({
-  model: 'gemini-live-2.5-flash-preview-native-audio-09-2025',
-  projectId: 'your-gcp-project-id',
-  location: 'us-central1',
-  adcCredentialsString: 'your-adc-credentials-json-string',
+}).withMllm(new GeminiLive({
+  apiKey: 'your-google-ai-api-key',
+  model: 'gemini-live-2.5-flash',
   instructions: 'You are a helpful voice assistant.',
   voice: 'Aoede',
   greetingMessage: 'Hello! Gemini is listening.',
@@ -81,6 +82,7 @@ const session = agent.createSession(client, {
   channel: 'gemini-room',
   agentUid: '1',
   remoteUids: ['100'],
+  token: 'your-rtc-join-token',
 });
 
 const agentId = await session.start();
