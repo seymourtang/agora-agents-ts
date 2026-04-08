@@ -81,8 +81,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  customerId: 'your-customer-id',
-  customerSecret: 'your-customer-secret',
 });
 
 const token = generateRtcToken({

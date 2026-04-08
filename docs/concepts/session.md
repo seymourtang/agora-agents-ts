@@ -10,6 +10,7 @@ description: Manage the full lifecycle of a running Agora Conversational AI agen
 
 Create a session via [`agent.createSession()`](./agent.md):
 
+<!-- snippet: fragment -->
 ```typescript
 const session = agent.createSession(client, {
   channel: 'my-room',
@@ -68,6 +69,7 @@ AgentKit supports three ways to use reseller-backed models:
 
 Examples:
 
+<!-- snippet: fragment -->
 ```typescript
 const explicitPresetSession = agent.createSession(client, {
   channel: 'my-room',
@@ -77,6 +79,7 @@ const explicitPresetSession = agent.createSession(client, {
 });
 ```
 
+<!-- snippet: fragment -->
 ```typescript
 const inferredPresetAgent = new Agent({ instructions: 'Be concise.' })
   .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
@@ -108,6 +111,7 @@ Supported inferred preset models:
 
 ### Example: listening for events
 
+<!-- snippet: executable -->
 ```typescript
 import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
 
@@ -162,6 +166,7 @@ await session.stop();
 
 If the Agora API adds a new endpoint before the agentkit is updated, you can call it directly:
 
+<!-- snippet: fragment -->
 ```typescript
 await session.raw.someNewEndpoint({
   appid: session.appId,

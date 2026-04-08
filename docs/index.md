@@ -6,24 +6,26 @@ description: The Agora Conversational AI TypeScript SDK — install, concepts, a
 
 # Agora Conversational AI TypeScript SDK
 
-The `agora-agent-server-sdk` package lets you build real-time voice AI agents on the [Agora Conversational AI](https://docs.agora.io/en/conversational-ai/overview) platform. Create agents that listen, think, and speak — powered by any combination of LLM, TTS, and STT providers.
+The `agora-agent-server-sdk` package lets you build real-time voice AI agents on the [Agora Conversational AI](https://docs.agora.io/en/conversational-ai/overview) platform.
 
 ## Two conversation flows
 
-**Cascading flow** — Speech-to-text feeds a text LLM, whose output is synthesized back to speech (ASR → LLM → TTS). This is the default path and supports the widest range of vendor combinations.
+**Cascading flow** uses ASR -> LLM -> TTS and supports the broadest set of vendor combinations.
 
-**MLLM flow** — A multimodal model (OpenAI Realtime or Vertex AI Gemini Live) handles audio end-to-end with no separate STT or TTS step. Lower latency for real-time conversation.
+**MLLM flow** uses a multimodal model such as OpenAI Realtime or Gemini Live for end-to-end audio.
+
+## Choose a starting point
+
+- Use [Quick Start](./getting-started/quick-start.md) if you want the recommended preset-based path with no vendor keys.
+- Use [MLLM Flow Guide](./guides/mllm-flow.md) if you want realtime end-to-end audio with OpenAI Realtime or Gemini Live.
+- Use [Cascading Flow Guide](./guides/cascading-flow.md) if you want separate ASR, LLM, and TTS vendors.
 
 ## SDK layers
 
-The SDK has two layers:
-
 | Layer | What it does | When to use |
 |---|---|---|
-| **Agentkit** (`Agent`, `AgentSession`, vendor classes) | High-level builder pattern, session lifecycle, typed vendors, automatic token generation | Most use cases |
-| **Fern-generated core** (`client.agents`, `client.telephony`) | Direct REST client mapping every API endpoint | Advanced use cases requiring full control over request bodies |
-
-The agentkit layer is built on top of the generated core. You can drop down to the raw client at any time via `session.raw`.
+| **Agentkit** (`Agent`, `AgentSession`, vendor classes) | High-level builder pattern, presets, lifecycle, typed vendors | Most use cases |
+| **Fern-generated core** (`client.agents`, `client.telephony`) | Direct REST client mapping every API endpoint | Advanced use cases |
 
 ## Install
 
@@ -36,20 +38,21 @@ npm install agora-agent-server-sdk
 | Section | What you will find |
 |---|---|
 | [Installation](./getting-started/installation.md) | Prerequisites, package managers, runtime compatibility |
-| [Authentication](./getting-started/authentication.md) | App credentials, pre-built tokens, Basic Auth |
-| [Quick Start](./getting-started/quick-start.md) | End-to-end cascading flow example |
+| [Authentication](./getting-started/authentication.md) | Token auth for REST and RTC joins |
+| [Quick Start](./getting-started/quick-start.md) | Recommended preset-based onboarding flow |
+| [BYOK](./guides/byok.md) | Bring your own vendor credentials and config |
 | [Architecture](./concepts/architecture.md) | Two-layer design, when to use agentkit vs. raw client |
 | [Agent](./concepts/agent.md) | Builder pattern, immutable reuse, vendor configuration |
 | [AgentSession](./concepts/session.md) | State machine, lifecycle methods, events |
 | [Vendors](./concepts/vendors.md) | LLM, TTS, STT, MLLM, and Avatar provider catalog |
-| [Cascading Flow Guide](./guides/cascading-flow.md) | Step-by-step ASR → LLM → TTS |
+| [Cascading Flow Guide](./guides/cascading-flow.md) | Step-by-step ASR -> LLM -> TTS |
 | [MLLM Flow Guide](./guides/mllm-flow.md) | OpenAI Realtime and Vertex AI Gemini Live |
 | [Avatar Integration](./guides/avatars.md) | HeyGen and Akool with sample-rate constraints |
 | [Regional Routing](./guides/regional-routing.md) | Area enum, domain pool, failover |
 | [Error Handling](./guides/error-handling.md) | AgoraError and API error handling |
 | [Pagination](./guides/pagination.md) | Iterate over paginated list endpoints |
 | [Advanced](./guides/advanced.md) | Headers, retries, timeouts, logging, custom fetcher |
-| [Low-Level API](./guides/low-level-api.md) | Direct client.agents.start() without builder |
+| [Low-Level API](./guides/low-level-api.md) | Direct `client.agents.start()` usage |
 | [AgoraClient Reference](./reference/client.md) | Constructor options, public methods |
 | [Agent Reference](./reference/agent.md) | Full builder API with TypeScript signatures |
 | [AgentSession Reference](./reference/session.md) | All methods, events, and payload types |

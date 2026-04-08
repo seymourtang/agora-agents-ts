@@ -6,12 +6,14 @@ description: Full API reference for the Agent builder class.
 
 # Agent Reference
 
+<!-- snippet: fragment -->
 ```typescript
 import { Agent } from 'agora-agent-server-sdk';
 ```
 
 ## Constructor
 
+<!-- snippet: fragment -->
 ```typescript
 new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 ```
@@ -139,6 +141,7 @@ Set filler words configuration (played while waiting for LLM response).
 
 Creates a new `AgentSession` bound to the given client and channel.
 
+<!-- snippet: fragment -->
 ```typescript
 createSession(
   client: AgoraClient & { readonly appId: string; readonly appCertificate?: string },
