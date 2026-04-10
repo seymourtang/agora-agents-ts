@@ -80,6 +80,23 @@ If you want to bring your own vendor credentials instead of using Agora-managed 
 
 - [BYOK Guide](./docs/guides/byok.md)
 
+## MLLM (Realtime / Multimodal)
+
+Use `withMllm()` for OpenAI Realtime or Gemini Live — no STT, LLM, or TTS vendor needed. MLLM mode is enabled automatically.
+
+```typescript
+import { Agent, OpenAIRealtime } from 'agora-agent-server-sdk';
+
+const agent = new Agent({ name: 'realtime-assistant' })
+  .withMllm(new OpenAIRealtime({
+    apiKey: process.env.OPENAI_API_KEY!,
+    model: 'gpt-4o-realtime-preview',
+    greetingMessage: 'Hello! Ready to chat.',
+  }));
+```
+
+See the [MLLM Flow guide](./docs/guides/mllm-flow.md) for full examples with Gemini Live and Vertex AI.
+
 ## Documentation
 
 - [Overview](./docs/index.md)

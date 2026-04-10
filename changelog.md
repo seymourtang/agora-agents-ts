@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v1.3.2] — 2026-04-10
+
+### Fixed
+
+- **`withMllm()` is now self-contained.** Previously, calling `agent.withMllm(vendor)` still required a separate `.withAdvancedFeatures({ enable_mllm: true })` call to bypass the STT/LLM/TTS required-field guards. Omitting it produced a misleading `"TTS configuration is required"` error. `withMllm()` now automatically sets `enable_mllm: true` — no extra configuration needed.
+
 ## [v1.3.1] — 2026-04-06
 
 ### Fixed
