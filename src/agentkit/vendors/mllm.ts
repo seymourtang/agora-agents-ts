@@ -105,6 +105,8 @@ export interface GeminiLiveOptions {
     apiKey: string;
     /** Model name (e.g., 'gemini-live-2.5-flash') */
     model: string;
+    /** WebSocket URL for real-time communication */
+    url?: string;
     /** System instructions for the model */
     instructions?: string;
     /** Voice name (e.g., 'Aoede', 'Charon') */
@@ -158,6 +160,7 @@ export class GeminiLive extends BaseMLLM {
         const {
             apiKey,
             model,
+            url,
             instructions,
             voice,
             greetingMessage,
@@ -173,6 +176,7 @@ export class GeminiLive extends BaseMLLM {
             // not the underlying vendor. All MLLM vendors use it.
             style: "openai",
             api_key: apiKey,
+            ...(url && { url }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -197,6 +201,8 @@ export class GeminiLive extends BaseMLLM {
 export interface VertexAIOptions {
     /** Model name (e.g., 'gemini-live-2.5-flash-preview-native-audio-09-2025') */
     model: string;
+    /** WebSocket URL for real-time communication */
+    url?: string;
     /** Google Cloud project ID */
     projectId: string;
     /** Google Cloud location/region */
@@ -257,6 +263,7 @@ export class VertexAI extends BaseMLLM {
     toConfig(): MllmConfig {
         const {
             model,
+            url,
             projectId,
             location,
             adcCredentialsString,
@@ -275,6 +282,7 @@ export class VertexAI extends BaseMLLM {
             // describes the request/response protocol format used by the backend,
             // not the underlying vendor. All MLLM vendors including VertexAI use it.
             style: "openai",
+            ...(url && { url }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,

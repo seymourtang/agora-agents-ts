@@ -189,11 +189,20 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified MLLM vendor.
      *
+     * MLLM vendors handle real-time audio end-to-end, bypassing the standard
+     * ASR → LLM → TTS pipeline. Calling this method automatically enables MLLM
+     * mode (`advancedFeatures.enable_mllm: true`), so `withLlm()`, `withTts()`,
+     * and `withStt()` are not needed.
+     *
      * @param vendor - MLLM vendor instance (e.g., new VertexAI({ model: '...', projectId: '...', ... }))
      */
     withMllm(vendor: BaseMLLM): Agent<TTSSampleRate> {
         const newAgent = this._clone();
         newAgent._mllm = vendor.toConfig();
+        // Calling withMllm() is the authoritative signal that MLLM mode is
+        // intended. Auto-enable the flag so callers don't need a separate
+        // withAdvancedFeatures({ enable_mllm: true }) call.
+        newAgent._advancedFeatures = { ...newAgent._advancedFeatures, enable_mllm: true };
         return newAgent;
     }
 
