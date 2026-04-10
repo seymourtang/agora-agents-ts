@@ -2,8 +2,9 @@
  * Type-safe MLLM (Multimodal Large Language Model) vendor classes.
  *
  * MLLM vendors handle real-time audio end-to-end, bypassing the standard
- * ASR → LLM → TTS pipeline. Requires `advancedFeatures: { enable_mllm: true }`
- * in the Agent configuration.
+ * ASR → LLM → TTS pipeline. Calling `agent.withMllm(vendor)` automatically
+ * enables MLLM mode — no separate `advancedFeatures: { enable_mllm: true }`
+ * configuration is required.
  */
 
 import { BaseMLLM } from "./base.js";
@@ -42,15 +43,11 @@ export interface OpenAIRealtimeOptions {
  *
  * @example
  * ```typescript
- * const mllm = new OpenAIRealtime({
- *   apiKey: process.env.OPENAI_API_KEY,
- *   greetingMessage: 'Hello! How can I help you?',
- * });
- *
- * const agent = new Agent({
- *   name: 'realtime-assistant',
- *   advancedFeatures: { enable_mllm: true },
- * }).withMllm(mllm);
+ * const agent = new Agent({ name: 'realtime-assistant' })
+ *   .withMllm(new OpenAIRealtime({
+ *     apiKey: process.env.OPENAI_API_KEY,
+ *     greetingMessage: 'Hello! How can I help you?',
+ *   }));
  * ```
  */
 export class OpenAIRealtime extends BaseMLLM {
@@ -136,16 +133,12 @@ export interface GeminiLiveOptions {
  *
  * @example
  * ```typescript
- * const mllm = new GeminiLive({
- *   apiKey: process.env.GOOGLE_API_KEY,
- *   model: 'gemini-live-2.5-flash',
- *   greetingMessage: 'Hello! Gemini is listening.',
- * });
- *
- * const agent = new Agent({
- *   name: 'gemini-assistant',
- *   advancedFeatures: { enable_mllm: true },
- * }).withMllm(mllm);
+ * const agent = new Agent({ name: 'gemini-assistant' })
+ *   .withMllm(new GeminiLive({
+ *     apiKey: process.env.GOOGLE_API_KEY,
+ *     model: 'gemini-live-2.5-flash',
+ *     greetingMessage: 'Hello! Gemini is listening.',
+ *   }));
  * ```
  */
 export class GeminiLive extends BaseMLLM {
@@ -236,20 +229,16 @@ export interface VertexAIOptions {
  *
  * @example
  * ```typescript
- * const mllm = new VertexAI({
- *   model: 'gemini-live-2.5-flash-preview-native-audio-09-2025',
- *   projectId: process.env.GOOGLE_PROJECT_ID,
- *   location: 'us-central1',
- *   adcCredentialsString: process.env.GOOGLE_ADC_CREDENTIALS,
- *   instructions: 'You are a helpful voice assistant.',
- *   voice: 'Aoede',
- *   greetingMessage: 'Hello! Gemini is listening.',
- * });
- *
- * const agent = new Agent({
- *   name: 'gemini-assistant',
- *   advancedFeatures: { enable_mllm: true },
- * }).withMllm(mllm);
+ * const agent = new Agent({ name: 'gemini-assistant' })
+ *   .withMllm(new VertexAI({
+ *     model: 'gemini-live-2.5-flash-preview-native-audio-09-2025',
+ *     projectId: process.env.GOOGLE_PROJECT_ID,
+ *     location: 'us-central1',
+ *     adcCredentialsString: process.env.GOOGLE_ADC_CREDENTIALS,
+ *     instructions: 'You are a helpful voice assistant.',
+ *     voice: 'Aoede',
+ *     greetingMessage: 'Hello! Gemini is listening.',
+ *   }));
  * ```
  */
 export class VertexAI extends BaseMLLM {
