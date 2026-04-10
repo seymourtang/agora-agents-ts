@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- **`GeminiLive` and `VertexAI` were missing the `url` parameter.** The optional WebSocket URL override supported by `OpenAIRealtime` was not exposed on the other two MLLM vendors, making it impossible to point them at a custom endpoint. Both constructors now accept an optional `url` field that is passed through to the API request.
+
 - **`withMllm()` is now self-contained.** Previously, calling `agent.withMllm(vendor)` still required a separate `.withAdvancedFeatures({ enable_mllm: true })` call to bypass the STT/LLM/TTS required-field guards. Omitting it produced a misleading `"TTS configuration is required"` error. `withMllm()` now automatically sets `enable_mllm: true` — no extra configuration needed.
 
 ## [v1.3.1] — 2026-04-06
