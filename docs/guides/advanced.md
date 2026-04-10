@@ -86,6 +86,7 @@ const client = new AgoraClient({
   area: Area.US,
   appId: "your-app-id",
   appCertificate: "your-app-certificate",
+  authToken: "your-rest-auth-token",
   logging: {
     level: logging.LogLevel.Debug,
     logger: new logging.ConsoleLogger(),
@@ -135,6 +136,7 @@ const client = new AgoraClient({
   area: Area.US,
   appId: "your-app-id",
   appCertificate: "your-app-certificate",
+  authToken: "your-rest-auth-token",
   fetcher: (url, init) => fetch(url, init), // your implementation
 });
 ```

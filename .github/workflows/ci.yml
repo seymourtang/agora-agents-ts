@@ -19,6 +19,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Validate docs
+        run: pnpm docs:check
+
       - name: Compile
         run: pnpm build
 
@@ -37,6 +40,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Validate docs
+        run: pnpm docs:check
 
       - name: Test with coverage
         run: pnpm test:coverage

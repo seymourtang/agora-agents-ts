@@ -197,6 +197,7 @@ describe("mllm vendor mappings", () => {
 
         const vertexConfig = new VertexAI({
             model: "gemini-live",
+            url: "wss://vertex.example.com/realtime",
             projectId: "project",
             location: "us-central1",
             adcCredentialsString: "adc",
@@ -208,6 +209,7 @@ describe("mllm vendor mappings", () => {
             maxHistory: 5,
         }).toConfig();
         expect(vertexConfig).toMatchObject({
+            url: "wss://vertex.example.com/realtime",
             greeting_message: "Hi",
             input_modalities: ["audio"],
             output_modalities: ["text"],

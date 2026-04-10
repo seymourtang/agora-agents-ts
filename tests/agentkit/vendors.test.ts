@@ -11,7 +11,7 @@ import {
     toBaseAvatarConfig,
 } from "../../src/agentkit/avatar-types";
 import { AkoolAvatar, AnamAvatar, HeyGenAvatar, LiveAvatarAvatar } from "../../src/agentkit/vendors/avatar";
-import { GeminiLive } from "../../src/agentkit/vendors/mllm";
+import { GeminiLive, VertexAI } from "../../src/agentkit/vendors/mllm";
 import { ElevenLabsTTS } from "../../src/agentkit/vendors/tts";
 
 describe("AgentKit vendor wrappers", () => {
@@ -19,6 +19,7 @@ describe("AgentKit vendor wrappers", () => {
         const config = new GeminiLive({
             apiKey: "google-key",
             model: "gemini-live-2.5-flash",
+            url: "wss://generativelanguage.googleapis.com/ws",
             instructions: "Be concise.",
             voice: "Aoede",
             greetingMessage: "Hello from Gemini",
@@ -35,6 +36,7 @@ describe("AgentKit vendor wrappers", () => {
             vendor: "gemini",
             style: "openai",
             api_key: "google-key",
+            url: "wss://generativelanguage.googleapis.com/ws",
             params: {
                 temperature: 0.2,
                 model: "gemini-live-2.5-flash",
@@ -48,6 +50,28 @@ describe("AgentKit vendor wrappers", () => {
             predefined_tools: ["_publish_message"],
             failure_message: "Please try again.",
             max_history: 8,
+        });
+    });
+
+    test("VertexAI forwards url into the generated MLLM config", () => {
+        const config = new VertexAI({
+            model: "gemini-live",
+            url: "wss://vertex.example.com/realtime",
+            projectId: "project",
+            location: "us-central1",
+            adcCredentialsString: "adc-json",
+        }).toConfig();
+
+        expect(config).toMatchObject({
+            vendor: "vertexai",
+            style: "openai",
+            url: "wss://vertex.example.com/realtime",
+            params: {
+                model: "gemini-live",
+                project_id: "project",
+                location: "us-central1",
+                adc_credentials_string: "adc-json",
+            },
         });
     });
 

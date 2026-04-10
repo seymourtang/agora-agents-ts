@@ -179,12 +179,54 @@ describe("Agent", () => {
         expect(properties.tts).toBeUndefined();
     });
 
+    test("withMllm() alone is sufficient — no advancedFeatures required", () => {
+        // Regression: withMllm() must not require a separate
+        // withAdvancedFeatures({ enable_mllm: true }) call. Before the fix,
+        // omitting that call caused a "TTS configuration is required" error.
+        const agent = new Agent({ greeting: "Hi" }).withMllm(
+            new OpenAIRealtime({ apiKey: "openai-key" }),
+        );
+
+        expect(agent.advancedFeatures).toMatchObject({ enable_mllm: true });
+
+        // Must not throw even though withTts/withLlm were never called.
+        expect(() =>
+            agent.toProperties({
+                channel: "c",
+                token: "t",
+                agentUid: "1",
+                remoteUids: ["2"],
+            }),
+        ).not.toThrow();
+
+        const props = agent.toProperties({
+            channel: "c",
+            token: "t",
+            agentUid: "1",
+            remoteUids: ["2"],
+        });
+        expect(props.mllm).toMatchObject({ vendor: "openai" });
+        expect(props.llm).toBeUndefined();
+        expect(props.tts).toBeUndefined();
+        expect(props.asr).toBeUndefined();
+    });
+
+    test("withMllm() preserves existing advancedFeatures fields", () => {
+        const agent = new Agent()
+            .withAdvancedFeatures({ enable_rtm: true })
+            .withMllm(new OpenAIRealtime({ apiKey: "key" }));
+
+        expect(agent.advancedFeatures).toMatchObject({
+            enable_rtm: true,
+            enable_mllm: true,
+        });
+    });
+
     test("toProperties generates token and respects MLLM vendor precedence", () => {
         const agent = new Agent({
             greeting: "Agent greeting",
             failureMessage: "Agent failure",
             maxHistory: 9,
-            advancedFeatures: { enable_mllm: true },
         }).withMllm(
             new OpenAIRealtime({
                 apiKey: "openai-key",
@@ -258,7 +300,6 @@ describe("Agent", () => {
             greeting: "Agent greeting",
             failureMessage: "Agent failure",
             maxHistory: 7,
-            advancedFeatures: { enable_mllm: true },
         }).withMllm(
             new OpenAIRealtime({
                 apiKey: "openai-key",

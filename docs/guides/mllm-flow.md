@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: MLLM Flow (Multimodal)
-description: Use OpenAI Realtime or Vertex AI Gemini Live for end-to-end audio processing.
+description: Use OpenAI Realtime or Gemini Live for end-to-end audio processing.
 ---
 
 # MLLM Flow (Multimodal)
@@ -16,7 +16,7 @@ In MLLM mode, a single multimodal model handles audio input and output end-to-en
 
 ## Requirements
 
-MLLM mode requires `advancedFeatures: { enable_mllm: true }` in the `Agent` constructor. The `withLlm()`, `withTts()`, and `withStt()` methods are not needed — the MLLM vendor handles everything.
+Call `agent.withMllm(vendor)` — that's it. MLLM mode is enabled automatically; you do not need to pass `advancedFeatures: { enable_mllm: true }` separately. The `withLlm()`, `withTts()`, and `withStt()` methods are not needed — the MLLM vendor handles everything.
 
 ## Example: OpenAI Realtime
 
@@ -27,23 +27,23 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
 });
 
-const agent = new Agent({
-  name: 'realtime-assistant',
-  advancedFeatures: { enable_mllm: true },
-}).withMllm(new OpenAIRealtime({
-  apiKey: 'your-openai-key',
-  model: 'gpt-4o-realtime-preview',
-  greetingMessage: 'Hello! Ready to chat.',
-  inputModalities: ['audio'],
-  outputModalities: ['text', 'audio'],
-}));
+const agent = new Agent({ name: 'realtime-assistant' })
+  .withMllm(new OpenAIRealtime({
+    apiKey: 'your-openai-key',
+    model: 'gpt-4o-realtime-preview',
+    greetingMessage: 'Hello! Ready to chat.',
+    inputModalities: ['audio'],
+    outputModalities: ['text', 'audio'],
+  }));
 
 const session = agent.createSession(client, {
   channel: 'realtime-room',
   agentUid: '1',
   remoteUids: ['100'],
+  token: 'your-rtc-join-token',
 });
 
 const agentId = await session.start();
@@ -53,34 +53,32 @@ console.log('Realtime agent running:', agentId);
 await session.stop();
 ```
 
-## Example: Vertex AI (Gemini Live)
+## Example: Gemini Live
 
 ```typescript
-import { AgoraClient, Area, Agent, VertexAI } from 'agora-agent-server-sdk';
+import { AgoraClient, Area, Agent, GeminiLive } from 'agora-agent-server-sdk';
 
 const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
 });
 
-const agent = new Agent({
-  name: 'gemini-assistant',
-  advancedFeatures: { enable_mllm: true },
-}).withMllm(new VertexAI({
-  model: 'gemini-live-2.5-flash-preview-native-audio-09-2025',
-  projectId: 'your-gcp-project-id',
-  location: 'us-central1',
-  adcCredentialsString: 'your-adc-credentials-json-string',
-  instructions: 'You are a helpful voice assistant.',
-  voice: 'Aoede',
-  greetingMessage: 'Hello! Gemini is listening.',
-}));
+const agent = new Agent({ name: 'gemini-assistant' })
+  .withMllm(new GeminiLive({
+    apiKey: 'your-google-ai-api-key',
+    model: 'gemini-live-2.5-flash',
+    instructions: 'You are a helpful voice assistant.',
+    voice: 'Aoede',
+    greetingMessage: 'Hello! Gemini is listening.',
+  }));
 
 const session = agent.createSession(client, {
   channel: 'gemini-room',
   agentUid: '1',
   remoteUids: ['100'],
+  token: 'your-rtc-join-token',
 });
 
 const agentId = await session.start();
@@ -94,10 +92,7 @@ You can configure turn detection alongside MLLM to control when the model should
 Legacy format (deprecated in favor of SOS/EOS):
 
 ```typescript
-const agent = new Agent({
-  name: 'realtime-with-vad',
-  advancedFeatures: { enable_mllm: true },
-})
+const agent = new Agent({ name: 'realtime-with-vad' })
   .withMllm(new OpenAIRealtime({
     apiKey: 'your-openai-key',
     model: 'gpt-4o-realtime-preview',
@@ -112,7 +107,7 @@ const agent = new Agent({
 
 ## How MLLM mode works internally
 
-When `enable_mllm: true` is set, the SDK:
+When MLLM mode is active (set automatically by `withMllm()`), the SDK:
 
 1. Sends the `mllm` configuration in the request body
 2. Omits `llm`, `tts`, and `asr` fields (the backend ignores them in MLLM mode)

@@ -189,11 +189,20 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified MLLM vendor.
      *
+     * MLLM vendors handle real-time audio end-to-end, bypassing the standard
+     * ASR → LLM → TTS pipeline. Calling this method automatically enables MLLM
+     * mode (`advancedFeatures.enable_mllm: true`), so `withLlm()`, `withTts()`,
+     * and `withStt()` are not needed.
+     *
      * @param vendor - MLLM vendor instance (e.g., new VertexAI({ model: '...', projectId: '...', ... }))
      */
     withMllm(vendor: BaseMLLM): Agent<TTSSampleRate> {
         const newAgent = this._clone();
         newAgent._mllm = vendor.toConfig();
+        // Calling withMllm() is the authoritative signal that MLLM mode is
+        // intended. Auto-enable the flag so callers don't need a separate
+        // withAdvancedFeatures({ enable_mllm: true }) call.
+        newAgent._advancedFeatures = { ...newAgent._advancedFeatures, enable_mllm: true };
         return newAgent;
     }
 
@@ -610,7 +619,9 @@ export class Agent<TTSSampleRate extends number = number> {
         }
         // In MLLM mode the backend handles audio end-to-end; LLM, TTS, and ASR
         // are disabled automatically — they must not be required by the SDK.
-        const isMllmMode = this._advancedFeatures?.enable_mllm === true;
+        // withMllm() sets both _mllm and enable_mllm automatically; check both
+        // as a safety net for any hand-built configs that set the flag directly.
+        const isMllmMode = this._advancedFeatures?.enable_mllm === true || this._mllm !== undefined;
 
         // When RTM is enabled, data_channel must also be 'rtm' for the client
         // to receive transcripts and state events. Default it automatically so

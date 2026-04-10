@@ -10,6 +10,7 @@ description: The Agent builder — configure an AI agent with LLM, TTS, STT, and
 
 ## Constructor options
 
+<!-- snippet: executable -->
 ```typescript
 import { Agent } from 'agora-agent-server-sdk';
 
@@ -67,6 +68,7 @@ Each method returns a new `Agent` instance with the updated configuration.
 
 Call `createSession()` to bind the agent to a client and channel:
 
+<!-- snippet: fragment -->
 ```typescript
 const session = agent.createSession(client, {
   channel: 'room-123',
@@ -93,6 +95,7 @@ const session = agent.createSession(client, {
 
 Because every method returns a new instance, you can create a base agent and derive variations:
 
+<!-- snippet: executable -->
 ```typescript
 import { Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
 

@@ -6,6 +6,7 @@ description: Full API reference for the AgentSession class.
 
 # AgentSession Reference
 
+<!-- snippet: fragment -->
 ```typescript
 import { AgentSession } from 'agora-agent-server-sdk';
 ```
@@ -124,6 +125,7 @@ Handler type: `AgentSessionEventHandler<T> = (data: T) => void`
 
 Access the underlying Fern-generated client to call endpoints not yet wrapped:
 
+<!-- snippet: fragment -->
 ```typescript
 await session.raw.someNewEndpoint({
   appid: session.appId,
