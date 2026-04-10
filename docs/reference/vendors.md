@@ -249,6 +249,29 @@ new OpenAIRealtime(options: OpenAIRealtimeOptions)
 | `messages` | `Record<string, unknown>[]` | No | Conversation messages for short-term memory |
 | `params` | `Record<string, unknown>` | No | Additional MLLM parameters |
 
+### GeminiLive
+
+<!-- snippet: fragment -->
+```typescript
+new GeminiLive(options: GeminiLiveOptions)
+```
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `apiKey` | `string` | Yes | Google API key |
+| `model` | `string` | Yes | Model name (e.g., `'gemini-live-2.5-flash'`) |
+| `url` | `string` | No | WebSocket URL |
+| `instructions` | `string` | No | System instructions for the model |
+| `voice` | `string` | No | Voice name (e.g., `'Aoede'`, `'Charon'`) |
+| `greetingMessage` | `string` | No | Agent greeting message |
+| `failureMessage` | `string` | No | Message played when the model call fails |
+| `maxHistory` | `number` | No | Maximum conversation history length |
+| `predefinedTools` | `string[]` | No | Predefined tools (e.g., `['_publish_message']`) |
+| `inputModalities` | `string[]` | No | Input modalities |
+| `outputModalities` | `string[]` | No | Output modalities |
+| `messages` | `Record<string, unknown>[]` | No | Conversation messages |
+| `additionalParams` | `Record<string, unknown>` | No | Additional parameters |
+
 ### VertexAI
 
 <!-- snippet: fragment -->
@@ -259,6 +282,7 @@ new VertexAI(options: VertexAIOptions)
 | Option | Type | Required | Description |
 |---|---|---|---|
 | `model` | `string` | Yes | Model name (e.g., `'gemini-live-2.5-flash-preview-native-audio-09-2025'`) |
+| `url` | `string` | No | WebSocket URL |
 | `projectId` | `string` | Yes | Google Cloud project ID |
 | `location` | `string` | Yes | Google Cloud location/region |
 | `adcCredentialsString` | `string` | Yes | Application Default Credentials JSON string |

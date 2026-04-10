@@ -73,6 +73,7 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({ name: 'heygen-agent', instructions: 'You are a friendly avatar assistant.' })
@@ -95,6 +96,7 @@ const session = agent.createSession(client, {
   channel: 'avatar-room',
   agentUid: '1',
   remoteUids: ['100'],
+  token: 'your-rtc-join-token',
 });
 
 await session.start();
@@ -117,6 +119,7 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({ name: 'akool-agent', instructions: 'You are a friendly avatar assistant.' })
@@ -137,6 +140,7 @@ const session = agent.createSession(client, {
   channel: 'avatar-room',
   agentUid: '1',
   remoteUids: ['100'],
+  token: 'your-rtc-join-token',
 });
 
 await session.start();

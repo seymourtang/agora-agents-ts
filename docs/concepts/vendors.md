@@ -85,12 +85,13 @@ const stt = new DeepgramSTT({
 
 ## MLLM vendors
 
-MLLM (Multimodal LLM) vendors handle audio end-to-end — no separate STT or TTS step. Requires `advancedFeatures: { enable_mllm: true }` in the `Agent` constructor.
+MLLM (Multimodal LLM) vendors handle audio end-to-end — no separate STT or TTS step. Call `agent.withMllm(vendor)` and MLLM mode is enabled automatically; no separate `advancedFeatures` flag is needed.
 
 | Class | Provider | Key constructor params |
 |---|---|---|
 | `OpenAIRealtime` | OpenAI Realtime API | `apiKey`, `model?`, `url?`, `greetingMessage?`, `inputModalities?`, `outputModalities?` |
-| `VertexAI` | Google Gemini Live | `model`, `projectId`, `location`, `adcCredentialsString`, `voice?`, `greetingMessage?` |
+| `GeminiLive` | Google Gemini Live | `apiKey`, `model`, `url?`, `voice?`, `greetingMessage?`, `inputModalities?`, `outputModalities?` |
+| `VertexAI` | Google Gemini Live | `model`, `url?`, `projectId`, `location`, `adcCredentialsString`, `voice?`, `greetingMessage?` |
 
 <!-- snippet: executable -->
 ```typescript

@@ -32,7 +32,8 @@ async function main(): Promise<void> {
     area: Area.US,
     appId: 'your-app-id',
     appCertificate: 'your-app-certificate',
-    });
+    authToken: process.env.AGORA_REST_AUTH_TOKEN!,
+  });
 
   // In BYOK mode, each vendor carries its own credentials.
   const agent = new Agent({
@@ -67,7 +68,8 @@ async function main(): Promise<void> {
     channel: 'support-room-123',
     agentUid: '1',
     remoteUids: ['100'],
-      idleTimeout: 120,
+    token: process.env.AGORA_RTC_JOIN_TOKEN!,
+    idleTimeout: 120,
   });
 
   const agentSessionId = await session.start();

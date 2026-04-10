@@ -57,9 +57,8 @@ Enable MLLM, RTM, SAL, or tools:
 ```typescript
 import { Agent } from 'agora-agent-server-sdk';
 
-// MLLM mode (see mllm-flow guide)
+// MLLM mode (see mllm-flow guide) — withMllm() enables it automatically
 const mllmAgent = new Agent()
-  .withAdvancedFeatures({ enable_mllm: true })
   .withMllm(/* ... */);
 
 // RTM signaling for custom data delivery
@@ -237,6 +236,7 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({
@@ -272,6 +272,7 @@ const session = agent.createSession(client, {
   channel: 'demo-room',
   agentUid: '1',
   remoteUids: ['100'],
+  token: 'your-rtc-join-token',
   idleTimeout: 120,
 });
 
@@ -282,5 +283,5 @@ const agentId = await session.start();
 
 - [Agent Reference](../reference/agent.md) — full API signatures
 - [Cascading Flow](./cascading-flow.md) — ASR → LLM → TTS setup
-- [MLLM Flow](./mllm-flow.md) — multimodal flow with `enable_mllm`
+- [MLLM Flow](./mllm-flow.md) — end-to-end audio with OpenAI Realtime or Gemini Live
 - [Regional Routing](./regional-routing.md) — client area and geofence

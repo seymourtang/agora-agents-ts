@@ -1,16 +1,19 @@
 ---
 sidebar_position: 2
 title: Authentication
-description: Configure AgoraClient with the recommended app-credentials flow and understand the supported auth modes.
+description: Configure AgoraClient with token auth for REST requests and session tokens for channel joins.
 ---
 
 # Authentication
 
-The recommended production path is app credentials mode.
+The recommended production path is token auth.
 
-Create `AgoraClient` with `appId` and `appCertificate`, then let `AgentSession` generate the ConvoAI REST auth token and the RTC join token automatically.
+You provide two different tokens:
 
-## Recommended: app credentials
+- `authToken` on `AgoraClient` for REST API authentication
+- `token` on `createSession(...)` for the RTC channel join
+
+## Recommended: token auth
 
 ```typescript
 import { Agent, AgentPresets, AgoraClient, Area } from 'agora-agent-server-sdk';
@@ -19,6 +22,7 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
+  authToken: process.env.AGORA_REST_AUTH_TOKEN!,
 });
 
 const agent = new Agent({ instructions: 'Be concise.' });
@@ -27,6 +31,7 @@ const session = agent.createSession(client, {
   channel: 'room-123',
   agentUid: '1',
   remoteUids: ['100'],
+  token: process.env.AGORA_RTC_JOIN_TOKEN!,
   preset: [
     AgentPresets.asr.deepgramNova3,
     AgentPresets.llm.openaiGpt5Mini,
@@ -37,16 +42,19 @@ const session = agent.createSession(client, {
 
 ## Why this is the default
 
-- The SDK handles ConvoAI REST auth and RTC join token generation for you.
-- Your onboarding code stays focused on agent behavior instead of auth plumbing.
+- REST auth is explicit and easy to rotate.
+- Channel join tokens stay scoped to the session.
 - Your quick start code stays vendor-key free when you use presets.
+
+## Other supported modes
+
+The SDK also supports app-credentials mode and Basic Auth, but they are intentionally not the default onboarding path.
+
+- App credentials are useful when your backend wants the SDK to mint ConvoAI REST tokens automatically.
+- Basic Auth is supported for legacy integrations and account-level workflows.
 
 ## Inspecting the resolved auth mode
 
 ```typescript
-console.log(client.authMode); // "app-credentials"
+console.log(client.authMode); // "token"
 ```
-
-## Other supported modes
-
-`authToken` and `customerId` + `customerSecret` are still supported for advanced or legacy cases, but they are not the default onboarding path.
