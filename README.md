@@ -15,48 +15,37 @@ npm install agora-agent-server-sdk
 
 ## Quick Start
 
-This is the canonical onboarding path:
-
-- Use `authToken` for REST API authentication.
-- Use `preset` on the session to select Agora-managed vendors.
-- Pass a channel join `token` when starting the session.
-- Do not provide vendor API keys for the preset flow.
+Minimal builder-based example using supported preset-backed providers with no vendor API keys:
 
 ```typescript
-import { Agent, AgentPresets, AgoraClient, Area } from 'agora-agent-server-sdk';
+import { Agent, AgoraClient, Area, DeepgramSTT, OpenAI, OpenAITTS } from 'agora-agent-server-sdk';
 
 async function main(): Promise<void> {
-  // Provision these in your backend. The SDK expects raw token values.
-  const restAuthToken = process.env.AGORA_REST_AUTH_TOKEN!;
-  const rtcJoinToken = process.env.AGORA_RTC_JOIN_TOKEN!;
-
-  // Token auth for REST API calls.
   const client = new AgoraClient({
     area: Area.US,
     appId: 'your-app-id',
     appCertificate: 'your-app-certificate',
-    authToken: restAuthToken,
   });
 
-  // Agent-level behavior lives here. Vendor selection comes from presets below.
   const agent = new Agent({
     name: 'support-assistant',
     instructions: 'You are a concise support voice assistant.',
     greeting: 'Hello! How can I help you today?',
     maxHistory: 10,
-  });
+  }).withStt(new DeepgramSTT({
+    model: 'nova-3',
+  })).withLlm(new OpenAI({
+    model: 'gpt-5-mini',
+  })).withTts(new OpenAITTS({
+    voice: 'alloy',
+    model: 'tts-1',
+  }));
 
   const session = agent.createSession(client, {
     channel: 'support-room-123',
     agentUid: '1',
     remoteUids: ['100'],
-    token: rtcJoinToken,
     idleTimeout: 120,
-    preset: [
-      AgentPresets.asr.deepgramNova3,
-      AgentPresets.llm.openaiGpt5Mini,
-      AgentPresets.tts.openaiTts1,
-    ],
   });
 
   const agentSessionId = await session.start();
@@ -69,10 +58,9 @@ async function main(): Promise<void> {
 void main();
 ```
 
-### Why two tokens?
+### Why no token or vendor key in the example?
 
-- `authToken` authenticates REST API requests.
-- `token` inside `createSession(...)` is the RTC join token used when the agent enters the channel.
+The SDK-managed path is the recommended path. `AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically, and AgentKit infers the matching supported presets from the provider configs when you omit vendor API keys.
 
 ## BYOK
 
