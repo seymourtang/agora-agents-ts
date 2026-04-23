@@ -104,7 +104,7 @@ export async function startConversation(): Promise<string> {
   const session = agent.createSession(client, {
     channel: "demo-channel-" + Date.now(),  // Unique channel name
     agentUid: 123456,                       // Unique agent UID. Can be a random number or a specific user ID.
-    remoteUids: [*],                       // * is a wildcard, or use a specific user ID.
+    remoteUids: ['*'],                     // '*' is a wildcard, or use a specific user ID.
     idleTimeout: 30,
     expiresIn: ExpiresIn.hours(1),
     debug: false,
