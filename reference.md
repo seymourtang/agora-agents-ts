@@ -668,6 +668,89 @@ await client.agents.interrupt({
 </dl>
 </details>
 
+## Agent Management
+<details><summary><code>client.agentManagement.<a href="/src/api/resources/agentManagement/client/Client.ts">agentThink</a>({ ...params }) -> Agora.AgentThinkResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Send a custom text instruction to the specified conversational AI agent instance.
+
+The instruction is injected into the current conversation pipeline as user input, and the agent processes and responds to it following the standard user input logic.
+
+Use this endpoint for the following scenarios:
+- **Implicit instruction injection**: Inject hidden context or directives into the conversation.
+- **Client-side event triggering**: Notify the agent of client-side events, such as a user clicking a button.
+- **Voice and text collaboration**: Combine text instructions with voice input for richer interaction.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.agentManagement.agentThink({
+    appid: "appid",
+    agentId: "agentId",
+    text: "The user just clicked the purchase button.",
+    on_listening_action: "inject",
+    on_thinking_action: "interrupt",
+    on_speaking_action: "ignore",
+    interruptable: true,
+    metadata: {
+        "publisher": "user123",
+        "model": "deepseek-r1"
+    }
+});
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `Agora.AgentThinkRequest` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `AgentManagementClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Telephony
 <details><summary><code>client.telephony.<a href="/src/api/resources/telephony/client/Client.ts">list</a>({ ...params }) -> core.Page<Agora.ListTelephonyResponse.Data.List.Item, Agora.ListTelephonyResponse></code></summary>
 <dl>

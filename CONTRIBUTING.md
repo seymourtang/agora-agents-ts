@@ -112,17 +112,6 @@ This approach is best for:
 6. Commit your changes with a clear commit message
 7. Push your branch and create a pull request
 
-### Documentation Changes
-
-If you change docs, follow the shared authoring rules in [docs/CONTRIBUTING.md](../docs/CONTRIBUTING.md).
-
-Key requirements:
-
-- Lead with token auth in onboarding and narrative docs.
-- Treat MLLM as a first-class flow alongside cascading flow.
-- Add `<!-- snippet: executable -->` or `<!-- snippet: fragment -->` above every code block in `docs/concepts` and `docs/reference`.
-- Run `node scripts/validate-docs.mjs` before opening a PR.
-
 ### Commit Messages
 
 Write clear, descriptive commit messages that explain what changed and why.

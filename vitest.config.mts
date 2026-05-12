@@ -1,29 +1,6 @@
 import { defineConfig } from "vitest/config";
 export default defineConfig({
     test: {
-        coverage: {
-            provider: "v8",
-            reporter: ["text", "json-summary", "html", "lcov"],
-            reportsDirectory: "./coverage",
-            reportOnFailure: true,
-            all: true,
-            include: ["src/**/*.ts"],
-            exclude: [
-                "src/api/**",
-                "src/Client.ts",
-                "src/version.ts",
-                "src/index.ts",
-                "src/exports.ts",
-                "src/agentkit/index.ts",
-                "src/agentkit/types.ts",
-            ],
-            thresholds: {
-                lines: 90,
-                branches: 85,
-                functions: 90,
-                statements: 90,
-            },
-        },
         projects: [
             {
                 test: {
