@@ -8,6 +8,13 @@ description: Direct client.agents.start() usage without the builder pattern.
 
 For direct control over the REST API, use `client.agents.start()` with raw request objects. See the [API Reference](../../reference.md) for full details.
 
+## Raw telephony and phone-number APIs
+
+AgentKit focuses on realtime agent session helpers. Telephony call status, call hangup, and phone-number management are exposed through the generated low-level clients:
+
+- `client.telephony` for call status and hangup operations
+- `client.phoneNumbers` for phone-number list, create, retrieve, update, and delete operations
+
 ## Direct client usage
 
 ```typescript

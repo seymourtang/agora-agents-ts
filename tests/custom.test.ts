@@ -107,6 +107,9 @@ describe("agentkit custom tests", () => {
                     apiKey: "openai-key",
                     model: "gpt-4o-mini",
                     headers: { "X-Trace-Id": "trace-123" },
+                    outputModalities: ["text", "audio"],
+                    greetingConfigs: { mode: "single_first" },
+                    templateVariables: { caller_name: "Ada" },
                 }),
             )
             .withTts(new OpenAITTS({ apiKey: "tts-key", voice: "alloy" }));
@@ -119,6 +122,26 @@ describe("agentkit custom tests", () => {
         });
 
         expect(properties.llm?.headers).toEqual({ "X-Trace-Id": "trace-123" });
+        expect(properties.llm?.output_modalities).toEqual(["text", "audio"]);
+        expect(properties.llm?.greeting_configs).toEqual({ mode: "single_first" });
+        expect(properties.llm?.template_variables).toEqual({ caller_name: "Ada" });
+    });
+
+    it("withTurnDetection forwards config to properties", () => {
+        const turnDetection = {
+            type: "agora_vad",
+            threshold: 0.5,
+        } as any;
+
+        const properties = new Agent().withTurnDetection(turnDetection).toProperties({
+            channel: "room",
+            token: "rtc-token",
+            agentUid: "1",
+            remoteUids: ["2"],
+            skipVendorValidation: true,
+        });
+
+        expect(properties.turn_detection).toEqual(turnDetection);
     });
 
     it("withMllm sets the legacy enable_mllm flag", () => {

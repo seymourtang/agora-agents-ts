@@ -27,8 +27,11 @@ new OpenAI(options: OpenAIOptions)
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
+| `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters (overrides `model` in params) |
 | `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
+| `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
 For supported reseller preset models, `apiKey` is optional:
 
@@ -58,8 +61,11 @@ new AzureOpenAI(options: AzureOpenAIOptions)
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
+| `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
 | `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
+| `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
 ### Anthropic
 
@@ -78,8 +84,11 @@ new Anthropic(options: AnthropicOptions)
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
+| `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
 | `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
+| `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
 ### Gemini
 
@@ -98,8 +107,11 @@ new Gemini(options: GeminiOptions)
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
+| `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
 | `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
+| `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
 ---
 
