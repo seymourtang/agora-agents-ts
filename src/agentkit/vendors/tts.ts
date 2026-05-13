@@ -202,7 +202,6 @@ export class OpenAITTS extends BaseTTS<24000> {
     toConfig(): TtsConfig {
         const { apiKey, voice, model, responseFormat, speed, skipPatterns } = this.options;
 
-        // Cast required: Fern-generated OpenAiTtsParams still uses `key`; actual API uses `api_key`.
         return {
             vendor: "openai",
             params: {
@@ -259,7 +258,6 @@ export class CartesiaTTS<SR extends CartesiaSampleRate = CartesiaSampleRate> ext
     toConfig(): TtsConfig {
         const { apiKey, voiceId, modelId, sampleRate, skipPatterns } = this.options;
 
-        // Cast required: Fern-generated CartesiaTtsParams still uses `key`/`voice_id`; actual API uses `api_key` and nested voice object.
         return {
             vendor: "cartesia",
             params: {
