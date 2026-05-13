@@ -13,6 +13,7 @@ import type {
     TtsConfig,
     MllmConfig,
     TurnDetectionConfig,
+    InterruptionConfig,
     SalConfig,
     AvatarConfig,
     AdvancedFeatures,
@@ -40,6 +41,8 @@ export interface AgentOptions {
     instructions?: string;
     /** Turn detection configuration */
     turnDetection?: TurnDetectionConfig;
+    /** Unified interruption control configuration */
+    interruption?: InterruptionConfig;
     /** SAL configuration */
     sal?: SalConfig;
     /** Avatar configuration */
@@ -87,6 +90,7 @@ export class Agent<TTSSampleRate extends number = number> {
     private _stt?: SttConfig;
     private _mllm?: MllmConfig;
     private _turnDetection?: TurnDetectionConfig;
+    private _interruption?: InterruptionConfig;
     private _sal?: SalConfig;
     private _avatar?: AvatarConfig;
     private _advancedFeatures?: AdvancedFeatures;
@@ -109,6 +113,9 @@ export class Agent<TTSSampleRate extends number = number> {
 
         if (options.turnDetection) {
             this._turnDetection = options.turnDetection;
+        }
+        if (options.interruption) {
+            this._interruption = options.interruption;
         }
         if (options.sal) {
             this._sal = options.sal;
@@ -190,19 +197,20 @@ export class Agent<TTSSampleRate extends number = number> {
      * Returns a new Agent with the specified MLLM vendor.
      *
      * MLLM vendors handle real-time audio end-to-end, bypassing the standard
-     * ASR → LLM → TTS pipeline. Calling this method automatically enables MLLM
-     * mode (`advancedFeatures.enable_mllm: true`), so `withLlm()`, `withTts()`,
-     * and `withStt()` are not needed.
+     * ASR → LLM → TTS pipeline. Calling this method automatically sets
+     * `mllm.enable: true`, so `withLlm()`, `withTts()`, and `withStt()`
+     * are not needed.
      *
      * @param vendor - MLLM vendor instance (e.g., new VertexAI({ model: '...', projectId: '...', ... }))
      */
     withMllm(vendor: BaseMLLM): Agent<TTSSampleRate> {
         const newAgent = this._clone();
-        newAgent._mllm = vendor.toConfig();
-        // Calling withMllm() is the authoritative signal that MLLM mode is
-        // intended. Auto-enable both legacy and current flags.
-        newAgent._mllm = { ...newAgent._mllm, enable: true };
-        newAgent._advancedFeatures = { ...newAgent._advancedFeatures, enable_mllm: true };
+        newAgent._mllm = { ...vendor.toConfig(), enable: true };
+        if (newAgent._advancedFeatures?.enable_mllm !== undefined) {
+            const advancedFeatures = { ...newAgent._advancedFeatures };
+            delete advancedFeatures.enable_mllm;
+            newAgent._advancedFeatures = Object.keys(advancedFeatures).length > 0 ? advancedFeatures : undefined;
+        }
         return newAgent;
     }
 
@@ -256,6 +264,15 @@ export class Agent<TTSSampleRate extends number = number> {
     }
 
     /**
+     * Returns a new Agent with unified interruption control configured.
+     */
+    withInterruption(config: InterruptionConfig): Agent<TTSSampleRate> {
+        const newAgent = this._clone();
+        newAgent._interruption = config;
+        return newAgent;
+    }
+
+    /**
      * Returns a new Agent with the specified instructions.
      */
     withInstructions(instructions: string): Agent<TTSSampleRate> {
@@ -294,7 +311,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified advanced features configuration.
      *
-     * Use this to enable features like MLLM mode (`enable_mllm: true`), RTM, and others.
+     * Use this to enable features like RTM and others.
      */
     withAdvancedFeatures(features: AdvancedFeatures): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -427,6 +444,13 @@ export class Agent<TTSSampleRate extends number = number> {
     }
 
     /**
+     * Get the interruption configuration.
+     */
+    get interruption(): InterruptionConfig | undefined {
+        return this._interruption;
+    }
+
+    /**
      * Get the instructions.
      */
     get instructions(): string | undefined {
@@ -525,6 +549,7 @@ export class Agent<TTSSampleRate extends number = number> {
             name: this._name,
             instructions: this._instructions,
             turnDetection: this._turnDetection,
+            interruption: this._interruption,
             sal: this._sal,
             avatar: this._avatar,
             advancedFeatures: this._advancedFeatures,
@@ -627,13 +652,8 @@ export class Agent<TTSSampleRate extends number = number> {
             });
         }
         // In MLLM mode the backend handles audio end-to-end; LLM, TTS, and ASR
-        // are disabled automatically — they must not be required by the SDK.
-        // withMllm() sets both _mllm and enable_mllm automatically; check both
-        // as a safety net for any hand-built configs that set the flag directly.
-        const isMllmMode =
-            this._advancedFeatures?.enable_mllm === true ||
-            this._mllm?.enable === true ||
-            this._mllm !== undefined;
+        // are not required.
+        const isMllmMode = this._mllm?.enable === true || this._mllm !== undefined;
 
         // When RTM is enabled, data_channel must also be 'rtm' for the client
         // to receive transcripts and state events. Default it automatically so
@@ -652,6 +672,7 @@ export class Agent<TTSSampleRate extends number = number> {
             enable_string_uid: opts.enableStringUid,
             mllm: this._mllm,
             turn_detection: this._turnDetection,
+            interruption: this._interruption,
             sal: this._sal,
             avatar: this._avatar,
             advanced_features: this._advancedFeatures,
@@ -723,6 +744,7 @@ export class Agent<TTSSampleRate extends number = number> {
         newAgent._stt = this._stt;
         newAgent._mllm = this._mllm;
         newAgent._turnDetection = this._turnDetection;
+        newAgent._interruption = this._interruption;
         newAgent._sal = this._sal;
         newAgent._avatar = this._avatar;
         newAgent._advancedFeatures = this._advancedFeatures;

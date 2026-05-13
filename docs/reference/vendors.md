@@ -265,6 +265,7 @@ new OpenAIRealtime(options: OpenAIRealtimeOptions)
 | `outputModalities` | `string[]` | No | Output modalities (e.g., `['text', 'audio']`) |
 | `messages` | `Record<string, unknown>[]` | No | Conversation messages for short-term memory |
 | `params` | `Record<string, unknown>` | No | Additional MLLM parameters |
+| `turnDetection` | `MllmTurnDetectionConfig` | No | MLLM turn detection configuration; overrides top-level `turn_detection` |
 
 ### GeminiLive
 
@@ -288,6 +289,7 @@ new GeminiLive(options: GeminiLiveOptions)
 | `outputModalities` | `string[]` | No | Output modalities |
 | `messages` | `Record<string, unknown>[]` | No | Conversation messages |
 | `additionalParams` | `Record<string, unknown>` | No | Additional parameters |
+| `turnDetection` | `MllmTurnDetectionConfig` | No | MLLM turn detection configuration; overrides top-level `turn_detection` |
 
 ### VertexAI
 
@@ -313,6 +315,7 @@ new VertexAI(options: VertexAIOptions)
 | `outputModalities` | `string[]` | No | Output modalities |
 | `messages` | `Record<string, unknown>[]` | No | Conversation messages |
 | `additionalParams` | `Record<string, unknown>` | No | Additional parameters |
+| `turnDetection` | `MllmTurnDetectionConfig` | No | MLLM turn detection configuration; overrides top-level `turn_detection` |
 
 ---
 

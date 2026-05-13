@@ -28,6 +28,7 @@ new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 | `failureMessage` | `string` | `undefined` | Message spoken when an LLM call fails |
 | `maxHistory` | `number` | `undefined` | Max conversation turns kept in LLM context |
 | `turnDetection` | `TurnDetectionConfig` | `undefined` | Voice activity detection settings |
+| `interruption` | `InterruptionConfig` | `undefined` | Unified interruption control settings |
 | `sal` | `SalConfig` | `undefined` | Selective Attention Locking configuration |
 | `avatar` | `AvatarConfig` | `undefined` | Avatar configuration |
 | `advancedFeatures` | `AdvancedFeatures` | `undefined` | Enable MLLM mode, AI-VAD, etc. |
@@ -55,7 +56,7 @@ Set the STT vendor. Pass an instance of any STT class (`DeepgramSTT`, `Speechmat
 
 ### `withMllm(vendor: BaseMLLM): Agent<TTSSampleRate>`
 
-Set the MLLM vendor for multimodal mode. Pass `OpenAIRealtime` or `VertexAI`.
+Set the MLLM vendor for multimodal mode. Pass `OpenAIRealtime`, `GeminiLive`, or `VertexAI`. Calling `withMllm()` automatically sets `mllm.enable = true`.
 
 ### `withAvatar<RequiredSR extends number>(this: Agent<RequiredSR>, vendor: BaseAvatar<RequiredSR>): Agent<RequiredSR>`
 
@@ -63,7 +64,11 @@ Set the avatar vendor. The `this` constraint enforces that the Agent's TTS sampl
 
 ### `withTurnDetection(config: TurnDetectionConfig): Agent<TTSSampleRate>`
 
-Configure turn detection. Use `config.start_of_speech` and `config.end_of_speech` for the preferred SOS/EOS model.
+Configure cascading-flow turn detection. Use `config.start_of_speech` and `config.end_of_speech` for SOS/EOS detection. Use `withInterruption()` for interruption behavior and MLLM vendor `turnDetection` for MLLM turn detection.
+
+### `withInterruption(config: InterruptionConfig): Agent<TTSSampleRate>`
+
+Configure unified interruption behavior using the top-level `interruption` object. Use this for `start_of_speech` and `keywords` interruption modes.
 
 ### `withInstructions(instructions: string): Agent<TTSSampleRate>`
 
@@ -83,7 +88,7 @@ Set SAL (Selective Attention Locking) configuration.
 
 ### `withAdvancedFeatures(features: AdvancedFeatures): Agent<TTSSampleRate>`
 
-Set advanced features (e.g. `enable_mllm`, `enable_rtm`).
+Set advanced features (e.g. `enable_rtm`).
 
 ### `withTools(enabled = true): Agent<TTSSampleRate>`
 
@@ -128,6 +133,7 @@ Set filler words configuration (played while waiting for LLM response).
 | `mllm` | `MllmConfig \| undefined` | MLLM config (set via `withMllm`) |
 | `avatar` | `AvatarConfig \| undefined` | Avatar config (set via `withAvatar`) |
 | `turnDetection` | `TurnDetectionConfig \| undefined` | Turn detection config |
+| `interruption` | `InterruptionConfig \| undefined` | Interruption config |
 | `instructions` | `string \| undefined` | System prompt |
 | `greeting` | `string \| undefined` | Greeting message |
 | `failureMessage` | `string \| undefined` | Message spoken when LLM fails |

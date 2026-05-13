@@ -3,12 +3,11 @@
  *
  * MLLM vendors handle real-time audio end-to-end, bypassing the standard
  * ASR → LLM → TTS pipeline. Calling `agent.withMllm(vendor)` automatically
- * enables MLLM mode — no separate `advancedFeatures: { enable_mllm: true }`
- * configuration is required.
+ * sets `mllm.enable: true`.
  */
 
 import { BaseMLLM } from "./base.js";
-import type { MllmConfig } from "../types.js";
+import type { MllmConfig, MllmTurnDetectionConfig } from "../types.js";
 
 /**
  * Constructor options for OpenAI Realtime API.
@@ -30,6 +29,8 @@ export interface OpenAIRealtimeOptions {
     messages?: Record<string, unknown>[];
     /** Additional MLLM parameters */
     params?: Record<string, unknown>;
+    /** MLLM turn detection configuration. Overrides top-level turn_detection. */
+    turnDetection?: MllmTurnDetectionConfig;
     /** Predefined tools available to the model (e.g., ['_publish_message']) */
     predefinedTools?: string[];
     /** Message played on failure */
@@ -68,6 +69,7 @@ export class OpenAIRealtime extends BaseMLLM {
             outputModalities,
             messages,
             params,
+            turnDetection,
         } = this.options;
 
         // Build params only when there is something to include.
@@ -79,7 +81,6 @@ export class OpenAIRealtime extends BaseMLLM {
 
         return {
             vendor: "openai",
-            style: "openai",
             api_key: apiKey,
             ...(url && { url }),
             ...(hasParams && { params: mergedParams }),
@@ -90,6 +91,7 @@ export class OpenAIRealtime extends BaseMLLM {
             ...(this.options.predefinedTools && { predefined_tools: this.options.predefinedTools }),
             ...(this.options.failureMessage && { failure_message: this.options.failureMessage }),
             ...(this.options.maxHistory !== undefined && { max_history: this.options.maxHistory }),
+            ...(turnDetection && { turn_detection: turnDetection }),
         };
     }
 }
@@ -118,6 +120,8 @@ export interface GeminiLiveOptions {
     messages?: Record<string, unknown>[];
     /** Additional MLLM parameters passed directly to the model */
     additionalParams?: Record<string, unknown>;
+    /** MLLM turn detection configuration. Overrides top-level turn_detection. */
+    turnDetection?: MllmTurnDetectionConfig;
     /** Predefined tools available to the model (e.g., ['_publish_message']) */
     predefinedTools?: string[];
     /** Message played on failure */
@@ -161,13 +165,11 @@ export class GeminiLive extends BaseMLLM {
             outputModalities,
             messages,
             additionalParams,
+            turnDetection,
         } = this.options;
 
         return {
             vendor: "gemini",
-            // "openai" describes the request/response protocol used by the backend,
-            // not the underlying vendor. All MLLM vendors use it.
-            style: "openai",
             api_key: apiKey,
             ...(url && { url }),
             params: {
@@ -184,6 +186,7 @@ export class GeminiLive extends BaseMLLM {
             ...(this.options.predefinedTools && { predefined_tools: this.options.predefinedTools }),
             ...(this.options.failureMessage && { failure_message: this.options.failureMessage }),
             ...(this.options.maxHistory !== undefined && { max_history: this.options.maxHistory }),
+            ...(turnDetection && { turn_detection: turnDetection }),
         };
     }
 }
@@ -216,6 +219,8 @@ export interface VertexAIOptions {
     messages?: Record<string, unknown>[];
     /** Additional MLLM parameters */
     additionalParams?: Record<string, unknown>;
+    /** MLLM turn detection configuration. Overrides top-level turn_detection. */
+    turnDetection?: MllmTurnDetectionConfig;
     /** Predefined tools available to the model (e.g., ['_publish_message']) */
     predefinedTools?: string[];
     /** Message played on failure */
@@ -263,14 +268,11 @@ export class VertexAI extends BaseMLLM {
             outputModalities,
             messages,
             additionalParams,
+            turnDetection,
         } = this.options;
 
         return {
             vendor: "vertexai",
-            // "openai" is the only valid MLLM style value in the Agora API — it
-            // describes the request/response protocol format used by the backend,
-            // not the underlying vendor. All MLLM vendors including VertexAI use it.
-            style: "openai",
             ...(url && { url }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
@@ -289,6 +291,7 @@ export class VertexAI extends BaseMLLM {
             ...(this.options.predefinedTools && { predefined_tools: this.options.predefinedTools }),
             ...(this.options.failureMessage && { failure_message: this.options.failureMessage }),
             ...(this.options.maxHistory !== undefined && { max_history: this.options.maxHistory }),
+            ...(turnDetection && { turn_detection: turnDetection }),
         };
     }
 }

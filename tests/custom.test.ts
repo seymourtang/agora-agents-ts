@@ -144,8 +144,61 @@ describe("agentkit custom tests", () => {
         expect(properties.turn_detection).toEqual(turnDetection);
     });
 
-    it("withMllm sets the legacy enable_mllm flag", () => {
+    it("withInterruption forwards config to properties", () => {
+        const interruption = {
+            enable: false,
+            disabled_config: { strategy: "ignore" },
+        } as any;
+
+        const properties = new Agent().withInterruption(interruption).toProperties({
+            channel: "room",
+            token: "rtc-token",
+            agentUid: "1",
+            remoteUids: ["2"],
+            skipVendorValidation: true,
+        });
+
+        expect(properties.interruption).toEqual(interruption);
+    });
+
+    it("mllm turn detection is forwarded without legacy style", () => {
+        const turnDetection = {
+            mode: "server_vad",
+            server_vad_config: { idle_timeout_ms: 5000 },
+        } as any;
+
         const properties = new Agent()
+            .withMllm(new OpenAIRealtime({ apiKey: "openai-key", turnDetection }))
+            .toProperties({
+                channel: "room",
+                token: "rtc-token",
+                agentUid: "1",
+                remoteUids: ["2"],
+            });
+
+        expect(properties.mllm?.vendor).toBe("openai");
+        expect((properties.mllm as any).style).toBeUndefined();
+        expect(properties.mllm?.turn_detection).toEqual(turnDetection);
+    });
+
+    it("withMllm sets mllm.enable without the legacy flag", () => {
+        const properties = new Agent()
+            .withMllm(new OpenAIRealtime({ apiKey: "openai-key" }))
+            .toProperties({
+                channel: "room",
+                token: "rtc-token",
+                agentUid: "1",
+                remoteUids: ["2"],
+        });
+
+        expect(properties.mllm?.enable).toBe(true);
+        expect(properties.advanced_features).toBeUndefined();
+    });
+
+    it("withMllm removes deprecated enable_mllm from existing advanced features", () => {
+        const properties = new Agent({
+            advancedFeatures: { enable_mllm: true, enable_rtm: true } as any,
+        })
             .withMllm(new OpenAIRealtime({ apiKey: "openai-key" }))
             .toProperties({
                 channel: "room",
@@ -155,7 +208,8 @@ describe("agentkit custom tests", () => {
             });
 
         expect(properties.mllm?.enable).toBe(true);
-        expect(properties.advanced_features?.enable_mllm).toBe(true);
+        expect(properties.advanced_features?.enable_mllm).toBeUndefined();
+        expect(properties.advanced_features?.enable_rtm).toBe(true);
     });
 
     it("withTools sets enable_tools", () => {
