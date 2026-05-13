@@ -135,6 +135,18 @@ describe("agentkit custom tests", () => {
         expect(properties.advanced_features?.enable_mllm).toBe(true);
     });
 
+    it("withTools sets enable_tools", () => {
+        const properties = new Agent().withTools().toProperties({
+            channel: "room",
+            token: "rtc-token",
+            agentUid: "1",
+            remoteUids: ["2"],
+            skipVendorValidation: true,
+        });
+
+        expect(properties.advanced_features?.enable_tools).toBe(true);
+    });
+
     it("deepgram tts vendor config matches the documented payload", () => {
         const config = new DeepgramTTS({
             apiKey: "deepgram-key",

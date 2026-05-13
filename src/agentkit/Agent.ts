@@ -303,6 +303,15 @@ export class Agent<TTSSampleRate extends number = number> {
     }
 
     /**
+     * Returns a new Agent with MCP tool invocation enabled or disabled.
+     */
+    withTools(enabled = true): Agent<TTSSampleRate> {
+        const newAgent = this._clone();
+        newAgent._advancedFeatures = { ...newAgent._advancedFeatures, enable_tools: enabled };
+        return newAgent;
+    }
+
+    /**
      * Returns a new Agent with the specified session parameters.
      *
      * Use this to configure silence behaviour, graceful hang-up, data channel, and more.
