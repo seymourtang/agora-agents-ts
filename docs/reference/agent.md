@@ -85,6 +85,10 @@ Set SAL (Selective Attention Locking) configuration.
 
 Set advanced features (e.g. `enable_mllm`, `enable_rtm`).
 
+### `withTools(enabled = true): Agent<TTSSampleRate>`
+
+Enable or disable MCP tool invocation by setting `advanced_features.enable_tools`.
+
 ### `withParameters(parameters: SessionParams): Agent<TTSSampleRate>`
 
 Set session parameters (silence config, farewell config, data channel, etc.).

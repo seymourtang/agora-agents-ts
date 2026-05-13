@@ -14,6 +14,7 @@ The Agent builder supports many configuration options beyond the core LLM, TTS, 
 |---|---|---|
 | `sal` | `withSal(config)` | Selective Attention Locking — speaker recognition and noise suppression |
 | `advancedFeatures` | `withAdvancedFeatures(features)` | Enable MLLM, RTM, SAL, tools |
+| `tools` | `withTools(enabled)` | Enable MCP tool invocation |
 | `parameters` | `withParameters(params)` | Silence config, farewell config, data channel |
 | `failureMessage` | `withFailureMessage(msg)` | Message spoken when LLM fails |
 | `maxHistory` | `withMaxHistory(n)` | Max conversation turns in LLM context |
@@ -67,7 +68,7 @@ const rtmAgent = new Agent()
 
 // Enable tool invocation via MCP
 const toolsAgent = new Agent()
-  .withAdvancedFeatures({ enable_tools: true });
+  .withTools();
 ```
 
 ## Session Parameters

@@ -28,6 +28,7 @@ new OpenAI(options: OpenAIOptions)
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters (overrides `model` in params) |
+| `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
 
 For supported reseller preset models, `apiKey` is optional:
 
@@ -58,6 +59,7 @@ new AzureOpenAI(options: AzureOpenAIOptions)
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
+| `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
 
 ### Anthropic
 
@@ -77,6 +79,7 @@ new Anthropic(options: AnthropicOptions)
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
+| `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
 
 ### Gemini
 
@@ -96,6 +99,7 @@ new Gemini(options: GeminiOptions)
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
+| `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
 
 ---
 
@@ -175,6 +179,7 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 |---|---|
 | `GoogleTTS` | `key`, `voiceName`, `languageCode?` |
 | `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId` |
+| `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `params?` |
 | `HumeAITTS` | `key`, `configId?` |
 | `RimeTTS` | `key`, `speaker`, `modelId?`, `lang?`, `samplingRate?`, `speedAlpha?` |
 | `FishAudioTTS` | `key`, `referenceId` |
