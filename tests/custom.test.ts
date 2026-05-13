@@ -1,6 +1,9 @@
 import { Agent } from "../src/agentkit/Agent.js";
 import { AgentSession } from "../src/agentkit/AgentSession.js";
 import { resolveSessionPresets } from "../src/agentkit/presets.js";
+import { OpenAI } from "../src/agentkit/vendors/llm.js";
+import { OpenAIRealtime } from "../src/agentkit/vendors/mllm.js";
+import { OpenAITTS } from "../src/agentkit/vendors/tts.js";
 import { describe, expect, it, vi } from "vitest";
 
 describe("agentkit custom tests", () => {
@@ -95,5 +98,40 @@ describe("agentkit custom tests", () => {
             },
         });
         expect(preset).toBeUndefined();
+    });
+
+    it("llm vendor headers are forwarded to properties", () => {
+        const agent = new Agent()
+            .withLlm(
+                new OpenAI({
+                    apiKey: "openai-key",
+                    model: "gpt-4o-mini",
+                    headers: { "X-Trace-Id": "trace-123" },
+                }),
+            )
+            .withTts(new OpenAITTS({ apiKey: "tts-key", voice: "alloy" }));
+
+        const properties = agent.toProperties({
+            channel: "room",
+            token: "rtc-token",
+            agentUid: "1",
+            remoteUids: ["2"],
+        });
+
+        expect(properties.llm?.headers).toEqual({ "X-Trace-Id": "trace-123" });
+    });
+
+    it("withMllm sets the legacy enable_mllm flag", () => {
+        const properties = new Agent()
+            .withMllm(new OpenAIRealtime({ apiKey: "openai-key" }))
+            .toProperties({
+                channel: "room",
+                token: "rtc-token",
+                agentUid: "1",
+                remoteUids: ["2"],
+            });
+
+        expect(properties.mllm?.enable).toBe(true);
+        expect(properties.advanced_features?.enable_mllm).toBe(true);
     });
 });

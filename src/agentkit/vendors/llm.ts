@@ -34,6 +34,8 @@ type OpenAICommonOptions = BaseLlmOptions & {
     inputModalities?: string[];
     /** Additional LLM parameters */
     params?: Record<string, unknown>;
+    /** Custom headers forwarded to the LLM provider */
+    headers?: Record<string, string>;
 };
 
 export type OpenAIOptions =
@@ -80,6 +82,7 @@ export class OpenAI extends BaseLLM {
             failureMessage,
             inputModalities,
             params,
+            headers,
         } = this.options;
 
         return {
@@ -93,6 +96,7 @@ export class OpenAI extends BaseLLM {
                 ...(topP !== undefined && { top_p: topP }),
                 ...(maxTokens !== undefined && { max_tokens: maxTokens }),
             },
+            headers,
             max_history: maxHistory,
             system_messages: systemMessages,
             greeting_message: greetingMessage,
@@ -140,6 +144,8 @@ export interface AzureOpenAIOptions extends BaseLlmOptions {
     inputModalities?: string[];
     /** Additional LLM parameters */
     params?: Record<string, unknown>;
+    /** Custom headers forwarded to the LLM provider */
+    headers?: Record<string, string>;
 }
 
 /**
@@ -179,6 +185,7 @@ export class AzureOpenAI extends BaseLLM {
             failureMessage,
             inputModalities,
             params,
+            headers,
         } = this.options;
 
         return {
@@ -194,6 +201,7 @@ export class AzureOpenAI extends BaseLLM {
                 ...(topP !== undefined && { top_p: topP }),
                 ...(maxTokens !== undefined && { max_tokens: maxTokens }),
             },
+            headers,
             max_history: maxHistory,
             system_messages: systemMessages,
             greeting_message: greetingMessage,
@@ -236,6 +244,8 @@ export interface AnthropicOptions extends BaseLlmOptions {
     inputModalities?: string[];
     /** Additional LLM parameters */
     params?: Record<string, unknown>;
+    /** Custom headers forwarded to the LLM provider */
+    headers?: Record<string, string>;
 }
 
 /**
@@ -271,6 +281,7 @@ export class Anthropic extends BaseLLM {
             failureMessage,
             inputModalities,
             params,
+            headers,
         } = this.options;
 
         return {
@@ -284,6 +295,7 @@ export class Anthropic extends BaseLLM {
                 ...(temperature !== undefined && { temperature }),
                 ...(topP !== undefined && { top_p: topP }),
             },
+            headers,
             max_history: maxHistory,
             system_messages: systemMessages,
             greeting_message: greetingMessage,
@@ -329,6 +341,8 @@ export interface GeminiOptions extends BaseLlmOptions {
     inputModalities?: string[];
     /** Additional LLM parameters */
     params?: Record<string, unknown>;
+    /** Custom headers forwarded to the LLM provider */
+    headers?: Record<string, string>;
 }
 
 /**
@@ -365,6 +379,7 @@ export class Gemini extends BaseLLM {
             failureMessage,
             inputModalities,
             params,
+            headers,
         } = this.options;
 
         return {
@@ -379,6 +394,7 @@ export class Gemini extends BaseLLM {
                 ...(topK !== undefined && { top_k: topK }),
                 ...(maxOutputTokens !== undefined && { max_output_tokens: maxOutputTokens }),
             },
+            headers,
             max_history: maxHistory,
             system_messages: systemMessages,
             greeting_message: greetingMessage,
