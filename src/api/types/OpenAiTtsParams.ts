@@ -5,7 +5,7 @@
  */
 export interface OpenAiTtsParams {
     /** OpenAI API key */
-    key: string;
+    api_key?: string;
     /** Voice name (e.g., "alloy", "echo", "fable", "onyx", "nova", "shimmer") */
     voice: string;
     /** Model name (e.g., "tts-1", "tts-1-hd") */

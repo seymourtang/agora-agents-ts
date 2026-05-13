@@ -34,7 +34,7 @@ export class AgentManagementClient {
      * - **Client-side event triggering**: Notify the agent of client-side events, such as a user clicking a button.
      * - **Voice and text collaboration**: Combine text instructions with voice input for richer interaction.
      *
-     * @param {Agora.AgentThinkRequest} request
+     * @param {Agora.AgentThinkAgentManagementRequest} request
      * @param {AgentManagementClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @example
@@ -53,16 +53,16 @@ export class AgentManagementClient {
      *     })
      */
     public agentThink(
-        request: Agora.AgentThinkRequest,
+        request: Agora.AgentThinkAgentManagementRequest,
         requestOptions?: AgentManagementClient.RequestOptions,
-    ): core.HttpResponsePromise<Agora.AgentThinkResponse> {
+    ): core.HttpResponsePromise<Agora.AgentThinkAgentManagementResponse> {
         return core.HttpResponsePromise.fromPromise(this.__agentThink(request, requestOptions));
     }
 
     private async __agentThink(
-        request: Agora.AgentThinkRequest,
+        request: Agora.AgentThinkAgentManagementRequest,
         requestOptions?: AgentManagementClient.RequestOptions,
-    ): Promise<core.WithRawResponse<Agora.AgentThinkResponse>> {
+    ): Promise<core.WithRawResponse<Agora.AgentThinkAgentManagementResponse>> {
         const { appid, agentId, ..._body } = request;
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             this._options?.headers,
@@ -92,7 +92,10 @@ export class AgentManagementClient {
             logging: this._options.logging,
         });
         if (_response.ok) {
-            return { data: _response.body as Agora.AgentThinkResponse, rawResponse: _response.rawResponse };
+            return {
+                data: _response.body as Agora.AgentThinkAgentManagementResponse,
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {

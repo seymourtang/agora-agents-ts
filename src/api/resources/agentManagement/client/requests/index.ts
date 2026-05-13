@@ -1,1 +1,1 @@
-export type { AgentThinkRequest } from "./AgentThinkRequest.js";
+export type { AgentThinkAgentManagementRequest } from "./AgentThinkAgentManagementRequest.js";

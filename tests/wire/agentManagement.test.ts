@@ -4,7 +4,7 @@ import { AgoraClient } from "../../src/Client";
 import { mockServerPool } from "../mock-server/MockServerPool";
 
 describe("AgentManagementClient", () => {
-    test("agent-think", async () => {
+    test("agentThink", async () => {
         const server = mockServerPool.createServer();
         const client = new AgoraClient({
             username: "test",

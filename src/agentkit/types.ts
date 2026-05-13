@@ -36,7 +36,7 @@ import type {
     MurfTtsParams as MurfTtsParamsType,
     SarvamTts as SarvamTtsType,
     SarvamTtsParams as SarvamTtsParamsType,
-    AgentThinkResponse,
+    AgentThinkAgentManagementResponse,
 } from "../api/index.js";
 import type { PresetInput } from "./presets.js";
 
@@ -200,7 +200,7 @@ export interface ThinkOptions {
 }
 
 /** Response type for `AgentSession.think()` */
-export type ThinkResponse = AgentThinkResponse;
+export type ThinkResponse = AgentThinkAgentManagementResponse;
 
 /** Regional access restriction configuration */
 export type GeofenceConfig = StartAgentsRequest.Properties.Geofence;

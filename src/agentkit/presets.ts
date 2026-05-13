@@ -208,7 +208,7 @@ function stripInferredPresetFields(
                     ...tts.params,
                     api_key: undefined,
                     model: ttsInference.stripModel ? undefined : tts.params?.model,
-                }) as typeof tts.params,
+                }) as unknown as typeof tts.params,
             };
         } else if (ttsInference.vendor === "minimax" && tts.vendor === "minimax") {
             tts = {

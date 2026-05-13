@@ -669,7 +669,7 @@ await client.agents.interrupt({
 </details>
 
 ## Agent Management
-<details><summary><code>client.agentManagement.<a href="/src/api/resources/agentManagement/client/Client.ts">agentThink</a>({ ...params }) -> Agora.AgentThinkResponse</code></summary>
+<details><summary><code>client.agentManagement.<a href="/src/api/resources/agentManagement/client/Client.ts">agentThink</a>({ ...params }) -> Agora.AgentThinkAgentManagementResponse</code></summary>
 <dl>
 <dd>
 
@@ -731,7 +731,7 @@ await client.agentManagement.agentThink({
 <dl>
 <dd>
 
-**request:** `Agora.AgentThinkRequest` 
+**request:** `Agora.AgentThinkAgentManagementRequest` 
     
 </dd>
 </dl>

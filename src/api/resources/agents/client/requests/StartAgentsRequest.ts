@@ -366,6 +366,12 @@ export namespace StartAgentsRequest {
             output_modalities?: string[];
             /** Agent greeting message. If provided, the first user in the channel is automatically greeted with this message upon joining. */
             greeting_message?: string;
+            /** Message played when the MLLM call fails. */
+            failure_message?: string;
+            /** Maximum number of conversation history messages cached for the MLLM session. */
+            max_history?: number;
+            /** Predefined tools available to the MLLM provider. */
+            predefined_tools?: string[];
             /**
              * MLLM provider. Currently supports:
              * - `openai`: OpenAI Realtime API
@@ -373,11 +379,6 @@ export namespace StartAgentsRequest {
              * - `vertexai`: Google Gemini Live (Vertex AI)
              */
             vendor?: Mllm.Vendor;
-            /**
-             * The request style for MLLM completion:
-             * - `openai`: For OpenAI Realtime API format
-             */
-            style?: "openai";
             /** Turn detection configuration for the MLLM module. When defined, the top-level `turn_detection` object has no effect. */
             turn_detection?: Mllm.TurnDetection;
         }
