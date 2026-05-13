@@ -16,7 +16,7 @@ import type {
     SalConfig,
     AvatarConfig,
     AdvancedFeatures,
-    SessionParams,
+    SessionParamsInput,
     SessionOptions,
     GeofenceConfig,
     RtcConfig,
@@ -47,7 +47,7 @@ export interface AgentOptions {
     /** Advanced features */
     advancedFeatures?: AdvancedFeatures;
     /** Session parameters */
-    parameters?: SessionParams;
+    parameters?: SessionParamsInput;
     /** Greeting message */
     greeting?: string;
     /** Failure message */
@@ -90,7 +90,7 @@ export class Agent<TTSSampleRate extends number = number> {
     private _sal?: SalConfig;
     private _avatar?: AvatarConfig;
     private _advancedFeatures?: AdvancedFeatures;
-    private _parameters?: SessionParams;
+    private _parameters?: SessionParamsInput;
     private _instructions?: string;
     private _greeting?: string;
     private _failureMessage?: string;
@@ -200,8 +200,8 @@ export class Agent<TTSSampleRate extends number = number> {
         const newAgent = this._clone();
         newAgent._mllm = vendor.toConfig();
         // Calling withMllm() is the authoritative signal that MLLM mode is
-        // intended. Auto-enable the flag so callers don't need a separate
-        // withAdvancedFeatures({ enable_mllm: true }) call.
+        // intended. Auto-enable both legacy and current flags.
+        newAgent._mllm = { ...newAgent._mllm, enable: true };
         newAgent._advancedFeatures = { ...newAgent._advancedFeatures, enable_mllm: true };
         return newAgent;
     }
@@ -307,7 +307,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * Use this to configure silence behaviour, graceful hang-up, data channel, and more.
      */
-    withParameters(parameters: SessionParams): Agent<TTSSampleRate> {
+    withParameters(parameters: SessionParamsInput): Agent<TTSSampleRate> {
         const newAgent = this._clone();
         newAgent._parameters = parameters;
         return newAgent;
@@ -469,7 +469,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Get the session parameters configuration.
      */
-    get parameters(): SessionParams | undefined {
+    get parameters(): SessionParamsInput | undefined {
         return this._parameters;
     }
 
@@ -621,7 +621,10 @@ export class Agent<TTSSampleRate extends number = number> {
         // are disabled automatically — they must not be required by the SDK.
         // withMllm() sets both _mllm and enable_mllm automatically; check both
         // as a safety net for any hand-built configs that set the flag directly.
-        const isMllmMode = this._advancedFeatures?.enable_mllm === true || this._mllm !== undefined;
+        const isMllmMode =
+            this._advancedFeatures?.enable_mllm === true ||
+            this._mllm?.enable === true ||
+            this._mllm !== undefined;
 
         // When RTM is enabled, data_channel must also be 'rtm' for the client
         // to receive transcripts and state events. Default it automatically so
