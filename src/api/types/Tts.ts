@@ -14,7 +14,8 @@ export type Tts =
     | Agora.Tts.Fishaudio
     | Agora.Tts.Google
     | Agora.Tts.Amazon
-    | Agora.Tts.Sarvam;
+    | Agora.Tts.Sarvam
+    | Agora.Tts.Deepgram;
 
 export namespace Tts {
     export interface Microsoft extends Agora.MicrosoftTts {
@@ -63,5 +64,9 @@ export namespace Tts {
 
     export interface Sarvam extends Agora.SarvamTts {
         vendor: "sarvam";
+    }
+
+    export interface Deepgram extends Agora.DeepgramTts {
+        vendor: "deepgram";
     }
 }
