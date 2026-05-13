@@ -1,5 +1,6 @@
 import { Agent } from "../src/agentkit/Agent.js";
 import { AgentSession } from "../src/agentkit/AgentSession.js";
+import { resolveSessionPresets } from "../src/agentkit/presets.js";
 import { describe, expect, it, vi } from "vitest";
 
 describe("agentkit custom tests", () => {
@@ -33,5 +34,66 @@ describe("agentkit custom tests", () => {
             text: "Injected instruction",
             on_thinking_action: "interrupt",
         });
+    });
+
+    it("minimax preset strips group_id, url, and model when no key provided", () => {
+        const { preset, properties } = resolveSessionPresets({
+            properties: {
+                tts: {
+                    vendor: "minimax",
+                    params: {
+                        group_id: "my-group",
+                        model: "speech-2.6-turbo",
+                        url: "wss://api-uw.minimax.io/ws/v1/t2a_v2",
+                        voice_id: "English_captivating_female1",
+                    } as any,
+                },
+            },
+        });
+        expect(preset).toBe("minimax_speech_2_6_turbo");
+        const params = properties.tts?.params as Record<string, unknown>;
+        expect(params).not.toHaveProperty("key");
+        expect(params).not.toHaveProperty("group_id");
+        expect(params).not.toHaveProperty("url");
+        expect(params).not.toHaveProperty("model");
+        expect(params?.voice_id).toBe("English_captivating_female1");
+    });
+
+    it("minimax preset strips group_id, url, and model for speech-2.8-turbo", () => {
+        const { preset, properties } = resolveSessionPresets({
+            properties: {
+                tts: {
+                    vendor: "minimax",
+                    params: {
+                        group_id: "org-123",
+                        model: "speech-2.8-turbo",
+                        url: "wss://api.minimax.io/ws/v1/t2a_v2",
+                        voice_id: "some-voice",
+                    } as any,
+                },
+            },
+        });
+        expect(preset).toBe("minimax_speech_2_8_turbo");
+        const params = properties.tts?.params as Record<string, unknown>;
+        expect(params).not.toHaveProperty("key");
+        expect(params).not.toHaveProperty("group_id");
+        expect(params).not.toHaveProperty("url");
+        expect(params).not.toHaveProperty("model");
+    });
+
+    it("minimax preset is not inferred when key is present", () => {
+        const { preset } = resolveSessionPresets({
+            properties: {
+                tts: {
+                    vendor: "minimax",
+                    params: {
+                        key: "user-secret",
+                        group_id: "my-group",
+                        model: "speech-2.6-turbo",
+                    } as any,
+                },
+            },
+        });
+        expect(preset).toBeUndefined();
     });
 });

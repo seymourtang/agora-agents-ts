@@ -216,6 +216,8 @@ function stripInferredPresetFields(
                 params: omitUndefinedKeys({
                     ...tts.params,
                     key: undefined,
+                    group_id: undefined,
+                    url: undefined,
                     model: ttsInference.stripModel ? undefined : tts.params?.model,
                 }) as unknown as typeof tts.params,
             };
