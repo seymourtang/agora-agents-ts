@@ -90,6 +90,7 @@ export type {
     ParametersDataChannel,
     ParametersAudioScenario,
     InterruptionConfig,
+    InterruptionMode,
     MllmTurnDetectionConfig,
     MllmTurnDetectionMode,
     ThinkOptions,

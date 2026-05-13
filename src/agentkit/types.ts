@@ -181,6 +181,9 @@ export type ParametersDataChannel = StartAgentsRequest.Properties.Parameters.Dat
 /** Interruption behavior configuration (`interruption`) */
 export type InterruptionConfig = StartAgentsRequest.Properties.Interruption;
 
+/** Interruption trigger mode: `"start_of_speech"` | `"keywords"` */
+export type InterruptionMode = StartAgentsRequest.Properties.Interruption.Mode;
+
 /** MLLM turn-detection configuration (`mllm.turn_detection`) */
 export type MllmTurnDetectionConfig = StartAgentsRequest.Properties.Mllm.TurnDetection;
 
