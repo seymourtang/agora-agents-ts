@@ -3,7 +3,7 @@ import { AgentSession } from "../src/agentkit/AgentSession.js";
 import { resolveSessionPresets } from "../src/agentkit/presets.js";
 import { OpenAI } from "../src/agentkit/vendors/llm.js";
 import { OpenAIRealtime } from "../src/agentkit/vendors/mllm.js";
-import { OpenAITTS } from "../src/agentkit/vendors/tts.js";
+import { DeepgramTTS, OpenAITTS } from "../src/agentkit/vendors/tts.js";
 import { describe, expect, it, vi } from "vitest";
 
 describe("agentkit custom tests", () => {
@@ -133,5 +133,26 @@ describe("agentkit custom tests", () => {
 
         expect(properties.mllm?.enable).toBe(true);
         expect(properties.advanced_features?.enable_mllm).toBe(true);
+    });
+
+    it("deepgram tts vendor config matches the documented payload", () => {
+        const config = new DeepgramTTS({
+            apiKey: "deepgram-key",
+            model: "aura-2-thalia-en",
+            baseUrl: "wss://api.deepgram.com/v1/speak",
+            sampleRate: 24000,
+            params: { encoding: "linear16" },
+        }).toConfig() as any;
+
+        expect(config).toEqual({
+            vendor: "deepgram",
+            params: {
+                api_key: "deepgram-key",
+                model: "aura-2-thalia-en",
+                base_url: "wss://api.deepgram.com/v1/speak",
+                sample_rate: 24000,
+                encoding: "linear16",
+            },
+        });
     });
 });
