@@ -12,3 +12,6 @@ src/agentkit/
 docs/
 README.md
 package.json
+
+# Dependency lockfile is managed manually
+pnpm-lock.yaml

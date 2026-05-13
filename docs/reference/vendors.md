@@ -27,7 +27,11 @@ new OpenAI(options: OpenAIOptions)
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
+| `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters (overrides `model` in params) |
+| `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
+| `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
 For supported reseller preset models, `apiKey` is optional:
 
@@ -57,7 +61,11 @@ new AzureOpenAI(options: AzureOpenAIOptions)
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
+| `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
+| `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
+| `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
 ### Anthropic
 
@@ -76,7 +84,11 @@ new Anthropic(options: AnthropicOptions)
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
+| `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
+| `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
+| `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
 ### Gemini
 
@@ -95,7 +107,11 @@ new Gemini(options: GeminiOptions)
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
+| `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
+| `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
+| `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
 ---
 
@@ -175,6 +191,7 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 |---|---|
 | `GoogleTTS` | `key`, `voiceName`, `languageCode?` |
 | `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId` |
+| `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `params?` |
 | `HumeAITTS` | `key`, `configId?` |
 | `RimeTTS` | `key`, `speaker`, `modelId?`, `lang?`, `samplingRate?`, `speedAlpha?` |
 | `FishAudioTTS` | `key`, `referenceId` |
@@ -248,6 +265,7 @@ new OpenAIRealtime(options: OpenAIRealtimeOptions)
 | `outputModalities` | `string[]` | No | Output modalities (e.g., `['text', 'audio']`) |
 | `messages` | `Record<string, unknown>[]` | No | Conversation messages for short-term memory |
 | `params` | `Record<string, unknown>` | No | Additional MLLM parameters |
+| `turnDetection` | `MllmTurnDetectionConfig` | No | MLLM turn detection configuration; overrides top-level `turn_detection` |
 
 ### GeminiLive
 
@@ -271,6 +289,7 @@ new GeminiLive(options: GeminiLiveOptions)
 | `outputModalities` | `string[]` | No | Output modalities |
 | `messages` | `Record<string, unknown>[]` | No | Conversation messages |
 | `additionalParams` | `Record<string, unknown>` | No | Additional parameters |
+| `turnDetection` | `MllmTurnDetectionConfig` | No | MLLM turn detection configuration; overrides top-level `turn_detection` |
 
 ### VertexAI
 
@@ -296,6 +315,7 @@ new VertexAI(options: VertexAIOptions)
 | `outputModalities` | `string[]` | No | Output modalities |
 | `messages` | `Record<string, unknown>[]` | No | Conversation messages |
 | `additionalParams` | `Record<string, unknown>` | No | Additional parameters |
+| `turnDetection` | `MllmTurnDetectionConfig` | No | MLLM turn detection configuration; overrides top-level `turn_detection` |
 
 ---
 

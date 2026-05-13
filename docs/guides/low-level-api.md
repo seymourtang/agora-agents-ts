@@ -8,6 +8,13 @@ description: Direct client.agents.start() usage without the builder pattern.
 
 For direct control over the REST API, use `client.agents.start()` with raw request objects. See the [API Reference](../../reference.md) for full details.
 
+## Raw telephony and phone-number APIs
+
+AgentKit focuses on realtime agent session helpers. Telephony call status, call hangup, and phone-number management are exposed through the generated low-level clients:
+
+- `client.telephony` for call status and hangup operations
+- `client.phoneNumbers` for phone-number list, create, retrieve, update, and delete operations
+
 ## Direct client usage
 
 ```typescript
@@ -112,7 +119,7 @@ await client.agents.start({
 
 ## MLLM (raw API)
 
-For MLLM flow without the builder pattern, pass `mllm` and `turn_detection` directly. See the [MLLM Overview](https://docs.agora.io/en/conversational-ai/models/mllm/overview) for details.
+For MLLM flow without the builder pattern, set `mllm.enable` and pass MLLM turn detection as `mllm.turn_detection`. See the [MLLM Overview](https://docs.agora.io/en/conversational-ai/models/mllm/overview) for details.
 
 ```typescript
 import { AgoraClient, Area, Agora } from "agora-agent-server-sdk";
@@ -125,6 +132,7 @@ const client = new AgoraClient({
 });
 
 const mllm: Agora.StartAgentsRequest.Properties.Mllm = {
+  enable: true,
   url: "wss://api.openai.com/v1/realtime",
   api_key: "<your_openai_api_key>",
   vendor: Agora.StartAgentsRequest.Properties.Mllm.Vendor.Openai,
@@ -132,12 +140,12 @@ const mllm: Agora.StartAgentsRequest.Properties.Mllm = {
   input_modalities: ["audio"],
   output_modalities: ["text", "audio"],
   greeting_message: "Hello! I'm ready to chat in real-time.",
-};
-
-const turnDetection: Agora.StartAgentsRequest.Properties.TurnDetection = {
-  type: Agora.StartAgentsRequest.Properties.TurnDetection.Type.ServerVad,
-  threshold: 0.5,
-  silence_duration_ms: 500,
+  turn_detection: {
+    mode: "server_vad",
+    server_vad_config: {
+      idle_timeout_ms: 5000,
+    },
+  },
 };
 
 await client.agents.start({
@@ -149,9 +157,7 @@ await client.agents.start({
     agent_rtc_uid: "1001",
     remote_rtc_uids: ["1002"],
     idle_timeout: 120,
-    advanced_features: { enable_mllm: true },
     mllm,
-    turn_detection: turnDetection,
     tts: {
       vendor: "elevenlabs",
       params: {

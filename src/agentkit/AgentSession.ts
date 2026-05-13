@@ -7,10 +7,19 @@
 
 import type { AgoraClient } from "../Client.js";
 import type { AgentsClient } from "../api/resources/agents/client/Client.js";
+import type { AgentManagementClient } from "../api/resources/agentManagement/client/Client.js";
 import type * as Agora from "../api/index.js";
 import { AgoraError } from "../errors/index.js";
 import { Agent } from "./Agent.js";
-import type { ConversationHistory, ConversationTurns, SayOptions, AgentConfigUpdate, SessionInfo } from "./types.js";
+import type {
+    ConversationHistory,
+    ConversationTurns,
+    SayOptions,
+    AgentConfigUpdate,
+    SessionInfo,
+    ThinkOptions,
+    ThinkResponse,
+} from "./types.js";
 import {
     validateTtsSampleRate,
     validateAvatarConfig,
@@ -228,6 +237,13 @@ export class AgentSession {
      */
     get raw(): AgentsClient {
         return this._client.agents;
+    }
+
+    /**
+     * Direct access to the underlying Fern-generated AgentManagement client.
+     */
+    get rawAgentManagement(): AgentManagementClient {
+        return this._client.agentManagement;
     }
 
     /**
@@ -456,6 +472,33 @@ export class AgentSession {
             {
                 appid: this._appId,
                 agentId: this._agentId,
+            },
+            { headers: this._convoAIHeaders() },
+        );
+    }
+
+    /**
+     * Inject a text instruction into the current session pipeline.
+     */
+    async think(text: string, options?: ThinkOptions): Promise<ThinkResponse> {
+        if (this._status !== "running") {
+            throw new Error(`Cannot think in ${this._status} state`);
+        }
+
+        if (!this._agentId) {
+            throw new Error("No agent ID available");
+        }
+
+        return this._client.agentManagement.agentThink(
+            {
+                appid: this._appId,
+                agentId: this._agentId,
+                text,
+                on_listening_action: options?.on_listening_action,
+                on_thinking_action: options?.on_thinking_action,
+                on_speaking_action: options?.on_speaking_action,
+                interruptable: options?.interruptable,
+                metadata: options?.metadata,
             },
             { headers: this._convoAIHeaders() },
         );

@@ -42,6 +42,7 @@ const llm = new OpenAI({
 | `FishAudioTTS` | Fish Audio | Not configurable via constructor |
 | `MiniMaxTTS` | MiniMax | Not configurable via constructor |
 | `MurfTTS` | Murf | Not configurable via constructor |
+| `DeepgramTTS` | Deepgram | Configurable |
 | `SarvamTTS` | Sarvam AI | Not configurable via constructor |
 
 <!-- snippet: executable -->
@@ -89,9 +90,9 @@ MLLM (Multimodal LLM) vendors handle audio end-to-end — no separate STT or TTS
 
 | Class | Provider | Key constructor params |
 |---|---|---|
-| `OpenAIRealtime` | OpenAI Realtime API | `apiKey`, `model?`, `url?`, `greetingMessage?`, `inputModalities?`, `outputModalities?` |
-| `GeminiLive` | Google Gemini Live | `apiKey`, `model`, `url?`, `voice?`, `greetingMessage?`, `inputModalities?`, `outputModalities?` |
-| `VertexAI` | Google Gemini Live | `model`, `url?`, `projectId`, `location`, `adcCredentialsString`, `voice?`, `greetingMessage?` |
+| `OpenAIRealtime` | OpenAI Realtime API | `apiKey`, `model?`, `url?`, `greetingMessage?`, `inputModalities?`, `outputModalities?`, `turnDetection?` |
+| `GeminiLive` | Google Gemini Live API | `apiKey`, `model`, `url?`, `voice?`, `greetingMessage?`, `inputModalities?`, `outputModalities?`, `turnDetection?` |
+| `VertexAI` | Vertex AI Gemini Live | `model`, `url?`, `projectId`, `location`, `adcCredentialsString`, `voice?`, `greetingMessage?`, `turnDetection?` |
 
 <!-- snippet: executable -->
 ```typescript

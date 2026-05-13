@@ -16,7 +16,7 @@ In MLLM mode, a single multimodal model handles audio input and output end-to-en
 
 ## Requirements
 
-Call `agent.withMllm(vendor)` — that's it. MLLM mode is enabled automatically; you do not need to pass `advancedFeatures: { enable_mllm: true }` separately. The `withLlm()`, `withTts()`, and `withStt()` methods are not needed — the MLLM vendor handles everything.
+Call `agent.withMllm(vendor)` — that's it. MLLM mode is enabled automatically through `mllm.enable`. The `withLlm()`, `withTts()`, and `withStt()` methods are not needed — the MLLM vendor handles everything.
 
 ## Example: OpenAI Realtime
 
@@ -87,9 +87,9 @@ console.log('Gemini agent running:', agentId);
 
 ## Turn detection in MLLM mode
 
-You can configure turn detection alongside MLLM to control when the model should respond. The preferred approach uses the SOS/EOS (Start of Speech / End of Speech) model via `config.start_of_speech` and `config.end_of_speech` — see [Agent Reference](../reference/agent.md) for full type definitions.
+Configure MLLM turn detection on the MLLM vendor with `turnDetection`. When set, `mllm.turn_detection` overrides the top-level `turn_detection` object.
 
-Legacy format (deprecated in favor of SOS/EOS):
+Example:
 
 ```typescript
 const agent = new Agent({ name: 'realtime-with-vad' })
@@ -97,11 +97,12 @@ const agent = new Agent({ name: 'realtime-with-vad' })
     apiKey: 'your-openai-key',
     model: 'gpt-4o-realtime-preview',
     greetingMessage: 'Hi!',
-  }))
-  .withTurnDetection({
-    type: 'server_vad',
-    interrupt_mode: 'interrupt',
-    eagerness: 'auto',
+    turnDetection: {
+      mode: 'server_vad',
+      server_vad_config: {
+        idle_timeout_ms: 5000,
+      },
+    },
   });
 ```
 

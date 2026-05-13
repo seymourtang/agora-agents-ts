@@ -202,7 +202,6 @@ export class OpenAITTS extends BaseTTS<24000> {
     toConfig(): TtsConfig {
         const { apiKey, voice, model, responseFormat, speed, skipPatterns } = this.options;
 
-        // Cast required: Fern-generated OpenAiTtsParams still uses `key`; actual API uses `api_key`.
         return {
             vendor: "openai",
             params: {
@@ -259,7 +258,6 @@ export class CartesiaTTS<SR extends CartesiaSampleRate = CartesiaSampleRate> ext
     toConfig(): TtsConfig {
         const { apiKey, voiceId, modelId, sampleRate, skipPatterns } = this.options;
 
-        // Cast required: Fern-generated CartesiaTtsParams still uses `key`/`voice_id`; actual API uses `api_key` and nested voice object.
         return {
             vendor: "cartesia",
             params: {
@@ -378,6 +376,52 @@ export class AmazonTTS extends BaseTTS {
             },
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         };
+    }
+}
+
+/**
+ * Constructor options for Deepgram TTS (Beta).
+ */
+export interface DeepgramTTSOptions {
+    /** Deepgram API key */
+    apiKey: string;
+    /** Deepgram TTS model (e.g., 'aura-2-thalia-en') */
+    model: string;
+    /** WebSocket endpoint (defaults server-side to Deepgram's speak endpoint) */
+    baseUrl?: string;
+    /** Audio sample rate in Hz */
+    sampleRate?: number;
+    /** Additional Deepgram TTS parameters */
+    params?: Record<string, unknown>;
+    /** Skip patterns for bracketed content */
+    skipPatterns?: number[];
+}
+
+/**
+ * Deepgram TTS vendor (Beta).
+ */
+export class DeepgramTTS extends BaseTTS {
+    private readonly options: DeepgramTTSOptions;
+
+    constructor(options: DeepgramTTSOptions) {
+        super();
+        this.options = options;
+    }
+
+    toConfig(): TtsConfig {
+        const { apiKey, model, baseUrl, sampleRate, params, skipPatterns } = this.options;
+
+        return {
+            vendor: "deepgram",
+            params: {
+                api_key: apiKey,
+                model,
+                ...params,
+                ...(baseUrl && { base_url: baseUrl }),
+                ...(sampleRate !== undefined && { sample_rate: sampleRate }),
+            },
+            ...(skipPatterns && { skip_patterns: skipPatterns }),
+        } as unknown as TtsConfig;
     }
 }
 

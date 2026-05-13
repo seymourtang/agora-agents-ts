@@ -36,6 +36,7 @@ import type {
     MurfTtsParams as MurfTtsParamsType,
     SarvamTts as SarvamTtsType,
     SarvamTtsParams as SarvamTtsParamsType,
+    AgentThinkAgentManagementResponse,
 } from "../api/index.js";
 import type { PresetInput } from "./presets.js";
 
@@ -154,6 +155,17 @@ export type AdvancedFeatures = StartAgentsRequest.Properties.AdvancedFeatures;
 /** Session parameters configuration */
 export type SessionParams = StartAgentsRequest.Properties.Parameters;
 
+/** RTC audio scenario for the session parameters object. */
+export type ParametersAudioScenario = StartAgentsRequest.Properties.Parameters.AudioScenario;
+
+/**
+ * AgentKit session parameters input.
+ * Allows providing `audio_scenario` through the AgentKit layer.
+ */
+export type SessionParamsInput = SessionParams & {
+    audio_scenario?: ParametersAudioScenario;
+};
+
 /** Silence configuration */
 export type SilenceConfig = StartAgentsRequest.Properties.Parameters.SilenceConfig;
 
@@ -165,6 +177,30 @@ export type FarewellConfig = StartAgentsRequest.Properties.Parameters.FarewellCo
 
 /** Agent data transmission channel (`"rtm"` | `"datastream"`) */
 export type ParametersDataChannel = StartAgentsRequest.Properties.Parameters.DataChannel;
+
+/** Interruption behavior configuration (`interruption`) */
+export type InterruptionConfig = StartAgentsRequest.Properties.Interruption;
+
+/** Interruption trigger mode: `"start_of_speech"` | `"keywords"` */
+export type InterruptionMode = StartAgentsRequest.Properties.Interruption.Mode;
+
+/** MLLM turn-detection configuration (`mllm.turn_detection`) */
+export type MllmTurnDetectionConfig = StartAgentsRequest.Properties.Mllm.TurnDetection;
+
+/** MLLM turn-detection mode (`agora_vad` | `server_vad` | `semantic_vad`) */
+export type MllmTurnDetectionMode = StartAgentsRequest.Properties.Mllm.TurnDetection.Mode;
+
+/** Options for `AgentSession.think()` */
+export interface ThinkOptions {
+    on_listening_action?: "inject" | "ignore";
+    on_thinking_action?: "interrupt" | "ignore";
+    on_speaking_action?: "interrupt" | "ignore";
+    interruptable?: boolean;
+    metadata?: Record<string, string>;
+}
+
+/** Response type for `AgentSession.think()` */
+export type ThinkResponse = AgentThinkAgentManagementResponse;
 
 /** Regional access restriction configuration */
 export type GeofenceConfig = StartAgentsRequest.Properties.Geofence;

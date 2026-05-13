@@ -50,7 +50,7 @@ Each method returns a new `Agent` instance with the updated configuration.
 | `withStt` | `withStt(vendor: BaseSTT): Agent` | Set the STT vendor |
 | `withMllm` | `withMllm(vendor: BaseMLLM): Agent` | Set the MLLM vendor (for multimodal flow) |
 | `withAvatar` | `withAvatar<SR>(vendor: BaseAvatar<SR>): Agent` | Set the avatar vendor (enforces TTS sample rate match) |
-| `withTurnDetection` | `withTurnDetection(config: TurnDetectionConfig): Agent` | Configure turn detection (use `config.start_of_speech` / `config.end_of_speech` for SOS/EOS) |
+| `withTurnDetection` | `withTurnDetection(config: TurnDetectionConfig): Agent` | Configure cascading-flow SOS/EOS detection; use `withInterruption()` for interruption behavior |
 | `withInstructions` | `withInstructions(text: string): Agent` | Override the system prompt |
 | `withGreeting` | `withGreeting(text: string): Agent` | Override the greeting message |
 | `withName` | `withName(name: string): Agent` | Override the agent name |
