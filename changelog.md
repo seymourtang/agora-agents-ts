@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v1.4.0] — 2026-05-13
+
+### Added
+
+- **`DeepgramTTS`** — New TTS vendor wrapper for Deepgram (Beta). Accepts `apiKey`, `model`, `baseUrl`, `sampleRate`, `params`, and `skipPatterns`.
+- **`Agent.withTools(enabled = true)`** — Dedicated builder method to enable MCP tool invocation (`advancedFeatures.enable_tools`). Replaces the raw `.withAdvancedFeatures({ enable_tools: true })` call.
+- **LLM vendors: `headers` option** — All four LLM vendors (`OpenAI`, `AzureOpenAI`, `Anthropic`, `Gemini`) now accept an optional `headers: Record<string, string>` option. Use this to pass custom HTTP headers to the LLM provider.
+- **`AgentSession.think()`** — Send a custom instruction to a running agent through the `agentManagement` API.
+- **`Agent.withInterruption()`** — Configure the new top-level `interruption` object for unified interruption control.
+- **MLLM turn detection** — `OpenAIRealtime`, `GeminiLive`, and `VertexAI` now accept `turnDetection`, which maps to `mllm.turn_detection` and overrides top-level turn detection for MLLM sessions.
+
+### Fixed
+
+- **MiniMax TTS preset stripping** — When a MiniMax reseller preset is inferred (`minimax_speech_2_6_turbo` or `minimax_speech_2_8_turbo`), the `group_id` and `url` fields are now correctly stripped from `tts.params` alongside `key` and `model`. Previously they were forwarded to the API, causing request failures.
+- **MLLM enable flag** — `Agent.withMllm()` now sets `mllm.enable = true` and removes the deprecated `advancedFeatures.enable_mllm` flag from generated requests.
+- **MLLM wrapper shape** — MLLM vendors no longer emit removed fields such as `style`; docs and tests now reflect the v2.6 MLLM contract.
+- **AgentKit parity coverage** — Added regression coverage for interruption, MLLM turn detection, Deepgram TTS, LLM headers, and deprecated MLLM flag cleanup.
+
 ## [v1.3.2] — 2026-04-10
 
 ### Fixed
