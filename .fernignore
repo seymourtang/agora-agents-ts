@@ -15,3 +15,6 @@ package.json
 
 # Dependency lockfile is managed manually
 pnpm-lock.yaml
+.fern/replay.lock
+.fern/replay.yml
+.gitattributes

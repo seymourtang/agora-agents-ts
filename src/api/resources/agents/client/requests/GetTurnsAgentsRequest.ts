@@ -12,4 +12,8 @@ export interface GetTurnsAgentsRequest {
     appid: string;
     /** The agent instance ID you obtained after successfully calling `join` to start a conversational AI agent. */
     agentId: string;
+    /** The page number. Starts from 1. */
+    page_index?: number;
+    /** The number of dialogue turns returned per page. */
+    page_size?: number;
 }

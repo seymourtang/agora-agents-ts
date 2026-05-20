@@ -4,7 +4,7 @@
  * OpenAI TTS configuration parameters.
  */
 export interface OpenAiTtsParams {
-    /** OpenAI API key */
+    /** OpenAI API key. Optional for preset-backed OpenAI TTS usage. */
     api_key?: string;
     /** Voice name (e.g., "alloy", "echo", "fable", "onyx", "nova", "shimmer") */
     voice: string;

@@ -5,6 +5,6 @@ export interface InterruptAgentsResponse {
     agent_id?: string;
     /** The name of the channel */
     channel?: string;
-    /** Timestamp when the broadcast started */
+    /** Unix timestamp in seconds when the interrupt request was processed. */
     start_ts?: number;
 }

@@ -60,6 +60,14 @@ await client.agents.start({
             max_history: 32,
             greeting_message: "Hello, how can I assist you today?",
             failure_message: "Please hold on a second."
+        },
+        turn_detection: {
+            mode: "default",
+            config: {
+                end_of_speech: {
+                    mode: "semantic"
+                }
+            }
         }
     }
 });
@@ -393,7 +401,7 @@ await client.agents.getTurns({
 <dl>
 <dd>
 
-Stop the specified conversational agent instance.
+Stop the specified conversational agent instance. The API responds after request parameters are validated, and the stop operation is processed asynchronously after the response is returned.
 </dd>
 </dl>
 </dd>

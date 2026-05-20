@@ -14,7 +14,6 @@ export interface GetAgentsResponse {
      * - `RUNNING` (2): The agent is running.
      * - `STOPPING` (3): The agent is stopping.
      * - `STOPPED` (4): The agent has exited.
-     * - `RECOVERING` (5): The agent is recovering.
      * - `FAILED` (6): The agent failed to execute.
      */
     status?: GetAgentsResponse.Status;
@@ -30,7 +29,6 @@ export namespace GetAgentsResponse {
      * - `RUNNING` (2): The agent is running.
      * - `STOPPING` (3): The agent is stopping.
      * - `STOPPED` (4): The agent has exited.
-     * - `RECOVERING` (5): The agent is recovering.
      * - `FAILED` (6): The agent failed to execute.
      */
     export const Status = {
@@ -39,7 +37,6 @@ export namespace GetAgentsResponse {
         Running: "RUNNING",
         Stopping: "STOPPING",
         Stopped: "STOPPED",
-        Recovering: "RECOVERING",
         Failed: "FAILED",
     } as const;
     export type Status = (typeof Status)[keyof typeof Status];
