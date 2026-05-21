@@ -23,7 +23,7 @@ import {
     validateTtsSampleRate,
 } from "./avatar-types.js";
 import { type PresetInput, resolveSessionPresets } from "./presets.js";
-import { ExpiresIn as ExpiresInHelper, generateAvatarRtcToken, generateConvoAIToken } from "./token.js";
+import { ExpiresIn as ExpiresInHelper, generateConvoAIToken } from "./token.js";
 import type {
     AgentConfigUpdate,
     ConversationHistory,
@@ -187,7 +187,7 @@ export class AgentSession {
             appId: this._appId,
             appCertificate: this._appCertificate,
             channelName: this._channel,
-            account: this._agentUid,
+            uid: _parseNumericUid(this._agentUid, "agentUid"),
         });
         return { Authorization: `agora token=${token}` };
     }
@@ -379,12 +379,12 @@ export class AgentSession {
                             "Pass appCertificate when creating AgoraClient, or set agoraToken on the avatar vendor.",
                     );
                 }
-                params.agora_token = generateAvatarRtcToken({
+                params.agora_token = generateConvoAIToken({
                     appId: this._appId,
                     appCertificate: this._appCertificate,
-                    channel: this._channel,
-                    uid: avatarUid as string | number,
-                    expirySeconds,
+                    channelName: this._channel,
+                    uid: _parseNumericUid(String(avatarUid), "avatar agora_uid"),
+                    tokenExpire: expirySeconds,
                 });
             }
 
@@ -808,4 +808,11 @@ export class AgentSession {
             }
         }
     }
+}
+
+function _parseNumericUid(uid: string, label: string): number {
+    if (!/^\d+$/.test(uid)) {
+        throw new Error(`${label} must be a numeric RTC UID when auto-generating a ConvoAI token`);
+    }
+    return Number(uid);
 }

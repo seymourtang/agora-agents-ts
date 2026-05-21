@@ -17,6 +17,7 @@ import type {
     InterruptionConfig,
     Labels,
     LlmConfig,
+    LlmGreetingConfigs,
     MllmConfig,
     ParametersAudioScenario,
     RtcConfig,
@@ -66,6 +67,8 @@ export interface AgentOptions {
     rtc?: RtcConfig;
     /** Filler word configuration (plays filler words while waiting for LLM responses) */
     fillerWords?: FillerWordsConfig;
+    /** Greeting playback configuration for multi-user channels */
+    greetingConfigs?: LlmGreetingConfigs;
 }
 
 /**
@@ -104,6 +107,7 @@ export class Agent<TTSSampleRate extends number = number> {
     private _labels?: Labels;
     private _rtc?: RtcConfig;
     private _fillerWords?: FillerWordsConfig;
+    private _greetingConfigs?: LlmGreetingConfigs;
 
     constructor(options: AgentOptions = {}) {
         this._name = options.name;
@@ -141,6 +145,9 @@ export class Agent<TTSSampleRate extends number = number> {
         }
         if (options.fillerWords) {
             this._fillerWords = options.fillerWords;
+        }
+        if (options.greetingConfigs) {
+            this._greetingConfigs = options.greetingConfigs;
         }
     }
 
@@ -297,6 +304,18 @@ export class Agent<TTSSampleRate extends number = number> {
     withGreeting(greeting: string): Agent<TTSSampleRate> {
         const newAgent = this._clone();
         newAgent._greeting = greeting;
+        return newAgent;
+    }
+
+    /**
+     * Returns a new Agent with the specified greeting playback configuration.
+     *
+     * Serializes to `llm.greeting_configs`. Agent-level values override any
+     * vendor-level `greeting_configs` configured on the LLM vendor.
+     */
+    withGreetingConfigs(configs: LlmGreetingConfigs): Agent<TTSSampleRate> {
+        const newAgent = this._clone();
+        newAgent._greetingConfigs = configs;
         return newAgent;
     }
 
@@ -485,6 +504,13 @@ export class Agent<TTSSampleRate extends number = number> {
     }
 
     /**
+     * Get the greeting playback configuration.
+     */
+    get greetingConfigs(): LlmGreetingConfigs | undefined {
+        return this._greetingConfigs;
+    }
+
+    /**
      * Get the failure message (played via TTS when the LLM call fails).
      */
     get failureMessage(): string | undefined {
@@ -581,6 +607,7 @@ export class Agent<TTSSampleRate extends number = number> {
             labels: this._labels,
             rtc: this._rtc,
             fillerWords: this._fillerWords,
+            greetingConfigs: this._greetingConfigs,
             llm: this._llm,
             tts: this._tts,
             stt: this._stt,
@@ -682,7 +709,7 @@ export class Agent<TTSSampleRate extends number = number> {
                 appId,
                 appCertificate,
                 channelName: opts.channel,
-                account: opts.agentUid,
+                uid: _parseNumericUid(opts.agentUid, "agentUid"),
                 tokenExpire: expiresIn,
             });
         }
@@ -747,6 +774,7 @@ export class Agent<TTSSampleRate extends number = number> {
                       ? [{ role: "system", content: this._instructions }]
                       : this._llm.system_messages,
                   greeting_message: this._greeting ?? this._llm.greeting_message,
+                  greeting_configs: this._greetingConfigs ?? this._llm.greeting_configs,
                   failure_message: this._failureMessage ?? this._llm.failure_message,
                   max_history: this._maxHistory ?? this._llm.max_history,
               }
@@ -785,6 +813,14 @@ export class Agent<TTSSampleRate extends number = number> {
         newAgent._labels = this._labels;
         newAgent._rtc = this._rtc;
         newAgent._fillerWords = this._fillerWords;
+        newAgent._greetingConfigs = this._greetingConfigs;
         return newAgent;
     }
+}
+
+function _parseNumericUid(uid: string, label: string): number {
+    if (!/^\d+$/.test(uid)) {
+        throw new Error(`${label} must be a numeric RTC UID when auto-generating a ConvoAI token`);
+    }
+    return Number(uid);
 }

@@ -24,7 +24,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **`XaiGrok`** — New MLLM vendor wrapper for xAI Grok Realtime API (`vendor: "xai"`), including voice, language, sample rate, modalities, messages, greeting/failure, and MLLM turn detection support.
 - **`GenericAvatar`** — New generic avatar provider wrapper with typed options for `apiKey`, `apiBaseUrl`, `avatarId`, and `agoraUid`.
 - **Avatar token automation** — AgentKit now fills generic avatar `agora_appid` / `agora_channel` from the session and auto-generates `avatar.params.agora_token` for vendors that publish a separate RTC video identity (`HeyGenAvatar`, `LiveAvatarAvatar`, `GenericAvatar`) when `agoraToken` is omitted. Avatar tokens use the same ConvoAI token format as agent tokens, scoped to the avatar `agora_uid`. `AkoolAvatar` and `AnamAvatar` never receive an auto-generated token (matching the Go and Python SDKs).
-- **`generateAvatarRtcToken()`** — Public helper for advanced avatar token generation. Explicit `agoraToken` values are preserved and never overwritten.
 - **`isAvatarTokenManaged()`** — Type guard exported from AgentKit that returns `true` when AgentKit manages the avatar's RTC publisher identity.
 - **`AgentSession.getTurns(options)` and `AgentSession.getAllTurns()`** — High-level support for paginated turn analytics.
 - **`AudioScenario` constants and `Agent.withAudioScenario()`** — Discoverable AgentKit API for `parameters.audio_scenario`.

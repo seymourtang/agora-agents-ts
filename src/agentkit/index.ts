@@ -56,8 +56,22 @@ export {
   DataChannel,
   FillerWordsSelectionRule,
   Geofence,
+  InterruptionDisabledStrategy,
+  InterruptionDisabledStrategyAppend,
+  InterruptionDisabledStrategyIgnore,
+  InterruptionModeValues,
+  InterruptionModeKeywords,
+  InterruptionModeStartOfSpeech,
+  MllmTurnDetectionModeValues,
+  MllmTurnDetectionModeAgoraVad,
+  MllmTurnDetectionModeSemanticVad,
+  MllmTurnDetectionModeServerVad,
   SalModeValues,
   SilenceActionValues,
+  SpeakPriorityValues,
+  SpeakPriorityAppend,
+  SpeakPriorityIgnore,
+  SpeakPriorityInterrupt,
   ThinkOnListeningActionIgnore,
   ThinkOnListeningActionInject,
   ThinkOnListeningActionInterrupt,
@@ -80,14 +94,13 @@ export type {
 } from './presets.js';
 export { AgentPresets, normalizePresetInput } from './presets.js';
 export type {
-  GenerateAvatarRtcTokenOptions,
   GenerateConvoAITokenOptions,
   GenerateTokenOptions,
 } from './token.js';
 // Token generation
 export {
   ExpiresIn,
-  generateAvatarRtcToken,
+  MAX_EXPIRY_SECONDS,
   generateConvoAIToken,
   generateRtcToken,
 } from './token.js';

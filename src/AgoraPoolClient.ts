@@ -208,7 +208,7 @@ export class AgoraClient extends BaseAgoraClient {
                 appId: this.appId,
                 appCertificate: this.appCertificate,
                 channelName: "stop",
-                account: agentId,
+                uid: 0,
             });
             headers = { Authorization: `agora token=${token}` };
         }

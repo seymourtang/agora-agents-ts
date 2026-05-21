@@ -12,7 +12,7 @@
 import agoraToken from "agora-token";
 
 const DEFAULT_EXPIRY_SECONDS = 86400;
-const MAX_EXPIRY_SECONDS = 86400;
+export const MAX_EXPIRY_SECONDS = 86400;
 
 /**
  * Convenience helpers for specifying token expiry durations.
@@ -147,42 +147,13 @@ export function generateRtcTokenWithAccount(opts: GenerateRtcTokenWithAccountOpt
     );
 }
 
-export interface GenerateAvatarRtcTokenOptions {
-    appId: string;
-    appCertificate: string;
-    channel: string;
-    /** Avatar RTC UID. Must be unique from the agent RTC UID. */
-    uid: string | number;
-    expirySeconds?: number;
-}
-
-/**
- * Builds the token used by an avatar video publisher.
- *
- * Avatar tokens use the same ConvoAI token format as agent tokens. The only
- * difference is the account: avatar tokens are scoped to the avatar's
- * `agora_uid`, which must be distinct from the agent RTC UID.
- */
-export function generateAvatarRtcToken(opts: GenerateAvatarRtcTokenOptions): string {
-    return generateConvoAIToken({
-        appId: opts.appId,
-        appCertificate: opts.appCertificate,
-        channelName: opts.channel,
-        account: String(opts.uid),
-        tokenExpire: opts.expirySeconds,
-    });
-}
-
 export interface GenerateConvoAITokenOptions {
     appId: string;
     appCertificate: string;
     /** The channel the agent will join — must match the channel used in the start request */
     channelName: string;
-    /**
-     * String account identity for the token. When used with numeric UIDs, pass
-     * the agent UID as a string (e.g. "1001"). For RTM, this becomes the user ID.
-     */
-    account: string;
+    /** Numeric ConvoAI participant UID. Use the RTC UID for a user, agent, or avatar. */
+    uid: number;
     /** Seconds until the token expires (default: 86400) */
     tokenExpire?: number;
     /**
@@ -207,13 +178,21 @@ export function generateConvoAIToken(opts: GenerateConvoAITokenOptions): string 
     // When omitted or 0, use the same value as tokenExpire.
     const configuredPrivilegeExpire = opts.privilegeExpire ?? 0;
     const privilegeExpire = configuredPrivilegeExpire === 0 ? tokenExpire : configuredPrivilegeExpire;
+    const account = _uidToAccount(opts.uid);
     return agoraToken.RtcTokenBuilder.buildTokenWithRtm(
         opts.appId,
         opts.appCertificate,
         opts.channelName,
-        opts.account,
+        account,
         agoraToken.RtcRole.PUBLISHER,
         tokenExpire,
         privilegeExpire,
     );
+}
+
+function _uidToAccount(uid: number): string {
+    if (!Number.isInteger(uid)) {
+        throw new Error("uid must be an integer when provided as a number");
+    }
+    return String(uid);
 }
