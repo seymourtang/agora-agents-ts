@@ -48,19 +48,32 @@ async function updateFileContents(file) {
     const content = await fs.readFile(file, "utf8");
 
     let newContent = content;
-    // Update each extension type defined in the map
-    for (const [oldExt, newExt] of Object.entries(extensionMap)) {
-        // Handle static imports/exports
-        const staticRegex = new RegExp(`(import|export)(.+from\\s+['"])(\\.\\.?\\/[^'"]+)(\\${oldExt})(['"])`, "g");
-        newContent = newContent.replace(staticRegex, `$1$2$3${newExt}$5`);
+    const replaceExtension = (specifier) => {
+        for (const [oldExt, newExt] of Object.entries(extensionMap)) {
+            if (specifier.endsWith(oldExt)) {
+                return specifier.slice(0, -oldExt.length) + newExt;
+            }
+        }
+        return specifier;
+    };
 
-        // Handle dynamic imports (yield import, await import, regular import())
-        const dynamicRegex = new RegExp(
-            `(yield\\s+import|await\\s+import|import)\\s*\\(\\s*['"](\\.\\.\?\\/[^'"]+)(\\${oldExt})['"]\\s*\\)`,
-            "g",
-        );
-        newContent = newContent.replace(dynamicRegex, `$1("$2${newExt}")`);
-    }
+    // Handle static imports/exports, including multiline export blocks.
+    newContent = newContent.replace(
+        /(from\s*['"])(\.{1,2}\/[^'"]+?)(\.js|\.d\.ts)(['"])/g,
+        (_match, prefix, specifier, extension, suffix) => `${prefix}${replaceExtension(`${specifier}${extension}`)}${suffix}`,
+    );
+
+    // Handle side-effect imports.
+    newContent = newContent.replace(
+        /(import\s*['"])(\.{1,2}\/[^'"]+?)(\.js|\.d\.ts)(['"])/g,
+        (_match, prefix, specifier, extension, suffix) => `${prefix}${replaceExtension(`${specifier}${extension}`)}${suffix}`,
+    );
+
+    // Handle dynamic imports.
+    newContent = newContent.replace(
+        /(import\s*\(\s*['"])(\.{1,2}\/[^'"]+?)(\.js|\.d\.ts)(['"]\s*\))/g,
+        (_match, prefix, specifier, extension, suffix) => `${prefix}${replaceExtension(`${specifier}${extension}`)}${suffix}`,
+    );
 
     if (content !== newContent) {
         await fs.writeFile(file, newContent, "utf8");

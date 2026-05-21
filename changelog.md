@@ -31,6 +31,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **Generic avatar validation** — `validateAvatarConfig()` now accepts pre-start Generic avatar configs where session-derived fields are intentionally omitted. Post-enrichment validation still requires `agora_appid`, `agora_channel`, and `agora_token`.
 - **Docs refreshed for v2.7** — Vendor, avatar, session, pagination, and error-handling docs now cover xAI Grok, Generic Avatar, avatar token automation, paginated turns, and updated error `reason` values.
 
+### Fixed
+
+- **ESM release output** — Multiline relative exports are now rewritten from `.js` to `.mjs`, and the ESM build fails if relative `.js` imports remain in `dist/esm`.
+
 ### Deprecated
 
 - **`HeyGenAvatar`** — Use `LiveAvatarAvatar` (`vendor: "liveavatar"`). The legacy wrapper remains available for backward compatibility and emits `@deprecated` JSDoc.
