@@ -5,9 +5,9 @@
  * Different vendors have specific audio sample rate requirements.
  */
 
-import { BaseAvatar } from "./base.js";
-import type { HeyGenSampleRate, LiveAvatarSampleRate, AkoolSampleRate } from "./base.js";
 import type { AvatarConfig } from "../types.js";
+import type { AkoolSampleRate, HeyGenSampleRate, LiveAvatarSampleRate } from "./base.js";
+import { BaseAvatar } from "./base.js";
 
 /**
  * Constructor options for HeyGen Avatar.
@@ -19,7 +19,7 @@ export interface HeyGenAvatarOptions {
     quality: "low" | "medium" | "high";
     /** RTC UID for the avatar (must be unique in the channel) */
     agoraUid: string;
-    /** RTC token for avatar authentication */
+    /** Avatar ConvoAI token. Omit to auto-generate at session start. */
     agoraToken?: string;
     /** HeyGen avatar ID */
     avatarId?: string;
@@ -334,6 +334,99 @@ export class AnamAvatar extends BaseAvatar<number> {
                 ...additionalParams,
                 api_key: apiKey,
                 ...(personaId && { persona_id: personaId }),
+            },
+        };
+    }
+}
+
+// =============================================================================
+// Generic
+// =============================================================================
+
+/**
+ * Constructor options for Generic Avatar.
+ */
+export interface GenericAvatarOptions {
+    /** Avatar provider API key */
+    apiKey: string;
+    /** Avatar provider API base URL */
+    apiBaseUrl: string;
+    /** Avatar ID */
+    avatarId: string;
+    /** RTC UID for the avatar video publisher (must be unique in the channel) */
+    agoraUid: string;
+    /** Agora App ID. Omit to use the session app ID at start. */
+    agoraAppId?: string;
+    /** Agora channel. Omit to use the session channel at start. */
+    agoraChannel?: string;
+    /** Avatar ConvoAI token. Omit to auto-generate at session start. */
+    agoraToken?: string;
+    /** Enable avatar (default: true) */
+    enable?: boolean;
+    /** Additional vendor-specific parameters */
+    additionalParams?: Record<string, unknown>;
+}
+
+/**
+ * Generic Avatar vendor (Beta).
+ *
+ * Generic avatars use a custom avatar provider while still publishing video
+ * into the Agora channel. AgentKit fills `agora_appid`, `agora_channel`, and
+ * `agora_token` at session start when they are omitted.
+ *
+ * @see https://docs.agora.io/en/conversational-ai/models/avatar/generic
+ */
+export class GenericAvatar extends BaseAvatar<number> {
+    private readonly options: GenericAvatarOptions;
+
+    /**
+     * Generic avatars do not enforce a specific TTS sample rate.
+     */
+    readonly requiredSampleRate = 0 as number;
+
+    constructor(options: GenericAvatarOptions) {
+        super();
+        this.options = options;
+
+        if (!options.apiKey) {
+            throw new Error("Generic avatar requires apiKey");
+        }
+        if (!options.apiBaseUrl) {
+            throw new Error("Generic avatar requires apiBaseUrl");
+        }
+        if (!options.avatarId) {
+            throw new Error("Generic avatar requires avatarId");
+        }
+        if (!options.agoraUid) {
+            throw new Error("Generic avatar requires agoraUid");
+        }
+    }
+
+    toConfig(): AvatarConfig {
+        const {
+            apiKey,
+            apiBaseUrl,
+            avatarId,
+            agoraUid,
+            agoraAppId,
+            agoraChannel,
+            agoraToken,
+            enable = true,
+            additionalParams,
+        } = this.options;
+
+        return {
+            enable,
+            vendor: "generic",
+            params: {
+                ...additionalParams,
+                api_key: apiKey,
+                api_base_url: apiBaseUrl,
+                avatar_id: avatarId,
+                agora_uid: agoraUid,
+                ...(agoraAppId && { agora_appid: agoraAppId }),
+                ...(agoraChannel && { agora_channel: agoraChannel }),
+                ...(agoraToken && { agora_token: agoraToken }),
             },
         };
     }

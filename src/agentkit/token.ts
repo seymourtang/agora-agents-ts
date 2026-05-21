@@ -147,6 +147,32 @@ export function generateRtcTokenWithAccount(opts: GenerateRtcTokenWithAccountOpt
     );
 }
 
+export interface GenerateAvatarRtcTokenOptions {
+    appId: string;
+    appCertificate: string;
+    channel: string;
+    /** Avatar RTC UID. Must be unique from the agent RTC UID. */
+    uid: string | number;
+    expirySeconds?: number;
+}
+
+/**
+ * Builds the token used by an avatar video publisher.
+ *
+ * Avatar tokens use the same ConvoAI token format as agent tokens. The only
+ * difference is the account: avatar tokens are scoped to the avatar's
+ * `agora_uid`, which must be distinct from the agent RTC UID.
+ */
+export function generateAvatarRtcToken(opts: GenerateAvatarRtcTokenOptions): string {
+    return generateConvoAIToken({
+        appId: opts.appId,
+        appCertificate: opts.appCertificate,
+        channelName: opts.channel,
+        account: String(opts.uid),
+        tokenExpire: opts.expirySeconds,
+    });
+}
+
 export interface GenerateConvoAITokenOptions {
     appId: string;
     appCertificate: string;
@@ -179,7 +205,8 @@ export function generateConvoAIToken(opts: GenerateConvoAITokenOptions): string 
     const tokenExpire = opts.tokenExpire ?? DEFAULT_EXPIRY_SECONDS;
     // Per Agora docs, privilegeExpire=0 means "expires immediately", which is invalid.
     // When omitted or 0, use the same value as tokenExpire.
-    const privilegeExpire = (opts.privilegeExpire ?? 0) === 0 ? tokenExpire : opts.privilegeExpire!;
+    const configuredPrivilegeExpire = opts.privilegeExpire ?? 0;
+    const privilegeExpire = configuredPrivilegeExpire === 0 ? tokenExpire : configuredPrivilegeExpire;
     return agoraToken.RtcTokenBuilder.buildTokenWithRtm(
         opts.appId,
         opts.appCertificate,

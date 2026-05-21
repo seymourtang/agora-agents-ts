@@ -6,8 +6,8 @@
  * sets `mllm.enable: true`.
  */
 
-import { BaseMLLM } from "./base.js";
 import type { MllmConfig, MllmTurnDetectionConfig } from "../types.js";
+import { BaseMLLM } from "./base.js";
 
 /**
  * Constructor options for OpenAI Realtime API.
@@ -31,12 +31,8 @@ export interface OpenAIRealtimeOptions {
     params?: Record<string, unknown>;
     /** MLLM turn detection configuration. Overrides top-level turn_detection. */
     turnDetection?: MllmTurnDetectionConfig;
-    /** Predefined tools available to the model (e.g., ['_publish_message']) */
-    predefinedTools?: string[];
     /** Message played on failure */
     failureMessage?: string;
-    /** Maximum conversation history length */
-    maxHistory?: number;
 }
 
 /**
@@ -88,9 +84,7 @@ export class OpenAIRealtime extends BaseMLLM {
             ...(inputModalities && { input_modalities: inputModalities }),
             ...(outputModalities && { output_modalities: outputModalities }),
             ...(messages && { messages }),
-            ...(this.options.predefinedTools && { predefined_tools: this.options.predefinedTools }),
             ...(this.options.failureMessage && { failure_message: this.options.failureMessage }),
-            ...(this.options.maxHistory !== undefined && { max_history: this.options.maxHistory }),
             ...(turnDetection && { turn_detection: turnDetection }),
         };
     }
@@ -122,12 +116,8 @@ export interface GeminiLiveOptions {
     additionalParams?: Record<string, unknown>;
     /** MLLM turn detection configuration. Overrides top-level turn_detection. */
     turnDetection?: MllmTurnDetectionConfig;
-    /** Predefined tools available to the model (e.g., ['_publish_message']) */
-    predefinedTools?: string[];
     /** Message played on failure */
     failureMessage?: string;
-    /** Maximum conversation history length */
-    maxHistory?: number;
 }
 
 /**
@@ -178,14 +168,12 @@ export class GeminiLive extends BaseMLLM {
                 model,
                 ...(instructions && { instructions }),
                 ...(voice && { voice }),
-                ...(messages && { messages }),
             },
+            ...(messages && { messages }),
             ...(greetingMessage && { greeting_message: greetingMessage }),
             ...(inputModalities && { input_modalities: inputModalities }),
             ...(outputModalities && { output_modalities: outputModalities }),
-            ...(this.options.predefinedTools && { predefined_tools: this.options.predefinedTools }),
             ...(this.options.failureMessage && { failure_message: this.options.failureMessage }),
-            ...(this.options.maxHistory !== undefined && { max_history: this.options.maxHistory }),
             ...(turnDetection && { turn_detection: turnDetection }),
         };
     }
@@ -221,12 +209,8 @@ export interface VertexAIOptions {
     additionalParams?: Record<string, unknown>;
     /** MLLM turn detection configuration. Overrides top-level turn_detection. */
     turnDetection?: MllmTurnDetectionConfig;
-    /** Predefined tools available to the model (e.g., ['_publish_message']) */
-    predefinedTools?: string[];
     /** Message played on failure */
     failureMessage?: string;
-    /** Maximum conversation history length */
-    maxHistory?: number;
 }
 
 /**
@@ -283,14 +267,108 @@ export class VertexAI extends BaseMLLM {
                 adc_credentials_string: adcCredentialsString,
                 ...(instructions && { instructions }),
                 ...(voice && { voice }),
-                ...(messages && { messages }),
             },
+            ...(messages && { messages }),
             ...(greetingMessage && { greeting_message: greetingMessage }),
             ...(inputModalities && { input_modalities: inputModalities }),
             ...(outputModalities && { output_modalities: outputModalities }),
-            ...(this.options.predefinedTools && { predefined_tools: this.options.predefinedTools }),
             ...(this.options.failureMessage && { failure_message: this.options.failureMessage }),
-            ...(this.options.maxHistory !== undefined && { max_history: this.options.maxHistory }),
+            ...(turnDetection && { turn_detection: turnDetection }),
+        };
+    }
+}
+
+/**
+ * Constructor options for xAI Grok Realtime API.
+ */
+export interface XaiGrokOptions {
+    /** xAI API key */
+    apiKey: string;
+    /** WebSocket URL for real-time communication (defaults to xAI Realtime API) */
+    url?: string;
+    /** Voice identifier (e.g., 'eve', 'rex') */
+    voice?: string;
+    /** Language code (e.g., 'en') */
+    language?: string;
+    /** Audio sample rate in Hz (e.g., 24000) */
+    sampleRate?: number;
+    /** Agent greeting message */
+    greetingMessage?: string;
+    /** Message played on failure */
+    failureMessage?: string;
+    /** Input modalities (e.g., ['audio'], ['audio', 'text']) */
+    inputModalities?: string[];
+    /** Output modalities (e.g., ['audio'], ['text', 'audio']) */
+    outputModalities?: string[];
+    /** Conversation messages for short-term memory */
+    messages?: Record<string, unknown>[];
+    /** Additional MLLM parameters passed directly to xAI */
+    params?: Record<string, unknown>;
+    /** MLLM turn detection configuration. Overrides top-level turn_detection. */
+    turnDetection?: MllmTurnDetectionConfig;
+}
+
+/**
+ * xAI Grok MLLM vendor (`mllm.vendor`: `"xai"`).
+ *
+ * Uses the xAI Realtime API WebSocket URL by default. Do not name future xAI ASR/TTS
+ * wrappers `XaiRealtime`; use `XaiSTT` / `XaiTTS` when those pipelines are added.
+ *
+ * @example
+ * ```typescript
+ * const agent = new Agent({ name: 'grok-assistant' })
+ *   .withMllm(new XaiGrok({
+ *     apiKey: process.env.XAI_API_KEY,
+ *     voice: 'eve',
+ *     language: 'en',
+ *     sampleRate: 24000,
+ *     greetingMessage: 'Hello, how can I help?',
+ *   }));
+ * ```
+ */
+export class XaiGrok extends BaseMLLM {
+    private readonly options: XaiGrokOptions;
+
+    constructor(options: XaiGrokOptions) {
+        super();
+        this.options = options;
+
+        if (!options.apiKey) {
+            throw new Error("XaiGrok requires apiKey");
+        }
+    }
+
+    toConfig(): MllmConfig {
+        const {
+            apiKey,
+            url = "wss://api.x.ai/v1/realtime",
+            voice,
+            language,
+            sampleRate,
+            greetingMessage,
+            failureMessage,
+            inputModalities,
+            outputModalities,
+            messages,
+            params,
+            turnDetection,
+        } = this.options;
+
+        return {
+            vendor: "xai",
+            api_key: apiKey,
+            url,
+            ...(messages && { messages }),
+            params: {
+                ...params,
+                ...(voice && { voice }),
+                ...(language && { language }),
+                ...(sampleRate !== undefined && { sample_rate: sampleRate }),
+            },
+            ...(inputModalities && { input_modalities: inputModalities }),
+            ...(outputModalities && { output_modalities: outputModalities }),
+            ...(greetingMessage && { greeting_message: greetingMessage }),
+            ...(failureMessage && { failure_message: failureMessage }),
             ...(turnDetection && { turn_detection: turnDetection }),
         };
     }

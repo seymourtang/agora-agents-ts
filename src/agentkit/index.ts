@@ -19,254 +19,258 @@
  *    parts that need manual updates when adding new sugar.
  */
 
-// Core classes
-export { Agent } from "./Agent.js";
-export type { AgentOptions } from "./Agent.js";
-
-export { AgentSession } from "./AgentSession.js";
-export { AgentPresets, normalizePresetInput } from "./presets.js";
-export type {
-    AgentPreset,
-    AsrPreset,
-    LlmPreset,
-    TtsPreset,
-    PresetInput,
-    DeepgramPresetModel,
-    OpenAIPresetModel,
-    OpenAITtsPresetModel,
-    MiniMaxPresetModel,
-} from "./presets.js";
-
-// Token generation
-export { generateRtcToken, generateConvoAIToken, ExpiresIn } from "./token.js";
-export type { GenerateTokenOptions, GenerateConvoAITokenOptions } from "./token.js";
-export type {
-    AgentSessionOptions,
-    AgentSessionEvent,
-    AgentSessionEventHandler,
-} from "./AgentSession.js";
-
 // Re-export the underlying client type for advanced usage
 export type { AgentsClient } from "../api/resources/agents/client/Client.js";
-
-// Clean type aliases
+export type { AgentOptions } from "./Agent.js";
+// Core classes
+export { Agent } from "./Agent.js";
 export type {
-    // Core configuration types
-    LlmConfig,
-    LlmStyle,
-    LlmGreetingConfigs,
-    LlmGreetingConfigsMode,
-    McpServersItem,
-    SttConfig,
-    SttVendor,
-    TtsConfig,
-    MllmConfig,
-    MllmVendor,
-    AvatarConfig,
-    AvatarVendor,
-    TurnDetectionConfig,
-    TurnDetectionNestedConfig,
-    StartOfSpeechConfig,
-    StartOfSpeechMode,
-    StartOfSpeechVadConfig,
-    StartOfSpeechKeywordsConfig,
-    StartOfSpeechDisabledConfig,
-    StartOfSpeechDisabledConfigStrategy,
-    EndOfSpeechConfig,
-    EndOfSpeechMode,
-    EndOfSpeechVadConfig,
-    EndOfSpeechSemanticConfig,
-    TurnDetectionType,
-    InterruptMode,
-    Eagerness,
-    SalConfig,
-    SalMode,
-    AdvancedFeatures,
-    SessionParams,
-    SessionParamsInput,
-    SilenceConfig,
-    SilenceAction,
-    FarewellConfig,
-    ParametersDataChannel,
-    ParametersAudioScenario,
-    InterruptionConfig,
-    InterruptionMode,
-    MllmTurnDetectionConfig,
-    MllmTurnDetectionMode,
-    ThinkOptions,
-    ThinkResponse,
-    GeofenceConfig,
-    GeofenceArea,
-    GeofenceExcludeArea,
-    RtcConfig,
-    FillerWordsConfig,
-    FillerWordsTrigger,
-    FillerWordsTriggerFixedTimeConfig,
-    FillerWordsContent,
-    FillerWordsContentStaticConfig,
-    FillerWordsContentSelectionRule,
-    Labels,
-    // Agent configuration
-    AgentConfig,
-    AgentConfigUpdate,
-    // Session types
-    SessionOptions,
-    SessionStatus,
-    SessionInfo,
-    SessionListResponse,
-    SessionSummary,
-    // Conversation types
-    ConversationHistory,
-    ConversationTurn,
-    ConversationRole,
-    ConversationTurns,
-    ConversationSessionTurn,
-    // Say/Speak types
-    SayOptions,
-    SpeakPriority,
-    // TTS vendor-specific types
-    MicrosoftTts,
-    MicrosoftTtsParams,
-    ElevenLabsTts,
-    ElevenLabsTtsParams,
-    CartesiaTts,
-    CartesiaTtsParams,
-    OpenAiTts,
-    OpenAiTtsParams,
-    HumeAiTts,
-    HumeAiTtsParams,
-    RimeTts,
-    RimeTtsParams,
-    FishAudioTts,
-    FishAudioTtsParams,
-    GoogleTts,
-    GoogleTtsParams,
-    AmazonTts,
-    AmazonTtsParams,
-    MinimaxTts,
-    MinimaxTtsParams,
-    MurfTts,
-    MurfTtsParams,
-    SarvamTts,
-    SarvamTtsParams,
-} from "./types.js";
-
+    AgentSessionEvent,
+    AgentSessionEventHandler,
+    AgentSessionOptions,
+} from "./AgentSession.js";
+export { AgentSession } from "./AgentSession.js";
 // Vendor-specific avatar types with strict constraints
 export type {
-    StrictAvatarConfig,
-    HeyGenAvatarConfig,
-    LiveAvatarAvatarConfig,
     AkoolAvatarConfig,
     AnamAvatarConfig,
     GenericAvatarConfig,
+    HeyGenAvatarConfig,
+    LiveAvatarAvatarConfig,
+    StrictAvatarConfig,
 } from "./avatar-types.js";
-
 export {
-    isHeyGenAvatar,
-    isLiveAvatarAvatar,
     isAkoolAvatar,
     isAnamAvatar,
+    isAvatarTokenManaged,
+    isGenericAvatar,
+    isHeyGenAvatar,
+    isLiveAvatarAvatar,
+    toBaseAvatarConfig,
     validateAvatarConfig,
     validateTtsSampleRate,
-    toBaseAvatarConfig,
 } from "./avatar-types.js";
-
-// Base vendor classes
+// Type-safe constants
 export {
-    BaseLLM,
-    BaseTTS,
-    BaseSTT,
-    BaseMLLM,
-    BaseAvatar,
-    type BaseLlmOptions,
-    type GoogleTTSSampleRate,
-} from "./vendors/base.js";
-
-// Sample rate types
+    AudioScenario,
+    DataChannel,
+    FillerWordsSelectionRule,
+    Geofence,
+    SalModeValues,
+    SilenceActionValues,
+    TurnDetectionTypeValues,
+} from "./constants.js";
 export type {
-    SampleRate,
-    ElevenLabsSampleRate,
-    MicrosoftSampleRate,
-    CartesiaSampleRate,
-    HeyGenSampleRate,
-    LiveAvatarSampleRate,
-    AkoolSampleRate,
-} from "./vendors/base.js";
-
-// LLM vendor classes
-export { OpenAI, AzureOpenAI, Anthropic, Gemini } from "./vendors/llm.js";
+    AgentPreset,
+    AsrPreset,
+    DeepgramPresetModel,
+    LlmPreset,
+    MiniMaxPresetModel,
+    OpenAIPresetModel,
+    OpenAITtsPresetModel,
+    PresetInput,
+    TtsPreset,
+} from "./presets.js";
+export { AgentPresets, normalizePresetInput } from "./presets.js";
+export type { GenerateAvatarRtcTokenOptions, GenerateConvoAITokenOptions, GenerateTokenOptions } from "./token.js";
+// Token generation
+export { ExpiresIn, generateAvatarRtcToken, generateConvoAIToken, generateRtcToken } from "./token.js";
+// Clean type aliases
 export type {
-    OpenAIOptions,
-    AzureOpenAIOptions,
-    AnthropicOptions,
-    GeminiOptions,
-} from "./vendors/llm.js";
-
-// TTS vendor classes
-export {
-    ElevenLabsTTS,
-    MicrosoftTTS,
-    OpenAITTS,
-    CartesiaTTS,
-    DeepgramTTS,
-    GoogleTTS,
-    AmazonTTS,
-    HumeAITTS,
-    RimeTTS,
-    FishAudioTTS,
-    MiniMaxTTS,
-    MurfTTS,
-    SarvamTTS,
-} from "./vendors/tts.js";
+    AdvancedFeatures,
+    // Agent configuration
+    AgentConfig,
+    AgentConfigUpdate,
+    AmazonTts,
+    AmazonTtsParams,
+    AvatarConfig,
+    AvatarVendor,
+    CartesiaTts,
+    CartesiaTtsParams,
+    // Conversation types
+    ConversationHistory,
+    ConversationRole,
+    ConversationSessionTurn,
+    ConversationTurn,
+    ConversationTurns,
+    Eagerness,
+    ElevenLabsTts,
+    ElevenLabsTtsParams,
+    EndOfSpeechConfig,
+    EndOfSpeechMode,
+    EndOfSpeechSemanticConfig,
+    EndOfSpeechVadConfig,
+    FarewellConfig,
+    FillerWordsConfig,
+    FillerWordsContent,
+    FillerWordsContentSelectionRule,
+    FillerWordsContentStaticConfig,
+    FillerWordsTrigger,
+    FillerWordsTriggerFixedTimeConfig,
+    FishAudioTts,
+    FishAudioTtsParams,
+    GeofenceArea,
+    GeofenceConfig,
+    GeofenceExcludeArea,
+    GetTurnsOptions,
+    GoogleTts,
+    GoogleTtsParams,
+    HumeAiTts,
+    HumeAiTtsParams,
+    InterruptionConfig,
+    InterruptionMode,
+    InterruptMode,
+    Labels,
+    // Core configuration types
+    LlmConfig,
+    LlmGreetingConfigs,
+    LlmGreetingConfigsMode,
+    LlmStyle,
+    McpServersItem,
+    // TTS vendor-specific types
+    MicrosoftTts,
+    MicrosoftTtsParams,
+    MinimaxTts,
+    MinimaxTtsParams,
+    MllmConfig,
+    MllmTurnDetectionConfig,
+    MllmTurnDetectionMode,
+    MllmVendor,
+    MurfTts,
+    MurfTtsParams,
+    OpenAiTts,
+    OpenAiTtsParams,
+    ParametersAudioScenario,
+    ParametersDataChannel,
+    RimeTts,
+    RimeTtsParams,
+    RtcConfig,
+    SalConfig,
+    SalMode,
+    SarvamTts,
+    SarvamTtsParams,
+    // Say/Speak types
+    SayOptions,
+    SessionInfo,
+    SessionListResponse,
+    // Session types
+    SessionOptions,
+    SessionParams,
+    SessionParamsInput,
+    SessionStatus,
+    SessionSummary,
+    SilenceAction,
+    SilenceConfig,
+    SpeakPriority,
+    StartOfSpeechConfig,
+    StartOfSpeechDisabledConfig,
+    StartOfSpeechDisabledConfigStrategy,
+    StartOfSpeechKeywordsConfig,
+    StartOfSpeechMode,
+    StartOfSpeechVadConfig,
+    SttConfig,
+    SttVendor,
+    ThinkOnListeningAction,
+    ThinkOnSpeakingAction,
+    ThinkOnThinkingAction,
+    ThinkOptions,
+    ThinkResponse,
+    TtsConfig,
+    TurnDetectionConfig,
+    TurnDetectionNestedConfig,
+    TurnDetectionType,
+} from "./types.js";
 export type {
-    ElevenLabsTTSOptions,
-    MicrosoftTTSOptions,
-    OpenAITTSOptions,
-    CartesiaTTSOptions,
-    DeepgramTTSOptions,
-    GoogleTTSOptions,
-    AmazonTTSOptions,
-    HumeAITTSOptions,
-    RimeTTSOptions,
-    FishAudioTTSOptions,
-    MiniMaxTTSOptions,
-    MurfTTSOptions,
-    SarvamTTSOptions,
-} from "./vendors/tts.js";
-
-// STT vendor classes
-export {
-    SpeechmaticsSTT,
-    DeepgramSTT,
-    MicrosoftSTT,
-    OpenAISTT,
-    GoogleSTT,
-    AmazonSTT,
-    AssemblyAISTT,
-    AresSTT,
-    SarvamSTT,
-} from "./vendors/stt.js";
-export type {
-    SpeechmaticsSTTOptions,
-    DeepgramSTTOptions,
-    MicrosoftSTTOptions,
-    OpenAISTTOptions,
-    GoogleSTTOptions,
-    AmazonSTTOptions,
-    AssemblyAISTTOptions,
-    AresSTTOptions,
-    SarvamSTTOptions,
-} from "./vendors/stt.js";
-
-// MLLM vendor classes
-export { OpenAIRealtime, GeminiLive, VertexAI } from "./vendors/mllm.js";
-export type { OpenAIRealtimeOptions, GeminiLiveOptions, VertexAIOptions } from "./vendors/mllm.js";
-
-// Avatar vendor classes
-export { HeyGenAvatar, LiveAvatarAvatar, AkoolAvatar, AnamAvatar } from "./vendors/avatar.js";
-export type {
-    HeyGenAvatarOptions,
-    LiveAvatarAvatarOptions,
     AkoolAvatarOptions,
     AnamAvatarOptions,
+    GenericAvatarOptions,
+    HeyGenAvatarOptions,
+    LiveAvatarAvatarOptions,
 } from "./vendors/avatar.js";
+// Avatar vendor classes
+export { AkoolAvatar, AnamAvatar, GenericAvatar, HeyGenAvatar, LiveAvatarAvatar } from "./vendors/avatar.js";
+// Sample rate types
+export type {
+    AkoolSampleRate,
+    CartesiaSampleRate,
+    ElevenLabsSampleRate,
+    HeyGenSampleRate,
+    LiveAvatarSampleRate,
+    MicrosoftSampleRate,
+    SampleRate,
+} from "./vendors/base.js";
+// Base vendor classes
+export {
+    BaseAvatar,
+    BaseLLM,
+    type BaseLlmOptions,
+    BaseMLLM,
+    BaseSTT,
+    BaseTTS,
+    type GoogleTTSSampleRate,
+} from "./vendors/base.js";
+export type {
+    AnthropicOptions,
+    AzureOpenAIOptions,
+    GeminiOptions,
+    OpenAIOptions,
+} from "./vendors/llm.js";
+// LLM vendor classes
+export { Anthropic, AzureOpenAI, Gemini, OpenAI } from "./vendors/llm.js";
+export type { GeminiLiveOptions, OpenAIRealtimeOptions, VertexAIOptions, XaiGrokOptions } from "./vendors/mllm.js";
+// MLLM vendor classes
+export { GeminiLive, OpenAIRealtime, VertexAI, XaiGrok } from "./vendors/mllm.js";
+export type {
+    AmazonSTTOptions,
+    AresSTTOptions,
+    AssemblyAISTTOptions,
+    DeepgramSTTOptions,
+    GoogleSTTOptions,
+    MicrosoftSTTOptions,
+    OpenAISTTOptions,
+    SarvamSTTOptions,
+    SpeechmaticsSTTOptions,
+} from "./vendors/stt.js";
+// STT vendor classes
+export {
+    AmazonSTT,
+    AresSTT,
+    AssemblyAISTT,
+    DeepgramSTT,
+    GoogleSTT,
+    MicrosoftSTT,
+    OpenAISTT,
+    SarvamSTT,
+    SpeechmaticsSTT,
+} from "./vendors/stt.js";
+export type {
+    AmazonTTSOptions,
+    CartesiaTTSOptions,
+    DeepgramTTSOptions,
+    ElevenLabsTTSOptions,
+    FishAudioTTSOptions,
+    GoogleTTSOptions,
+    HumeAITTSOptions,
+    MicrosoftTTSOptions,
+    MiniMaxTTSOptions,
+    MurfTTSOptions,
+    OpenAITTSOptions,
+    RimeTTSOptions,
+    SarvamTTSOptions,
+} from "./vendors/tts.js";
+// TTS vendor classes
+export {
+    AmazonTTS,
+    CartesiaTTS,
+    DeepgramTTS,
+    ElevenLabsTTS,
+    FishAudioTTS,
+    GoogleTTS,
+    HumeAITTS,
+    MicrosoftTTS,
+    MiniMaxTTS,
+    MurfTTS,
+    OpenAITTS,
+    RimeTTS,
+    SarvamTTS,
+} from "./vendors/tts.js";

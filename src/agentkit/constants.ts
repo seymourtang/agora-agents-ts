@@ -10,6 +10,10 @@ import { StartAgentsRequest as StartAgentsRequestNS } from "../api/resources/age
 export const DataChannel: typeof StartAgentsRequestNS.Properties.Parameters.DataChannel =
     StartAgentsRequestNS.Properties.Parameters.DataChannel;
 
+/** RTC audio scenario: `"default"` | `"chorus"` | `"aiserver"` */
+export const AudioScenario: typeof StartAgentsRequestNS.Properties.Parameters.AudioScenario =
+    StartAgentsRequestNS.Properties.Parameters.AudioScenario;
+
 /** Silence action when timeout elapses: `"speak"` | `"think"` (avoids shadowing SilenceAction type) */
 export const SilenceActionValues: typeof StartAgentsRequestNS.Properties.Parameters.SilenceConfig.Action =
     StartAgentsRequestNS.Properties.Parameters.SilenceConfig.Action;
@@ -19,8 +23,7 @@ export const SalModeValues: typeof StartAgentsRequestNS.Properties.Sal.SalMode =
     StartAgentsRequestNS.Properties.Sal.SalMode;
 
 /** Geofence area and exclude area constants */
-export const Geofence: typeof StartAgentsRequestNS.Properties.Geofence =
-    StartAgentsRequestNS.Properties.Geofence;
+export const Geofence: typeof StartAgentsRequestNS.Properties.Geofence = StartAgentsRequestNS.Properties.Geofence;
 
 /** Filler word selection rule: `"shuffle"` | `"round_robin"` */
 export const FillerWordsSelectionRule: typeof StartAgentsRequestNS.Properties.FillerWords.Content.StaticConfig.SelectionRule =
