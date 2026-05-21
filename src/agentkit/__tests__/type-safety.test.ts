@@ -17,7 +17,7 @@ import { OpenAI } from "../vendors/llm.js";
 import { DeepgramSTT } from "../vendors/stt.js";
 import { ElevenLabsTTS, MicrosoftTTS, CartesiaTTS, OpenAITTS } from "../vendors/tts.js";
 import { MiniMaxTTS } from "../vendors/tts.js";
-import { HeyGenAvatar, AkoolAvatar } from "../vendors/avatar.js";
+import { LiveAvatarAvatar, AkoolAvatar } from "../vendors/avatar.js";
 
 // ============================================
 // ✅ VALID CONFIGURATIONS
@@ -35,7 +35,7 @@ function validExample1(): Agent<24000> {
             }),
         )
         .withAvatar(
-            new HeyGenAvatar({
+            new LiveAvatarAvatar({
                 apiKey: "test",
                 quality: "high",
                 agoraUid: "12345",
@@ -73,7 +73,7 @@ function validExample3(): Agent<24000> {
             }),
         )
         .withAvatar(
-            new HeyGenAvatar({
+            new LiveAvatarAvatar({
                 apiKey: "test",
                 quality: "high",
                 agoraUid: "12345",
@@ -91,7 +91,7 @@ function validExample4(): Agent<24000> {
             }),
         )
         .withAvatar(
-            new HeyGenAvatar({
+            new LiveAvatarAvatar({
                 apiKey: "test",
                 quality: "high",
                 agoraUid: "12345",
@@ -161,7 +161,7 @@ function invalidMismatch1(): Agent<24000> {
             })
         )
         .withAvatar(
-            new HeyGenAvatar({
+            new LiveAvatarAvatar({
                 apiKey: "test",
                 quality: "high",
                 agoraUid: "12345",
@@ -203,7 +203,7 @@ function invalidMismatch3(): Agent<24000> {
             })
         )
         .withAvatar(
-            new HeyGenAvatar({
+            new LiveAvatarAvatar({
                 apiKey: "test",
                 quality: "high",
                 agoraUid: "12345",
@@ -265,7 +265,7 @@ function invalidEnum3() {
 // Avatar without TTS configured (allowed)
 function edgeCase1() {
     return new Agent({ instructions: "Test" }).withAvatar(
-        new HeyGenAvatar({
+        new LiveAvatarAvatar({
             apiKey: "test",
             quality: "high",
             agoraUid: "12345",
@@ -299,7 +299,7 @@ function edgeCase3(): Agent<24000> {
         .withInstructions("Updated instructions")
         .withGreeting("Hello!")
         .withAvatar(
-            new HeyGenAvatar({
+            new LiveAvatarAvatar({
                 apiKey: "test",
                 quality: "high",
                 agoraUid: "12345",
