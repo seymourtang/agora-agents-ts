@@ -4,23 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [v2.0.0] — 2026-05-21
 
 ### Added
 
 - **Alias parity** — `AsrConfig` (= `SttConfig`), think value constants (`ThinkOnListeningActionInject`, etc.), and cross-SDK discovery table in `docs/reference/agent.md`.
-
-### Deprecated (legacy naming — use replacements)
-
-- **`HeyGenAvatar`** — Use `LiveAvatarAvatar` (`vendor: "liveavatar"`). Emits `DeprecationWarning` in Python; `@deprecated` JSDoc in TypeScript; godoc `Deprecated:` in Go.
-- **`is_rtc_avatar`** (Python) — Use `is_avatar_token_managed` for vendor gating.
-- **`XAIGrok` / `NewXAIGrok`** (Go) — Use `XaiGrok` / `NewXaiGrok`.
-- **`AgentThinkRequestOn*`** / **`AgentThinkResponse`** (Python) — Use `ThinkOn*` / `ThinkResponse`.
-
-## [v1.5.0] — 2026-05-20
-
-### Added
-
+- **Agent-level greeting configs** — `Agent.withGreetingConfigs()` maps directly to `llm.greeting_configs`, including v2.7 `interruptable`.
+- **v2.7 value constants** — Exported discoverable constants for Think actions, interruption modes, speak priorities, and MLLM turn detection modes.
 - **`XaiGrok`** — New MLLM vendor wrapper for xAI Grok Realtime API (`vendor: "xai"`), including voice, language, sample rate, modalities, messages, greeting/failure, and MLLM turn detection support.
 - **`GenericAvatar`** — New generic avatar provider wrapper with typed options for `apiKey`, `apiBaseUrl`, `avatarId`, and `agoraUid`.
 - **Avatar token automation** — AgentKit now fills generic avatar `agora_appid` / `agora_channel` from the session and auto-generates `avatar.params.agora_token` for vendors that publish a separate RTC video identity (`HeyGenAvatar`, `LiveAvatarAvatar`, `GenericAvatar`) when `agoraToken` is omitted. Avatar tokens use the same ConvoAI token format as agent tokens, scoped to the avatar `agora_uid`. `AkoolAvatar` and `AnamAvatar` never receive an auto-generated token (matching the Go and Python SDKs).
@@ -31,6 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **ConvoAI token options** — `generateConvoAIToken()` now accepts an integer `uid` and handles the internal token string conversion for users, agents, and avatars.
+- **Avatar token generation** — Removed the dedicated `generateAvatarRtcToken()` wrapper; avatar RTC tokens use the existing ConvoAI token helper.
 - **`AgentSession.think()` typing** — `ThinkOptions.on_listening_action` now includes `"interrupt"` to match the v2.7 API. The server default changed from `"inject"` to `"interrupt"`; pass `"inject"` explicitly to preserve prior behavior.
 - **MLLM + avatar guard** — `Agent.toProperties()` and `AgentSession.start()` now throw a clear error when an MLLM vendor is combined with an enabled avatar. Avatars currently require the cascading ASR + LLM + TTS pipeline; the guard prevents an opaque backend failure (matches Go and Python SDKs).
 - **MLLM message shape** — `GeminiLive` and `VertexAI` now emit `messages` at the top level of `mllm`, matching the generated v2.7 core type.
@@ -41,7 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Deprecated
 
-- **`HeyGenAvatar`** remains available for backward compatibility but is documented as deprecated in favor of `LiveAvatarAvatar`.
+- **`HeyGenAvatar`** — Use `LiveAvatarAvatar` (`vendor: "liveavatar"`). The legacy wrapper remains available for backward compatibility and emits `@deprecated` JSDoc.
 
 ## [v1.4.0] — 2026-05-13
 
@@ -107,7 +99,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - **`AresSTT`** — Removed redundant `language` key from the `params` dict. Language is now emitted only at the top level. `params` is only included when `additionalParams` is provided.
 - **`OpenAIRealtime` / `VertexAI` (MLLM)** — Agent-level `greeting` and `failureMessage` overrides are now correctly applied when the agent is in MLLM mode. Previously these values were silently dropped.
-- **`VertexAI` (MLLM)** — Message handling was updated for the MLLM wrapper. As of v1.5.0, `messages` is emitted at top-level `mllm.messages` to match the generated v2.7 core type.
+- **`VertexAI` (MLLM)** — Message handling was updated for the MLLM wrapper. As of v2.0.0, `messages` is emitted at top-level `mllm.messages` to match the generated v2.7 core type.
 
 ### Changed
 
