@@ -90,9 +90,12 @@ MLLM (Multimodal LLM) vendors handle audio end-to-end — no separate STT or TTS
 
 | Class | Provider | Key constructor params |
 |---|---|---|
-| `OpenAIRealtime` | OpenAI Realtime API | `apiKey`, `model?`, `url?`, `greetingMessage?`, `inputModalities?`, `outputModalities?`, `turnDetection?` |
-| `GeminiLive` | Google Gemini Live API | `apiKey`, `model`, `url?`, `voice?`, `greetingMessage?`, `inputModalities?`, `outputModalities?`, `turnDetection?` |
-| `VertexAI` | Vertex AI Gemini Live | `model`, `url?`, `projectId`, `location`, `adcCredentialsString`, `voice?`, `greetingMessage?`, `turnDetection?` |
+| `OpenAIRealtime` | OpenAI Realtime API | `apiKey`, `model?`, `url?`, `greetingMessage?`, `failureMessage?`, `inputModalities?`, `outputModalities?`, `messages?`, `turnDetection?` |
+| `GeminiLive` | Google Gemini Live API | `apiKey`, `model`, `url?`, `voice?`, `greetingMessage?`, `failureMessage?`, `inputModalities?`, `outputModalities?`, `messages?`, `turnDetection?` |
+| `VertexAI` | Vertex AI Gemini Live | `model`, `url?`, `projectId`, `location`, `adcCredentialsString`, `voice?`, `greetingMessage?`, `failureMessage?`, `inputModalities?`, `outputModalities?`, `messages?`, `turnDetection?` |
+| `XaiGrok` | xAI Grok (`mllm.vendor`: `xai`) | `apiKey`, `url?`, `voice?`, `language?`, `sampleRate?`, `greetingMessage?`, `failureMessage?`, `inputModalities?`, `outputModalities?`, `messages?`, `turnDetection?` |
+
+> Future xAI **STT** and **TTS** vendors will be named `XaiSTT` and `XaiTTS` (cascading pipeline), not `XaiRealtime`. See workspace `docs/AGENTKIT-VENDOR-NAMING.md`.
 
 <!-- snippet: executable -->
 ```typescript
@@ -109,12 +112,17 @@ See [MLLM Flow Guide](../guides/mllm-flow.md) for full examples.
 
 ## Avatar vendors
 
-Avatars provide a visual representation for the agent. Each avatar vendor requires a specific TTS sample rate — this is enforced at both compile time and runtime.
+Avatars provide a visual representation for the agent. Several avatar vendors require a specific TTS sample rate — this is enforced at both compile time and runtime.
+
+> Avatars currently require the cascading ASR + LLM + TTS pipeline. They are not supported with MLLM (`OpenAIRealtime`, `GeminiLive`, `VertexAI`, `XaiGrok`); combining the two throws at `Agent.toProperties()` and `AgentSession.start()`.
 
 | Class | Provider | Required TTS sample rate |
 |---|---|---|
-| `HeyGenAvatar` | HeyGen | 24000 Hz |
+| `LiveAvatarAvatar` | LiveAvatar (formerly HeyGen) | 24000 Hz |
+| `HeyGenAvatar` | HeyGen (deprecated, use `LiveAvatarAvatar`) | 24000 Hz |
 | `AkoolAvatar` | Akool | 16000 Hz |
+| `AnamAvatar` | Anam | Provider-defined |
+| `GenericAvatar` | Custom avatar provider | Provider-defined |
 
 See [Avatar Integration](../guides/avatars.md) for full examples and the sample-rate constraint details.
 

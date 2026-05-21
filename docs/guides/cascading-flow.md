@@ -201,5 +201,5 @@ await session.start();
 
 ## Next steps
 
-- [MLLM Flow](./mllm-flow.md) — skip the ASR → LLM → TTS pipeline with OpenAI Realtime or Gemini Live
+- [MLLM Flow](./mllm-flow.md) — skip the ASR → LLM → TTS pipeline with OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok
 - [Avatar Integration](./avatars.md) — add a visual avatar to the agent

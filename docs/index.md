@@ -12,12 +12,12 @@ The `agora-agent-server-sdk` package lets you build real-time voice AI agents on
 
 **Cascading flow** uses ASR -> LLM -> TTS and supports the broadest set of vendor combinations.
 
-**MLLM flow** uses a multimodal model such as OpenAI Realtime or Gemini Live for end-to-end audio.
+**MLLM flow** uses a multimodal model such as OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok for end-to-end audio.
 
 ## Choose a starting point
 
 - Use [Quick Start](./getting-started/quick-start.md) if you want the recommended preset-based path with no vendor keys.
-- Use [MLLM Flow Guide](./guides/mllm-flow.md) if you want realtime end-to-end audio with OpenAI Realtime or Gemini Live.
+- Use [MLLM Flow Guide](./guides/mllm-flow.md) if you want realtime end-to-end audio with OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok.
 - Use [Cascading Flow Guide](./guides/cascading-flow.md) if you want separate ASR, LLM, and TTS vendors.
 
 ## SDK layers
@@ -46,8 +46,8 @@ npm install agora-agent-server-sdk
 | [AgentSession](./concepts/session.md) | State machine, lifecycle methods, events |
 | [Vendors](./concepts/vendors.md) | LLM, TTS, STT, MLLM, and Avatar provider catalog |
 | [Cascading Flow Guide](./guides/cascading-flow.md) | Step-by-step ASR -> LLM -> TTS |
-| [MLLM Flow Guide](./guides/mllm-flow.md) | OpenAI Realtime and Vertex AI Gemini Live |
-| [Avatar Integration](./guides/avatars.md) | HeyGen and Akool with sample-rate constraints |
+| [MLLM Flow Guide](./guides/mllm-flow.md) | OpenAI Realtime, Gemini Live, Vertex AI, and xAI Grok |
+| [Avatar Integration](./guides/avatars.md) | LiveAvatar, Generic Avatar, Anam, HeyGen, and Akool integration |
 | [Regional Routing](./guides/regional-routing.md) | Area enum, domain pool, failover |
 | [Error Handling](./guides/error-handling.md) | AgoraError and API error handling |
 | [Pagination](./guides/pagination.md) | Iterate over paginated list endpoints |

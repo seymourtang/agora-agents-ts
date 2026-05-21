@@ -43,7 +43,10 @@ Start the agent session. Validates avatar/TTS configuration, sends the start req
 - Transitions: `idle` / `stopped` / `error` → `starting` → `running`
 - Throws if called in `starting`, `running`, or `stopping` state
 - Throws if avatar config is invalid (wrong TTS sample rate)
+- Throws if MLLM is enabled together with an enabled avatar — avatars are only supported with the cascading ASR + LLM + TTS pipeline
 - Resolves explicit `preset` values and also infers reseller presets from supported vendor configs when credentials are omitted
+- Fills generic avatar `agora_appid` and `agora_channel` from the session when omitted
+- Generates avatar `agora_token` for `HeyGenAvatar`, `LiveAvatarAvatar`, and `GenericAvatar` when `agoraToken` is omitted and the client has an `appCertificate`. Other vendors (`AkoolAvatar`, `AnamAvatar`) never receive an auto-generated token.
 
 ### `stop(): Promise<void>`
 
@@ -79,11 +82,20 @@ Fetch the conversation history for this session.
 
 - Requires a valid `agentId` (i.e., `start()` must have been called)
 
-### `getTurns(): Promise<ConversationTurns>`
+### `getTurns(options?: GetTurnsOptions): Promise<ConversationTurns>`
 
 Fetch turn-by-turn analytics for this session, including start/end events and latency metrics.
 
 - Requires a valid `agentId` (i.e., `start()` must have been called)
+- `options.page_index`: page number, starting from `1`
+- `options.page_size`: number of turns per page
+
+### `getAllTurns(options?: Omit<GetTurnsOptions, "page_index">): Promise<ConversationTurns>`
+
+Fetch all turn analytics pages and merge the `turns` array.
+
+- Requires a valid `agentId`
+- For very long sessions, prefer processing pages with `getTurns()` to avoid holding all turns in memory
 
 ### `getInfo(): Promise<SessionInfo>`
 

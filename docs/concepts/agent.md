@@ -48,8 +48,8 @@ Each method returns a new `Agent` instance with the updated configuration.
 | `withLlm` | `withLlm(vendor: BaseLLM): Agent` | Set the LLM vendor |
 | `withTts` | `withTts<SR>(vendor: BaseTTS<SR>): Agent<SR>` | Set the TTS vendor (tracks sample rate type) |
 | `withStt` | `withStt(vendor: BaseSTT): Agent` | Set the STT vendor |
-| `withMllm` | `withMllm(vendor: BaseMLLM): Agent` | Set the MLLM vendor (for multimodal flow) |
-| `withAvatar` | `withAvatar<SR>(vendor: BaseAvatar<SR>): Agent` | Set the avatar vendor (enforces TTS sample rate match) |
+| `withMllm` | `withMllm(vendor: BaseMLLM): Agent` | Set the MLLM vendor (for multimodal flow). Not compatible with `withAvatar()`. |
+| `withAvatar` | `withAvatar<SR>(vendor: BaseAvatar<SR>): Agent` | Set the avatar vendor (enforces TTS sample rate match). Requires the cascading pipeline; not supported with `withMllm()`. |
 | `withTurnDetection` | `withTurnDetection(config: TurnDetectionConfig): Agent` | Configure cascading-flow SOS/EOS detection; use `withInterruption()` for interruption behavior |
 | `withInstructions` | `withInstructions(text: string): Agent` | Override the system prompt |
 | `withGreeting` | `withGreeting(text: string): Agent` | Override the greeting message |
