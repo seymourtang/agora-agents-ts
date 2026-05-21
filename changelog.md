@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+
+- **Alias parity** — `AsrConfig` (= `SttConfig`), think value constants (`ThinkOnListeningActionInject`, etc.), and cross-SDK discovery table in `docs/reference/agent.md`.
+
+### Deprecated (legacy naming — use replacements)
+
+- **`HeyGenAvatar`** — Use `LiveAvatarAvatar` (`vendor: "liveavatar"`). Emits `DeprecationWarning` in Python; `@deprecated` JSDoc in TypeScript; godoc `Deprecated:` in Go.
+- **`is_rtc_avatar`** (Python) — Use `is_avatar_token_managed` for vendor gating.
+- **`XAIGrok` / `NewXAIGrok`** (Go) — Use `XaiGrok` / `NewXaiGrok`.
+- **`AgentThinkRequestOn*`** / **`AgentThinkResponse`** (Python) — Use `ThinkOn*` / `ThinkResponse`.
+
 ## [v1.5.0] — 2026-05-20
 
 ### Added
