@@ -201,3 +201,18 @@ If you provide your own vendor API key for those same models, AgentKit keeps the
 ## `toProperties(opts): StartAgentsRequest.Properties`
 
 Low-level method to convert the agent config to the Fern request format. Used internally by `AgentSession.start()`. You typically don't need to call this directly unless building custom request bodies.
+
+## Type aliases
+
+Public aliases over Fern-generated types include `LlmConfig`, `SttConfig`, `AsrConfig` (= `SttConfig`), `MllmConfig`, `AvatarConfig`, session/conversation types, and think types (`ThinkOnListeningAction`, etc.).
+
+Think value constants: `ThinkOnListeningActionInject`, `ThinkOnListeningActionInterrupt`, `ThinkOnListeningActionIgnore`, `ThinkOnThinkingActionInterrupt`, `ThinkOnThinkingActionIgnore`, `ThinkOnSpeakingActionInterrupt`, `ThinkOnSpeakingActionIgnore`.
+
+## Cross-SDK discovery map
+
+| Concept | TypeScript | Python | Go |
+|---|---|---|---|
+| STT payload alias (wire: `asr`) | `SttConfig` / `AsrConfig` | `SttConfig` / `AsrConfig` | `AsrConfig` / `SttConfig` |
+| xAI MLLM (primary) | `XaiGrok` | `XaiGrok` | `XaiGrok` / `NewXaiGrok` |
+| Avatar token helper | `isAvatarTokenManaged` | `is_avatar_token_managed` | `IsAvatarTokenManaged` |
+| Think inject constant | `ThinkOnListeningActionInject` | `ThinkOnListeningActionInject` | `ThinkOnListeningActionInject` |
