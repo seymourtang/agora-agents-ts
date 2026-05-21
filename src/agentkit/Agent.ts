@@ -7,26 +7,27 @@
 
 import type * as Agora from "../api/index.js";
 import type { AgoraClient } from "../Client.js";
+import { AgentSession } from "./AgentSession.js";
+import { generateConvoAIToken } from "./token.js";
 import type {
+    AdvancedFeatures,
+    AvatarConfig,
+    FillerWordsConfig,
+    GeofenceConfig,
+    InterruptionConfig,
+    Labels,
     LlmConfig,
+    MllmConfig,
+    ParametersAudioScenario,
+    RtcConfig,
+    SalConfig,
+    SessionOptions,
+    SessionParamsInput,
     SttConfig,
     TtsConfig,
-    MllmConfig,
     TurnDetectionConfig,
-    InterruptionConfig,
-    SalConfig,
-    AvatarConfig,
-    AdvancedFeatures,
-    SessionParamsInput,
-    SessionOptions,
-    GeofenceConfig,
-    RtcConfig,
-    FillerWordsConfig,
-    Labels,
 } from "./types.js";
-import { BaseLLM, BaseTTS, BaseSTT, BaseMLLM, BaseAvatar } from "./vendors/base.js";
-import { generateConvoAIToken } from "./token.js";
-import { AgentSession } from "./AgentSession.js";
+import type { BaseAvatar, BaseLLM, BaseMLLM, BaseSTT, BaseTTS } from "./vendors/base.js";
 
 /**
  * Configuration options for creating an Agent.
@@ -55,7 +56,7 @@ export interface AgentOptions {
     greeting?: string;
     /** Failure message */
     failureMessage?: string;
-    /** Max conversation history */
+    /** Max conversation history for the standard LLM pipeline. Does not apply to MLLM. */
     maxHistory?: number;
     /** Regional access restriction configuration */
     geofence?: GeofenceConfig;
@@ -201,6 +202,10 @@ export class Agent<TTSSampleRate extends number = number> {
      * `mllm.enable: true`, so `withLlm()`, `withTts()`, and `withStt()`
      * are not needed.
      *
+     * Note: avatars are not supported with MLLM. The avatar publisher requires
+     * the cascading ASR + LLM + TTS pipeline. Combining `withMllm()` and
+     * `withAvatar()` throws at `toProperties()` / `session.start()`.
+     *
      * @param vendor - MLLM vendor instance (e.g., new VertexAI({ model: '...', projectId: '...', ... }))
      */
     withMllm(vendor: BaseMLLM): Agent<TTSSampleRate> {
@@ -217,12 +222,17 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified Avatar vendor.
      *
-     * ⚠️ IMPORTANT: Different avatar vendors require specific TTS sample rates:
-     * - HeyGen: Requires 24,000 Hz (24kHz)
+     * ⚠️ IMPORTANT: avatars are only supported with the cascading
+     * ASR + LLM + TTS pipeline. They are not supported with MLLM
+     * (`withMllm()`); combining the two throws at `toProperties()` /
+     * `session.start()`.
+     *
+     * Different avatar vendors require specific TTS sample rates:
+     * - HeyGen / LiveAvatar: Requires 24,000 Hz (24kHz)
      * - Akool: Requires 16,000 Hz (16kHz)
      *
      * This method enforces sample rate compatibility at compile time. If you configure
-     * a TTS with 16kHz and try to add a HeyGen avatar (which needs 24kHz), TypeScript
+     * a TTS with 16kHz and try to add a LiveAvatar avatar (which needs 24kHz), TypeScript
      * will show a compile error.
      *
      * @template RequiredSR - Required sample rate for the avatar
@@ -340,6 +350,15 @@ export class Agent<TTSSampleRate extends number = number> {
     }
 
     /**
+     * Returns a new Agent with the specified RTC audio scenario.
+     */
+    withAudioScenario(audioScenario: ParametersAudioScenario): Agent<TTSSampleRate> {
+        const newAgent = this._clone();
+        newAgent._parameters = { ...newAgent._parameters, audio_scenario: audioScenario };
+        return newAgent;
+    }
+
+    /**
      * Returns a new Agent with the specified failure message.
      *
      * The failure message is played via TTS when the LLM call fails.
@@ -352,6 +371,7 @@ export class Agent<TTSSampleRate extends number = number> {
 
     /**
      * Returns a new Agent with the specified maximum conversation history length.
+     * Applies to the standard LLM pipeline only; the v2.7 MLLM core schema has no max_history field.
      */
     withMaxHistory(maxHistory: number): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -630,6 +650,21 @@ export class Agent<TTSSampleRate extends number = number> {
             | { token?: undefined; appId: string; appCertificate: string; expiresIn?: number }
         ),
     ): Agora.StartAgentsRequest.Properties {
+        // In MLLM mode the backend handles audio end-to-end; LLM, TTS, and ASR
+        // are not required.
+        const isMllmMode = this._mllm?.enable === true || this._mllm !== undefined;
+
+        // Reject incompatible combinations before any work (token generation, etc.).
+        // Avatars are currently supported only with the cascading ASR/LLM/TTS pipeline;
+        // the MLLM pipeline does not flow through the avatar publisher, so combining
+        // them produces a backend error. Mirrors the Go and Python SDK guards.
+        if (isMllmMode && this._avatar !== undefined && this._avatar.enable !== false) {
+            throw new Error(
+                "Avatars are only supported with the cascading ASR + LLM + TTS pipeline. " +
+                    "Remove the avatar configuration when using MLLM, or switch to a cascading session.",
+            );
+        }
+
         let token: string;
         if (opts.token) {
             token = opts.token;
@@ -651,9 +686,6 @@ export class Agent<TTSSampleRate extends number = number> {
                 tokenExpire: expiresIn,
             });
         }
-        // In MLLM mode the backend handles audio end-to-end; LLM, TTS, and ASR
-        // are not required.
-        const isMllmMode = this._mllm?.enable === true || this._mllm !== undefined;
 
         // When RTM is enabled, data_channel must also be 'rtm' for the client
         // to receive transcripts and state events. Default it automatically so
@@ -684,20 +716,16 @@ export class Agent<TTSSampleRate extends number = number> {
         };
 
         if (isMllmMode) {
-            let mllmConfig = this._mllm ? { ...this._mllm } : undefined;
+            const mllmConfig = this._mllm ? { ...this._mllm } : undefined;
             if (mllmConfig) {
                 // Vendor config wins: only apply agent-level values when the vendor hasn't already set them.
                 // Consistent with Python (setdefault) and Go (!exists) semantics.
-                // Cast to Record to write fields absent from the stale Fern-generated MllmConfig type.
-                const c = mllmConfig as Record<string, unknown>;
-                if (this._greeting !== undefined && c["greeting_message"] === undefined) {
-                    c["greeting_message"] = this._greeting;
+                const c = mllmConfig as Record<"greeting_message" | "failure_message", unknown>;
+                if (this._greeting !== undefined && c.greeting_message === undefined) {
+                    c.greeting_message = this._greeting;
                 }
-                if (this._failureMessage !== undefined && c["failure_message"] === undefined) {
-                    c["failure_message"] = this._failureMessage;
-                }
-                if (this._maxHistory !== undefined && c["max_history"] === undefined) {
-                    c["max_history"] = this._maxHistory;
+                if (this._failureMessage !== undefined && c.failure_message === undefined) {
+                    c.failure_message = this._failureMessage;
                 }
             }
             return { ...base, mllm: mllmConfig };
