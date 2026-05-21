@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v1.5.0] — 2026-05-20
+
+### Added
+
+- **`XaiGrok`** — New MLLM vendor wrapper for xAI Grok Realtime API (`vendor: "xai"`), including voice, language, sample rate, modalities, messages, greeting/failure, and MLLM turn detection support.
+- **`GenericAvatar`** — New generic avatar provider wrapper with typed options for `apiKey`, `apiBaseUrl`, `avatarId`, and `agoraUid`.
+- **Avatar token automation** — AgentKit now fills generic avatar `agora_appid` / `agora_channel` from the session and auto-generates `avatar.params.agora_token` for vendors that publish a separate RTC video identity (`HeyGenAvatar`, `LiveAvatarAvatar`, `GenericAvatar`) when `agoraToken` is omitted. Avatar tokens use the same ConvoAI token format as agent tokens, scoped to the avatar `agora_uid`. `AkoolAvatar` and `AnamAvatar` never receive an auto-generated token (matching the Go and Python SDKs).
+- **`generateAvatarRtcToken()`** — Public helper for advanced avatar token generation. Explicit `agoraToken` values are preserved and never overwritten.
+- **`isAvatarTokenManaged()`** — Type guard exported from AgentKit that returns `true` when AgentKit manages the avatar's RTC publisher identity.
+- **`AgentSession.getTurns(options)` and `AgentSession.getAllTurns()`** — High-level support for paginated turn analytics.
+- **`AudioScenario` constants and `Agent.withAudioScenario()`** — Discoverable AgentKit API for `parameters.audio_scenario`.
+- **Parity coverage** — Added AgentKit regression tests covering v2.5-v2.7 behavior, including presets, MLLM shapes, avatar enrichment, paginated turns, interruption, tools, and pause-state detection.
+
+### Changed
+
+- **`AgentSession.think()` typing** — `ThinkOptions.on_listening_action` now includes `"interrupt"` to match the v2.7 API. The server default changed from `"inject"` to `"interrupt"`; pass `"inject"` explicitly to preserve prior behavior.
+- **MLLM + avatar guard** — `Agent.toProperties()` and `AgentSession.start()` now throw a clear error when an MLLM vendor is combined with an enabled avatar. Avatars currently require the cascading ASR + LLM + TTS pipeline; the guard prevents an opaque backend failure (matches Go and Python SDKs).
+- **MLLM message shape** — `GeminiLive` and `VertexAI` now emit `messages` at the top level of `mllm`, matching the generated v2.7 core type.
+- **MLLM core parity** — AgentKit no longer exposes or emits non-core `mllm.max_history` or `mllm.predefined_tools` fields. Use supported top-level MLLM fields from the generated TypeScript core SDK.
+- **Session warning logger typing** — `SessionOptions.warn` is now part of the public type, matching the existing runtime behavior.
+- **Generic avatar validation** — `validateAvatarConfig()` now accepts pre-start Generic avatar configs where session-derived fields are intentionally omitted. Post-enrichment validation still requires `agora_appid`, `agora_channel`, and `agora_token`.
+- **Docs refreshed for v2.7** — Vendor, avatar, session, pagination, and error-handling docs now cover xAI Grok, Generic Avatar, avatar token automation, paginated turns, and updated error `reason` values.
+
+### Deprecated
+
+- **`HeyGenAvatar`** remains available for backward compatibility but is documented as deprecated in favor of `LiveAvatarAvatar`.
+
 ## [v1.4.0] — 2026-05-13
 
 ### Added
@@ -67,8 +94,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Fixed
 
 - **`AresSTT`** — Removed redundant `language` key from the `params` dict. Language is now emitted only at the top level. `params` is only included when `additionalParams` is provided.
-- **`OpenAIRealtime` / `VertexAI` (MLLM)** — Agent-level `greeting`, `failureMessage`, and `maxHistory` overrides are now correctly applied when the agent is in MLLM mode. Previously these values were silently dropped.
-- **`VertexAI` (MLLM)** — `messages` is now correctly placed inside `params` (required by the Gemini Live API). Previously it was emitted at the top level and silently ignored.
+- **`OpenAIRealtime` / `VertexAI` (MLLM)** — Agent-level `greeting` and `failureMessage` overrides are now correctly applied when the agent is in MLLM mode. Previously these values were silently dropped.
+- **`VertexAI` (MLLM)** — Message handling was updated for the MLLM wrapper. As of v1.5.0, `messages` is emitted at top-level `mllm.messages` to match the generated v2.7 core type.
 
 ### Changed
 
@@ -81,8 +108,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **`OpenAITTS`** — New optional parameters: `responseFormat` (string, e.g. `"pcm"`) and `speed` (number).
 - **`CartesiaTTS`** — `voiceId` user-facing option is preserved; voice is serialized to the required nested object format automatically.
 - **`RimeTTS`** — New optional parameters: `lang` (string), `samplingRate` (number, serialized as `samplingRate`), `speedAlpha` (number, serialized as `speedAlpha`).
-- **`OpenAIRealtime`** — New optional parameters: `predefinedTools` (string[]), `failureMessage` (string), `maxHistory` (number).
-- **`VertexAI` (MLLM)** — New optional parameters: `predefinedTools` (string[]), `failureMessage` (string), `maxHistory` (number).
+- **`OpenAIRealtime`** — New optional parameter: `failureMessage` (string).
+- **`VertexAI` (MLLM)** — New optional parameter: `failureMessage` (string).
 - **`HeyGenAvatar`** — New options: `agoraToken` (string), `avatarId` (string), `enable` (boolean, default `true`), `disableIdleTimeout` (boolean), `activityIdleTimeout` (number).
 
 ## [v1.1.0] — 2026-03-17

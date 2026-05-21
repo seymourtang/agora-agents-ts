@@ -161,7 +161,7 @@ If you want to bring your own vendor credentials instead of using Agora-managed 
 
 ## MLLM (Realtime / Multimodal)
 
-Use `withMllm()` for OpenAI Realtime or Gemini Live — no STT, LLM, or TTS vendor needed. MLLM mode is enabled automatically.
+Use `withMllm()` for OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok — no STT, LLM, or TTS vendor needed. MLLM mode is enabled automatically.
 
 ```typescript
 import { Agent, OpenAIRealtime } from 'agora-agent-server-sdk';
@@ -175,7 +175,15 @@ const agent = new Agent({ name: 'realtime-assistant' }).withMllm(
 );
 ```
 
-See the [MLLM Flow guide](./docs/guides/mllm-flow.md) for full examples with Gemini Live and Vertex AI.
+See the [MLLM Flow guide](./docs/guides/mllm-flow.md) for full examples with Gemini Live, Vertex AI, and xAI Grok.
+
+> Avatars are not supported with MLLM. The avatar publisher requires the cascading ASR + LLM + TTS pipeline; combining `withMllm()` with `withAvatar()` throws at `Agent.toProperties()` and `AgentSession.start()`.
+
+## Avatars
+
+AgentKit supports LiveAvatar, Generic Avatar, Anam, Akool, and deprecated HeyGen. Avatar `agoraToken` is optional: when omitted, `session.start()` generates a token using the same ConvoAI token format as the agent token, scoped to the avatar `agoraUid`. Avatars require the cascading ASR + LLM + TTS pipeline (not MLLM).
+
+See the [Avatar Integration guide](./docs/guides/avatars.md) for sample-rate requirements and Generic Avatar setup.
 
 ## Documentation
 
