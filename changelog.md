@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v1.4.1] — 2026-05-21
+
+### Fixed
+
+- **ESM release output** — Multiline relative exports are now rewritten from `.js` to `.mjs`, and the ESM build fails if relative `.js` imports remain in `dist/esm`.
+
 ## [v1.4.0] — 2026-05-13
 
 ### Added
