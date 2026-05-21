@@ -65,6 +65,9 @@ export type SttConfig =
     | { vendor: "sarvam"; language?: string; params?: SarvamAsrParams }
     | StartAgentsRequest.Properties.Asr; // Fallback for shorthand/untyped configs
 
+/** ASR configuration — alias for {@link SttConfig} (wire field: `asr`). */
+export type AsrConfig = SttConfig;
+
 /** STT vendor (ares, microsoft, deepgram, openai, etc.) */
 export type SttVendor = StartAgentsRequest.Properties.Asr.Vendor;
 

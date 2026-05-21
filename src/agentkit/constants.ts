@@ -4,6 +4,7 @@
  */
 
 // Import namespace as value from source (api index uses export type)
+import { AgentThinkAgentManagementRequest as AgentThinkRequestNS } from "../api/resources/agentManagement/client/requests/AgentThinkAgentManagementRequest.js";
 import { StartAgentsRequest as StartAgentsRequestNS } from "../api/resources/agents/client/requests/StartAgentsRequest.js";
 
 /** Data channel: `"rtm"` | `"datastream"` */
@@ -37,3 +38,24 @@ export const FillerWordsSelectionRule: typeof StartAgentsRequestNS.Properties.Fi
  */
 export const TurnDetectionTypeValues: typeof StartAgentsRequestNS.Properties.TurnDetection.Type =
     StartAgentsRequestNS.Properties.TurnDetection.Type;
+
+/** Think action when the agent is listening: inject custom text without interrupting. */
+export const ThinkOnListeningActionInject = AgentThinkRequestNS.OnListeningAction.Inject;
+
+/** Think action when the agent is listening: interrupt and start a new turn. */
+export const ThinkOnListeningActionInterrupt = AgentThinkRequestNS.OnListeningAction.Interrupt;
+
+/** Think action when the agent is listening: ignore the request. */
+export const ThinkOnListeningActionIgnore = AgentThinkRequestNS.OnListeningAction.Ignore;
+
+/** Think action when the agent is thinking: interrupt and start a new turn. */
+export const ThinkOnThinkingActionInterrupt = AgentThinkRequestNS.OnThinkingAction.Interrupt;
+
+/** Think action when the agent is thinking: ignore the request. */
+export const ThinkOnThinkingActionIgnore = AgentThinkRequestNS.OnThinkingAction.Ignore;
+
+/** Think action when the agent is speaking: interrupt and start a new turn. */
+export const ThinkOnSpeakingActionInterrupt = AgentThinkRequestNS.OnSpeakingAction.Interrupt;
+
+/** Think action when the agent is speaking: ignore the request. */
+export const ThinkOnSpeakingActionIgnore = AgentThinkRequestNS.OnSpeakingAction.Ignore;
