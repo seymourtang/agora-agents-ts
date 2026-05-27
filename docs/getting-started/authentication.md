@@ -1,60 +1,82 @@
 ---
 sidebar_position: 2
 title: Authentication
-description: Configure AgoraClient with token auth for REST requests and session tokens for channel joins.
+description: Configure AgoraClient with app credentials and understand other supported auth modes.
 ---
 
 # Authentication
 
-The recommended production path is token auth.
+Create `AgoraClient` with `appId` and `appCertificate` only. The SDK mints a fresh ConvoAI REST token for each API call and generates the RTC join token when the session starts.
 
-You provide two different tokens:
-
-- `authToken` on `AgoraClient` for REST API authentication
-- `token` on `createSession(...)` for the RTC channel join
-
-## Recommended: token auth
+## App credentials
 
 ```typescript
-import { Agent, AgentPresets, AgoraClient, Area } from 'agora-agents';
+import { Agent, AgoraClient, Area, DeepgramSTT, OpenAI, MiniMaxTTS } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: process.env.AGORA_REST_AUTH_TOKEN!,
 });
 
-const agent = new Agent({ instructions: 'Be concise.' });
+const agent = new Agent({ instructions: 'Be concise.' })
+  .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
+  .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
+  .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
 
 const session = agent.createSession(client, {
   channel: 'room-123',
   agentUid: '1',
   remoteUids: ['100'],
-  token: process.env.AGORA_RTC_JOIN_TOKEN!,
-  preset: [
-    AgentPresets.asr.deepgramNova3,
-    AgentPresets.llm.openaiGpt5Mini,
-    AgentPresets.tts.openaiTts1,
-  ],
 });
 ```
 
-## Why this is the default
+## Why app credentials
 
-- REST auth is explicit and easy to rotate.
-- Channel join tokens stay scoped to the session.
-- Your quick start code stays vendor-key free when you use presets.
+- Fresh short-lived tokens per API call instead of reusing long-lived credentials
+- No Customer ID / Customer Secret in request headers
+- No manual REST or RTC token provisioning in application code
 
-## Other supported modes
-
-The SDK also supports app-credentials mode and Basic Auth, but they are intentionally not the default onboarding path.
-
-- App credentials are useful when your backend wants the SDK to mint ConvoAI REST tokens automatically.
-- Basic Auth is supported for legacy integrations and account-level workflows.
-
-## Inspecting the resolved auth mode
+## Inspecting auth mode
 
 ```typescript
-console.log(client.authMode); // "token"
+console.log(client.authMode); // "app-credentials"
+```
+
+## Other auth modes
+
+The SDK also supports pre-minted REST tokens and HTTP Basic Auth for legacy integrations. These are not recommended for new applications.
+
+### Token auth (`authToken`)
+
+Pass a pre-minted Agora REST token on the client. You must also supply the RTC join token on `createSession(..., { token })`.
+
+```typescript
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+  authToken: 'your-rest-auth-token',
+});
+
+const session = agent.createSession(client, {
+  channel: 'room-123',
+  agentUid: '1',
+  remoteUids: ['100'],
+  token: 'your-rtc-join-token',
+});
+```
+
+### Basic Auth (`customerId` + `customerSecret`)
+
+Uses HTTP Basic Auth with Customer ID and Secret from Agora Console. Avoid for new integrations — the same credentials are sent on every request instead of minting fresh tokens.
+
+```typescript
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+  customerId: 'your-customer-id',
+  customerSecret: 'your-customer-secret',
+});
 ```

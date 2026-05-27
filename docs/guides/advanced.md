@@ -80,13 +80,12 @@ console.log(rawResponse.headers["X-My-Header"]);
 Configure the logger via client options:
 
 ```typescript
-import { AgoraClient, logging } from "agora-agents";
+import { AgoraClient, Area, logging } from "agora-agents";
 
 const client = new AgoraClient({
   area: Area.US,
   appId: "your-app-id",
   appCertificate: "your-app-certificate",
-  authToken: "your-rest-auth-token",
   logging: {
     level: logging.LogLevel.Debug,
     logger: new logging.ConsoleLogger(),
@@ -130,13 +129,12 @@ The SDK works in:
 Provide a custom `fetcher` for unsupported environments:
 
 ```typescript
-import { AgoraClient } from "agora-agents";
+import { AgoraClient, Area } from "agora-agents";
 
 const client = new AgoraClient({
   area: Area.US,
   appId: "your-app-id",
   appCertificate: "your-app-certificate",
-  authToken: "your-rest-auth-token",
   fetcher: (url, init) => fetch(url, init), // your implementation
 });
 ```

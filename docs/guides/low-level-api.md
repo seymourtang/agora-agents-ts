@@ -24,7 +24,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: "your-app-id",
   appCertificate: "your-app-certificate",
-  authToken: "your-rest-auth-token",
 });
 
 await client.agents.start({
@@ -73,7 +72,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: "your-app-id",
   appCertificate: "your-app-certificate",
-  authToken: "your-rest-auth-token",
 });
 
 const tts: Agora.StartAgentsRequest.Properties.Tts = {
@@ -128,7 +126,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: "your-app-id",
   appCertificate: "your-app-certificate",
-  authToken: "your-rest-auth-token",
 });
 
 const mllm: Agora.StartAgentsRequest.Properties.Mllm = {

@@ -6,11 +6,11 @@ description: Bring your own vendor credentials and use custom vendor configurati
 
 # BYOK
 
-Use BYOK when you want to provide vendor credentials yourself instead of relying on Agora-managed presets.
+Use BYOK when you want to provide vendor credentials yourself instead of relying on Agora-managed models via the builder.
 
 Typical reasons:
 
-- you need a vendor model that is not part of the preset catalog
+- you need a vendor model outside the Agora-managed catalog
 - you want to point to a custom endpoint
 - you want direct control over vendor-specific parameters
 - your organization manages vendor billing separately from Agora
@@ -32,7 +32,6 @@ async function main(): Promise<void> {
     area: Area.US,
     appId: 'your-app-id',
     appCertificate: 'your-app-certificate',
-    authToken: process.env.AGORA_REST_AUTH_TOKEN!,
   });
 
   // In BYOK mode, each vendor carries its own credentials.
@@ -68,7 +67,6 @@ async function main(): Promise<void> {
     channel: 'support-room-123',
     agentUid: '1',
     remoteUids: ['100'],
-    token: process.env.AGORA_RTC_JOIN_TOKEN!,
     idleTimeout: 120,
   });
 
@@ -81,7 +79,7 @@ async function main(): Promise<void> {
 void main();
 ```
 
-## Presets vs BYOK
+## Builder-managed vs BYOK
 
-- Presets: fastest path, no vendor keys in app code
-- BYOK: most control, your keys and your vendor configuration
+- Builder without vendor keys: fastest path with Agora-managed models
+- BYOK: your keys and full vendor control

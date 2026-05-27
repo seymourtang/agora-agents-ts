@@ -38,7 +38,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({ name: 'realtime-assistant' })
@@ -54,7 +53,6 @@ const session = agent.createSession(client, {
   channel: 'realtime-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
 });
 
 const agentId = await session.start();
@@ -73,7 +71,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({ name: 'gemini-assistant' })
@@ -89,7 +86,6 @@ const session = agent.createSession(client, {
   channel: 'gemini-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
 });
 
 const agentId = await session.start();
@@ -105,7 +101,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({ name: 'grok-assistant' })

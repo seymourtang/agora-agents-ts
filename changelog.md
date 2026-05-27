@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
-- **Alias parity** — `AsrConfig` (= `SttConfig`), think value constants (`ThinkOnListeningActionInject`, etc.), and cross-SDK discovery table in `docs/reference/agent.md`.
+- **Type aliases** — `AsrConfig` (= `SttConfig`), think value constants (`ThinkOnListeningActionInject`, etc.).
 - **Agent-level greeting configs** — `Agent.withGreetingConfigs()` maps directly to `llm.greeting_configs`, including v2.7 `interruptable`.
 - **v2.7 value constants** — Exported discoverable constants for Think actions, interruption modes, speak priorities, and MLLM turn detection modes.
 - **`XaiGrok`** — New MLLM vendor wrapper for xAI Grok Realtime API (`vendor: "xai"`), including voice, language, sample rate, modalities, messages, greeting/failure, and MLLM turn detection support.
@@ -30,7 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **Session warning logger typing** — `SessionOptions.warn` is now part of the public type, matching the existing runtime behavior.
 - **Generic avatar validation** — `validateAvatarConfig()` now accepts pre-start Generic avatar configs where session-derived fields are intentionally omitted. Post-enrichment validation still requires `agora_appid`, `agora_channel`, and `agora_token`.
 - **Docs refreshed for v2.7** — Vendor, avatar, session, pagination, and error-handling docs now cover xAI Grok, Generic Avatar, avatar token automation, paginated turns, and updated error `reason` values.
-- **npm distribution rename** — The published package name is now `agora-agents` (formerly `agora-agent-server-sdk`). Import paths and the public API are unchanged.
+- **npm distribution rename** — The published package name is now `agora-agents` (formerly `agora-agent-server-sdk`). The public API is unchanged; update your install and import path to `agora-agents`.
 
 ### Fixed
 
@@ -142,7 +142,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [v1.0.0] — 2026-03-11
 
-Initial stable release of the Agora Agent Server SDK for TypeScript.
+Initial stable release of the Agora Conversational AI TypeScript SDK.
 
 ### Added
 

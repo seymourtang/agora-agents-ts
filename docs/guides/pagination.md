@@ -15,7 +15,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: "your-app-id",
   appCertificate: "your-app-certificate",
-  authToken: "your-rest-auth-token",
 });
 
 const pageableResponse = await client.agents.list({ appid: "appid" });

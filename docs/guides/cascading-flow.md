@@ -32,7 +32,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({
@@ -61,7 +60,6 @@ const session = agent.createSession(client, {
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
   idleTimeout: 120,
 });
 
@@ -83,7 +81,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: process.env.AGORA_REST_AUTH_TOKEN!,
 });
 
 const token = generateRtcToken({
@@ -156,7 +153,6 @@ const client = new AgoraClient({
   area: Area.EU,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({
@@ -187,7 +183,6 @@ const session = agent.createSession(client, {
   channel: 'support-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
 });
 
 await session.start();

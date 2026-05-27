@@ -1,4 +1,4 @@
-# Agora Agents SDK for TypeScript
+# Agora Conversational AI TypeScript SDK
 
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2FAgoraIO-Conversational-AI%2Fagent-server-sdk-ts)
 [![npm shield](https://img.shields.io/npm/v/agora-agents)](https://www.npmjs.com/package/agora-agents)
@@ -15,7 +15,7 @@ npm install agora-agents
 
 ## Quick Start
 
-The recommended onboarding path is a server-side builder flow: define the agent once, configure preset-backed providers in the builder, and let AgentKit infer the reseller `preset` values when the session starts.
+The recommended onboarding path is a server-side builder flow: define the agent once, configure vendors on the builder, and let AgentKit infer Agora-managed configuration when credentials are omitted.
 
 ```typescript
 import {
@@ -116,11 +116,11 @@ export async function startConversation(): Promise<string> {
 
 ### Why no token or vendor key in the example?
 
-`AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically when you provide `appId` and `appCertificate`. AgentKit then inspects the builder-provided vendor configs and infers the matching supported `preset` values for reseller-backed models, so you do not pass vendor API keys in this flow.
+`AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically when you provide `appId` and `appCertificate`. AgentKit inspects the builder-provided vendor configs and infers Agora-managed configuration for supported models, so you do not pass vendor API keys in this flow.
 
 ### BYOK version of the same builder flow
 
-Use the same `Agent` builder shape, but provide credentials explicitly when you want vendor-managed billing and routing instead of Agora-managed presets.
+Use the same `Agent` builder shape, but provide credentials explicitly when you want vendor-managed billing and routing instead of Agora-managed models.
 
 ```typescript
 const agent = new Agent({
@@ -155,7 +155,7 @@ const agent = new Agent({
 
 ## BYOK
 
-If you want to bring your own vendor credentials instead of using Agora-managed presets, use the BYOK guide:
+If you want to bring your own vendor credentials instead of using Agora-managed models, use the BYOK guide:
 
 - [BYOK Guide](./docs/guides/byok.md)
 

@@ -69,3 +69,5 @@ if (err instanceof AgoraError) {
   }
 }
 ```
+
+See [Error Reference](../reference/errors.md) for v2.7 status code and `reason` migration notes.

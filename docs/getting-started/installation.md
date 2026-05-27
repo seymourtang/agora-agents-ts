@@ -38,4 +38,12 @@ yarn add agora-agents
 
 ## Server-side only
 
-This SDK is designed for server-side use. Do not use it in a browser or expose it client-side — your App Certificate and Customer Secret must never be sent to the client. If you need a client-side integration, use the [Agora RTC SDK](https://docs.agora.io/en/video-calling/overview) for the media layer and call your own backend to manage agents.
+This SDK is designed for server-side use. Do not use it in a browser or expose it client-side — your App Certificate must never be sent to the client. If you need a client-side integration, use the [Agora RTC SDK](https://docs.agora.io/en/video-calling/overview) for the media layer and call your own backend to manage agents.
+
+## Imports
+
+```typescript
+import { Agent, AgoraClient, Area, DeepgramSTT, OpenAI } from 'agora-agents';
+```
+
+The package installs as `agora-agents`.

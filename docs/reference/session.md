@@ -7,6 +7,7 @@ description: Full API reference for the AgentSession class.
 # AgentSession Reference
 
 <!-- snippet: fragment -->
+
 ```typescript
 import { AgentSession } from 'agora-agents';
 ```
@@ -22,15 +23,15 @@ idle ──► starting ──► running ──► stopping ──► stopped
                        error
 ```
 
-| Transition | Trigger |
-|---|---|
-| `idle → starting` | `start()` called |
-| `starting → running` | API responds with agent ID |
-| `starting → error` | API request fails |
-| `running → stopping` | `stop()` called |
-| `stopping → stopped` | API confirms agent stopped |
-| `stopping → error` | Stop request fails (and agent was not already stopped) |
-| `running → error` | Unrecoverable error during interaction |
+| Transition           | Trigger                                                |
+| -------------------- | ------------------------------------------------------ |
+| `idle → starting`    | `start()` called                                       |
+| `starting → running` | API responds with agent ID                             |
+| `starting → error`   | API request fails                                      |
+| `running → stopping` | `stop()` called                                        |
+| `stopping → stopped` | API confirms agent stopped                             |
+| `stopping → error`   | Stop request fails (and agent was not already stopped) |
+| `running → error`    | Unrecoverable error during interaction                 |
 
 `start()` can also be called from `stopped` or `error` state to restart.
 
@@ -113,11 +114,11 @@ Unsubscribe from a session event.
 
 ## Events
 
-| Event | Payload type | Description |
-|---|---|---|
+| Event       | Payload type          | Description                           |
+| ----------- | --------------------- | ------------------------------------- |
 | `"started"` | `{ agentId: string }` | Agent successfully joined the channel |
-| `"stopped"` | `{ agentId: string }` | Agent left the channel |
-| `"error"` | `Error` | An unrecoverable error occurred |
+| `"stopped"` | `{ agentId: string }` | Agent left the channel                |
+| `"error"`   | `Error`               | An unrecoverable error occurred       |
 
 Event type: `AgentSessionEvent = "started" | "stopped" | "error"`
 
@@ -125,19 +126,20 @@ Handler type: `AgentSessionEventHandler<T> = (data: T) => void`
 
 ## Properties
 
-| Property | Type | Description |
-|---|---|---|
-| `status` | `"idle" \| "starting" \| "running" \| "stopping" \| "stopped" \| "error"` | Current session state |
-| `id` | `string \| null` | Agent ID (populated after `start()` resolves) |
-| `agent` | `Agent` | The agent configuration this session was created from |
-| `appId` | `string` | The App ID for this session |
-| `raw` | `AgentsClient` | Direct access to the Fern-generated `AgentsClient` for advanced operations |
+| Property | Type                                                                      | Description                                                                |
+| -------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `status` | `"idle" \| "starting" \| "running" \| "stopping" \| "stopped" \| "error"` | Current session state                                                      |
+| `id`     | `string \| null`                                                          | Agent ID (populated after `start()` resolves)                              |
+| `agent`  | `Agent`                                                                   | The agent configuration this session was created from                      |
+| `appId`  | `string`                                                                  | The App ID for this session                                                |
+| `raw`    | `AgentsClient`                                                            | Direct access to the Fern-generated `AgentsClient` for advanced operations |
 
 ### Using `session.raw`
 
 Access the underlying Fern-generated client to call endpoints not yet wrapped:
 
 <!-- snippet: fragment -->
+
 ```typescript
 await session.raw.someNewEndpoint({
   appid: session.appId,
@@ -149,15 +151,15 @@ You must pass `appid` and `agentId` manually when using raw methods.
 
 ## Presets and BYOK
 
-`preset` lives on the session because Agora applies presets when the agent joins a channel.
+Prefer configuring vendors on the `Agent` builder. When you omit credentials for supported Agora-managed models, AgentKit infers the matching reseller configuration at session start.
 
-AgentKit supports both explicit presets and BYOK:
+`preset` is an advanced session option for accessing specific feature flags and not meant for reseller IDs. Most applications should use the builder instead.
 
-- Pass `preset` directly on `agent.createSession(...)` when you want to choose the base reseller configuration yourself.
-- Provide vendor credentials for preset-capable models when you want full BYOK behavior.
-- Omit credentials for supported reseller models when you want AgentKit to infer the matching preset automatically.
+- Omit vendor credentials on the builder for supported Agora-managed models.
+- Provide vendor API keys when you want BYOK.
+- Pass `preset` on `agent.createSession(...)` only when you need to access specific feature flags.
 
-Supported inferred preset models:
+Supported inferred models:
 
 - Deepgram STT: `nova-2`, `nova-3`
 - OpenAI LLM: `gpt-4o-mini`, `gpt-4.1-mini`, `gpt-5-nano`, `gpt-5-mini`
