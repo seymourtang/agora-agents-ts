@@ -40,3 +40,27 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+  compat-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build and verify compatibility shim
+        run: |
+          pnpm build
+          cd compat/agora-agent-server-sdk
+          npm install --no-save file:../..
+          npm pack --dry-run
+          node verify-compat.js
