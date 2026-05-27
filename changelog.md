@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **Session warning logger typing** — `SessionOptions.warn` is now part of the public type, matching the existing runtime behavior.
 - **Generic avatar validation** — `validateAvatarConfig()` now accepts pre-start Generic avatar configs where session-derived fields are intentionally omitted. Post-enrichment validation still requires `agora_appid`, `agora_channel`, and `agora_token`.
 - **Docs refreshed for v2.7** — Vendor, avatar, session, pagination, and error-handling docs now cover xAI Grok, Generic Avatar, avatar token automation, paginated turns, and updated error `reason` values.
+- **npm distribution rename** — The published package name is now `agora-agents` (formerly `agora-agent-server-sdk`). Import paths and the public API are unchanged.
 
 ### Fixed
 
@@ -38,6 +39,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Deprecated
 
 - **`HeyGenAvatar`** — Use `LiveAvatarAvatar` (`vendor: "liveavatar"`). The legacy wrapper remains available for backward compatibility and emits `@deprecated` JSDoc.
+
+### Migration notes
+
+- **npm package rename** — Install `agora-agents` instead of `agora-agent-server-sdk` (`npm install agora-agents`, `pnpm add agora-agents`, or `yarn add agora-agents`). The legacy npm package name remains available as a compatibility shim that re-exports the public API from `agora-agents`.
 
 ## [v1.4.1] — 2026-05-21
 
