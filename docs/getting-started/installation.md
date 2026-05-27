@@ -14,15 +14,15 @@ description: Install the Agora Conversational AI TypeScript SDK.
 ## Install
 
 ```sh
-npm install agora-agent-server-sdk
+npm install agora-agents
 ```
 
 ```sh
-pnpm add agora-agent-server-sdk
+pnpm add agora-agents
 ```
 
 ```sh
-yarn add agora-agent-server-sdk
+yarn add agora-agents
 ```
 
 ## Runtime compatibility

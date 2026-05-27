@@ -1,0 +1,30 @@
+{
+    "name": "agora-agent-server-sdk",
+    "version": "2.0.0",
+    "private": false,
+    "description": "Compatibility shim for the renamed agora-agents package.",
+    "repository": "github:AgoraIO-Conversational-AI/agora-agents-ts",
+    "license": "MIT",
+    "main": "./index.js",
+    "module": "./index.mjs",
+    "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./index.d.ts",
+            "import": "./index.mjs",
+            "require": "./index.js",
+            "default": "./index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "index.js",
+        "index.mjs",
+        "index.d.ts",
+        "README.md"
+    ],
+    "sideEffects": false,
+    "dependencies": {
+        "agora-agents": "^2.0.0"
+    }
+}

@@ -6,7 +6,7 @@ description: Typed vendor classes for LLM, TTS, STT, MLLM, and Avatar providers.
 
 # Vendors
 
-Each vendor is a typed class that validates options at construction time and serializes to the wire format for the Agora API. Import all vendors from `agora-agent-server-sdk`.
+Each vendor is a typed class that validates options at construction time and serializes to the wire format for the Agora API. Import all vendors from `agora-agents`.
 
 ## LLM vendors
 
@@ -19,7 +19,7 @@ Each vendor is a typed class that validates options at construction time and ser
 
 <!-- snippet: executable -->
 ```typescript
-import { OpenAI } from 'agora-agent-server-sdk';
+import { OpenAI } from 'agora-agents';
 
 const llm = new OpenAI({
   apiKey: 'your-openai-key',
@@ -47,7 +47,7 @@ const llm = new OpenAI({
 
 <!-- snippet: executable -->
 ```typescript
-import { ElevenLabsTTS } from 'agora-agent-server-sdk';
+import { ElevenLabsTTS } from 'agora-agents';
 
 const tts = new ElevenLabsTTS({
   key: 'your-elevenlabs-key',
@@ -75,7 +75,7 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 
 <!-- snippet: executable -->
 ```typescript
-import { DeepgramSTT } from 'agora-agent-server-sdk';
+import { DeepgramSTT } from 'agora-agents';
 
 const stt = new DeepgramSTT({
   apiKey: 'your-deepgram-key',
@@ -99,7 +99,7 @@ MLLM (Multimodal LLM) vendors handle audio end-to-end — no separate STT or TTS
 
 <!-- snippet: executable -->
 ```typescript
-import { OpenAIRealtime } from 'agora-agent-server-sdk';
+import { OpenAIRealtime } from 'agora-agents';
 
 const mllm = new OpenAIRealtime({
   apiKey: 'your-openai-key',

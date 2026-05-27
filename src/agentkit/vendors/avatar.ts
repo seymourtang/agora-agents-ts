@@ -55,7 +55,7 @@ export interface AkoolAvatarOptions {
  *
  * @example
  * ```typescript
- * import { Agent, AkoolAvatar, ElevenLabsTTS } from 'agora-agent-server-sdk';
+ * import { Agent, AkoolAvatar, ElevenLabsTTS } from 'agora-agents';
  *
  * const avatar = new AkoolAvatar({
  *   apiKey: process.env.AKOOL_API_KEY,
@@ -124,7 +124,7 @@ export class AkoolAvatar extends BaseAvatar<AkoolSampleRate> {
  *
  * @example
  * ```typescript
- * import { Agent, LiveAvatarAvatar, ElevenLabsTTS } from 'agora-agent-server-sdk';
+ * import { Agent, LiveAvatarAvatar, ElevenLabsTTS } from 'agora-agents';
  *
  * const avatar = new LiveAvatarAvatar({
  *   apiKey: process.env.LIVEAVATAR_API_KEY,
@@ -286,7 +286,7 @@ export interface AnamAvatarOptions {
  *
  * @example
  * ```typescript
- * import { Agent, AnamAvatar } from 'agora-agent-server-sdk';
+ * import { Agent, AnamAvatar } from 'agora-agents';
  *
  * const avatar = new AnamAvatar({
  *   apiKey: process.env.ANAM_API_KEY,

@@ -32,7 +32,7 @@ If you need an avatar, switch to the [cascading flow](./cascading-flow.md). If y
 ## Example: OpenAI Realtime
 
 ```typescript
-import { AgoraClient, Area, Agent, OpenAIRealtime } from 'agora-agent-server-sdk';
+import { AgoraClient, Area, Agent, OpenAIRealtime } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
@@ -67,7 +67,7 @@ await session.stop();
 ## Example: Gemini Live
 
 ```typescript
-import { AgoraClient, Area, Agent, GeminiLive } from 'agora-agent-server-sdk';
+import { AgoraClient, Area, Agent, GeminiLive } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
@@ -99,7 +99,7 @@ console.log('Gemini agent running:', agentId);
 ## Example: xAI Grok
 
 ```typescript
-import { AgoraClient, Area, Agent, XaiGrok } from 'agora-agent-server-sdk';
+import { AgoraClient, Area, Agent, XaiGrok } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,

@@ -10,7 +10,7 @@ description: AgoraClient constructor options and public methods.
 
 <!-- snippet: fragment -->
 ```typescript
-import { AgoraClient, Area } from 'agora-agent-server-sdk';
+import { AgoraClient, Area } from 'agora-agents';
 ```
 
 ## Constructor

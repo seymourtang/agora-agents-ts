@@ -6,7 +6,7 @@ description: Constructor options for all LLM, TTS, STT, MLLM, and Avatar vendor 
 
 # Vendor Reference
 
-All vendor classes are imported from `agora-agent-server-sdk`.
+All vendor classes are imported from `agora-agents`.
 
 ## LLM vendors
 

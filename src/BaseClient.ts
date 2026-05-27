@@ -43,9 +43,9 @@ export function normalizeClientOptions<T extends BaseClientOptions>(options: T):
     const headers = mergeHeaders(
         {
             "X-Fern-Language": "JavaScript",
-            "X-Fern-SDK-Name": "agora-agent-server-sdk",
+            "X-Fern-SDK-Name": "agora-agents",
             "X-Fern-SDK-Version": "v2.0.0",
-            "User-Agent": "agora-agent-server-sdk/v2.0.0",
+            "User-Agent": "agora-agents/v2.0.0",
             "X-Fern-Runtime": core.RUNTIME.type,
             "X-Fern-Runtime-Version": core.RUNTIME.version,
         },

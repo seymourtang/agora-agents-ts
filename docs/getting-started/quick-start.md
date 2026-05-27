@@ -16,7 +16,7 @@ This guide uses the recommended onboarding path:
 ## Full example
 
 ```typescript
-import { Agent, AgentPresets, AgoraClient, Area } from 'agora-agent-server-sdk';
+import { Agent, AgentPresets, AgoraClient, Area } from 'agora-agents';
 
 async function main(): Promise<void> {
   // Provision these in your backend. The SDK expects raw token values.

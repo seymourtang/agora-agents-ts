@@ -9,7 +9,7 @@ description: Iterate over paginated list endpoints.
 List endpoints are paginated. The SDK provides an iterator so you can loop over items:
 
 ```typescript
-import { AgoraClient, Area } from "agora-agent-server-sdk";
+import { AgoraClient, Area } from "agora-agents";
 
 const client = new AgoraClient({
   area: Area.US,

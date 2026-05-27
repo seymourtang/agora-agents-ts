@@ -97,7 +97,7 @@ export interface AgentSessionOptions {
  *
  * @example
  * ```typescript
- * import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
+ * import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agents';
  *
  * const client = new AgoraClient({
  *   area: Area.US,

@@ -25,7 +25,7 @@ import {
   DeepgramSTT,
   ElevenLabsTTS,
   OpenAI,
-} from 'agora-agent-server-sdk';
+} from 'agora-agents';
 
 async function main(): Promise<void> {
   const client = new AgoraClient({

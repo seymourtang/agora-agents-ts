@@ -1,16 +1,16 @@
-# Agora Agent Server SDK for TypeScript
+# Agora Agents SDK for TypeScript
 
-[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2FAgoraIO-Conversational-AI%2Fagent-server-sdk-ts)
-[![npm shield](https://img.shields.io/npm/v/agora-agent-server-sdk)](https://www.npmjs.com/package/agora-agent-server-sdk)
-[![ci](https://github.com/AgoraIO-Conversational-AI/agent-server-sdk-ts/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AgoraIO-Conversational-AI/agent-server-sdk-ts/actions/workflows/ci.yml)
-[![coverage](https://codecov.io/gh/AgoraIO-Conversational-AI/agent-server-sdk-ts/branch/main/graph/badge.svg)](https://codecov.io/gh/AgoraIO-Conversational-AI/agent-server-sdk-ts/branch/main)
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2FAgoraIO-Conversational-AI%2Fagora-agents-ts)
+[![npm shield](https://img.shields.io/npm/v/agora-agents)](https://www.npmjs.com/package/agora-agents)
+[![ci](https://github.com/AgoraIO-Conversational-AI/agora-agents-ts/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AgoraIO-Conversational-AI/agora-agents-ts/actions/workflows/ci.yml)
+[![coverage](https://codecov.io/gh/AgoraIO-Conversational-AI/agora-agents-ts/branch/main/graph/badge.svg)](https://codecov.io/gh/AgoraIO-Conversational-AI/agora-agents-ts/branch/main)
 
-The Agora Agent Server SDK for TypeScript lets you build real-time voice agents on Agora Conversational AI with a high-level `Agent` / `AgentSession` API and a generated low-level REST client.
+The Agora Agents SDK for TypeScript lets you build real-time voice agents on Agora Conversational AI with a high-level `Agent` / `AgentSession` API and a generated low-level REST client.
 
 ## Installation
 
 ```sh
-npm install agora-agent-server-sdk
+npm install agora-agents
 ```
 
 ## Quick Start
@@ -26,7 +26,7 @@ import {
   ExpiresIn,
   MiniMaxTTS,
   OpenAI,
-} from 'agora-agent-server-sdk';
+} from 'agora-agents';
 
 const AGENT_PROMPT = `You are a concise, technically credible voice assistant. Keep replies short unless the user asks for detail.`;
 
@@ -164,7 +164,7 @@ If you want to bring your own vendor credentials instead of using Agora-managed 
 Use `withMllm()` for OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok — no STT, LLM, or TTS vendor needed. MLLM mode is enabled automatically.
 
 ```typescript
-import { Agent, OpenAIRealtime } from 'agora-agent-server-sdk';
+import { Agent, OpenAIRealtime } from 'agora-agents';
 
 const agent = new Agent({ name: 'realtime-assistant' }).withMllm(
   new OpenAIRealtime({
@@ -198,3 +198,7 @@ See the [Avatar Integration guide](./docs/guides/avatars.md) for sample-rate req
 
 - [SDK Reference](./reference.md)
 - [Agora Conversational AI Docs](https://docs.agora.io/en/conversational-ai/overview)
+
+## Package Rename Compatibility
+
+The legacy npm package name `agora-agent-server-sdk` is maintained as a compatibility shim in [compat/agora-agent-server-sdk](./compat/agora-agent-server-sdk). The release workflow publishes both `agora-agents` and the legacy shim from the same `vX.Y.Z` tag, as long as both package versions are kept in sync.

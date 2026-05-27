@@ -51,7 +51,29 @@ jobs:
           TAG="${RELEASE_TAG}"
           git rev-parse "$TAG" >/dev/null
 
-      - name: Publish to npm
+      - name: Verify package versions match release tag
+        run: |
+          TAG_VERSION="${RELEASE_TAG#v}"
+          ROOT_VERSION="$(node -p "require('./package.json').version")"
+          COMPAT_VERSION="$(node -p "require('./compat/agora-agent-server-sdk/package.json').version")"
+          COMPAT_DEP_VERSION="$(node -p "require('./compat/agora-agent-server-sdk/package.json').dependencies['agora-agents']")"
+
+          if [ "$ROOT_VERSION" != "$TAG_VERSION" ]; then
+            echo "Root package version ($ROOT_VERSION) does not match tag version ($TAG_VERSION)."
+            exit 1
+          fi
+
+          if [ "$COMPAT_VERSION" != "$TAG_VERSION" ]; then
+            echo "Compat package version ($COMPAT_VERSION) does not match tag version ($TAG_VERSION)."
+            exit 1
+          fi
+
+          if [ "$COMPAT_DEP_VERSION" != "^$TAG_VERSION" ]; then
+            echo "Compat package dependency on agora-agents ($COMPAT_DEP_VERSION) does not match ^$TAG_VERSION."
+            exit 1
+          fi
+
+      - name: Publish primary package to npm
         run: |
           PACKAGE_NAME="$(node -p "require('./package.json').name")"
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
@@ -62,3 +84,27 @@ jobs:
           fi
 
           npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish compatibility shim to npm
+        run: |
+          PACKAGE_NAME="$(node -p "require('./compat/agora-agent-server-sdk/package.json').name")"
+          PACKAGE_VERSION="$(node -p "require('./compat/agora-agent-server-sdk/package.json').version")"
+
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version >/dev/null 2>&1; then
+            echo "${PACKAGE_NAME}@${PACKAGE_VERSION} is already published; skipping npm publish."
+            exit 0
+          fi
+
+          cd compat/agora-agent-server-sdk
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Deprecate legacy package name
+        run: |
+          npm deprecate "agora-agent-server-sdk@<${RELEASE_TAG#v}" "This package has been renamed to agora-agents. Please install agora-agents instead." || true
+          npm deprecate "agora-agent-server-sdk@${RELEASE_TAG#v}" "This package has been renamed to agora-agents. Please install agora-agents instead."
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

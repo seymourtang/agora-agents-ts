@@ -16,7 +16,7 @@ You provide two different tokens:
 ## Recommended: token auth
 
 ```typescript
-import { Agent, AgentPresets, AgoraClient, Area } from 'agora-agent-server-sdk';
+import { Agent, AgentPresets, AgoraClient, Area } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,

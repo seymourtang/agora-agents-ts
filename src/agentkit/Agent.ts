@@ -78,7 +78,7 @@ export interface AgentOptions {
  *
  * @example
  * ```typescript
- * import { Agent, OpenAI, MicrosoftTTS, DeepgramSTT } from 'agora-agent-server-sdk';
+ * import { Agent, OpenAI, MicrosoftTTS, DeepgramSTT } from 'agora-agents';
  *
  * // Use the fluent builder pattern to configure vendors
  * const agent = new Agent({ instructions: 'You are helpful.' })
@@ -187,7 +187,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * @example
      * ```typescript
-     * import { SpeechmaticsSTT } from 'agora-agent-server-sdk';
+     * import { SpeechmaticsSTT } from 'agora-agents';
      *
      * agent.withStt(new SpeechmaticsSTT({
      *   apiKey: 'your-key',
@@ -247,7 +247,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * @example
      * ```typescript
-     * import { HeyGenAvatar, ElevenLabsTTS } from 'agora-agent-server-sdk';
+     * import { HeyGenAvatar, ElevenLabsTTS } from 'agora-agents';
      *
      * const agent = new Agent({ name: 'avatar-assistant' })
      *   .withTts(new ElevenLabsTTS({

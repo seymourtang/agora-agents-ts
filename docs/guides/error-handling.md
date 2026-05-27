@@ -9,7 +9,7 @@ description: Handle API errors with AgoraError and subclasses.
 When the API returns a non-success status code (4xx or 5xx response), a subclass of `AgoraError` is thrown.
 
 ```typescript
-import { AgoraError } from "agora-agent-server-sdk";
+import { AgoraError } from "agora-agents";
 
 try {
   await client.agents.start(...);
@@ -44,7 +44,7 @@ The generated core SDK exposes the full API response body on `err.body`. Convers
 Most error bodies match `AgentErrorResponse` and include a `detail` message and a stable `reason` enum value. Treat `reason` as the machine-readable identifier; keep `detail` for logs or user diagnostics.
 
 ```typescript
-import { Agora } from "agora-agent-server-sdk";
+import { Agora } from "agora-agents";
 
 if (err instanceof AgoraError) {
   const body = err.body as Agora.AgentErrorResponse;

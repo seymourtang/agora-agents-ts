@@ -18,7 +18,7 @@ AgentKit focuses on realtime agent session helpers. Telephony call status, call 
 ## Direct client usage
 
 ```typescript
-import { AgoraClient, Area } from "agora-agent-server-sdk";
+import { AgoraClient, Area } from "agora-agents";
 
 const client = new AgoraClient({
   area: Area.US,
@@ -67,7 +67,7 @@ await client.agents.start({
 Use the `Agora` namespace for typed request objects and IDE autocompletion:
 
 ```typescript
-import { AgoraClient, Area, Agora } from "agora-agent-server-sdk";
+import { AgoraClient, Area, Agora } from "agora-agents";
 
 const client = new AgoraClient({
   area: Area.US,
@@ -122,7 +122,7 @@ await client.agents.start({
 For MLLM flow without the builder pattern, set `mllm.enable` and pass MLLM turn detection as `mllm.turn_detection`. See the [MLLM Overview](https://docs.agora.io/en/conversational-ai/models/mllm/overview) for details.
 
 ```typescript
-import { AgoraClient, Area, Agora } from "agora-agent-server-sdk";
+import { AgoraClient, Area, Agora } from "agora-agents";
 
 const client = new AgoraClient({
   area: Area.US,

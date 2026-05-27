@@ -81,7 +81,7 @@ function _validateExpiresIn(secs: number): number {
         throw new Error("expiresIn must be between 1 and 86400 seconds (24h)");
     }
     if (secs > MAX_EXPIRY_SECONDS) {
-        console.warn("agora-agent-server-sdk: expiresIn capped at 24h (Agora max)");
+        console.warn("agora-agents: expiresIn capped at 24h (Agora max)");
         return MAX_EXPIRY_SECONDS;
     }
     return secs;
