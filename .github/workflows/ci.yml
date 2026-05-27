@@ -12,6 +12,8 @@ jobs:
 
       - name: Set up node
         uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -22,6 +24,12 @@ jobs:
       - name: Compile
         run: pnpm build
 
+      - name: Lint and format check
+        run: pnpm check
+
+      - name: Docs check
+        run: pnpm docs:check
+
   test:
     runs-on: ubuntu-latest
 
@@ -31,6 +39,8 @@ jobs:
 
       - name: Set up node
         uses: actions/setup-node@v4
+        with:
+          node-version: 24
                 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -50,6 +60,8 @@ jobs:
 
       - name: Set up node
         uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4

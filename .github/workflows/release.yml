@@ -44,7 +44,7 @@ jobs:
         run: pnpm build
 
       - name: Test
-        run: pnpm test:unit
+        run: pnpm test:unit && pnpm test:wire
 
       - name: Verify release tag
         run: |
