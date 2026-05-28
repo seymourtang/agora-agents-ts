@@ -153,6 +153,8 @@ const agent = new Agent({
   );
 ```
 
+Migrating from `agora-agent-server-sdk`? Install and import `agora-agents` instead — see [changelog migration notes](./changelog.md#migration-notes) or [installation guide](./docs/getting-started/installation.md#migrating-from-a-previous-package-name).
+
 ## BYOK
 
 If you want to bring your own vendor credentials instead of using Agora-managed models, use the BYOK guide:
@@ -198,7 +200,3 @@ See the [Avatar Integration guide](./docs/guides/avatars.md) for sample-rate req
 
 - [SDK Reference](./reference.md)
 - [Agora Conversational AI Docs](https://docs.agora.io/en/conversational-ai/overview)
-
-## Package Rename Compatibility
-
-The legacy npm package name `agora-agent-server-sdk` is maintained as a compatibility shim in [compat/agora-agent-server-sdk](./compat/agora-agent-server-sdk). The release workflow publishes both `agora-agents` and the legacy shim from the same `vX.Y.Z` tag, as long as both package versions are kept in sync.
