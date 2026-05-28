@@ -84,8 +84,6 @@ jobs:
           fi
 
           npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Wait for primary package on npm
         run: |
@@ -101,8 +99,6 @@ jobs:
           done
           echo "Timed out waiting for ${PACKAGE}@${TAG_VERSION} on npm."
           exit 1
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish compatibility shim to npm
         run: |
@@ -123,12 +119,3 @@ jobs:
             sleep 15
           done
           exit 1
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Deprecate legacy package name
-        run: |
-          npm deprecate "agora-agent-server-sdk@<${RELEASE_TAG#v}" "This package has been renamed to agora-agents. Please install agora-agents instead." || true
-          npm deprecate "agora-agent-server-sdk@${RELEASE_TAG#v}" "This package has been renamed to agora-agents. Please install agora-agents instead."
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
