@@ -12,7 +12,7 @@
 import agoraToken from "agora-token";
 
 const DEFAULT_EXPIRY_SECONDS = 86400;
-const MAX_EXPIRY_SECONDS = 86400;
+export const MAX_EXPIRY_SECONDS = 86400;
 
 /**
  * Convenience helpers for specifying token expiry durations.
@@ -81,7 +81,7 @@ function _validateExpiresIn(secs: number): number {
         throw new Error("expiresIn must be between 1 and 86400 seconds (24h)");
     }
     if (secs > MAX_EXPIRY_SECONDS) {
-        console.warn("agora-agent-server-sdk: expiresIn capped at 24h (Agora max)");
+        console.warn("agora-agents: expiresIn capped at 24h (Agora max)");
         return MAX_EXPIRY_SECONDS;
     }
     return secs;
@@ -152,11 +152,8 @@ export interface GenerateConvoAITokenOptions {
     appCertificate: string;
     /** The channel the agent will join — must match the channel used in the start request */
     channelName: string;
-    /**
-     * String account identity for the token. When used with numeric UIDs, pass
-     * the agent UID as a string (e.g. "1001"). For RTM, this becomes the user ID.
-     */
-    account: string;
+    /** Numeric ConvoAI participant UID. Use the RTC UID for a user, agent, or avatar. */
+    uid: number;
     /** Seconds until the token expires (default: 86400) */
     tokenExpire?: number;
     /**
@@ -179,14 +176,23 @@ export function generateConvoAIToken(opts: GenerateConvoAITokenOptions): string 
     const tokenExpire = opts.tokenExpire ?? DEFAULT_EXPIRY_SECONDS;
     // Per Agora docs, privilegeExpire=0 means "expires immediately", which is invalid.
     // When omitted or 0, use the same value as tokenExpire.
-    const privilegeExpire = (opts.privilegeExpire ?? 0) === 0 ? tokenExpire : opts.privilegeExpire!;
+    const configuredPrivilegeExpire = opts.privilegeExpire ?? 0;
+    const privilegeExpire = configuredPrivilegeExpire === 0 ? tokenExpire : configuredPrivilegeExpire;
+    const account = _uidToAccount(opts.uid);
     return agoraToken.RtcTokenBuilder.buildTokenWithRtm(
         opts.appId,
         opts.appCertificate,
         opts.channelName,
-        opts.account,
+        account,
         agoraToken.RtcRole.PUBLISHER,
         tokenExpire,
         privilegeExpire,
     );
+}
+
+function _uidToAccount(uid: number): string {
+    if (!Number.isInteger(uid)) {
+        throw new Error("uid must be an integer when provided as a number");
+    }
+    return String(uid);
 }

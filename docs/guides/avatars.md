@@ -1,17 +1,51 @@
 ---
 sidebar_position: 3
 title: Avatar Integration
-description: Add a digital avatar (HeyGen or Akool) to your Conversational AI agent.
+description: Add a digital avatar to your Conversational AI agent.
 ---
 
 # Avatar Integration
 
-Avatars attach a visual representation to the agent's audio output. Two avatar providers are supported, each with a strict TTS sample rate requirement.
+Avatars attach a visual representation to the agent's audio output.
 
 | Avatar | Provider | Required TTS sample rate |
 |---|---|---|
-| `HeyGenAvatar` | HeyGen | **24,000 Hz** |
+| `LiveAvatarAvatar` | LiveAvatar (formerly HeyGen) | **24,000 Hz** |
+| `HeyGenAvatar` | Deprecated HeyGen alias | **24,000 Hz** |
 | `AkoolAvatar` | Akool | **16,000 Hz** |
+| `AnamAvatar` | Anam | Consult provider docs |
+| `GenericAvatar` | Custom avatar provider | Consult provider docs |
+
+## Avatars require the cascading pipeline
+
+Avatars currently only work with the cascading **ASR + LLM + TTS** pipeline. They are **not** supported with MLLM (`OpenAIRealtime`, `GeminiLive`, `VertexAI`, `XaiGrok`). AgentKit rejects the combination at `Agent.toProperties()` and at `AgentSession.start()` so you see a clear error before the request reaches the backend:
+
+```
+Avatars are only supported with the cascading ASR + LLM + TTS pipeline.
+Remove the avatar configuration when using MLLM, or switch to a cascading session.
+```
+
+If you need an MLLM session, omit the avatar; if you need an avatar, use the cascading pipeline.
+
+## Avatar tokens
+
+The agent and the avatar publish with separate RTC identities:
+
+| Identity | Field | UID |
+|---|---|---|
+| Agent audio pipeline | `properties.token` | `agent_rtc_uid` |
+| Avatar video publisher | `avatar.params.agora_token` | `avatar.params.agora_uid` |
+
+AgentKit auto-fills `agora_token` for avatar vendors that publish a separate RTC video identity:
+
+- `LiveAvatarAvatar` (and the deprecated `HeyGenAvatar` alias)
+- `GenericAvatar`
+
+For `AkoolAvatar` and `AnamAvatar`, the avatar provider handles publishing on its own and AgentKit never injects an `agora_token`. Use `isAvatarTokenManaged(avatar)` to check whether a config falls into the managed group.
+
+When `agoraToken` is omitted on a managed vendor, AgentKit generates it at `session.start()` from the session App ID, channel, app certificate, and avatar `agoraUid`. The generated token uses the same ConvoAI token format as the agent token, but is scoped to the avatar `agoraUid`. AgentKit never overwrites a user-provided avatar token.
+
+Keep `agoraUid` unique from `agentUid`. AgentKit warns when they match (managed vendors only).
 
 ## The sample-rate constraint
 
@@ -22,7 +56,7 @@ Avatars require the TTS audio to be at a specific sample rate. If you use the wr
 The `Agent` class tracks the TTS sample rate as a type parameter. When you call `.withAvatar()`, TypeScript checks that the TTS sample rate type matches the avatar's required rate. If they don't match, you get a compile error:
 
 ```typescript
-import { Agent, ElevenLabsTTS, HeyGenAvatar } from 'agora-agent-server-sdk';
+import { Agent, ElevenLabsTTS, HeyGenAvatar } from 'agora-agents';
 
 // This works — ElevenLabs at 24kHz matches HeyGen's requirement
 const good = new Agent({ name: 'avatar-agent' })
@@ -56,7 +90,7 @@ with 24000 Hz. Please update your TTS configuration to use 16kHz sample rate.
 See: https://docs.agora.io/en/conversational-ai/models/avatar/akool
 ```
 
-## Example: HeyGen avatar with ElevenLabs at 24kHz
+## Example: LiveAvatar with auto-generated avatar token
 
 ```typescript
 import {
@@ -66,40 +100,57 @@ import {
   OpenAI,
   ElevenLabsTTS,
   DeepgramSTT,
-  HeyGenAvatar,
-} from 'agora-agent-server-sdk';
+  LiveAvatarAvatar,
+} from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
-const agent = new Agent({ name: 'heygen-agent', instructions: 'You are a friendly avatar assistant.' })
+const agent = new Agent({ name: 'liveavatar-agent', instructions: 'You are a friendly avatar assistant.' })
   .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
   .withTts(new ElevenLabsTTS({
     key: 'your-elevenlabs-key',
     modelId: 'eleven_flash_v2_5',
     voiceId: 'your-voice-id',
-    sampleRate: 24000,  // Required for HeyGen
+    sampleRate: 24000,  // Required for LiveAvatar
   }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }))
-  .withAvatar(new HeyGenAvatar({
-    apiKey: 'your-heygen-key',
+  .withAvatar(new LiveAvatarAvatar({
+    apiKey: 'your-liveavatar-key',
     quality: 'high',
-    agoraUid: '12345',
+    agoraUid: '200', // unique avatar video UID
     avatarId: 'your-avatar-id',
+    // agoraToken omitted: AgentKit generates it at session.start()
   }));
 
 const session = agent.createSession(client, {
   channel: 'avatar-room',
-  agentUid: '1',
+  agentUid: '1', // distinct from avatar agoraUid
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
 });
 
 await session.start();
+```
+
+## Example: Generic avatar
+
+```typescript
+import { Agent, GenericAvatar, OpenAI, OpenAITTS, AresSTT } from 'agora-agents';
+
+const agent = new Agent({ name: 'generic-avatar-agent' })
+  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
+  .withTts(new OpenAITTS({ apiKey: 'your-openai-tts-key', model: 'tts-1', voice: 'alloy' }))
+  .withStt(new AresSTT())
+  .withAvatar(new GenericAvatar({
+    apiKey: 'your-avatar-provider-key',
+    apiBaseUrl: 'https://avatar-provider.example.com',
+    avatarId: 'avatar-id',
+    agoraUid: '200',
+    // agoraAppId, agoraChannel, and agoraToken are filled from the session.
+  }));
 ```
 
 ## Example: Akool avatar with ElevenLabs at 16kHz
@@ -113,13 +164,12 @@ import {
   ElevenLabsTTS,
   DeepgramSTT,
   AkoolAvatar,
-} from 'agora-agent-server-sdk';
+} from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({ name: 'akool-agent', instructions: 'You are a friendly avatar assistant.' })
@@ -140,7 +190,6 @@ const session = agent.createSession(client, {
   channel: 'avatar-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
 });
 
 await session.start();
@@ -148,15 +197,28 @@ await session.start();
 
 ## HeyGenAvatar constructor options
 
+`HeyGenAvatar` is deprecated. Use `LiveAvatarAvatar` for new integrations.
+
 | Option | Type | Required | Description |
 |---|---|---|---|
 | `apiKey` | `string` | Yes | HeyGen API key |
 | `quality` | `"low" \| "medium" \| "high"` | Yes | Video quality (360p / 480p / 720p) |
 | `agoraUid` | `string` | Yes | RTC UID for the avatar stream (must be unique in the channel) |
-| `agoraToken` | `string` | No | RTC token for avatar authentication |
+| `agoraToken` | `string` | No | Avatar token override. Omit to auto-generate at `session.start()` |
 | `avatarId` | `string` | No | HeyGen avatar ID |
 | `disableIdleTimeout` | `boolean` | No | Disable idle timeout (default: false) |
 | `activityIdleTimeout` | `number` | No | Idle timeout in seconds (default: 120) |
+| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+## LiveAvatarAvatar constructor options
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `apiKey` | `string` | Yes | LiveAvatar API key |
+| `quality` | `"low" \| "medium" \| "high"` | Yes | Video quality |
+| `agoraUid` | `string` | Yes | RTC UID for the avatar stream (must be unique in the channel) |
+| `agoraToken` | `string` | No | Avatar token override. Omit to auto-generate at `session.start()` |
+| `avatarId` | `string` | No | Avatar ID |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
 
 ## AkoolAvatar constructor options
@@ -165,4 +227,25 @@ await session.start();
 |---|---|---|---|
 | `apiKey` | `string` | Yes | Akool API key |
 | `avatarId` | `string` | No | Akool avatar ID |
+| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+## AnamAvatar constructor options
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `apiKey` | `string` | Yes | Anam API key |
+| `personaId` | `string` | No | Anam persona ID |
+| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+## GenericAvatar constructor options
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `apiKey` | `string` | Yes | Custom avatar provider API key |
+| `apiBaseUrl` | `string` | Yes | Avatar provider API base URL |
+| `avatarId` | `string` | Yes | Avatar ID |
+| `agoraUid` | `string` | Yes | RTC UID for the avatar stream |
+| `agoraAppId` | `string` | No | Omit to use the session App ID |
+| `agoraChannel` | `string` | No | Omit to use the session channel |
+| `agoraToken` | `string` | No | Avatar token override. Omit to auto-generate at `session.start()` |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |

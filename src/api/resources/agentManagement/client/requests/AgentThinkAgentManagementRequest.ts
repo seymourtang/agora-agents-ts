@@ -26,6 +26,7 @@ export interface AgentThinkAgentManagementRequest {
     /**
      * The action to take when the agent is in a listening state:
      * - `inject`: Inject the custom text instruction into the current turn without interrupting it.
+     * - `interrupt`: Immediately interrupt the current flow and initiate a new round of dialogue.
      * - `ignore`: Ignore the request.
      */
     on_listening_action?: AgentThinkAgentManagementRequest.OnListeningAction;
@@ -55,10 +56,12 @@ export namespace AgentThinkAgentManagementRequest {
     /**
      * The action to take when the agent is in a listening state:
      * - `inject`: Inject the custom text instruction into the current turn without interrupting it.
+     * - `interrupt`: Immediately interrupt the current flow and initiate a new round of dialogue.
      * - `ignore`: Ignore the request.
      */
     export const OnListeningAction = {
         Inject: "inject",
+        Interrupt: "interrupt",
         Ignore: "ignore",
     } as const;
     export type OnListeningAction = (typeof OnListeningAction)[keyof typeof OnListeningAction];

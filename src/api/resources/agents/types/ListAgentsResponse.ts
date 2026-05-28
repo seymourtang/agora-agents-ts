@@ -41,7 +41,6 @@ export namespace ListAgentsResponse {
                     Running: "RUNNING",
                     Stopping: "STOPPING",
                     Stopped: "STOPPED",
-                    Recovering: "RECOVERING",
                     Failed: "FAILED",
                 } as const;
                 export type Status = (typeof Status)[keyof typeof Status];

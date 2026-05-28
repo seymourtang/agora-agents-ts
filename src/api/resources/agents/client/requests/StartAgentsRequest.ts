@@ -37,6 +37,14 @@ import type * as Agora from "../../../../index.js";
  *                 max_history: 32,
  *                 greeting_message: "Hello, how can I assist you today?",
  *                 failure_message: "Please hold on a second."
+ *             },
+ *             turn_detection: {
+ *                 mode: "default",
+ *                 config: {
+ *                     end_of_speech: {
+ *                         mode: "semantic"
+ *                     }
+ *                 }
  *             }
  *         }
  *     }
@@ -149,7 +157,7 @@ export namespace StartAgentsRequest {
          * Advanced features configuration.
          */
         export interface AdvancedFeatures {
-            /** Use `mllm.enable` instead. Enable Multimodal Large Language Model for voice-to-voice processing. Enabling MLLM automatically disables ASR, LLM, and TTS since the MLLM handles end-to-end voice processing directly. See `turn_detection.mode` for turn detection options available with MLLM. */
+            /** Use `mllm.enable` instead. Enable Multimodal Large Language Model for voice-to-voice processing. Enabling MLLM automatically disables ASR, LLM, and TTS since the MLLM handles end-to-end voice processing directly. See `turn_detection.type` for turn detection options available with MLLM. */
             enable_mllm?: boolean;
             /** Whether to enable the Signaling (RTM) service. When enabled, the agent can combine the capabilities provided by Signaling to implement advanced functions, such as delivering custom information. Before enabling the Signaling service, make sure the token includes both RTC and RTM privileges. */
             enable_rtm?: boolean;
@@ -226,7 +234,7 @@ export namespace StartAgentsRequest {
             /**
              * LLM input modalities:
              * - `["text"]`: Text only
-             * - `["text", "image"]`: Text plus image; requires the selected LLM to support visual input
+             * - `["text", "image"]`: Text plus image. Recommended configuration, requires the selected LLM to support visual input
              */
             input_modalities?: string[];
             /**
@@ -294,6 +302,11 @@ export namespace StartAgentsRequest {
                 mode?: GreetingConfigs.Mode;
                 /** The delay in milliseconds before the agent plays the greeting message after a user joins the channel. */
                 delay_ms?: number;
+                /**
+                 * - `true`: Follows the global `interruption` configuration.
+                 * - `false`: Uninterruptible. The greeting plays in its entirety. If the user speaks multiple times while the greeting plays, the system merges the speech segments after the greeting ends and sends them to the LLM for a single response.
+                 */
+                interruptable?: boolean;
             }
 
             export namespace GreetingConfigs {
@@ -366,17 +379,14 @@ export namespace StartAgentsRequest {
             output_modalities?: string[];
             /** Agent greeting message. If provided, the first user in the channel is automatically greeted with this message upon joining. */
             greeting_message?: string;
-            /** Message played when the MLLM call fails. */
+            /** Agent failure message. If provided, the agent speaks this message when an MLLM request fails. */
             failure_message?: string;
-            /** Maximum number of conversation history messages cached for the MLLM session. */
-            max_history?: number;
-            /** Predefined tools available to the MLLM provider. */
-            predefined_tools?: string[];
             /**
              * MLLM provider. Currently supports:
              * - `openai`: OpenAI Realtime API
              * - `gemini`: Google Gemini Live
              * - `vertexai`: Google Gemini Live (Vertex AI)
+             * - `xai`: xAI Grok Realtime API
              */
             vendor?: Mllm.Vendor;
             /** Turn detection configuration for the MLLM module. When defined, the top-level `turn_detection` object has no effect. */
@@ -389,11 +399,13 @@ export namespace StartAgentsRequest {
              * - `openai`: OpenAI Realtime API
              * - `gemini`: Google Gemini Live
              * - `vertexai`: Google Gemini Live (Vertex AI)
+             * - `xai`: xAI Grok Realtime API
              */
             export const Vendor = {
                 Openai: "openai",
                 Gemini: "gemini",
                 Vertexai: "vertexai",
+                Xai: "xai",
             } as const;
             export type Vendor = (typeof Vendor)[keyof typeof Vendor];
 
@@ -404,7 +416,7 @@ export namespace StartAgentsRequest {
                 /**
                  * Turn detection mode for MLLM:
                  * - `agora_vad`: Agora VAD-based detection.
-                 * - `server_vad`: Vendor-side VAD-based detection. Supported by OpenAI Realtime API and Gemini Live.
+                 * - `server_vad`: Vendor-side VAD-based detection. Supported by OpenAI Realtime API, Gemini Live, and xAI Grok.
                  * - `semantic_vad`: Semantic-based detection. Supported by OpenAI Realtime API only.
                  */
                 mode?: TurnDetection.Mode;
@@ -420,7 +432,7 @@ export namespace StartAgentsRequest {
                 /**
                  * Turn detection mode for MLLM:
                  * - `agora_vad`: Agora VAD-based detection.
-                 * - `server_vad`: Vendor-side VAD-based detection. Supported by OpenAI Realtime API and Gemini Live.
+                 * - `server_vad`: Vendor-side VAD-based detection. Supported by OpenAI Realtime API, Gemini Live, and xAI Grok.
                  * - `semantic_vad`: Semantic-based detection. Supported by OpenAI Realtime API only.
                  */
                 export const Mode = {
@@ -452,7 +464,7 @@ export namespace StartAgentsRequest {
                     prefix_padding_ms?: number;
                     /** Duration of silence in milliseconds required to determine end of speech. */
                     silence_duration_ms?: number;
-                    /** VAD sensitivity threshold. Applicable to OpenAI Realtime API only. */
+                    /** VAD sensitivity threshold. Applicable to OpenAI Realtime API and xAI Grok. */
                     threshold?: number;
                     /** Idle timeout in milliseconds. Applicable to OpenAI Realtime API only. */
                     idle_timeout_ms?: number;
@@ -511,6 +523,7 @@ export namespace StartAgentsRequest {
              * - `akool`: Akool (Beta)
              * - `liveavatar`: LiveAvatar (Beta)
              * - `anam`: Anam (Beta)
+             * - `generic`: Generic (Beta)
              */
             vendor?: Avatar.Vendor;
             /** The configuration parameters for the avatar vendor. See [AI Avatar Overview](https://docs.agora.io/en/conversational-ai/models/avatar/overview) for details. */
@@ -523,6 +536,7 @@ export namespace StartAgentsRequest {
              * - `akool`: Akool (Beta)
              * - `liveavatar`: LiveAvatar (Beta)
              * - `anam`: Anam (Beta)
+             * - `generic`: Generic (Beta)
              */
             export const Vendor = {
                 Akool: "akool",
@@ -530,6 +544,9 @@ export namespace StartAgentsRequest {
                  * LiveAvatar (Beta) — formerly HeyGen */
                 Liveavatar: "liveavatar",
                 Anam: "anam",
+                /**
+                 * Generic avatar (Beta) */
+                Generic: "generic",
                 /**
                  * Deprecated: HeyGen has renamed to LiveAvatar. Use `liveavatar` instead. */
                 Heygen: "heygen",
@@ -965,7 +982,7 @@ export namespace StartAgentsRequest {
                  */
                 export interface StaticConfig {
                     /** List of filler word phrases. Maximum 100 filler words, each not exceeding 50 English words. */
-                    phrases?: string[];
+                    phrases: string[];
                     /**
                      * Filler word selection rule:
                      * - `shuffle`: Random shuffle. Already-used filler words are not repeated until all have been used once.

@@ -33,7 +33,7 @@ import {
   OpenAI,
   ElevenLabsTTS,
   DeepgramSTT,
-} from 'agora-agent-server-sdk';
+} from 'agora-agents';
 
 const agent = new Agent({
   name: 'sal-assistant',
@@ -56,7 +56,7 @@ const agent = new Agent({
 Enable MLLM, RTM, SAL, or tools:
 
 ```typescript
-import { Agent } from 'agora-agent-server-sdk';
+import { Agent } from 'agora-agents';
 
 // MLLM mode (see mllm-flow guide) — withMllm() enables it automatically
 const mllmAgent = new Agent()
@@ -76,7 +76,7 @@ const toolsAgent = new Agent()
 Configure silence handling, farewell behavior, and data channel:
 
 ```typescript
-import { Agent } from 'agora-agent-server-sdk';
+import { Agent } from 'agora-agents';
 
 const agent = new Agent({ name: 'params-agent' })
   .withLlm(/* ... */)
@@ -231,13 +231,12 @@ import {
   OpenAI,
   ElevenLabsTTS,
   DeepgramSTT,
-} from 'agora-agent-server-sdk';
+} from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({
@@ -273,7 +272,6 @@ const session = agent.createSession(client, {
   channel: 'demo-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
   idleTimeout: 120,
 });
 
@@ -284,5 +282,5 @@ const agentId = await session.start();
 
 - [Agent Reference](../reference/agent.md) — full API signatures
 - [Cascading Flow](./cascading-flow.md) — ASR → LLM → TTS setup
-- [MLLM Flow](./mllm-flow.md) — end-to-end audio with OpenAI Realtime or Gemini Live
+- [MLLM Flow](./mllm-flow.md) — end-to-end audio with OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok
 - [Regional Routing](./regional-routing.md) — client area and geofence

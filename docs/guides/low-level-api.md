@@ -1,172 +1,56 @@
 ---
 sidebar_position: 9
 title: Low-Level API
-description: Direct client.agents.start() usage without the builder pattern.
+description: Use generated clients for escape-hatch APIs while keeping agent sessions on AgentKit.
 ---
 
 # Low-Level API
 
-For direct control over the REST API, use `client.agents.start()` with raw request objects. See the [API Reference](../../reference.md) for full details.
+Use the `Agent` builder and `AgentSession` for conversational agent starts. That path generates ConvoAI REST auth and RTC join tokens from `appId` and `appCertificate`, so application code does not need prebuilt REST tokens, RTC tokens, Customer ID, or Customer Secret.
+
+Generated clients are still available for API surface that AgentKit does not wrap yet, such as telephony and phone-number management.
+
+## Client setup
+
+```typescript
+import { AgoraClient, Area } from "agora-agents";
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: "your-app-id",
+  appCertificate: "your-app-certificate",
+});
+```
 
 ## Raw telephony and phone-number APIs
 
-AgentKit focuses on realtime agent session helpers. Telephony call status, call hangup, and phone-number management are exposed through the generated low-level clients:
+AgentKit focuses on realtime agent session helpers. Use generated clients for operational APIs:
 
 - `client.telephony` for call status and hangup operations
 - `client.phoneNumbers` for phone-number list, create, retrieve, update, and delete operations
 
-## Direct client usage
-
 ```typescript
-import { AgoraClient, Area } from "agora-agent-server-sdk";
-
-const client = new AgoraClient({
-  area: Area.US,
-  appId: "your-app-id",
-  appCertificate: "your-app-certificate",
-  authToken: "your-rest-auth-token",
+const calls = await client.telephony.list({
+  appid: client.appId,
+  type: "sip",
 });
 
-await client.agents.start({
-  appid: "your_app_id",
-  name: "unique_name",
-  properties: {
-    channel: "channel_name",
-    token: "your_token",
-    agent_rtc_uid: "1001",
-    remote_rtc_uids: ["1002"],
-    idle_timeout: 120,
-    asr: {
-      language: "en-US",
-      vendor: "deepgram",
-      params: { api_key: "your-deepgram-key" },
-    },
-    tts: {
-      vendor: "elevenlabs",
-      params: {
-        key: "your-elevenlabs-key",
-        model_id: "eleven_flash_v2_5",
-        voice_id: "your-voice-id",
-      },
-    },
-    llm: {
-      url: "https://api.openai.com/v1/chat/completions",
-      api_key: "<your_llm_key>",
-      system_messages: [{ role: "system", content: "You are a helpful chatbot." }],
-      params: { model: "gpt-4o-mini" },
-      max_history: 32,
-      greeting_message: "Hello, how can I assist you today?",
-      failure_message: "Please hold on a second.",
-    },
-  },
+for (const call of calls.data) {
+  console.log(call.id, call.state);
+}
+```
+
+## Direct agent APIs
+
+`client.agents` exposes the generated REST surface for advanced integrations. Prefer `agent.createSession(...).start()` for new session starts because it handles auth, token generation, vendor serialization, lifecycle state, and avatar enrichment.
+
+If you need an endpoint that is not wrapped by `AgentSession`, use `session.raw` after creating the session:
+
+```typescript
+const info = await session.raw.get({
+  appid: session.appId,
+  agentId: session.id!,
 });
 ```
 
-## Using named types
-
-Use the `Agora` namespace for typed request objects and IDE autocompletion:
-
-```typescript
-import { AgoraClient, Area, Agora } from "agora-agent-server-sdk";
-
-const client = new AgoraClient({
-  area: Area.US,
-  appId: "your-app-id",
-  appCertificate: "your-app-certificate",
-  authToken: "your-rest-auth-token",
-});
-
-const tts: Agora.StartAgentsRequest.Properties.Tts = {
-  vendor: "elevenlabs",
-  params: {
-    key: "<your_elevenlabs_key>",
-    model_id: "eleven_flash_v2_5",
-    voice_id: "<your_voice_id>",
-  },
-};
-
-const asr: Agora.StartAgentsRequest.Properties.Asr = {
-  language: "en-US",
-  vendor: Agora.StartAgentsRequest.Properties.Asr.Vendor.Deepgram,
-  params: { api_key: "<your_deepgram_key>" },
-};
-
-const llm: Agora.StartAgentsRequest.Properties.Llm = {
-  url: "https://api.openai.com/v1/chat/completions",
-  api_key: "<your_llm_key>",
-  system_messages: [{ role: "system", content: "You are a helpful assistant." }],
-  params: { model: "gpt-4o-mini" },
-  max_history: 32,
-  greeting_message: "Hello, how can I assist you today?",
-  failure_message: "Please hold on a second.",
-};
-
-await client.agents.start({
-  appid: "your_app_id",
-  name: "unique_agent_name",
-  properties: {
-    channel: "channel_name",
-    token: "your_token",
-    agent_rtc_uid: "1001",
-    remote_rtc_uids: ["1002"],
-    idle_timeout: 120,
-    asr,
-    tts,
-    llm,
-  },
-});
-```
-
-## MLLM (raw API)
-
-For MLLM flow without the builder pattern, set `mllm.enable` and pass MLLM turn detection as `mllm.turn_detection`. See the [MLLM Overview](https://docs.agora.io/en/conversational-ai/models/mllm/overview) for details.
-
-```typescript
-import { AgoraClient, Area, Agora } from "agora-agent-server-sdk";
-
-const client = new AgoraClient({
-  area: Area.US,
-  appId: "your-app-id",
-  appCertificate: "your-app-certificate",
-  authToken: "your-rest-auth-token",
-});
-
-const mllm: Agora.StartAgentsRequest.Properties.Mllm = {
-  enable: true,
-  url: "wss://api.openai.com/v1/realtime",
-  api_key: "<your_openai_api_key>",
-  vendor: Agora.StartAgentsRequest.Properties.Mllm.Vendor.Openai,
-  params: { model: "gpt-4o-realtime-preview", voice: "alloy" },
-  input_modalities: ["audio"],
-  output_modalities: ["text", "audio"],
-  greeting_message: "Hello! I'm ready to chat in real-time.",
-  turn_detection: {
-    mode: "server_vad",
-    server_vad_config: {
-      idle_timeout_ms: 5000,
-    },
-  },
-};
-
-await client.agents.start({
-  appid: "your_app_id",
-  name: "mllm_agent",
-  properties: {
-    channel: "channel_name",
-    token: "your_token",
-    agent_rtc_uid: "1001",
-    remote_rtc_uids: ["1002"],
-    idle_timeout: 120,
-    mllm,
-    tts: {
-      vendor: "elevenlabs",
-      params: {
-        key: "your-elevenlabs-key",
-        model_id: "eleven_flash_v2_5",
-        voice_id: "your-voice-id",
-      },
-    },
-    llm: { url: "https://api.openai.com/v1/chat/completions" },
-  },
-});
-```
+You must pass `appid` and `agentId` manually when using generated raw methods.

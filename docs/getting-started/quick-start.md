@@ -1,55 +1,45 @@
 ---
 sidebar_position: 3
 title: Quick Start
-description: Build and run your first Agora Conversational AI agent in TypeScript with token auth and presets.
+description: Build and run your first Agora Conversational AI agent in TypeScript with app credentials and the builder API.
 ---
 
 # Quick Start
 
-This guide uses the recommended onboarding path:
+This guide starts with the standard AgentKit path:
 
-- `authToken` for REST API authentication
-- `preset` for Agora-managed ASR, LLM, and TTS
-- a channel join `token` for the RTC session
-- no vendor API keys in application code
+- `appId`, `appCertificate`, and `area` on `AgoraClient`
+- the `Agent` builder with `.withStt()`, `.withLlm()`, and `.withTts()`
+- automatic ConvoAI REST auth and RTC join token generation
+- no vendor API keys when using supported Agora-managed models
 
 ## Full example
 
 ```typescript
-import { Agent, AgentPresets, AgoraClient, Area } from 'agora-agent-server-sdk';
+import { Agent, AgoraClient, Area, DeepgramSTT, OpenAI, MiniMaxTTS } from 'agora-agents';
 
 async function main(): Promise<void> {
-  // Provision these in your backend. The SDK expects raw token values.
-  const restAuthToken = process.env.AGORA_REST_AUTH_TOKEN!;
-  const rtcJoinToken = process.env.AGORA_RTC_JOIN_TOKEN!;
-
-  // Token auth for REST API calls.
   const client = new AgoraClient({
     area: Area.US,
     appId: 'your-app-id',
     appCertificate: 'your-app-certificate',
-    authToken: restAuthToken,
   });
 
-  // Agent-level behavior lives here. Vendor selection comes from presets below.
   const agent = new Agent({
     name: 'support-assistant',
     instructions: 'You are a concise support voice assistant.',
     greeting: 'Hello! How can I help you today?',
     maxHistory: 10,
-  });
+  })
+    .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
+    .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
+    .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
 
   const session = agent.createSession(client, {
     channel: 'support-room-123',
     agentUid: '1',
     remoteUids: ['100'],
-    token: rtcJoinToken,
     idleTimeout: 120,
-    preset: [
-      AgentPresets.asr.deepgramNova3,
-      AgentPresets.llm.openaiGpt5Mini,
-      AgentPresets.tts.openaiTts1,
-    ],
   });
 
   const agentSessionId = await session.start();
@@ -64,20 +54,19 @@ void main();
 
 ## What this does
 
-1. `AgoraClient` uses `authToken` for REST API authentication.
+1. `AgoraClient` runs in app-credentials mode when you pass `appId` and `appCertificate` only.
 2. `Agent` holds reusable behavior such as instructions, greeting, and history settings.
-3. `preset` tells Agora which managed ASR, LLM, and TTS vendors to run.
-4. `token` on the session is the RTC join token used when the agent enters the channel.
-5. `session.start()` starts the agent and returns the unique agent session ID.
+3. Vendor classes on the builder select the ASR, LLM, and TTS stack. Leave vendor credentials unset for supported Agora-managed models, or provide keys when you want BYOK.
+4. `session.start()` generates the required auth tokens and returns the unique agent session ID.
 
 ## When to use BYOK instead
 
-Use presets when you want the fastest path to a working agent.
+Use the builder without vendor API keys when you are using supported Agora-managed models.
 
 Use BYOK when you need to:
 
 - supply your own vendor API keys
-- use models outside the preset catalog
+- use models outside the Agora-managed catalog
 - point at custom vendor endpoints
 - manage vendor-specific parameters directly
 

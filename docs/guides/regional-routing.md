@@ -11,7 +11,7 @@ The `AgoraClient` uses a domain pool to route API requests to the nearest Agora 
 ## Area enum
 
 ```typescript
-import { Area } from 'agora-agent-server-sdk';
+import { Area } from 'agora-agents';
 ```
 
 | Value | Region |
@@ -24,13 +24,12 @@ import { Area } from 'agora-agent-server-sdk';
 Pass the area when creating the client:
 
 ```typescript
-import { AgoraClient, Area } from 'agora-agent-server-sdk';
+import { AgoraClient, Area } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.EU,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 ```
 
@@ -58,13 +57,12 @@ Note: `Area.CN` uses `sd-rtn.com` as the primary suffix (optimized for Chinese m
 If a request fails, call `client.nextRegion()` to cycle to the next domain prefix, then retry:
 
 ```typescript
-import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
+import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.EU,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({ name: 'failover-demo', instructions: 'You are helpful.' })
@@ -76,7 +74,6 @@ const session = agent.createSession(client, {
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
 });
 
 try {
@@ -95,7 +92,7 @@ try {
 | `client.nextRegion()` | Cycle to the next domain prefix in the pool |
 | `client.selectBestDomain(signal?)` | Trigger a manual DNS resolution check (normally runs every 30s) |
 | `client.getCurrentURL()` | Inspect the full URL currently being used for API requests |
-| `client.pool` | Access the underlying `Pool` instance for advanced usage |
+| `client.pool` | Access the `Pool` instance for advanced usage |
 
 ```typescript
 // Check the current URL

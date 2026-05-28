@@ -26,13 +26,12 @@ import {
   OpenAI,
   ElevenLabsTTS,
   DeepgramSTT,
-} from 'agora-agent-server-sdk';
+} from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({
@@ -61,7 +60,6 @@ const session = agent.createSession(client, {
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
   idleTimeout: 120,
 });
 
@@ -77,13 +75,12 @@ await session.stop();
 For advanced use cases where you need full control over the request body:
 
 ```typescript
-import { AgoraClient, Area, generateRtcToken } from 'agora-agent-server-sdk';
+import { AgoraClient, Area, generateRtcToken } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: process.env.AGORA_REST_AUTH_TOKEN!,
 });
 
 const token = generateRtcToken({
@@ -150,13 +147,12 @@ import {
   AzureOpenAI,
   MicrosoftTTS,
   MicrosoftSTT,
-} from 'agora-agent-server-sdk';
+} from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.EU,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({
@@ -187,7 +183,6 @@ const session = agent.createSession(client, {
   channel: 'support-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
 });
 
 await session.start();
@@ -201,5 +196,5 @@ await session.start();
 
 ## Next steps
 
-- [MLLM Flow](./mllm-flow.md) — skip the ASR → LLM → TTS pipeline with OpenAI Realtime or Gemini Live
+- [MLLM Flow](./mllm-flow.md) — skip the ASR → LLM → TTS pipeline with OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok
 - [Avatar Integration](./avatars.md) — add a visual avatar to the agent

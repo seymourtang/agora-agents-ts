@@ -1,33 +1,43 @@
 ---
 sidebar_position: 2
 title: MLLM Flow (Multimodal)
-description: Use OpenAI Realtime or Gemini Live for end-to-end audio processing.
+description: Use OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok for end-to-end audio processing.
 ---
 
 # MLLM Flow (Multimodal)
 
-In MLLM mode, a single multimodal model handles audio input and output end-to-end — no separate STT or TTS step. This reduces latency and is required for OpenAI Realtime and Gemini Live.
+In MLLM mode, a single multimodal model handles audio input and output end-to-end — no separate STT or TTS step. This reduces latency and is required for OpenAI Realtime, Gemini Live, Vertex AI, and xAI Grok.
 
 ## When to use MLLM
 
 - You want the lowest-latency conversational experience
-- You are using OpenAI Realtime API or Google Gemini Live
+- You are using OpenAI Realtime API, Google Gemini Live, Vertex AI Gemini Live, or xAI Grok Realtime
 - You don't need fine-grained control over STT/TTS vendor selection
 
 ## Requirements
 
 Call `agent.withMllm(vendor)` — that's it. MLLM mode is enabled automatically through `mllm.enable`. The `withLlm()`, `withTts()`, and `withStt()` methods are not needed — the MLLM vendor handles everything.
 
+## Limitations
+
+Avatars are not supported with MLLM at this time. The avatar publisher requires the cascading ASR + LLM + TTS pipeline, so combining `withMllm()` with `withAvatar()` throws at `Agent.toProperties()` and `AgentSession.start()`:
+
+```
+Avatars are only supported with the cascading ASR + LLM + TTS pipeline.
+Remove the avatar configuration when using MLLM, or switch to a cascading session.
+```
+
+If you need an avatar, switch to the [cascading flow](./cascading-flow.md). If you need MLLM, omit the avatar.
+
 ## Example: OpenAI Realtime
 
 ```typescript
-import { AgoraClient, Area, Agent, OpenAIRealtime } from 'agora-agent-server-sdk';
+import { AgoraClient, Area, Agent, OpenAIRealtime } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({ name: 'realtime-assistant' })
@@ -43,7 +53,6 @@ const session = agent.createSession(client, {
   channel: 'realtime-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
 });
 
 const agentId = await session.start();
@@ -56,13 +65,12 @@ await session.stop();
 ## Example: Gemini Live
 
 ```typescript
-import { AgoraClient, Area, Agent, GeminiLive } from 'agora-agent-server-sdk';
+import { AgoraClient, Area, Agent, GeminiLive } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
   appId: 'your-app-id',
   appCertificate: 'your-app-certificate',
-  authToken: 'your-rest-auth-token',
 });
 
 const agent = new Agent({ name: 'gemini-assistant' })
@@ -78,11 +86,40 @@ const session = agent.createSession(client, {
   channel: 'gemini-room',
   agentUid: '1',
   remoteUids: ['100'],
-  token: 'your-rtc-join-token',
 });
 
 const agentId = await session.start();
 console.log('Gemini agent running:', agentId);
+```
+
+## Example: xAI Grok
+
+```typescript
+import { AgoraClient, Area, Agent, XaiGrok } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ name: 'grok-assistant' })
+  .withMllm(new XaiGrok({
+    apiKey: 'your-xai-key',
+    voice: 'eve',
+    language: 'en',
+    sampleRate: 24000,
+    greetingMessage: 'Hello! Grok is listening.',
+  }));
+
+const session = agent.createSession(client, {
+  channel: 'grok-room',
+  agentUid: '1',
+  remoteUids: ['100'],
+});
+
+const agentId = await session.start();
+console.log('Grok agent running:', agentId);
 ```
 
 ## Turn detection in MLLM mode

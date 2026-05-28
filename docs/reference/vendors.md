@@ -6,7 +6,7 @@ description: Constructor options for all LLM, TTS, STT, MLLM, and Avatar vendor 
 
 # Vendor Reference
 
-All vendor classes are imported from `agora-agent-server-sdk`.
+All vendor classes are imported from `agora-agents`.
 
 ## LLM vendors
 
@@ -33,14 +33,14 @@ new OpenAI(options: OpenAIOptions)
 | `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
 | `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
-For supported reseller preset models, `apiKey` is optional:
+For supported Agora-managed models, `apiKey` is optional:
 
 - `gpt-4o-mini`
 - `gpt-4.1-mini`
 - `gpt-5-nano`
 - `gpt-5-mini`
 
-If `apiKey` is omitted for one of those models, AgentKit infers the matching session preset. This no-key branch is only available with the default OpenAI endpoint and without a custom vendor hint. If `apiKey` is provided, AgentKit uses standard BYOK behavior instead.
+For those models, omit `apiKey` to use Agora-managed credentials. This option is only available with the default OpenAI endpoint and without a custom vendor hint. If `apiKey` is provided, AgentKit uses BYOK instead.
 
 ### AzureOpenAI
 
@@ -55,7 +55,7 @@ new AzureOpenAI(options: AzureOpenAIOptions)
 | `model` | `string` | Yes | Model/deployment name |
 | `resourceName` | `string` | Yes | Azure resource name |
 | `deploymentName` | `string` | Yes | Deployment name in Azure |
-| `apiVersion` | `string` | No | Azure API version (default: `'2023-05-15'`) |
+| `apiVersion` | `string` | No | Azure API version (default: `'2024-08-01-preview'`) |
 | `maxHistory` | `number` | No | Max conversation history to cache |
 | `systemMessages` | `Record<string, unknown>[]` | No | System messages |
 | `greetingMessage` | `string` | No | Agent greeting message |
@@ -113,6 +113,18 @@ new Gemini(options: GeminiOptions)
 | `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
 | `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
+### Other LLM vendors
+
+The SDK also includes named helpers for the remaining Agora-supported LLM providers. These helpers choose the correct request format internally.
+
+| Class | Provider | Key options |
+|---|---|---|
+| `Groq` | Groq | `apiKey`, `model`, `url?` |
+| `VertexAILLM` | Google Vertex AI | `apiKey`, `model`, `projectId`, `location`, `url?` |
+| `AmazonBedrock` | Amazon Bedrock | `apiKey`, `url`, `model` |
+| `Dify` | Dify | `apiKey`, `url`, `user?`, `conversationId?` |
+| `CustomLLM` | OpenAI-compatible LLM | `apiKey`, `model`, `url` |
+
 ---
 
 ## TTS vendors
@@ -166,7 +178,7 @@ Fixed at 24kHz — no configurable sample rate.
 | `speed` | `number` | No | Speech speed multiplier |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
-`apiKey` is optional only for the reseller-backed `tts-1` preset path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit infers `openai_tts_1`. If provided, the request stays in BYOK mode.
+`apiKey` is optional only for the Agora-managed `tts-1` path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit sends the matching Agora-managed configuration. If provided, the request stays in BYOK mode.
 
 ### CartesiaTTS
 
@@ -199,12 +211,12 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `MurfTTS` | `key`, `voiceId`, `style?` |
 | `SarvamTTS` | `key`, `speaker`, `targetLanguageCode` |
 
-For `MiniMaxTTS`, `key` is optional only for reseller-backed models:
+For `MiniMaxTTS`, `key` is optional only for Agora-managed models:
 
 - `speech-2.6-turbo`
 - `speech-2.8-turbo`
 
-If `key` is omitted for one of those models, AgentKit infers the matching session preset. In that preset-backed path, `groupId`, `voiceId`, and `url` are optional overrides rather than required fields. If `key` is provided, AgentKit uses BYOK.
+For those models, omit `key` to use Agora-managed credentials. In that configuration, `groupId`, `voiceId`, and `url` are optional overrides rather than required fields. If `key` is provided, AgentKit uses BYOK.
 
 ---
 
@@ -219,14 +231,14 @@ new DeepgramSTT(options: DeepgramSTTOptions)
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `apiKey` | `string` | No | Deepgram API key. Optional only for `nova-2` and `nova-3` reseller preset usage. |
+| `apiKey` | `string` | No | Deepgram API key. Optional only for `nova-2` and `nova-3` Agora-managed usage. |
 | `model` | `string` | No | Model (e.g., `'nova-2'`, `'enhanced'`) |
 | `language` | `string` | No | Language code (e.g., `'en-US'`) |
 | `smartFormat` | `boolean` | No | Enable smart formatting |
 | `punctuation` | `boolean` | No | Enable punctuation |
 | `additionalParams` | `Record<string, unknown>` | No | Additional vendor params |
 
-If `apiKey` is omitted for `nova-2` or `nova-3`, AgentKit infers the matching Deepgram reseller preset. For all other Deepgram models, TypeScript requires `apiKey`.
+For `nova-2` and `nova-3`, omit `apiKey` to use Agora-managed credentials. For all other Deepgram models, TypeScript requires `apiKey`.
 
 ### Other STT vendors
 
@@ -259,8 +271,6 @@ new OpenAIRealtime(options: OpenAIRealtimeOptions)
 | `url` | `string` | No | WebSocket URL |
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message played when the model call fails |
-| `maxHistory` | `number` | No | Maximum conversation history length |
-| `predefinedTools` | `string[]` | No | Predefined tools (e.g., `['_publish_message']`) |
 | `inputModalities` | `string[]` | No | Input modalities (e.g., `['audio']`) |
 | `outputModalities` | `string[]` | No | Output modalities (e.g., `['text', 'audio']`) |
 | `messages` | `Record<string, unknown>[]` | No | Conversation messages for short-term memory |
@@ -283,8 +293,6 @@ new GeminiLive(options: GeminiLiveOptions)
 | `voice` | `string` | No | Voice name (e.g., `'Aoede'`, `'Charon'`) |
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message played when the model call fails |
-| `maxHistory` | `number` | No | Maximum conversation history length |
-| `predefinedTools` | `string[]` | No | Predefined tools (e.g., `['_publish_message']`) |
 | `inputModalities` | `string[]` | No | Input modalities |
 | `outputModalities` | `string[]` | No | Output modalities |
 | `messages` | `Record<string, unknown>[]` | No | Conversation messages |
@@ -309,17 +317,39 @@ new VertexAI(options: VertexAIOptions)
 | `voice` | `string` | No | Voice name (e.g., `'Aoede'`, `'Charon'`) |
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message played when the model call fails |
-| `maxHistory` | `number` | No | Maximum conversation history length |
-| `predefinedTools` | `string[]` | No | Predefined tools (e.g., `['_publish_message']`) |
 | `inputModalities` | `string[]` | No | Input modalities |
 | `outputModalities` | `string[]` | No | Output modalities |
 | `messages` | `Record<string, unknown>[]` | No | Conversation messages |
 | `additionalParams` | `Record<string, unknown>` | No | Additional parameters |
 | `turnDetection` | `MllmTurnDetectionConfig` | No | MLLM turn detection configuration; overrides top-level `turn_detection` |
 
+### XaiGrok
+
+<!-- snippet: fragment -->
+```typescript
+new XaiGrok(options: XaiGrokOptions)
+```
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `apiKey` | `string` | Yes | xAI API key |
+| `url` | `string` | No | WebSocket URL (defaults to xAI Realtime API) |
+| `voice` | `string` | No | Voice identifier (for example, `'eve'`) |
+| `language` | `string` | No | Language code |
+| `sampleRate` | `number` | No | Audio sample rate in Hz |
+| `greetingMessage` | `string` | No | Agent greeting message |
+| `failureMessage` | `string` | No | Message played when the model call fails |
+| `inputModalities` | `string[]` | No | Input modalities |
+| `outputModalities` | `string[]` | No | Output modalities |
+| `messages` | `Record<string, unknown>[]` | No | Conversation messages |
+| `params` | `Record<string, unknown>` | No | Additional xAI parameters |
+| `turnDetection` | `MllmTurnDetectionConfig` | No | MLLM turn detection configuration; overrides top-level `turn_detection` |
+
 ---
 
 ## Avatar vendors
+
+AgentKit auto-fills `agora_token` only for vendors that publish a separate RTC video identity: `HeyGenAvatar`, `LiveAvatarAvatar`, and `GenericAvatar`. When `agoraToken` is omitted on those vendors, AgentKit generates it at `session.start()` from the session App ID, channel, app certificate, and avatar `agoraUid`. Avatar tokens use the same ConvoAI token format as agent tokens, scoped to the avatar UID. Explicit `agoraToken` values are preserved. `AkoolAvatar` and `AnamAvatar` never receive an auto-generated token (the avatar provider handles publishing). Use `isAvatarTokenManaged(avatar)` to check whether a config is in the managed group.
 
 ### HeyGenAvatar
 
@@ -328,17 +358,37 @@ new VertexAI(options: VertexAIOptions)
 new HeyGenAvatar(options: HeyGenAvatarOptions)
 ```
 
-Requires TTS at **24,000 Hz**. See [Avatar Integration](../guides/avatars.md).
+Deprecated. Use `LiveAvatarAvatar` for new integrations. Requires TTS at **24,000 Hz**. See [Avatar Integration](../guides/avatars.md).
 
 | Option | Type | Required | Description |
 |---|---|---|---|
 | `apiKey` | `string` | Yes | HeyGen API key |
 | `quality` | `"low" \| "medium" \| "high"` | Yes | Video quality (360p / 480p / 720p) |
 | `agoraUid` | `string` | Yes | RTC UID for the avatar stream |
-| `agoraToken` | `string` | No | RTC token for avatar authentication |
+| `agoraToken` | `string` | No | Avatar token override |
 | `avatarId` | `string` | No | HeyGen avatar ID |
 | `disableIdleTimeout` | `boolean` | No | Disable idle timeout (default: false) |
 | `activityIdleTimeout` | `number` | No | Idle timeout in seconds (default: 120) |
+| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+### LiveAvatarAvatar
+
+<!-- snippet: fragment -->
+```typescript
+new LiveAvatarAvatar(options: LiveAvatarAvatarOptions)
+```
+
+Requires TTS at **24,000 Hz**. See [Avatar Integration](../guides/avatars.md).
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `apiKey` | `string` | Yes | LiveAvatar API key |
+| `quality` | `"low" \| "medium" \| "high"` | Yes | Video quality |
+| `agoraUid` | `string` | Yes | RTC UID for the avatar stream |
+| `agoraToken` | `string` | No | Avatar token override |
+| `avatarId` | `string` | No | Avatar ID |
+| `disableIdleTimeout` | `boolean` | No | Disable idle timeout |
+| `activityIdleTimeout` | `number` | No | Idle timeout in seconds |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
 
 ### AkoolAvatar
@@ -354,4 +404,37 @@ Requires TTS at **16,000 Hz**. See [Avatar Integration](../guides/avatars.md).
 |---|---|---|---|
 | `apiKey` | `string` | Yes | Akool API key |
 | `avatarId` | `string` | No | Akool avatar ID |
+| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+### AnamAvatar
+
+<!-- snippet: fragment -->
+```typescript
+new AnamAvatar(options: AnamAvatarOptions)
+```
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `apiKey` | `string` | Yes | Anam API key |
+| `personaId` | `string` | No | Anam persona ID |
+| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+### GenericAvatar
+
+<!-- snippet: fragment -->
+```typescript
+new GenericAvatar(options: GenericAvatarOptions)
+```
+
+Generic avatars can omit `agoraAppId`, `agoraChannel`, and `agoraToken`. AgentKit fills them from the session at `start()`.
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `apiKey` | `string` | Yes | Custom avatar provider API key |
+| `apiBaseUrl` | `string` | Yes | Avatar provider API base URL |
+| `avatarId` | `string` | Yes | Avatar ID |
+| `agoraUid` | `string` | Yes | RTC UID for the avatar stream |
+| `agoraAppId` | `string` | No | Agora App ID override |
+| `agoraChannel` | `string` | No | Agora channel override |
+| `agoraToken` | `string` | No | Avatar token override |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |

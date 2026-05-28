@@ -6,7 +6,7 @@ description: How the TypeScript SDK layers are structured and when to use each.
 
 # Architecture
 
-The SDK is built in two layers: a hand-written agentkit on top of a Fern-generated core.
+The SDK is built in three layers: a hand-written AgentKit layer on top of a regional client wrapper and a Fern-generated core.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -24,9 +24,9 @@ The SDK is built in two layers: a hand-written agentkit on top of a Fern-generat
 
 | Use case | Layer | Entry point |
 |---|---|---|
-| Start a voice agent with typed vendor config | Agentkit | `new Agent().withLlm().withTts().withStt()` |
-| Manage session lifecycle and events | Agentkit | `session.start()`, `session.stop()`, `session.on()` |
-| Auto-generate RTC/ConvoAI tokens | Agentkit | App-credentials auth mode, `generateRtcToken()` |
+| Start a voice agent with typed vendor config | AgentKit | `new Agent().withLlm().withTts().withStt()` |
+| Manage session lifecycle and events | AgentKit | `session.start()`, `session.stop()`, `session.on()` |
+| Auto-generate RTC/ConvoAI tokens | AgentKit | App-credentials auth mode, `generateRtcToken()` |
 | Access a new API endpoint not yet in the agentkit | Raw client | `session.raw.someNewEndpoint()` |
 | Build custom `StartAgentsRequest` bodies | Raw client | `client.agents.start({ appid, name, properties })` |
 | Use advanced `mllm` or vendor params not in typed classes | Raw client | Pass raw config objects directly |
@@ -47,4 +47,4 @@ The SDK is built in two layers: a hand-written agentkit on top of a Fern-generat
 - `agentkit/token.ts` — RTC and ConvoAI token generation
 - `core/domain/index.ts` — `Area` enum, `Pool` class, DNS-based domain selection
 
-The Fern-generated `reference.md` documents the raw client layer. This documentation covers the agentkit layer.
+The generated `reference.md` documents the REST client layer. This documentation covers the AgentKit layer.

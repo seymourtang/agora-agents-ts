@@ -6,7 +6,15 @@
  * Agora API format (snake_case).
  */
 
-import type { LlmConfig, TtsConfig, SttConfig, MllmConfig, AvatarConfig, McpServersItem, LlmGreetingConfigs } from "../types.js";
+import type {
+    AvatarConfig,
+    LlmConfig,
+    LlmGreetingConfigs,
+    McpServersItem,
+    MllmConfig,
+    SttConfig,
+    TtsConfig,
+} from "../types.js";
 
 /**
  * Common options shared by all LLM vendor classes.
@@ -76,15 +84,14 @@ export type CartesiaSampleRate = 8000 | 16000 | 22050 | 24000 | 44100 | 48000;
 export type GoogleTTSSampleRate = 8000 | 16000 | 22050 | 24000 | 44100 | 48000;
 
 /**
- * Sample rate required by HeyGen avatars (24kHz only).
- * @deprecated HeyGen has been renamed to LiveAvatar. Use {@link LiveAvatarSampleRate} instead.
- */
-export type HeyGenSampleRate = 24000;
-
-/**
  * Sample rate required by LiveAvatar avatars (24kHz only). Formerly HeyGen.
  */
 export type LiveAvatarSampleRate = 24000;
+
+/**
+ * @deprecated HeyGen has been renamed to LiveAvatar. Use {@link LiveAvatarSampleRate} instead.
+ */
+export type HeyGenSampleRate = LiveAvatarSampleRate;
 
 /**
  * Sample rate required by Akool avatars (16kHz only).
@@ -109,16 +116,22 @@ export abstract class BaseLLM {
         this._mcpServers = options?.mcpServers;
     }
 
-    protected get outputModalities(): string[] | undefined { return this._outputModalities; }
-    protected get greetingConfigs(): LlmGreetingConfigs | undefined { return this._greetingConfigs; }
-    protected get templateVariables(): Record<string, string> | undefined { return this._templateVariables; }
-    protected get vendor(): string | undefined { return this._vendor; }
+    protected get outputModalities(): string[] | undefined {
+        return this._outputModalities;
+    }
+    protected get greetingConfigs(): LlmGreetingConfigs | undefined {
+        return this._greetingConfigs;
+    }
+    protected get templateVariables(): Record<string, string> | undefined {
+        return this._templateVariables;
+    }
+    protected get vendor(): string | undefined {
+        return this._vendor;
+    }
     /** MCP servers with transport defaulted to streamable_http (API requires it; only option). */
     protected get mcpServers(): McpServersItem[] | undefined {
         if (!this._mcpServers?.length) return this._mcpServers;
-        return this._mcpServers.map((s) =>
-            s.transport ? s : { ...s, transport: "streamable_http" as const }
-        );
+        return this._mcpServers.map((s) => (s.transport ? s : { ...s, transport: "streamable_http" as const }));
     }
 
     /**
@@ -144,7 +157,7 @@ export abstract class BaseLLM {
  *
  * @template SR - Sample rate literal type (e.g., 24000, 16000)
  */
-export abstract class BaseTTS<SR extends number = number> {
+export abstract class BaseTTS<_SR extends number = number> {
     /**
      * Converts the vendor configuration to the Agora API format.
      */
@@ -180,7 +193,7 @@ export abstract class BaseAvatar<RequiredSR extends number = number> {
      * Converts the vendor configuration to the Agora API format.
      */
     abstract toConfig(): AvatarConfig;
-    
+
     /**
      * The TTS sample rate required by this avatar vendor.
      */

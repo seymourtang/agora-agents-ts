@@ -19,7 +19,7 @@ const session = agent.createSession(client, {
 });
 ```
 
-Presets are also configured at session creation time. That matches the underlying Agora start/join API, where presets are applied to a specific agent run rather than to the reusable `Agent` definition.
+Presets are configured at session creation time when you use them explicitly. Most applications should configure vendors on the `Agent` builder instead — see [Quick Start](../getting-started/quick-start.md).
 
 ## State machine
 
@@ -59,40 +59,19 @@ All interaction methods require the session to be in the `running` state.
 | `on(event, handler)` | `void` | Subscribe to a session event. |
 | `off(event, handler)` | `void` | Unsubscribe from a session event. |
 
-## Presets, inferred presets, and BYOK
+## Agora-managed models and BYOK
 
-AgentKit supports three ways to use reseller-backed models:
-
-- Pass `preset` directly in `createSession(...)` when you want explicit control over the base reseller stack.
-- Use supported preset-backed vendor models without credentials and let AgentKit infer the matching preset automatically.
-- Use the same models with your own vendor credentials when you want BYOK instead.
-
-Examples:
+When you omit credentials for supported Agora-managed models on the builder, AgentKit sends the matching Agora-managed configuration at session start. Pass your own vendor API keys when you need BYOK.
 
 <!-- snippet: fragment -->
 ```typescript
-const explicitPresetSession = agent.createSession(client, {
-  channel: 'my-room',
-  agentUid: '1',
-  remoteUids: ['100'],
-  preset: 'deepgram_nova_3,openai_gpt_5_mini,openai_tts_1',
-});
-```
-
-<!-- snippet: fragment -->
-```typescript
-const inferredPresetAgent = new Agent({ instructions: 'Be concise.' })
+const agent = new Agent({ instructions: 'Be concise.' })
   .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
-  .withLlm(new OpenAI({ model: 'gpt-5-mini' }))
+  .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
   .withTts(new OpenAITTS({ voice: 'alloy' }));
 ```
 
-Supported inferred preset models:
-
-- Deepgram STT: `nova-2`, `nova-3`
-- OpenAI LLM: `gpt-4o-mini`, `gpt-4.1-mini`, `gpt-5-nano`, `gpt-5-mini`
-- OpenAI TTS: `tts-1`
-- MiniMax TTS: `speech-2.6-turbo`, `speech-2.8-turbo`
+For explicit project-specific preset values and the full list of Agora-managed models, see [AgentSession Reference](../reference/session.md).
 
 ### SayOptions
 
@@ -113,7 +92,7 @@ Supported inferred preset models:
 
 <!-- snippet: executable -->
 ```typescript
-import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
+import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,

@@ -5,6 +5,6 @@ export interface AgentThinkAgentManagementResponse {
     agent_id?: string;
     /** The name of the RTC channel where the agent is located. */
     channel?: string;
-    /** Timestamp indicating when the agent was created. */
+    /** Unix timestamp in seconds when the think request was processed. */
     start_ts?: number;
 }

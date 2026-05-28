@@ -1,3 +1,4 @@
+export * from "./AgentErrorResponse.js";
 export * from "./AmazonTts.js";
 export * from "./AmazonTtsParams.js";
 export * from "./CartesiaTts.js";
@@ -25,4 +26,5 @@ export * from "./RimeTts.js";
 export * from "./RimeTtsParams.js";
 export * from "./SarvamTts.js";
 export * from "./SarvamTtsParams.js";
+export * from "./TelephonyErrorResponse.js";
 export * from "./Tts.js";

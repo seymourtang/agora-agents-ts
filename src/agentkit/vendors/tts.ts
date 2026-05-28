@@ -2,10 +2,10 @@
  * Type-safe TTS (Text-to-Speech) vendor classes.
  */
 
-import { BaseTTS } from "./base.js";
-import type { ElevenLabsSampleRate, GoogleTTSSampleRate, MicrosoftSampleRate, CartesiaSampleRate } from "./base.js";
-import type { TtsConfig } from "../types.js";
 import type { MiniMaxPresetModel, OpenAITtsPresetModel } from "../presets.js";
+import type { TtsConfig } from "../types.js";
+import type { CartesiaSampleRate, ElevenLabsSampleRate, GoogleTTSSampleRate, MicrosoftSampleRate } from "./base.js";
+import { BaseTTS } from "./base.js";
 
 /**
  * Constructor options for ElevenLabs TTS.
@@ -155,7 +155,7 @@ export class MicrosoftTTS<SR extends MicrosoftSampleRate = MicrosoftSampleRate> 
  * Constructor options for OpenAI TTS.
  */
 type OpenAITTSCommonOptions = {
-    /** OpenAI API key. Optional only for the `tts-1` reseller preset path. */
+    /** OpenAI API key. Optional only for the Agora-managed `tts-1` path. */
     apiKey?: string;
     /** Voice name (e.g., 'alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer') */
     voice: string;
@@ -575,7 +575,7 @@ export class FishAudioTTS extends BaseTTS {
  * Constructor options for MiniMax TTS.
  */
 type MiniMaxTTSCommonOptions = {
-    /** MiniMax API key. Optional only for AgentKit-supported reseller preset models. */
+    /** MiniMax API key. Optional only for AgentKit-supported Agora-managed models. */
     key?: string;
     /** MiniMax group identifier */
     groupId: string;

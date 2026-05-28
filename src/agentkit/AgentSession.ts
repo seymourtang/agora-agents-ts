@@ -5,31 +5,35 @@
  * including starting, stopping, and interacting with the agent.
  */
 
-import type { AgoraClient } from "../Client.js";
-import type { AgentsClient } from "../api/resources/agents/client/Client.js";
-import type { AgentManagementClient } from "../api/resources/agentManagement/client/Client.js";
+import type { AgoraAuthMode } from "../AgoraPoolClient.js";
 import type * as Agora from "../api/index.js";
+import type { AgentManagementClient } from "../api/resources/agentManagement/client/Client.js";
+import type { AgentsClient } from "../api/resources/agents/client/Client.js";
+import type { AgoraClient } from "../Client.js";
 import { AgoraError } from "../errors/index.js";
-import { Agent } from "./Agent.js";
+import type { Agent } from "./Agent.js";
+import {
+    isAkoolAvatar,
+    isAnamAvatar,
+    isAvatarTokenManaged,
+    isGenericAvatar,
+    isHeyGenAvatar,
+    isLiveAvatarAvatar,
+    validateAvatarConfig,
+    validateTtsSampleRate,
+} from "./avatar-types.js";
+import { type PresetInput, resolveSessionPresets } from "./presets.js";
+import { ExpiresIn as ExpiresInHelper, generateConvoAIToken } from "./token.js";
 import type {
+    AgentConfigUpdate,
     ConversationHistory,
     ConversationTurns,
+    GetTurnsOptions,
     SayOptions,
-    AgentConfigUpdate,
     SessionInfo,
     ThinkOptions,
     ThinkResponse,
 } from "./types.js";
-import {
-    validateTtsSampleRate,
-    validateAvatarConfig,
-    isHeyGenAvatar,
-    isLiveAvatarAvatar,
-    isAkoolAvatar,
-} from "./avatar-types.js";
-import type { AgoraAuthMode } from "../AgoraPoolClient.js";
-import { generateConvoAIToken, ExpiresIn as ExpiresInHelper } from "./token.js";
-import { resolveSessionPresets, type PresetInput } from "./presets.js";
 
 /**
  * Event types that can be emitted by AgentSession.
@@ -93,7 +97,7 @@ export interface AgentSessionOptions {
  *
  * @example
  * ```typescript
- * import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
+ * import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agents';
  *
  * const client = new AgoraClient({
  *   area: Area.US,
@@ -183,7 +187,7 @@ export class AgentSession {
             appId: this._appId,
             appCertificate: this._appCertificate,
             channelName: this._channel,
-            account: this._agentUid,
+            uid: _parseNumericUid(this._agentUid, "agentUid"),
         });
         return { Authorization: `agora token=${token}` };
     }
@@ -247,10 +251,22 @@ export class AgentSession {
     }
 
     /**
+     * Returns true when the agent is configured for MLLM (multimodal end-to-end audio).
+     */
+    private _isMllmMode(): boolean {
+        const mllm = this._agent.mllm;
+        if (mllm?.enable === true) {
+            return true;
+        }
+        return mllm !== undefined;
+    }
+
+    /**
      * Validates avatar and TTS configuration before starting.
      *
      * This catches common misconfigurations like using the wrong TTS sample rate
-     * for a specific avatar vendor (e.g., HeyGen requires 24kHz, Akool requires 16kHz).
+     * for a specific avatar vendor (e.g., HeyGen requires 24kHz, Akool requires 16kHz),
+     * and rejects the unsupported MLLM + avatar combination.
      *
      * @throws {Error} If configuration is invalid
      */
@@ -264,9 +280,29 @@ export class AgentSession {
             return;
         }
 
-        // Validate avatar config structure
-        if (isHeyGenAvatar(avatar) || isLiveAvatarAvatar(avatar) || isAkoolAvatar(avatar)) {
-            validateAvatarConfig(avatar);
+        // Avatars currently require the cascading ASR/LLM/TTS pipeline. Reject
+        // MLLM + avatar before sending the request so callers see a clear,
+        // actionable error instead of an opaque server failure.
+        if (this._isMllmMode()) {
+            throw new Error(
+                "Avatars are only supported with the cascading ASR + LLM + TTS pipeline. " +
+                    "Remove the avatar configuration when using MLLM, or switch to a cascading session.",
+            );
+        }
+
+        const strictAvatar = avatar as unknown as Parameters<typeof validateAvatarConfig>[0];
+
+        // Validate non-session fields up-front. Generic avatars have additional
+        // session-derived fields (agora_appid, agora_channel, agora_token) that
+        // are filled by `_enrichAvatarParams()` and validated separately.
+        if (
+            isHeyGenAvatar(strictAvatar) ||
+            isLiveAvatarAvatar(strictAvatar) ||
+            isAkoolAvatar(strictAvatar) ||
+            isAnamAvatar(strictAvatar) ||
+            isGenericAvatar(strictAvatar)
+        ) {
+            validateAvatarConfig(strictAvatar);
         }
 
         // Validate TTS sample rate against avatar requirements
@@ -277,26 +313,119 @@ export class AgentSession {
             ttsParams && "sample_rate" in ttsParams ? (ttsParams as { sample_rate?: number }).sample_rate : undefined;
 
         if (typeof sampleRate === "number") {
-            if (isHeyGenAvatar(avatar) || isLiveAvatarAvatar(avatar) || isAkoolAvatar(avatar)) {
-                validateTtsSampleRate(avatar, sampleRate);
+            if (isHeyGenAvatar(strictAvatar) || isLiveAvatarAvatar(strictAvatar) || isAkoolAvatar(strictAvatar)) {
+                validateTtsSampleRate(strictAvatar, sampleRate);
             }
-        } else if (isHeyGenAvatar(avatar)) {
+        } else if (isHeyGenAvatar(strictAvatar)) {
             // HeyGen requires explicit 24kHz - warn if not set
             this._warn(
                 "Warning: HeyGen avatar detected but TTS sample_rate is not explicitly set. " +
                     "HeyGen requires 24,000 Hz. Please ensure your TTS provider is configured for 24kHz.",
             );
-        } else if (isLiveAvatarAvatar(avatar)) {
+        } else if (isLiveAvatarAvatar(strictAvatar)) {
             // LiveAvatar requires explicit 24kHz - warn if not set
             this._warn(
                 "Warning: LiveAvatar avatar detected but TTS sample_rate is not explicitly set. " +
                     "LiveAvatar requires 24,000 Hz. Please ensure your TTS provider is configured for 24kHz.",
             );
-        } else if (isAkoolAvatar(avatar)) {
+        } else if (isAkoolAvatar(strictAvatar)) {
             // Akool requires explicit 16kHz - warn if not set
             this._warn(
                 "Warning: Akool avatar detected but TTS sample_rate is not explicitly set. " +
                     "Akool requires 16,000 Hz. Please ensure your TTS provider is configured for 16kHz.",
+            );
+        }
+    }
+
+    /**
+     * Fills session-derived avatar fields and generates avatar ConvoAI tokens.
+     *
+     * Token management is gated to vendors that publish a separate RTC video
+     * identity (HeyGen, LiveAvatar, Generic). Other vendors (Akool, Anam) do
+     * not run a separate publisher and never receive an auto-generated token.
+     */
+    private _enrichAvatarParams(
+        properties: Agora.StartAgentsRequest.Properties,
+        expirySeconds?: number,
+    ): Agora.StartAgentsRequest.Properties {
+        const avatar = properties.avatar;
+        if (!avatar || avatar.enable === false || !avatar.params) {
+            return properties;
+        }
+
+        const params = { ...avatar.params } as Record<string, unknown>;
+        const strictAvatar = avatar as unknown as Parameters<typeof validateAvatarConfig>[0];
+        const tokenManaged = isAvatarTokenManaged(strictAvatar);
+
+        if (isGenericAvatar(strictAvatar)) {
+            if (params.agora_appid == null || params.agora_appid === "") {
+                params.agora_appid = this._appId;
+            }
+            if (params.agora_channel == null || params.agora_channel === "") {
+                params.agora_channel = this._channel;
+            }
+        }
+
+        if (tokenManaged) {
+            const avatarUid = params.agora_uid;
+            const hasAvatarUid =
+                (typeof avatarUid === "string" && avatarUid.length > 0) || typeof avatarUid === "number";
+            const hasAvatarToken = typeof params.agora_token === "string" && params.agora_token.length > 0;
+
+            if (hasAvatarUid && !hasAvatarToken) {
+                if (!this._appCertificate) {
+                    throw new Error(
+                        "Cannot auto-generate avatar agora_token: appCertificate is required. " +
+                            "Pass appCertificate when creating AgoraClient, or set agoraToken on the avatar vendor.",
+                    );
+                }
+                params.agora_token = generateConvoAIToken({
+                    appId: this._appId,
+                    appCertificate: this._appCertificate,
+                    channelName: this._channel,
+                    uid: _parseNumericUid(String(avatarUid), "avatar agora_uid"),
+                    tokenExpire: expirySeconds,
+                });
+            }
+
+            if (hasAvatarUid && String(avatarUid) === this._agentUid) {
+                this._warn(
+                    "Warning: avatar agora_uid matches agent_rtc_uid. Use a unique UID for the avatar video publisher.",
+                );
+            }
+        }
+
+        return { ...properties, avatar: { ...avatar, params } };
+    }
+
+    private _validateEnrichedAvatarConfig(properties: Agora.StartAgentsRequest.Properties): void {
+        const avatar = properties.avatar;
+        if (!avatar || avatar.enable === false) {
+            return;
+        }
+
+        const strictAvatar = avatar as unknown as Parameters<typeof validateAvatarConfig>[0];
+        if (
+            isHeyGenAvatar(strictAvatar) ||
+            isLiveAvatarAvatar(strictAvatar) ||
+            isAkoolAvatar(strictAvatar) ||
+            isAnamAvatar(strictAvatar) ||
+            isGenericAvatar(strictAvatar)
+        ) {
+            validateAvatarConfig(strictAvatar, { requireSessionFields: isGenericAvatar(strictAvatar) });
+        }
+
+        if (!isAvatarTokenManaged(strictAvatar)) {
+            return;
+        }
+
+        const params = avatar.params as Record<string, unknown> | undefined;
+        const hasUid = typeof params?.agora_uid === "string" || typeof params?.agora_uid === "number";
+        const hasToken = typeof params?.agora_token === "string" && params.agora_token.length > 0;
+        if (hasUid && !hasToken) {
+            throw new Error(
+                `${avatar.vendor ?? "Avatar"} avatar requires agora_token. ` +
+                    "Pass agoraToken on the avatar vendor or provide appCertificate for automatic token generation.",
             );
         }
     }
@@ -356,13 +485,15 @@ export class AgentSession {
                 preset: this._preset,
                 properties,
             });
+            const enrichedProperties = this._enrichAvatarParams(resolved.properties, expiresIn);
+            this._validateEnrichedAvatarConfig(enrichedProperties);
 
             const request: Agora.StartAgentsRequest = {
                 appid: this._appId,
                 name: this._name,
                 preset: resolved.preset,
                 pipeline_id: this._pipelineId,
-                properties: resolved.properties,
+                properties: enrichedProperties,
             };
 
             if (this._debug) {
@@ -552,7 +683,7 @@ export class AgentSession {
      *
      * @returns The session's conversation turns
      */
-    async getTurns(): Promise<ConversationTurns> {
+    async getTurns(options?: GetTurnsOptions): Promise<ConversationTurns> {
         if (!this._agentId) {
             throw new Error("No agent ID available");
         }
@@ -561,9 +692,58 @@ export class AgentSession {
             {
                 appid: this._appId,
                 agentId: this._agentId,
+                page_index: options?.page_index,
+                page_size: options?.page_size,
             },
             { headers: this._convoAIHeaders() },
         );
+    }
+
+    /**
+     * Get all turn analytics pages for this session.
+     *
+     * For very long sessions, prefer processing pages with `getTurns()` to avoid
+     * holding all turn data in memory at once.
+     */
+    async getAllTurns(options?: Omit<GetTurnsOptions, "page_index">): Promise<ConversationTurns> {
+        let page = await this.getTurns({ page_index: 1, page_size: options?.page_size });
+        const allTurns = [...(page.turns ?? [])];
+        let currentPage = page.pagination?.page_index ?? 1;
+
+        while (page.pagination && !page.pagination.is_last_page) {
+            if (page.pagination.page_index === undefined && page.pagination.total_pages === undefined) {
+                throw new Error(
+                    "getAllTurns pagination cannot continue: response must include page_index, total_pages, " +
+                        "or is_last_page=true.",
+                );
+            }
+            if (page.pagination.total_pages !== undefined && currentPage >= page.pagination.total_pages) {
+                break;
+            }
+            const nextPage = currentPage + 1;
+            page = await this.getTurns({ page_index: nextPage, page_size: options?.page_size });
+            allTurns.push(...(page.turns ?? []));
+            const returnedPage = page.pagination?.page_index;
+            if (returnedPage !== undefined) {
+                if (returnedPage <= currentPage && !page.pagination?.is_last_page) {
+                    throw new Error(
+                        `getAllTurns pagination did not advance: requested page ${nextPage}, ` +
+                            `received page ${returnedPage}.`,
+                    );
+                }
+                currentPage = returnedPage;
+            } else {
+                if (page.pagination?.total_pages === undefined && !page.pagination?.is_last_page) {
+                    throw new Error(
+                        "getAllTurns pagination cannot continue: response must include page_index, total_pages, " +
+                            "or is_last_page=true.",
+                    );
+                }
+                currentPage = nextPage;
+            }
+        }
+
+        return { ...page, turns: allTurns };
     }
 
     /**
@@ -595,7 +775,7 @@ export class AgentSession {
         if (!this._eventHandlers.has(event)) {
             this._eventHandlers.set(event, new Set());
         }
-        this._eventHandlers.get(event)!.add(handler as AgentSessionEventHandler);
+        this._eventHandlers.get(event)?.add(handler as AgentSessionEventHandler);
     }
 
     /**
@@ -628,4 +808,11 @@ export class AgentSession {
             }
         }
     }
+}
+
+function _parseNumericUid(uid: string, label: string): number {
+    if (!/^\d+$/.test(uid)) {
+        throw new Error(`${label} must be a numeric RTC UID when auto-generating a ConvoAI token`);
+    }
+    return Number(uid);
 }

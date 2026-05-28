@@ -4,40 +4,41 @@
  */
 
 import type {
-    StartAgentsRequest,
-    UpdateAgentsRequest,
-    ListAgentsResponse,
+    AgentThinkAgentManagementResponse,
+    AmazonTtsParams as AmazonTtsParamsType,
+    AmazonTts as AmazonTtsType,
+    CartesiaTtsParams as CartesiaTtsParamsType,
+    CartesiaTts as CartesiaTtsType,
+    ElevenLabsTtsParams as ElevenLabsTtsParamsType,
+    ElevenLabsTts as ElevenLabsTtsType,
+    FishAudioTtsParams as FishAudioTtsParamsType,
+    FishAudioTts as FishAudioTtsType,
     GetAgentsResponse,
     GetHistoryAgentsResponse,
     GetTurnsAgentsResponse,
-    SpeakAgentsRequest,
-    Tts,
-    MicrosoftTts as MicrosoftTtsType,
-    MicrosoftTtsParams as MicrosoftTtsParamsType,
-    ElevenLabsTts as ElevenLabsTtsType,
-    ElevenLabsTtsParams as ElevenLabsTtsParamsType,
-    CartesiaTts as CartesiaTtsType,
-    CartesiaTtsParams as CartesiaTtsParamsType,
-    OpenAiTts as OpenAiTtsType,
-    OpenAiTtsParams as OpenAiTtsParamsType,
-    HumeAiTts as HumeAiTtsType,
-    HumeAiTtsParams as HumeAiTtsParamsType,
-    RimeTts as RimeTtsType,
-    RimeTtsParams as RimeTtsParamsType,
-    FishAudioTts as FishAudioTtsType,
-    FishAudioTtsParams as FishAudioTtsParamsType,
-    GoogleTts as GoogleTtsType,
     GoogleTtsParams as GoogleTtsParamsType,
-    AmazonTts as AmazonTtsType,
-    AmazonTtsParams as AmazonTtsParamsType,
-    MinimaxTts as MinimaxTtsType,
+    GoogleTts as GoogleTtsType,
+    HumeAiTtsParams as HumeAiTtsParamsType,
+    HumeAiTts as HumeAiTtsType,
+    ListAgentsResponse,
+    MicrosoftTtsParams as MicrosoftTtsParamsType,
+    MicrosoftTts as MicrosoftTtsType,
     MinimaxTtsParams as MinimaxTtsParamsType,
-    MurfTts as MurfTtsType,
+    MinimaxTts as MinimaxTtsType,
     MurfTtsParams as MurfTtsParamsType,
-    SarvamTts as SarvamTtsType,
+    MurfTts as MurfTtsType,
+    OpenAiTtsParams as OpenAiTtsParamsType,
+    OpenAiTts as OpenAiTtsType,
+    RimeTtsParams as RimeTtsParamsType,
+    RimeTts as RimeTtsType,
     SarvamTtsParams as SarvamTtsParamsType,
-    AgentThinkAgentManagementResponse,
+    SarvamTts as SarvamTtsType,
+    SpeakAgentsRequest,
+    StartAgentsRequest,
+    Tts,
+    UpdateAgentsRequest,
 } from "../api/index.js";
+import type { AgentThinkAgentManagementRequest } from "../api/resources/agentManagement/client/requests/AgentThinkAgentManagementRequest.js";
 import type { PresetInput } from "./presets.js";
 
 // =============================================================================
@@ -64,6 +65,9 @@ export type SttConfig =
     | { vendor: "sarvam"; language?: string; params?: SarvamAsrParams }
     | StartAgentsRequest.Properties.Asr; // Fallback for shorthand/untyped configs
 
+/** ASR configuration — alias for {@link SttConfig} (wire field: `asr`). */
+export type AsrConfig = SttConfig;
+
 /** STT vendor (ares, microsoft, deepgram, openai, etc.) */
 export type SttVendor = StartAgentsRequest.Properties.Asr.Vendor;
 
@@ -73,13 +77,13 @@ export type TtsConfig = Tts;
 /** MLLM (Multimodal LLM) configuration */
 export type MllmConfig = StartAgentsRequest.Properties.Mllm;
 
-/** MLLM vendor (openai, vertexai) */
+/** MLLM vendor (openai, gemini, vertexai, xai) */
 export type MllmVendor = StartAgentsRequest.Properties.Mllm.Vendor;
 
 /** Avatar configuration */
 export type AvatarConfig = StartAgentsRequest.Properties.Avatar;
 
-/** Avatar vendor (akool, heygen) */
+/** Avatar vendor (akool, liveavatar, anam, generic, deprecated heygen) */
 export type AvatarVendor = StartAgentsRequest.Properties.Avatar.Vendor;
 
 /** Turn detection configuration */
@@ -191,16 +195,28 @@ export type MllmTurnDetectionConfig = StartAgentsRequest.Properties.Mllm.TurnDet
 export type MllmTurnDetectionMode = StartAgentsRequest.Properties.Mllm.TurnDetection.Mode;
 
 /** Options for `AgentSession.think()` */
+export type ThinkOnListeningAction = AgentThinkAgentManagementRequest.OnListeningAction;
+export type ThinkOnThinkingAction = AgentThinkAgentManagementRequest.OnThinkingAction;
+export type ThinkOnSpeakingAction = AgentThinkAgentManagementRequest.OnSpeakingAction;
+
 export interface ThinkOptions {
-    on_listening_action?: "inject" | "ignore";
-    on_thinking_action?: "interrupt" | "ignore";
-    on_speaking_action?: "interrupt" | "ignore";
+    on_listening_action?: ThinkOnListeningAction;
+    on_thinking_action?: ThinkOnThinkingAction;
+    on_speaking_action?: ThinkOnSpeakingAction;
     interruptable?: boolean;
     metadata?: Record<string, string>;
 }
 
 /** Response type for `AgentSession.think()` */
 export type ThinkResponse = AgentThinkAgentManagementResponse;
+
+/** Options for `AgentSession.getTurns()`. */
+export interface GetTurnsOptions {
+    /** Page number, starting from 1. */
+    page_index?: number;
+    /** Number of dialogue turns returned per page. */
+    page_size?: number;
+}
 
 /** Regional access restriction configuration */
 export type GeofenceConfig = StartAgentsRequest.Properties.Geofence;
@@ -291,6 +307,8 @@ export interface SessionOptions {
     expiresIn?: number;
     /** Enable debug logging of API requests */
     debug?: boolean;
+    /** Optional warning logger. Defaults to console.warn. Set to a no-op to silence warnings. */
+    warn?: (message: string) => void;
 }
 
 /** Session status */

@@ -8,9 +8,11 @@ description: AgoraClient constructor options and public methods.
 
 `AgoraClient` extends the Fern-generated base client with domain pool support for regional URL cycling and three authentication modes.
 
+Pass `appId` and `appCertificate` only for the recommended app-credentials mode. The SDK mints fresh REST tokens per request and generates RTC join tokens at session start.
+
 <!-- snippet: fragment -->
 ```typescript
-import { AgoraClient, Area } from 'agora-agent-server-sdk';
+import { AgoraClient, Area } from 'agora-agents';
 ```
 
 ## Constructor
@@ -51,7 +53,7 @@ See [Authentication](../getting-started/authentication.md) for details on each m
 | `appId` | `string` (readonly) | The Agora App ID |
 | `appCertificate` | `string` (readonly) | The Agora App Certificate |
 | `authMode` | `AgoraAuthMode` (readonly) | `"basic"`, `"token"`, or `"app-credentials"` |
-| `pool` | `Pool` (readonly) | The underlying domain pool instance |
+| `pool` | `Pool` (readonly) | The domain pool instance |
 
 ## Public methods
 

@@ -12,7 +12,7 @@ description: The Agent builder — configure an AI agent with LLM, TTS, STT, and
 
 <!-- snippet: executable -->
 ```typescript
-import { Agent } from 'agora-agent-server-sdk';
+import { Agent } from 'agora-agents';
 
 const agent = new Agent({
   name: 'my-assistant',
@@ -48,8 +48,8 @@ Each method returns a new `Agent` instance with the updated configuration.
 | `withLlm` | `withLlm(vendor: BaseLLM): Agent` | Set the LLM vendor |
 | `withTts` | `withTts<SR>(vendor: BaseTTS<SR>): Agent<SR>` | Set the TTS vendor (tracks sample rate type) |
 | `withStt` | `withStt(vendor: BaseSTT): Agent` | Set the STT vendor |
-| `withMllm` | `withMllm(vendor: BaseMLLM): Agent` | Set the MLLM vendor (for multimodal flow) |
-| `withAvatar` | `withAvatar<SR>(vendor: BaseAvatar<SR>): Agent` | Set the avatar vendor (enforces TTS sample rate match) |
+| `withMllm` | `withMllm(vendor: BaseMLLM): Agent` | Set the MLLM vendor (for multimodal flow). Not compatible with `withAvatar()`. |
+| `withAvatar` | `withAvatar<SR>(vendor: BaseAvatar<SR>): Agent` | Set the avatar vendor (enforces TTS sample rate match). Requires the cascading pipeline; not supported with `withMllm()`. |
 | `withTurnDetection` | `withTurnDetection(config: TurnDetectionConfig): Agent` | Configure cascading-flow SOS/EOS detection; use `withInterruption()` for interruption behavior |
 | `withInstructions` | `withInstructions(text: string): Agent` | Override the system prompt |
 | `withGreeting` | `withGreeting(text: string): Agent` | Override the greeting message |
@@ -97,7 +97,7 @@ Because every method returns a new instance, you can create a base agent and der
 
 <!-- snippet: executable -->
 ```typescript
-import { Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agent-server-sdk';
+import { Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agents';
 
 const base = new Agent({ instructions: 'You are helpful.' })
   .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))

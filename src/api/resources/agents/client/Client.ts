@@ -61,6 +61,14 @@ export class AgentsClient {
      *                 max_history: 32,
      *                 greeting_message: "Hello, how can I assist you today?",
      *                 failure_message: "Please hold on a second."
+     *             },
+     *             turn_detection: {
+     *                 mode: "default",
+     *                 config: {
+     *                     end_of_speech: {
+     *                         mode: "semantic"
+     *                     }
+     *                 }
      *             }
      *         }
      *     })
@@ -424,7 +432,16 @@ export class AgentsClient {
         request: Agora.GetTurnsAgentsRequest,
         requestOptions?: AgentsClient.RequestOptions,
     ): Promise<core.WithRawResponse<Agora.GetTurnsAgentsResponse>> {
-        const { appid, agentId } = request;
+        const { appid, agentId, page_index: pageIndex, page_size: pageSize } = request;
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (pageIndex != null) {
+            _queryParams.page_index = pageIndex.toString();
+        }
+
+        if (pageSize != null) {
+            _queryParams.page_size = pageSize.toString();
+        }
+
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             this._options?.headers,
             mergeOnlyDefinedHeaders({
@@ -442,7 +459,7 @@ export class AgentsClient {
             ),
             method: "GET",
             headers: _headers,
-            queryParameters: requestOptions?.queryParams,
+            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -481,7 +498,7 @@ export class AgentsClient {
     }
 
     /**
-     * Stop the specified conversational agent instance.
+     * Stop the specified conversational agent instance. The API responds after request parameters are validated, and the stop operation is processed asynchronously after the response is returned.
      *
      * @param {Agora.StopAgentsRequest} request
      * @param {AgentsClient.RequestOptions} requestOptions - Request-specific configuration.

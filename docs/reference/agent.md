@@ -8,7 +8,7 @@ description: Full API reference for the Agent builder class.
 
 <!-- snippet: fragment -->
 ```typescript
-import { Agent } from 'agora-agent-server-sdk';
+import { Agent } from 'agora-agents';
 ```
 
 ## Constructor
@@ -26,7 +26,7 @@ new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 | `instructions` | `string` | `undefined` | System prompt injected as a system message to the LLM |
 | `greeting` | `string` | `undefined` | First message spoken when the session starts |
 | `failureMessage` | `string` | `undefined` | Message spoken when an LLM call fails |
-| `maxHistory` | `number` | `undefined` | Max conversation turns kept in LLM context |
+| `maxHistory` | `number` | `undefined` | Max conversation turns kept in standard LLM context; does not apply to MLLM |
 | `turnDetection` | `TurnDetectionConfig` | `undefined` | Voice activity detection settings |
 | `interruption` | `InterruptionConfig` | `undefined` | Unified interruption control settings |
 | `sal` | `SalConfig` | `undefined` | Selective Attention Locking configuration |
@@ -56,11 +56,13 @@ Set the STT vendor. Pass an instance of any STT class (`DeepgramSTT`, `Speechmat
 
 ### `withMllm(vendor: BaseMLLM): Agent<TTSSampleRate>`
 
-Set the MLLM vendor for multimodal mode. Pass `OpenAIRealtime`, `GeminiLive`, or `VertexAI`. Calling `withMllm()` automatically sets `mllm.enable = true`.
+Set the MLLM vendor for multimodal mode. Pass `OpenAIRealtime`, `GeminiLive`, `VertexAI`, or `XaiGrok`. Calling `withMllm()` automatically sets `mllm.enable = true`. MLLM mode does not require `withTts()` / `withLlm()` / `withStt()`.
+
+> Avatars are only supported with the cascading ASR + LLM + TTS pipeline. Combining `withMllm()` with `withAvatar()` throws at `toProperties()` and `session.start()`.
 
 ### `withAvatar<RequiredSR extends number>(this: Agent<RequiredSR>, vendor: BaseAvatar<RequiredSR>): Agent<RequiredSR>`
 
-Set the avatar vendor. The `this` constraint enforces that the Agent's TTS sample rate matches the avatar's required rate at compile time.
+Set the avatar vendor. The `this` constraint enforces that the Agent's TTS sample rate matches the avatar's required rate at compile time. Requires the cascading ASR + LLM + TTS pipeline; avatars are not supported with MLLM.
 
 ### `withTurnDetection(config: TurnDetectionConfig): Agent<TTSSampleRate>`
 
@@ -98,13 +100,22 @@ Enable or disable MCP tool invocation by setting `advanced_features.enable_tools
 
 Set session parameters (silence config, farewell config, data channel, etc.).
 
+### `withAudioScenario(audioScenario: ParametersAudioScenario): Agent<TTSSampleRate>`
+
+Set `parameters.audio_scenario`. Use the exported `AudioScenario` constants for discoverability:
+
+<!-- snippet: fragment -->
+```typescript
+agent.withAudioScenario(AudioScenario.Aiserver)
+```
+
 ### `withFailureMessage(message: string): Agent<TTSSampleRate>`
 
 Set the message spoken via TTS when the LLM call fails.
 
 ### `withMaxHistory(maxHistory: number): Agent<TTSSampleRate>`
 
-Set the maximum conversation history length.
+Set the maximum conversation history length for the standard LLM pipeline. The v2.7 MLLM core schema does not expose a `max_history` field.
 
 ### `withGeofence(geofence: GeofenceConfig): Agent<TTSSampleRate>`
 
@@ -137,7 +148,7 @@ Set filler words configuration (played while waiting for LLM response).
 | `instructions` | `string \| undefined` | System prompt |
 | `greeting` | `string \| undefined` | Greeting message |
 | `failureMessage` | `string \| undefined` | Message spoken when LLM fails |
-| `maxHistory` | `number \| undefined` | Max conversation history length |
+| `maxHistory` | `number \| undefined` | Max conversation history length for the standard LLM pipeline |
 | `sal` | `SalConfig \| undefined` | SAL configuration |
 | `advancedFeatures` | `AdvancedFeatures \| undefined` | Advanced features |
 | `parameters` | `SessionParams \| undefined` | Session parameters |
@@ -171,21 +182,28 @@ createSession(
 | `expiresIn` | `number` | No | Token lifetime in seconds (default: `86400` = 24 h, Agora max). Only applies when the token is auto-generated. Use `ExpiresIn.hours()` or `ExpiresIn.minutes()` for clarity. Valid range: 1–86400. |
 | `idleTimeout` | `number` | No | Seconds before auto-exit if no audio (0 = disabled) |
 | `enableStringUid` | `boolean` | No | Use string UIDs instead of numeric |
-| `preset` | `string \| AgentPreset[]` | No | Session-level preset IDs to use as the base ASR/LLM/TTS configuration. Accepts either a comma-separated string or an array of exported `AgentPresets.*` values. |
+| `preset` | `string \| AgentPreset[]` | No | Advanced project-specific presets. Use only when Agora provides a specific preset ID for your project. |
 | `pipelineId` | `string` | No | Published AI Studio pipeline ID to use as the base configuration |
 | `debug` | `boolean` | No | Log API requests to console |
+| `warn` | `(message: string) => void` | No | Custom warning logger; pass a no-op to silence warnings |
 
-`preset` is session-scoped because the underlying Agora start/join API applies presets per session, not per reusable `Agent` definition.
+`preset` is session-scoped because the Agora start/join API applies project-specific settings per session, not per reusable `Agent` definition. Most applications should leave it unset.
 
-When you omit credentials for supported reseller-backed vendor models, AgentKit also infers the matching session preset automatically:
+When you omit credentials for supported Agora-managed models, AgentKit sends the matching Agora-managed configuration automatically:
 
 - Deepgram STT: `nova-2`, `nova-3`
 - OpenAI LLM: `gpt-4o-mini`, `gpt-4.1-mini`, `gpt-5-nano`, `gpt-5-mini`
 - OpenAI TTS: `tts-1`
 - MiniMax TTS: `speech-2.6-turbo`, `speech-2.8-turbo`
 
-If you provide your own vendor API key for those same models, AgentKit keeps the request in BYOK mode and does not infer a preset.
+If you provide your own vendor API key for those same models, AgentKit keeps the request in BYOK mode.
 
 ## `toProperties(opts): StartAgentsRequest.Properties`
 
 Low-level method to convert the agent config to the Fern request format. Used internally by `AgentSession.start()`. You typically don't need to call this directly unless building custom request bodies.
+
+## Type aliases
+
+Public aliases over Fern-generated types include `LlmConfig`, `SttConfig`, `AsrConfig` (= `SttConfig`), `MllmConfig`, `AvatarConfig`, session/conversation types, and think types (`ThinkOnListeningAction`, etc.).
+
+Think value constants: `ThinkOnListeningActionInject`, `ThinkOnListeningActionInterrupt`, `ThinkOnListeningActionIgnore`, `ThinkOnThinkingActionInterrupt`, `ThinkOnThinkingActionIgnore`, `ThinkOnSpeakingActionInterrupt`, `ThinkOnSpeakingActionIgnore`.

@@ -2,9 +2,9 @@
  * Type-safe STT (Speech-to-Text) vendor classes.
  */
 
-import { BaseSTT } from "./base.js";
-import type { SttConfig } from "../types.js";
 import type { DeepgramPresetModel } from "../presets.js";
+import type { SttConfig } from "../types.js";
+import { BaseSTT } from "./base.js";
 
 /**
  * Constructor options for Speechmatics STT.
@@ -63,7 +63,7 @@ export class SpeechmaticsSTT extends BaseSTT {
  * Constructor options for Deepgram STT.
  */
 type DeepgramSTTCommonOptions = {
-    /** Deepgram API key. Optional only for the `nova-2` and `nova-3` reseller preset path. */
+    /** Deepgram API key. Optional only for the Agora-managed `nova-2` and `nova-3` path. */
     apiKey?: string;
     /** Model to use (e.g., 'nova-2', 'enhanced', 'base') */
     model?: string;
