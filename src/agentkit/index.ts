@@ -246,13 +246,18 @@ export {
   type GoogleTTSSampleRate,
 } from './vendors/base.js';
 export type {
+  AmazonBedrockOptions,
   AnthropicOptions,
   AzureOpenAIOptions,
+  CustomLLMOptions,
+  DifyOptions,
   GeminiOptions,
+  GroqOptions,
   OpenAIOptions,
+  VertexAILLMOptions,
 } from './vendors/llm.js';
 // LLM vendor classes
-export { Anthropic, AzureOpenAI, Gemini, OpenAI } from './vendors/llm.js';
+export { AmazonBedrock, Anthropic, AzureOpenAI, CustomLLM, Dify, Gemini, Groq, OpenAI, VertexAILLM } from './vendors/llm.js';
 export type {
   GeminiLiveOptions,
   OpenAIRealtimeOptions,

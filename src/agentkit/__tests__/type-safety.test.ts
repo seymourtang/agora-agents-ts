@@ -116,7 +116,7 @@ function validExample5(): Agent<16000> {
         );
 }
 
-// Preset-backed reseller models may omit credentials.
+// Agora-managed models may omit credentials.
 new DeepgramSTT({ model: "nova-3" });
 new OpenAI({ model: "gpt-5-mini" });
 new OpenAITTS({ voice: "alloy" });
@@ -125,9 +125,9 @@ new MiniMaxTTS({
     model: "speech-2.6-turbo",
 });
 
-// @ts-expect-error Missing apiKey is only allowed for preset-backed Deepgram models.
+// @ts-expect-error Missing apiKey is only allowed for Agora-managed Deepgram models.
 new DeepgramSTT({ model: "enhanced" });
-// @ts-expect-error Missing apiKey is only allowed for preset-backed OpenAI models.
+// @ts-expect-error Missing apiKey is only allowed for Agora-managed OpenAI models.
 new OpenAI({ model: "gpt-4o" });
 // @ts-expect-error Missing apiKey cannot be combined with a custom vendor hint.
 new OpenAI({ model: "gpt-5-mini", vendor: "custom" });
