@@ -13,18 +13,17 @@
  */
 
 import { Agent } from "../Agent.js";
+import { AkoolAvatar, LiveAvatarAvatar } from "../vendors/avatar.js";
 import { OpenAI } from "../vendors/llm.js";
 import { DeepgramSTT } from "../vendors/stt.js";
-import { ElevenLabsTTS, MicrosoftTTS, CartesiaTTS, OpenAITTS } from "../vendors/tts.js";
-import { MiniMaxTTS } from "../vendors/tts.js";
-import { LiveAvatarAvatar, AkoolAvatar } from "../vendors/avatar.js";
+import { CartesiaTTS, ElevenLabsTTS, MicrosoftTTS, MiniMaxTTS, OpenAITTS } from "../vendors/tts.js";
 
 // ============================================
 // ✅ VALID CONFIGURATIONS
 // ============================================
 
 // Example 1: ElevenLabs 24kHz + HeyGen avatar
-function validExample1(): Agent<24000> {
+function _validExample1(): Agent<24000> {
     return new Agent({ instructions: "Test" })
         .withTts(
             new ElevenLabsTTS({
@@ -44,7 +43,7 @@ function validExample1(): Agent<24000> {
 }
 
 // Example 2: ElevenLabs 16kHz + Akool avatar
-function validExample2(): Agent<16000> {
+function _validExample2(): Agent<16000> {
     return new Agent({ instructions: "Test" })
         .withTts(
             new ElevenLabsTTS({
@@ -62,7 +61,7 @@ function validExample2(): Agent<16000> {
 }
 
 // Example 3: Microsoft 24kHz + HeyGen avatar
-function validExample3(): Agent<24000> {
+function _validExample3(): Agent<24000> {
     return new Agent({ instructions: "Test" })
         .withTts(
             new MicrosoftTTS({
@@ -82,7 +81,7 @@ function validExample3(): Agent<24000> {
 }
 
 // Example 4: OpenAI (fixed 24kHz) + HeyGen avatar
-function validExample4(): Agent<24000> {
+function _validExample4(): Agent<24000> {
     return new Agent({ instructions: "Test" })
         .withTts(
             new OpenAITTS({
@@ -100,7 +99,7 @@ function validExample4(): Agent<24000> {
 }
 
 // Example 5: Cartesia 16kHz + Akool avatar
-function validExample5(): Agent<16000> {
+function _validExample5(): Agent<16000> {
     return new Agent({ instructions: "Test" })
         .withTts(
             new CartesiaTTS({
@@ -263,7 +262,7 @@ function invalidEnum3() {
 // ============================================
 
 // Avatar without TTS configured (allowed)
-function edgeCase1() {
+function _edgeCase1() {
     return new Agent({ instructions: "Test" }).withAvatar(
         new LiveAvatarAvatar({
             apiKey: "test",
@@ -274,7 +273,7 @@ function edgeCase1() {
 }
 
 // TTS without avatar (allowed)
-function edgeCase2() {
+function _edgeCase2() {
     return new Agent({ instructions: "Test" }).withTts(
         new ElevenLabsTTS({
             key: "test",
@@ -286,7 +285,7 @@ function edgeCase2() {
 }
 
 // Method chaining preserves type tracking
-function edgeCase3(): Agent<24000> {
+function _edgeCase3(): Agent<24000> {
     return new Agent({ instructions: "Test" })
         .withTts(
             new ElevenLabsTTS({
@@ -311,7 +310,7 @@ function edgeCase3(): Agent<24000> {
 // Type inference verification
 // ============================================
 
-function typeInference1() {
+function _typeInference1() {
     const agentWith24k = new Agent({ instructions: "Test" }).withTts(
         new ElevenLabsTTS({
             key: "test",
@@ -326,7 +325,7 @@ function typeInference1() {
     return agentWith24k;
 }
 
-function typeInference2() {
+function _typeInference2() {
     const agentWith16k = new Agent({ instructions: "Test" }).withTts(
         new ElevenLabsTTS({
             key: "test",
@@ -341,7 +340,7 @@ function typeInference2() {
     return agentWith16k;
 }
 
-function typeInference3() {
+function _typeInference3() {
     const openAIAgent = new Agent({ instructions: "Test" }).withTts(
         new OpenAITTS({
             apiKey: "test",

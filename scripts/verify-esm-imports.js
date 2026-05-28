@@ -3,8 +3,7 @@
 const fs = require("fs").promises;
 const path = require("path");
 
-const relativeJsSpecifierPattern =
-    /(?:from\s*['"]|import\s*['"]|import\s*\(\s*['"])(\.{1,2}\/[^'"]+\.js)(?:['"])/g;
+const relativeJsSpecifierPattern = /(?:from\s*['"]|import\s*['"]|import\s*\(\s*['"])(\.{1,2}\/[^'"]+\.js)(?:['"])/g;
 
 async function findFiles(rootPath) {
     const files = [];

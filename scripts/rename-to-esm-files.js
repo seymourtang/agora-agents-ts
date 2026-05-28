@@ -60,19 +60,22 @@ async function updateFileContents(file) {
     // Handle static imports/exports, including multiline export blocks.
     newContent = newContent.replace(
         /(from\s*['"])(\.{1,2}\/[^'"]+?)(\.js|\.d\.ts)(['"])/g,
-        (_match, prefix, specifier, extension, suffix) => `${prefix}${replaceExtension(`${specifier}${extension}`)}${suffix}`,
+        (_match, prefix, specifier, extension, suffix) =>
+            `${prefix}${replaceExtension(`${specifier}${extension}`)}${suffix}`,
     );
 
     // Handle side-effect imports.
     newContent = newContent.replace(
         /(import\s*['"])(\.{1,2}\/[^'"]+?)(\.js|\.d\.ts)(['"])/g,
-        (_match, prefix, specifier, extension, suffix) => `${prefix}${replaceExtension(`${specifier}${extension}`)}${suffix}`,
+        (_match, prefix, specifier, extension, suffix) =>
+            `${prefix}${replaceExtension(`${specifier}${extension}`)}${suffix}`,
     );
 
     // Handle dynamic imports.
     newContent = newContent.replace(
         /(import\s*\(\s*['"])(\.{1,2}\/[^'"]+?)(\.js|\.d\.ts)(['"]\s*\))/g,
-        (_match, prefix, specifier, extension, suffix) => `${prefix}${replaceExtension(`${specifier}${extension}`)}${suffix}`,
+        (_match, prefix, specifier, extension, suffix) =>
+            `${prefix}${replaceExtension(`${specifier}${extension}`)}${suffix}`,
     );
 
     if (content !== newContent) {

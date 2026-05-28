@@ -1,22 +1,20 @@
-"use strict";
-
 const assert = require("node:assert/strict");
 const shim = require("./index.js");
 const root = require("agora-agents");
 
 const exportsToVerify = [
-  "AgoraClient",
-  "Agent",
-  "AgentSession",
-  "Area",
-  "DeepgramSTT",
-  "OpenAI",
-  "AgentPresets",
-  "generateRtcToken",
+    "AgoraClient",
+    "Agent",
+    "AgentSession",
+    "Area",
+    "DeepgramSTT",
+    "OpenAI",
+    "AgentPresets",
+    "generateRtcToken",
 ];
 
 for (const name of exportsToVerify) {
-  assert.equal(shim[name], root[name], `missing compat export: ${name}`);
+    assert.equal(shim[name], root[name], `missing compat export: ${name}`);
 }
 
 console.log("Compat package re-exports verified.");

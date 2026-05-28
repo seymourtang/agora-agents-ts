@@ -460,9 +460,9 @@ describe("AgentsClient", () => {
             .jsonBody({ message: "not found" })
             .build();
 
-        await expect(
-            client.agents.get({ appid: "appid", agentId: "missing-agent" }),
-        ).rejects.toMatchObject({ statusCode: 404 });
+        await expect(client.agents.get({ appid: "appid", agentId: "missing-agent" })).rejects.toMatchObject({
+            statusCode: 404,
+        });
     });
 
     test("interrupt", async () => {

@@ -7,14 +7,14 @@
  */
 
 import type {
-  LlmConfig,
-  TtsConfig,
-  SttConfig,
-  MllmConfig,
-  AvatarConfig,
-  McpServersItem,
-  LlmGreetingConfigs,
-} from '../types.js';
+    AvatarConfig,
+    LlmConfig,
+    LlmGreetingConfigs,
+    McpServersItem,
+    MllmConfig,
+    SttConfig,
+    TtsConfig,
+} from "../types.js";
 
 /**
  * Common options shared by all LLM vendor classes.
@@ -22,36 +22,36 @@ import type {
  * vendor-specific and therefore belong here rather than on individual vendors.
  */
 export interface BaseLlmOptions {
-  /**
-   * LLM output modalities.
-   * - `["text"]` (default): Output text is converted to speech by TTS and published to RTC.
-   * - `["audio"]`: Voice only — audio published directly to RTC (no TTS step).
-   * - `["text", "audio"]`: Both text and audio; handle the output with custom logic.
-   */
-  outputModalities?: string[];
-  /**
-   * Greeting broadcast mode for multi-user channels.
-   * - `"single_every"`: Broadcasts a greeting every time a user joins.
-   * - `"single_first"`: Broadcasts a greeting only once to the first user.
-   */
-  greetingConfigs?: LlmGreetingConfigs;
-  /**
-   * Key-value pairs injected into `system_messages`, `greeting_message`, and
-   * `failure_message` via `{{variable_name}}` syntax. Useful for per-session
-   * personalisation (e.g. injecting the caller's name into the system prompt).
-   * Variable values cannot reference other variables.
-   */
-  templateVariables?: Record<string, string>;
-  /**
-   * LLM provider hint.
-   * - `"custom"`: Adds `turn_id` and `timestamp` fields to every LLM request —
-   *   useful for custom LLM backends that need per-turn tracking.
-   * - `"azure"`: Required for Azure OpenAI (set automatically by `AzureOpenAI`).
-   * Omit for standard OpenAI / Anthropic / Gemini endpoints.
-   */
-  vendor?: string;
-  /** MCP server configurations enabling the agent to call tools from external services */
-  mcpServers?: McpServersItem[];
+    /**
+     * LLM output modalities.
+     * - `["text"]` (default): Output text is converted to speech by TTS and published to RTC.
+     * - `["audio"]`: Voice only — audio published directly to RTC (no TTS step).
+     * - `["text", "audio"]`: Both text and audio; handle the output with custom logic.
+     */
+    outputModalities?: string[];
+    /**
+     * Greeting broadcast mode for multi-user channels.
+     * - `"single_every"`: Broadcasts a greeting every time a user joins.
+     * - `"single_first"`: Broadcasts a greeting only once to the first user.
+     */
+    greetingConfigs?: LlmGreetingConfigs;
+    /**
+     * Key-value pairs injected into `system_messages`, `greeting_message`, and
+     * `failure_message` via `{{variable_name}}` syntax. Useful for per-session
+     * personalisation (e.g. injecting the caller's name into the system prompt).
+     * Variable values cannot reference other variables.
+     */
+    templateVariables?: Record<string, string>;
+    /**
+     * LLM provider hint.
+     * - `"custom"`: Adds `turn_id` and `timestamp` fields to every LLM request —
+     *   useful for custom LLM backends that need per-turn tracking.
+     * - `"azure"`: Required for Azure OpenAI (set automatically by `AzureOpenAI`).
+     * Omit for standard OpenAI / Anthropic / Gemini endpoints.
+     */
+    vendor?: string;
+    /** MCP server configurations enabling the agent to call tools from external services */
+    mcpServers?: McpServersItem[];
 }
 
 /**
@@ -102,44 +102,42 @@ export type AkoolSampleRate = 16000;
  * Base class for LLM (Large Language Model) vendors.
  */
 export abstract class BaseLLM {
-  private readonly _outputModalities?: string[];
-  private readonly _greetingConfigs?: LlmGreetingConfigs;
-  private readonly _templateVariables?: Record<string, string>;
-  private readonly _vendor?: string;
-  private readonly _mcpServers?: McpServersItem[];
+    private readonly _outputModalities?: string[];
+    private readonly _greetingConfigs?: LlmGreetingConfigs;
+    private readonly _templateVariables?: Record<string, string>;
+    private readonly _vendor?: string;
+    private readonly _mcpServers?: McpServersItem[];
 
-  constructor(options?: BaseLlmOptions) {
-    this._outputModalities = options?.outputModalities;
-    this._greetingConfigs = options?.greetingConfigs;
-    this._templateVariables = options?.templateVariables;
-    this._vendor = options?.vendor;
-    this._mcpServers = options?.mcpServers;
-  }
+    constructor(options?: BaseLlmOptions) {
+        this._outputModalities = options?.outputModalities;
+        this._greetingConfigs = options?.greetingConfigs;
+        this._templateVariables = options?.templateVariables;
+        this._vendor = options?.vendor;
+        this._mcpServers = options?.mcpServers;
+    }
 
-  protected get outputModalities(): string[] | undefined {
-    return this._outputModalities;
-  }
-  protected get greetingConfigs(): LlmGreetingConfigs | undefined {
-    return this._greetingConfigs;
-  }
-  protected get templateVariables(): Record<string, string> | undefined {
-    return this._templateVariables;
-  }
-  protected get vendor(): string | undefined {
-    return this._vendor;
-  }
-  /** MCP servers with transport defaulted to streamable_http (API requires it; only option). */
-  protected get mcpServers(): McpServersItem[] | undefined {
-    if (!this._mcpServers?.length) return this._mcpServers;
-    return this._mcpServers.map((s) =>
-      s.transport ? s : { ...s, transport: 'streamable_http' as const },
-    );
-  }
+    protected get outputModalities(): string[] | undefined {
+        return this._outputModalities;
+    }
+    protected get greetingConfigs(): LlmGreetingConfigs | undefined {
+        return this._greetingConfigs;
+    }
+    protected get templateVariables(): Record<string, string> | undefined {
+        return this._templateVariables;
+    }
+    protected get vendor(): string | undefined {
+        return this._vendor;
+    }
+    /** MCP servers with transport defaulted to streamable_http (API requires it; only option). */
+    protected get mcpServers(): McpServersItem[] | undefined {
+        if (!this._mcpServers?.length) return this._mcpServers;
+        return this._mcpServers.map((s) => (s.transport ? s : { ...s, transport: "streamable_http" as const }));
+    }
 
-  /**
-   * Converts the vendor configuration to the Agora API format.
-   */
-  abstract toConfig(): LlmConfig;
+    /**
+     * Converts the vendor configuration to the Agora API format.
+     */
+    abstract toConfig(): LlmConfig;
 }
 
 /**
@@ -159,31 +157,31 @@ export abstract class BaseLLM {
  *
  * @template SR - Sample rate literal type (e.g., 24000, 16000)
  */
-export abstract class BaseTTS<SR extends number = number> {
-  /**
-   * Converts the vendor configuration to the Agora API format.
-   */
-  abstract toConfig(): TtsConfig;
+export abstract class BaseTTS<_SR extends number = number> {
+    /**
+     * Converts the vendor configuration to the Agora API format.
+     */
+    abstract toConfig(): TtsConfig;
 }
 
 /**
  * Base class for STT (Speech-to-Text) vendors.
  */
 export abstract class BaseSTT {
-  /**
-   * Converts the vendor configuration to the Agora API format.
-   */
-  abstract toConfig(): SttConfig;
+    /**
+     * Converts the vendor configuration to the Agora API format.
+     */
+    abstract toConfig(): SttConfig;
 }
 
 /**
  * Base class for MLLM (Multimodal Large Language Model) vendors.
  */
 export abstract class BaseMLLM {
-  /**
-   * Converts the vendor configuration to the Agora API format.
-   */
-  abstract toConfig(): MllmConfig;
+    /**
+     * Converts the vendor configuration to the Agora API format.
+     */
+    abstract toConfig(): MllmConfig;
 }
 
 /**
@@ -191,13 +189,13 @@ export abstract class BaseMLLM {
  * @template RequiredSR - Required sample rate literal type
  */
 export abstract class BaseAvatar<RequiredSR extends number = number> {
-  /**
-   * Converts the vendor configuration to the Agora API format.
-   */
-  abstract toConfig(): AvatarConfig;
+    /**
+     * Converts the vendor configuration to the Agora API format.
+     */
+    abstract toConfig(): AvatarConfig;
 
-  /**
-   * The TTS sample rate required by this avatar vendor.
-   */
-  abstract readonly requiredSampleRate: RequiredSR;
+    /**
+     * The TTS sample rate required by this avatar vendor.
+     */
+    abstract readonly requiredSampleRate: RequiredSR;
 }

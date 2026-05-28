@@ -5,8 +5,8 @@
 
 // Import namespace as value from source (api index uses export type)
 import { AgentThinkAgentManagementRequest as AgentThinkRequestNS } from "../api/resources/agentManagement/client/requests/AgentThinkAgentManagementRequest.js";
-import { StartAgentsRequest as StartAgentsRequestNS } from "../api/resources/agents/client/requests/StartAgentsRequest.js";
 import { SpeakAgentsRequest as SpeakAgentsRequestNS } from "../api/resources/agents/client/requests/SpeakAgentsRequest.js";
+import { StartAgentsRequest as StartAgentsRequestNS } from "../api/resources/agents/client/requests/StartAgentsRequest.js";
 
 /** Data channel: `"rtm"` | `"datastream"` */
 export const DataChannel: typeof StartAgentsRequestNS.Properties.Parameters.DataChannel =

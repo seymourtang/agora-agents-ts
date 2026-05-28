@@ -2,10 +2,10 @@
  * Type-safe TTS (Text-to-Speech) vendor classes.
  */
 
-import { BaseTTS } from "./base.js";
-import type { ElevenLabsSampleRate, GoogleTTSSampleRate, MicrosoftSampleRate, CartesiaSampleRate } from "./base.js";
-import type { TtsConfig } from "../types.js";
 import type { MiniMaxPresetModel, OpenAITtsPresetModel } from "../presets.js";
+import type { TtsConfig } from "../types.js";
+import type { CartesiaSampleRate, ElevenLabsSampleRate, GoogleTTSSampleRate, MicrosoftSampleRate } from "./base.js";
+import { BaseTTS } from "./base.js";
 
 /**
  * Constructor options for ElevenLabs TTS.

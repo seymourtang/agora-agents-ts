@@ -93,7 +93,7 @@ class ResolverImpl implements Resolver {
                 const url = `${regionPrefix}.${domain}`;
                 await lookupHost(url);
                 return domain;
-            })
+            }),
         );
 
         for (const result of results) {

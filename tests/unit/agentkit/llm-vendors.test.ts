@@ -12,7 +12,9 @@ describe("LLM vendor helpers", () => {
     });
 
     test("CustomLLM marks the request as custom", () => {
-        expect(new CustomLLM({ apiKey: "key", model: "model", url: "https://llm.example.com/chat" }).toConfig()).toMatchObject({
+        expect(
+            new CustomLLM({ apiKey: "key", model: "model", url: "https://llm.example.com/chat" }).toConfig(),
+        ).toMatchObject({
             url: "https://llm.example.com/chat",
             api_key: "key",
             vendor: "custom",

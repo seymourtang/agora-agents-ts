@@ -2,9 +2,9 @@
  * Type-safe STT (Speech-to-Text) vendor classes.
  */
 
-import { BaseSTT } from "./base.js";
-import type { SttConfig } from "../types.js";
 import type { DeepgramPresetModel } from "../presets.js";
+import type { SttConfig } from "../types.js";
+import { BaseSTT } from "./base.js";
 
 /**
  * Constructor options for Speechmatics STT.

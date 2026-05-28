@@ -2,9 +2,9 @@
  * Type-safe LLM (Large Language Model) vendor classes.
  */
 
-import { BaseLLM, type BaseLlmOptions } from "./base.js";
-import type { LlmConfig } from "../types.js";
 import type { OpenAIPresetModel } from "../presets.js";
+import type { LlmConfig } from "../types.js";
+import { BaseLLM, type BaseLlmOptions } from "./base.js";
 
 /**
  * Constructor options for OpenAI LLM.
