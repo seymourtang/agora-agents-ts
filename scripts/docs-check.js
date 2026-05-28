@@ -12,6 +12,15 @@ const legacyPackagePatterns = [
   /\bagora-agent-server-sdk\b/,
 ];
 
+function isAllowedLegacyPackageLine(line) {
+  return (
+    line.includes("compat/") ||
+    /\bmigrat(?:e|ing|ion)\b/i.test(line) ||
+    /previous package name/i.test(line) ||
+    /renamed from/i.test(line)
+  );
+}
+
 function walk(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
@@ -45,7 +54,7 @@ function checkFile(filePath) {
     const lines = text.split("\n");
     for (const pattern of legacyPackagePatterns) {
       for (const line of lines) {
-        if (pattern.test(line) && !line.includes("compat/")) {
+        if (pattern.test(line) && !isAllowedLegacyPackageLine(line)) {
           errors.push(`${rel}: contains legacy package name reference outside compat context`);
           return;
         }
