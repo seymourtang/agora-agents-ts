@@ -72,7 +72,8 @@ jobs:
       - name: Build and verify compatibility shim
         run: |
           pnpm build
+          ROOT_TARBALL="$(npm pack --pack-destination "$RUNNER_TEMP")"
           cd compat/agora-agent-server-sdk
-          npm install --no-save file:../..
+          npm install --no-save "$RUNNER_TEMP/$ROOT_TARBALL"
           npm pack --dry-run
           node verify-compat.js
