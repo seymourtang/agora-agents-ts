@@ -33,14 +33,14 @@ new OpenAI(options: OpenAIOptions)
 | `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
 | `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
-For supported reseller preset models, `apiKey` is optional:
+For supported Agora-managed models, `apiKey` is optional:
 
 - `gpt-4o-mini`
 - `gpt-4.1-mini`
 - `gpt-5-nano`
 - `gpt-5-mini`
 
-If `apiKey` is omitted for one of those models, AgentKit infers the matching session preset. This no-key branch is only available with the default OpenAI endpoint and without a custom vendor hint. If `apiKey` is provided, AgentKit uses standard BYOK behavior instead.
+If `apiKey` is omitted for one of those models, AgentKit sends the matching Agora-managed model configuration. This no-key branch is only available with the default OpenAI endpoint and without a custom vendor hint. If `apiKey` is provided, AgentKit uses standard BYOK behavior instead.
 
 ### AzureOpenAI
 
@@ -166,7 +166,7 @@ Fixed at 24kHz — no configurable sample rate.
 | `speed` | `number` | No | Speech speed multiplier |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
-`apiKey` is optional only for the reseller-backed `tts-1` preset path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit infers `openai_tts_1`. If provided, the request stays in BYOK mode.
+`apiKey` is optional only for the Agora-managed `tts-1` path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit sends the matching managed-model configuration. If provided, the request stays in BYOK mode.
 
 ### CartesiaTTS
 
@@ -199,12 +199,12 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `MurfTTS` | `key`, `voiceId`, `style?` |
 | `SarvamTTS` | `key`, `speaker`, `targetLanguageCode` |
 
-For `MiniMaxTTS`, `key` is optional only for reseller-backed models:
+For `MiniMaxTTS`, `key` is optional only for Agora-managed models:
 
 - `speech-2.6-turbo`
 - `speech-2.8-turbo`
 
-If `key` is omitted for one of those models, AgentKit infers the matching session preset. In that preset-backed path, `groupId`, `voiceId`, and `url` are optional overrides rather than required fields. If `key` is provided, AgentKit uses BYOK.
+If `key` is omitted for one of those models, AgentKit sends the matching Agora-managed model configuration. In that managed path, `groupId`, `voiceId`, and `url` are optional overrides rather than required fields. If `key` is provided, AgentKit uses BYOK.
 
 ---
 
@@ -219,14 +219,14 @@ new DeepgramSTT(options: DeepgramSTTOptions)
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `apiKey` | `string` | No | Deepgram API key. Optional only for `nova-2` and `nova-3` reseller preset usage. |
+| `apiKey` | `string` | No | Deepgram API key. Optional only for `nova-2` and `nova-3` Agora-managed usage. |
 | `model` | `string` | No | Model (e.g., `'nova-2'`, `'enhanced'`) |
 | `language` | `string` | No | Language code (e.g., `'en-US'`) |
 | `smartFormat` | `boolean` | No | Enable smart formatting |
 | `punctuation` | `boolean` | No | Enable punctuation |
 | `additionalParams` | `Record<string, unknown>` | No | Additional vendor params |
 
-If `apiKey` is omitted for `nova-2` or `nova-3`, AgentKit infers the matching Deepgram reseller preset. For all other Deepgram models, TypeScript requires `apiKey`.
+If `apiKey` is omitted for `nova-2` or `nova-3`, AgentKit sends the matching Deepgram Agora-managed model configuration. For all other Deepgram models, TypeScript requires `apiKey`.
 
 ### Other STT vendors
 

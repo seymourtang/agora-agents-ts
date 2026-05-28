@@ -45,7 +45,7 @@ Start the agent session. Validates avatar/TTS configuration, sends the start req
 - Throws if called in `starting`, `running`, or `stopping` state
 - Throws if avatar config is invalid (wrong TTS sample rate)
 - Throws if MLLM is enabled together with an enabled avatar — avatars are only supported with the cascading ASR + LLM + TTS pipeline
-- Resolves explicit `preset` values and also infers reseller presets from supported vendor configs when credentials are omitted
+- Applies explicit `preset` values when provided and sends Agora-managed model configuration when supported vendor credentials are omitted
 - Fills generic avatar `agora_appid` and `agora_channel` from the session when omitted
 - Generates avatar `agora_token` for `HeyGenAvatar`, `LiveAvatarAvatar`, and `GenericAvatar` when `agoraToken` is omitted and the client has an `appCertificate`. Other vendors (`AkoolAvatar`, `AnamAvatar`) never receive an auto-generated token.
 
@@ -151,15 +151,15 @@ You must pass `appid` and `agentId` manually when using raw methods.
 
 ## Presets and BYOK
 
-Prefer configuring vendors on the `Agent` builder. When you omit credentials for supported Agora-managed models, AgentKit infers the matching reseller configuration at session start.
+Prefer configuring vendors on the `Agent` builder. When you omit credentials for supported Agora-managed models, AgentKit sends the matching managed-model configuration at session start.
 
-`preset` is an advanced session option for accessing specific feature flags and not meant for reseller IDs. Most applications should use the builder instead.
+`preset` is an advanced session option for accessing specific feature flags, not for selecting managed model paths. Most applications should use the builder instead.
 
 - Omit vendor credentials on the builder for supported Agora-managed models.
 - Provide vendor API keys when you want BYOK.
 - Pass `preset` on `agent.createSession(...)` only when you need to access specific feature flags.
 
-Supported inferred models:
+Supported Agora-managed models:
 
 - Deepgram STT: `nova-2`, `nova-3`
 - OpenAI LLM: `gpt-4o-mini`, `gpt-4.1-mini`, `gpt-5-nano`, `gpt-5-mini`

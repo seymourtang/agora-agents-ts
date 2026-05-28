@@ -61,7 +61,7 @@ All interaction methods require the session to be in the `running` state.
 
 ## Agora-managed models and BYOK
 
-When you omit credentials for supported Agora-managed models on the builder, AgentKit infers the matching reseller configuration at session start. Pass your own vendor API keys when you need BYOK.
+When you omit credentials for supported Agora-managed models on the builder, AgentKit sends the matching managed-model configuration at session start. Pass your own vendor API keys when you need BYOK.
 
 <!-- snippet: fragment -->
 ```typescript
@@ -71,7 +71,7 @@ const agent = new Agent({ instructions: 'Be concise.' })
   .withTts(new OpenAITTS({ voice: 'alloy' }));
 ```
 
-For explicit preset IDs and the full list of inferred models, see [AgentSession Reference](../reference/session.md).
+For explicit feature-flag preset IDs and the full list of Agora-managed models, see [AgentSession Reference](../reference/session.md).
 
 ### SayOptions
 
