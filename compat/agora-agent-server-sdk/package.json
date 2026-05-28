@@ -3,7 +3,7 @@
     "version": "2.0.0",
     "private": false,
     "description": "Compatibility shim for the renamed agora-agents package.",
-    "repository": "github:AgoraIO-Conversational-AI/agent-server-sdk-ts",
+    "repository": "github:AgoraIO/agora-agents-ts",
     "license": "MIT",
     "main": "./index.js",
     "module": "./index.mjs",
