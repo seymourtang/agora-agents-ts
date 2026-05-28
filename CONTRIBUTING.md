@@ -116,6 +116,16 @@ This approach is best for:
 
 Write clear, descriptive commit messages that explain what changed and why.
 
+### Release Tags
+
+Before creating a release tag, prepare the package metadata with the target version:
+
+```bash
+pnpm release:prepare 2.0.2
+```
+
+Commit the generated `package.json` changes first, then create the matching tag from that commit. The release workflow checks that the root package, compatibility package, and compatibility dependency all match the tag version.
+
 ### Code Style
 
 This project uses automated code formatting and linting. Run `pnpm run check:fix` before committing to ensure your code meets the project's style guidelines.

@@ -1,6 +1,6 @@
 {
     "name": "agora-agents",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "private": false,
     "repository": "github:AgoraIO/agora-agents-ts",
     "type": "commonjs",
@@ -35,6 +35,7 @@
         "check": "biome check --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
         "check:fix": "biome check --fix --unsafe --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
         "docs:check": "node scripts/docs-check.js",
+        "release:prepare": "node scripts/prepare-release.js",
         "build": "rm -rf dist && pnpm build:cjs && pnpm build:esm",
         "build:cjs": "tsc --project ./tsconfig.cjs.json",
         "build:esm": "tsc --project ./tsconfig.esm.json && node scripts/rename-to-esm-files.js dist/esm && node scripts/verify-esm-imports.js dist/esm",
