@@ -92,7 +92,7 @@ try {
 | `client.nextRegion()` | Cycle to the next domain prefix in the pool |
 | `client.selectBestDomain(signal?)` | Trigger a manual DNS resolution check (normally runs every 30s) |
 | `client.getCurrentURL()` | Inspect the full URL currently being used for API requests |
-| `client.pool` | Access the underlying `Pool` instance for advanced usage |
+| `client.pool` | Access the `Pool` instance for advanced usage |
 
 ```typescript
 // Check the current URL

@@ -81,5 +81,5 @@ void main();
 
 ## Builder-managed vs BYOK
 
-- Builder without vendor keys: fastest path with Agora-managed models
+- Builder without vendor keys: supported Agora-managed models
 - BYOK: your keys and full vendor control

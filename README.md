@@ -5,7 +5,7 @@
 [![ci](https://github.com/AgoraIO-Conversational-AI/agent-server-sdk-ts/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AgoraIO-Conversational-AI/agent-server-sdk-ts/actions/workflows/ci.yml)
 [![coverage](https://codecov.io/gh/AgoraIO-Conversational-AI/agent-server-sdk-ts/branch/main/graph/badge.svg)](https://codecov.io/gh/AgoraIO-Conversational-AI/agent-server-sdk-ts/branch/main)
 
-The Agora Agents SDK for TypeScript lets you build real-time voice agents on Agora Conversational AI with a high-level `Agent` / `AgentSession` API and a generated low-level REST client.
+The Agora Agents SDK for TypeScript lets you build real-time voice agents on Agora Conversational AI with a high-level `Agent` / `AgentSession` API and a generated REST client.
 
 ## Installation
 
@@ -15,7 +15,7 @@ npm install agora-agents
 
 ## Quick Start
 
-The recommended onboarding path is a server-side builder flow: define the agent once, configure vendors on the builder, and let AgentKit infer Agora-managed configuration when credentials are omitted.
+Start with the `Agent` builder: create a client with app credentials, choose your ASR, LLM, and TTS providers, then start a session. Omit vendor API keys for supported Agora-managed models, or provide keys when you want BYOK.
 
 ```typescript
 import {
@@ -116,9 +116,9 @@ export async function startConversation(): Promise<string> {
 
 ### Why no token or vendor key in the example?
 
-`AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically when you provide `appId` and `appCertificate`. AgentKit inspects the builder-provided vendor configs and infers Agora-managed configuration for supported models, so you do not pass vendor API keys in this flow.
+`AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically when you provide `appId` and `appCertificate`. For supported Agora-managed models, leave vendor API keys unset; provide keys when you want BYOK.
 
-### BYOK version of the same builder flow
+### BYOK version
 
 Use the same `Agent` builder shape, but provide credentials explicitly when you want vendor-managed billing and routing instead of Agora-managed models.
 

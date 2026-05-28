@@ -53,7 +53,7 @@ See [Authentication](../getting-started/authentication.md) for details on each m
 | `appId` | `string` (readonly) | The Agora App ID |
 | `appCertificate` | `string` (readonly) | The Agora App Certificate |
 | `authMode` | `AgoraAuthMode` (readonly) | `"basic"`, `"token"`, or `"app-credentials"` |
-| `pool` | `Pool` (readonly) | The underlying domain pool instance |
+| `pool` | `Pool` (readonly) | The domain pool instance |
 
 ## Public methods
 

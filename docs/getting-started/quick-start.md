@@ -6,7 +6,7 @@ description: Build and run your first Agora Conversational AI agent in TypeScrip
 
 # Quick Start
 
-This guide uses the recommended onboarding path:
+This guide starts with the standard AgentKit path:
 
 - `appId`, `appCertificate`, and `area` on `AgoraClient`
 - the `Agent` builder with `.withStt()`, `.withLlm()`, and `.withTts()`
@@ -56,12 +56,12 @@ void main();
 
 1. `AgoraClient` runs in app-credentials mode when you pass `appId` and `appCertificate` only.
 2. `Agent` holds reusable behavior such as instructions, greeting, and history settings.
-3. Vendor classes on the builder select the ASR, LLM, and TTS stack. AgentKit infers Agora-managed configuration when credentials are omitted for supported models.
+3. Vendor classes on the builder select the ASR, LLM, and TTS stack. Leave vendor credentials unset for supported Agora-managed models, or provide keys when you want BYOK.
 4. `session.start()` generates the required auth tokens and returns the unique agent session ID.
 
 ## When to use BYOK instead
 
-Use the builder without vendor API keys when you want the fastest path with Agora-managed models.
+Use the builder without vendor API keys when you are using supported Agora-managed models.
 
 Use BYOK when you need to:
 

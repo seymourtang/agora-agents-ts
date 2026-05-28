@@ -40,7 +40,7 @@ For supported Agora-managed models, `apiKey` is optional:
 - `gpt-5-nano`
 - `gpt-5-mini`
 
-If `apiKey` is omitted for one of those models, AgentKit sends the matching Agora-managed model configuration. This no-key branch is only available with the default OpenAI endpoint and without a custom vendor hint. If `apiKey` is provided, AgentKit uses standard BYOK behavior instead.
+For those models, omit `apiKey` to use Agora-managed credentials. This option is only available with the default OpenAI endpoint and without a custom vendor hint. If `apiKey` is provided, AgentKit uses BYOK instead.
 
 ### AzureOpenAI
 
@@ -113,6 +113,18 @@ new Gemini(options: GeminiOptions)
 | `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
 | `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
+### Other LLM vendors
+
+The SDK also includes named helpers for the remaining Agora-supported LLM providers. These helpers choose the correct request format internally.
+
+| Class | Provider | Key options |
+|---|---|---|
+| `Groq` | Groq | `apiKey`, `model`, `url?` |
+| `VertexAILLM` | Google Vertex AI | `apiKey`, `model`, `projectId`, `location`, `url?` |
+| `AmazonBedrock` | Amazon Bedrock | `apiKey`, `url`, `model` |
+| `Dify` | Dify | `apiKey`, `url`, `user?`, `conversationId?` |
+| `CustomLLM` | OpenAI-compatible LLM | `apiKey`, `model`, `url` |
+
 ---
 
 ## TTS vendors
@@ -166,7 +178,7 @@ Fixed at 24kHz — no configurable sample rate.
 | `speed` | `number` | No | Speech speed multiplier |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
-`apiKey` is optional only for the Agora-managed `tts-1` path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit sends the matching managed-model configuration. If provided, the request stays in BYOK mode.
+`apiKey` is optional only for the Agora-managed `tts-1` path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit sends the matching Agora-managed configuration. If provided, the request stays in BYOK mode.
 
 ### CartesiaTTS
 
@@ -204,7 +216,7 @@ For `MiniMaxTTS`, `key` is optional only for Agora-managed models:
 - `speech-2.6-turbo`
 - `speech-2.8-turbo`
 
-If `key` is omitted for one of those models, AgentKit sends the matching Agora-managed model configuration. In that managed path, `groupId`, `voiceId`, and `url` are optional overrides rather than required fields. If `key` is provided, AgentKit uses BYOK.
+For those models, omit `key` to use Agora-managed credentials. In that configuration, `groupId`, `voiceId`, and `url` are optional overrides rather than required fields. If `key` is provided, AgentKit uses BYOK.
 
 ---
 
@@ -226,7 +238,7 @@ new DeepgramSTT(options: DeepgramSTTOptions)
 | `punctuation` | `boolean` | No | Enable punctuation |
 | `additionalParams` | `Record<string, unknown>` | No | Additional vendor params |
 
-If `apiKey` is omitted for `nova-2` or `nova-3`, AgentKit sends the matching Deepgram Agora-managed model configuration. For all other Deepgram models, TypeScript requires `apiKey`.
+For `nova-2` and `nova-3`, omit `apiKey` to use Agora-managed credentials. For all other Deepgram models, TypeScript requires `apiKey`.
 
 ### Other STT vendors
 

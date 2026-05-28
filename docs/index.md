@@ -14,18 +14,18 @@ The `agora-agents` package lets you build real-time voice AI agents on the [Agor
 
 **MLLM flow** uses a multimodal model such as OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok for end-to-end audio.
 
-## Choose a starting point
+## Start here
 
-- Use [Quick Start](./getting-started/quick-start.md) if you want the recommended builder-based path with app credentials.
-- Use [MLLM Flow Guide](./guides/mllm-flow.md) if you want realtime end-to-end audio with OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok.
-- Use [Cascading Flow Guide](./guides/cascading-flow.md) if you want separate ASR, LLM, and TTS vendors.
+- Start with [Quick Start](./getting-started/quick-start.md). It shows the baseline app-credentials setup and starts a cascading ASR -> LLM -> TTS agent.
+- Use [MLLM Flow Guide](./guides/mllm-flow.md) when your agent uses one realtime multimodal model, such as OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok.
+- Use [Cascading Flow Guide](./guides/cascading-flow.md) for more examples of the default ASR -> LLM -> TTS flow, including provider-specific configuration.
 
-## SDK layers
+## How the SDK is organized
 
 | Layer | What it does | When to use |
 |---|---|---|
 | **AgentKit** (`Agent`, `AgentSession`, vendor classes) | High-level builder pattern, lifecycle, typed vendors | Most use cases |
-| **Fern-generated core** (`client.agents`, `client.telephony`) | Direct REST client mapping every API endpoint | Advanced use cases |
+| **Generated REST clients** (`client.agents`, `client.telephony`) | Typed access to REST APIs not covered by AgentKit | Advanced use cases |
 
 ## Install
 
@@ -39,9 +39,9 @@ npm install agora-agents
 |---|---|
 | [Installation](./getting-started/installation.md) | Prerequisites, package managers, runtime compatibility |
 | [Authentication](./getting-started/authentication.md) | App credentials and other auth modes |
-| [Quick Start](./getting-started/quick-start.md) | Recommended builder-based onboarding flow |
+| [Quick Start](./getting-started/quick-start.md) | App credentials and AgentKit |
 | [BYOK](./guides/byok.md) | Bring your own vendor credentials and config |
-| [Architecture](./concepts/architecture.md) | Layer design, when to use AgentKit vs. raw client |
+| [Architecture](./concepts/architecture.md) | SDK structure and generated REST clients |
 | [Agent](./concepts/agent.md) | Builder pattern, immutable reuse, vendor configuration |
 | [AgentSession](./concepts/session.md) | State machine, lifecycle methods, events |
 | [Vendors](./concepts/vendors.md) | LLM, TTS, STT, MLLM, and Avatar provider catalog |
@@ -54,10 +54,10 @@ npm install agora-agents
 | [Error Reference](./reference/errors.md) | v2.7 status codes and error reason values |
 | [Pagination](./guides/pagination.md) | Iterate over paginated list endpoints |
 | [Advanced](./guides/advanced.md) | Headers, retries, timeouts, logging, custom fetcher |
-| [Low-Level API](./guides/low-level-api.md) | Direct `client.agents.start()` usage |
+| [Low-Level API](./guides/low-level-api.md) | Generated REST APIs |
 | [AgoraClient Reference](./reference/client.md) | Constructor options, public methods |
 | [Agent Reference](./reference/agent.md) | Full builder API with TypeScript signatures |
 | [AgentSession Reference](./reference/session.md) | All methods, events, and payload types |
 | [Vendor Reference](./reference/vendors.md) | Constructor options for every vendor class |
 
-For Fern-generated raw API types, see the [API Reference](../../reference.md).
+For generated REST API types, see the [API Reference](../../reference.md).

@@ -182,14 +182,14 @@ createSession(
 | `expiresIn` | `number` | No | Token lifetime in seconds (default: `86400` = 24 h, Agora max). Only applies when the token is auto-generated. Use `ExpiresIn.hours()` or `ExpiresIn.minutes()` for clarity. Valid range: 1–86400. |
 | `idleTimeout` | `number` | No | Seconds before auto-exit if no audio (0 = disabled) |
 | `enableStringUid` | `boolean` | No | Use string UIDs instead of numeric |
-| `preset` | `string \| AgentPreset[]` | No | Advanced feature-flag presets. Use only when Agora provides a specific preset ID for your project. |
+| `preset` | `string \| AgentPreset[]` | No | Advanced project-specific presets. Use only when Agora provides a specific preset ID for your project. |
 | `pipelineId` | `string` | No | Published AI Studio pipeline ID to use as the base configuration |
 | `debug` | `boolean` | No | Log API requests to console |
 | `warn` | `(message: string) => void` | No | Custom warning logger; pass a no-op to silence warnings |
 
-`preset` is session-scoped because the underlying Agora start/join API applies feature flags per session, not per reusable `Agent` definition. Most applications should leave it unset.
+`preset` is session-scoped because the Agora start/join API applies project-specific settings per session, not per reusable `Agent` definition. Most applications should leave it unset.
 
-When you omit credentials for supported Agora-managed models, AgentKit sends the matching managed-model configuration automatically:
+When you omit credentials for supported Agora-managed models, AgentKit sends the matching Agora-managed configuration automatically:
 
 - Deepgram STT: `nova-2`, `nova-3`
 - OpenAI LLM: `gpt-4o-mini`, `gpt-4.1-mini`, `gpt-5-nano`, `gpt-5-mini`

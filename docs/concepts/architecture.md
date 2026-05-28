@@ -47,4 +47,4 @@ The SDK is built in three layers: a hand-written AgentKit layer on top of a regi
 - `agentkit/token.ts` — RTC and ConvoAI token generation
 - `core/domain/index.ts` — `Area` enum, `Pool` class, DNS-based domain selection
 
-The Fern-generated `reference.md` documents the raw client layer. This documentation covers the agentkit layer.
+The generated `reference.md` documents the REST client layer. This documentation covers the AgentKit layer.
