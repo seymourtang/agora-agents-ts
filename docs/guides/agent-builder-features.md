@@ -16,8 +16,8 @@ The Agent builder supports many configuration options beyond the core LLM, TTS, 
 | `advancedFeatures` | `withAdvancedFeatures(features)` | Enable MLLM, RTM, SAL, tools |
 | `tools` | `withTools(enabled)` | Enable MCP tool invocation |
 | `parameters` | `withParameters(params)` | Silence config, farewell config, data channel |
-| `failureMessage` | `withFailureMessage(msg)` | Message spoken when LLM fails |
-| `maxHistory` | `withMaxHistory(n)` | Max conversation turns in LLM context |
+| `failureMessage` | LLM/MLLM vendor option | Message spoken when LLM fails |
+| `maxHistory` | LLM vendor option | Max conversation turns in LLM context |
 | `geofence` | `withGeofence(config)` | Restrict backend server regions |
 | `labels` | `withLabels(labels)` | Custom key-value labels (returned in callbacks) |
 | `rtc` | `withRtc(config)` | RTC media encryption |
@@ -37,9 +37,12 @@ import {
 
 const agent = new Agent({
   name: 'sal-assistant',
-  instructions: 'You are a helpful assistant.',
 })
-  .withLlm(new OpenAI({ apiKey: 'your-key', model: 'gpt-4o-mini' }))
+  .withLlm(new OpenAI({
+    apiKey: 'your-key',
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are a helpful assistant.' }],
+  }))
   .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-key', model: 'nova-2', language: 'en-US' }))
   .withAdvancedFeatures({ enable_sal: true })
@@ -99,20 +102,13 @@ const agent = new Agent({ name: 'params-agent' })
 ## Failure Message and Max History
 
 ```typescript
-const agent = new Agent({
-  name: 'assistant',
-  failureMessage: 'Sorry, I encountered an error. Please try again.',
-  maxHistory: 20,
-})
-  .withLlm(/* ... */)
-  .withTts(/* ... */)
-  .withStt(/* ... */);
-
-// Or via builder methods
 const agent2 = new Agent()
-  .withFailureMessage('Something went wrong.')
-  .withMaxHistory(15)
-  .withLlm(/* ... */)
+  .withLlm(new OpenAI({
+    apiKey: 'your-key',
+    model: 'gpt-4o-mini',
+    failureMessage: 'Something went wrong.',
+    maxHistory: 15,
+  }))
   .withTts(/* ... */)
   .withStt(/* ... */);
 ```
@@ -204,12 +200,11 @@ const agent = new Agent()
 Read back configuration via getter properties:
 
 ```typescript
-const agent = new Agent({ maxHistory: 20 })
+const agent = new Agent()
   .withGeofence({ area: 'EUROPE' })
   .withLabels({ env: 'staging' });
 
 agent.name;           // string | undefined
-agent.maxHistory;     // 20
 agent.geofence;       // { area: 'NORTH_AMERICA' }
 agent.labels;         // { env: 'staging' }
 agent.sal;            // SalConfig | undefined
@@ -239,14 +234,15 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({
-  name: 'full-featured-assistant',
-  instructions: 'You are a helpful voice assistant.',
-  greeting: 'Hello! How can I help?',
-  failureMessage: 'Sorry, I had trouble processing that.',
-  maxHistory: 20,
-})
-  .withLlm(new OpenAI({ apiKey: 'your-key', model: 'gpt-4o-mini' }))
+const agent = new Agent({ name: 'full-featured-assistant' })
+  .withLlm(new OpenAI({
+    apiKey: 'your-key',
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are a helpful voice assistant.' }],
+    greetingMessage: 'Hello! How can I help?',
+    failureMessage: 'Sorry, I had trouble processing that.',
+    maxHistory: 20,
+  }))
   .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-key', model: 'nova-2', language: 'en-US' }))
   .withAdvancedFeatures({ enable_rtm: true })

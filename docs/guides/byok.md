@@ -35,12 +35,7 @@ async function main(): Promise<void> {
   });
 
   // In BYOK mode, each vendor carries its own credentials.
-  const agent = new Agent({
-    name: 'support-assistant',
-    instructions: 'You are a concise support voice assistant.',
-    greeting: 'Hello! How can I help you today?',
-    maxHistory: 10,
-  })
+  const agent = new Agent({ name: 'support-assistant' })
     .withStt(
       new DeepgramSTT({
         apiKey: process.env.DEEPGRAM_API_KEY!,
@@ -52,6 +47,9 @@ async function main(): Promise<void> {
       new OpenAI({
         apiKey: process.env.OPENAI_API_KEY!,
         model: 'gpt-4o-mini',
+        systemMessages: [{ role: 'system', content: 'You are a concise support voice assistant.' }],
+        greetingMessage: 'Hello! How can I help you today?',
+        maxHistory: 10,
       }),
     )
     .withTts(

@@ -109,8 +109,12 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'liveavatar-agent', instructions: 'You are a friendly avatar assistant.' })
-  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
+const agent = new Agent({ name: 'liveavatar-agent' })
+  .withLlm(new OpenAI({
+    apiKey: 'your-openai-key',
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are a friendly avatar assistant.' }],
+  }))
   .withTts(new ElevenLabsTTS({
     key: 'your-elevenlabs-key',
     modelId: 'eleven_flash_v2_5',
@@ -172,8 +176,12 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'akool-agent', instructions: 'You are a friendly avatar assistant.' })
-  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
+const agent = new Agent({ name: 'akool-agent' })
+  .withLlm(new OpenAI({
+    apiKey: 'your-openai-key',
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are a friendly avatar assistant.' }],
+  }))
   .withTts(new ElevenLabsTTS({
     key: 'your-elevenlabs-key',
     modelId: 'eleven_flash_v2_5',

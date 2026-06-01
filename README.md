@@ -44,10 +44,6 @@ export async function startConversation(): Promise<string> {
 
   const agent = new Agent({
     name: `conversation-${Date.now()}`,
-    instructions: AGENT_PROMPT,
-    greeting: GREETING,
-    failureMessage: 'Please wait a moment.',
-    maxHistory: 50,
     turnDetection: {
       config: {
         speech_threshold: 0.5,
@@ -84,9 +80,10 @@ export async function startConversation(): Promise<string> {
     .withLlm(
       new OpenAI({
         model: 'gpt-4o-mini',
+        systemMessages: [{ role: 'system', content: AGENT_PROMPT }],
         greetingMessage: GREETING,
         failureMessage: 'Please wait a moment.',
-        maxHistory: 15,
+        maxHistory: 50,
         params: {
           max_tokens: 1024,
           temperature: 0.7,
@@ -123,10 +120,7 @@ export async function startConversation(): Promise<string> {
 Use the same `Agent` builder shape, but provide credentials explicitly when you want vendor-managed billing and routing instead of Agora-managed models.
 
 ```typescript
-const agent = new Agent({
-  instructions: SUPPORT_PROMPT,
-  greeting: GREETING,
-})
+const agent = new Agent()
   .withStt(
     new DeepgramSTT({
       apiKey: process.env.DEEPGRAM_API_KEY!,
@@ -138,6 +132,8 @@ const agent = new Agent({
     new OpenAI({
       apiKey: process.env.OPENAI_API_KEY!,
       model: 'gpt-4o-mini',
+      systemMessages: [{ role: 'system', content: SUPPORT_PROMPT }],
+      greetingMessage: GREETING,
       maxTokens: 1024,
       temperature: 0.7,
       topP: 0.95,

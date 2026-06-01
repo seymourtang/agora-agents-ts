@@ -23,10 +23,10 @@ new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `name` | `string` | `undefined` | Agent name (used as default session name) |
-| `instructions` | `string` | `undefined` | System prompt injected as a system message to the LLM |
-| `greeting` | `string` | `undefined` | First message spoken when the session starts |
-| `failureMessage` | `string` | `undefined` | Message spoken when an LLM call fails |
-| `maxHistory` | `number` | `undefined` | Max conversation turns kept in standard LLM context; does not apply to MLLM |
+| `instructions` | `string` | `undefined` | Deprecated. Use LLM vendor `systemMessages` instead. |
+| `greeting` | `string` | `undefined` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
+| `failureMessage` | `string` | `undefined` | Deprecated. Use LLM/MLLM vendor `failureMessage` instead. |
+| `maxHistory` | `number` | `undefined` | Deprecated. Use LLM vendor `maxHistory` instead. |
 | `turnDetection` | `TurnDetectionConfig` | `undefined` | Voice activity detection settings |
 | `interruption` | `InterruptionConfig` | `undefined` | Unified interruption control settings |
 | `sal` | `SalConfig` | `undefined` | Selective Attention Locking configuration |
@@ -37,6 +37,8 @@ new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 | `labels` | `Labels` | `undefined` | Custom key-value labels (returned in callbacks) |
 | `rtc` | `RtcConfig` | `undefined` | RTC media encryption |
 | `fillerWords` | `FillerWordsConfig` | `undefined` | Filler words while waiting for LLM |
+
+The Agent-level `instructions`, `greeting`, `failureMessage`, `maxHistory`, and `greetingConfigs` fields are compatibility shims. New code should configure those values on the LLM or MLLM vendor because that matches the core request schema.
 
 ## Builder methods
 
@@ -74,11 +76,11 @@ Configure unified interruption behavior using the top-level `interruption` objec
 
 ### `withInstructions(instructions: string): Agent<TTSSampleRate>`
 
-Override the system prompt.
+Deprecated. Configure `systemMessages` on the LLM vendor instead.
 
 ### `withGreeting(greeting: string): Agent<TTSSampleRate>`
 
-Override the greeting message.
+Deprecated. Configure `greetingMessage` on the LLM or MLLM vendor instead.
 
 ### `withName(name: string): Agent<TTSSampleRate>`
 
@@ -111,11 +113,11 @@ agent.withAudioScenario(AudioScenario.Aiserver)
 
 ### `withFailureMessage(message: string): Agent<TTSSampleRate>`
 
-Set the message spoken via TTS when the LLM call fails.
+Deprecated. Configure `failureMessage` on the LLM or MLLM vendor instead.
 
 ### `withMaxHistory(maxHistory: number): Agent<TTSSampleRate>`
 
-Set the maximum conversation history length for the standard LLM pipeline. The v2.7 MLLM core schema does not expose a `max_history` field.
+Deprecated. Configure `maxHistory` on the LLM vendor instead.
 
 ### `withGeofence(geofence: GeofenceConfig): Agent<TTSSampleRate>`
 
