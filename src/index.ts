@@ -82,6 +82,7 @@ export type {
     InterruptionConfig,
     InterruptionMode,
     InterruptMode,
+    InteractionLanguage,
     Labels,
     LiveAvatarAvatarConfig,
     LiveAvatarAvatarOptions,

@@ -14,6 +14,7 @@ import type {
     AvatarConfig,
     FillerWordsConfig,
     GeofenceConfig,
+    InteractionLanguage,
     InterruptionConfig,
     Labels,
     LlmConfig,
@@ -30,6 +31,47 @@ import type {
 } from "./types.js";
 import type { BaseAvatar, BaseLLM, BaseMLLM, BaseSTT, BaseTTS } from "./vendors/base.js";
 
+const DEFAULT_INTERACTION_LANGUAGE: InteractionLanguage = "en-US";
+
+const INTERACTION_LANGUAGES = new Set<string>([
+    "ar-EG",
+    "ar-JO",
+    "ar-SA",
+    "ar-AE",
+    "bn-IN",
+    "zh-CN",
+    "zh-HK",
+    "zh-TW",
+    "nl-NL",
+    "en-IN",
+    "en-US",
+    "fil-PH",
+    "fr-FR",
+    "de-DE",
+    "gu-IN",
+    "he-IL",
+    "hi-IN",
+    "id-ID",
+    "it-IT",
+    "ja-JP",
+    "kn-IN",
+    "ko-KR",
+    "ms-MY",
+    "fa-IR",
+    "pt-PT",
+    "ru-RU",
+    "es-ES",
+    "ta-IN",
+    "te-IN",
+    "th-TH",
+    "tr-TR",
+    "vi-VN",
+]);
+
+function isInteractionLanguage(value: string): value is InteractionLanguage {
+    return INTERACTION_LANGUAGES.has(value);
+}
+
 /**
  * Configuration options for creating an Agent.
  *
@@ -39,7 +81,10 @@ import type { BaseAvatar, BaseLLM, BaseMLLM, BaseSTT, BaseTTS } from "./vendors/
 export interface AgentOptions {
     /** Optional name for the agent (used as default session name) */
     name?: string;
-    /** System instructions for the agent */
+    /**
+     * System instructions for the agent.
+     * @deprecated Configure this on the LLM vendor with `systemMessages` instead.
+     */
     instructions?: string;
     /** Turn detection configuration */
     turnDetection?: TurnDetectionConfig;
@@ -53,11 +98,22 @@ export interface AgentOptions {
     advancedFeatures?: AdvancedFeatures;
     /** Session parameters */
     parameters?: SessionParamsInput;
-    /** Greeting message */
+    /** Agora interaction language serialized to `asr.language`. */
+    interactionLanguage?: InteractionLanguage;
+    /**
+     * Greeting message.
+     * @deprecated Configure this on the LLM or MLLM vendor with `greetingMessage` instead.
+     */
     greeting?: string;
-    /** Failure message */
+    /**
+     * Failure message.
+     * @deprecated Configure this on the LLM or MLLM vendor with `failureMessage` instead.
+     */
     failureMessage?: string;
-    /** Max conversation history for the standard LLM pipeline. Does not apply to MLLM. */
+    /**
+     * Max conversation history for the standard LLM pipeline. Does not apply to MLLM.
+     * @deprecated Configure this on the LLM vendor with `maxHistory` instead.
+     */
     maxHistory?: number;
     /** Regional access restriction configuration */
     geofence?: GeofenceConfig;
@@ -67,7 +123,10 @@ export interface AgentOptions {
     rtc?: RtcConfig;
     /** Filler word configuration (plays filler words while waiting for LLM responses) */
     fillerWords?: FillerWordsConfig;
-    /** Greeting playback configuration for multi-user channels */
+    /**
+     * Greeting playback configuration for multi-user channels.
+     * @deprecated Configure this on the LLM vendor with `greetingConfigs` instead.
+     */
     greetingConfigs?: LlmGreetingConfigs;
 }
 
@@ -108,6 +167,7 @@ export class Agent<TTSSampleRate extends number = number> {
     private _rtc?: RtcConfig;
     private _fillerWords?: FillerWordsConfig;
     private _greetingConfigs?: LlmGreetingConfigs;
+    private _interactionLanguage?: InteractionLanguage;
 
     constructor(options: AgentOptions = {}) {
         this._name = options.name;
@@ -133,6 +193,9 @@ export class Agent<TTSSampleRate extends number = number> {
         }
         if (options.parameters) {
             this._parameters = options.parameters;
+        }
+        if (options.interactionLanguage) {
+            this._interactionLanguage = options.interactionLanguage;
         }
         if (options.geofence) {
             this._geofence = options.geofence;
@@ -198,6 +261,18 @@ export class Agent<TTSSampleRate extends number = number> {
     withStt(vendor: BaseSTT): Agent<TTSSampleRate> {
         const newAgent = this._clone();
         newAgent._stt = vendor.toConfig();
+        return newAgent;
+    }
+
+    /**
+     * Returns a new Agent with the Agora interaction language.
+     *
+     * This serializes to `asr.language`. Vendor-specific language values remain
+     * under `asr.params`, for example `asr.params.language`.
+     */
+    withInteractionLanguage(language: InteractionLanguage): Agent<TTSSampleRate> {
+        const newAgent = this._clone();
+        newAgent._interactionLanguage = language;
         return newAgent;
     }
 
@@ -291,6 +366,8 @@ export class Agent<TTSSampleRate extends number = number> {
 
     /**
      * Returns a new Agent with the specified instructions.
+     *
+     * @deprecated Configure system messages on the LLM vendor instead.
      */
     withInstructions(instructions: string): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -300,6 +377,8 @@ export class Agent<TTSSampleRate extends number = number> {
 
     /**
      * Returns a new Agent with the specified greeting message.
+     *
+     * @deprecated Configure the greeting on the LLM or MLLM vendor instead.
      */
     withGreeting(greeting: string): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -312,6 +391,8 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * Serializes to `llm.greeting_configs`. Agent-level values override any
      * vendor-level `greeting_configs` configured on the LLM vendor.
+     *
+     * @deprecated Configure greeting playback on the LLM vendor instead.
      */
     withGreetingConfigs(configs: LlmGreetingConfigs): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -381,6 +462,8 @@ export class Agent<TTSSampleRate extends number = number> {
      * Returns a new Agent with the specified failure message.
      *
      * The failure message is played via TTS when the LLM call fails.
+     *
+     * @deprecated Configure the failure message on the LLM or MLLM vendor instead.
      */
     withFailureMessage(message: string): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -391,6 +474,8 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified maximum conversation history length.
      * Applies to the standard LLM pipeline only; the v2.7 MLLM core schema has no max_history field.
+     *
+     * @deprecated Configure max history on the LLM vendor instead.
      */
     withMaxHistory(maxHistory: number): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -780,7 +865,7 @@ export class Agent<TTSSampleRate extends number = number> {
               }
             : undefined;
 
-        return { ...base, llm: llmConfig, tts: this._tts, asr: this._stt };
+        return { ...base, llm: llmConfig, tts: this._tts, asr: this._resolveAsrConfig() };
     }
 
     /**
@@ -814,7 +899,22 @@ export class Agent<TTSSampleRate extends number = number> {
         newAgent._rtc = this._rtc;
         newAgent._fillerWords = this._fillerWords;
         newAgent._greetingConfigs = this._greetingConfigs;
+        newAgent._interactionLanguage = this._interactionLanguage;
         return newAgent;
+    }
+
+    private _resolveAsrConfig(): SttConfig | undefined {
+        const asrConfig = { ...(this._stt ?? {}) } as SttConfig & { language?: string };
+        const existingLanguage = asrConfig.language;
+        const language =
+            this._interactionLanguage ??
+            (existingLanguage !== undefined && isInteractionLanguage(existingLanguage)
+                ? existingLanguage
+                : DEFAULT_INTERACTION_LANGUAGE);
+
+        asrConfig.language = language;
+
+        return Object.keys(asrConfig).length > 0 ? asrConfig : undefined;
     }
 }
 

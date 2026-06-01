@@ -54,15 +54,15 @@ export type LlmStyle = StartAgentsRequest.Properties.Llm.Style;
  * When using shorthand strings or minimal configs, the untyped variant is available.
  */
 export type SttConfig =
-    | { vendor: "speechmatics"; language?: string; params: SpeechmaticsParams }
-    | { vendor: "deepgram"; language?: string; params?: DeepgramParams }
-    | { vendor: "microsoft"; language?: string; params: MicrosoftAsrParams }
-    | { vendor: "openai"; language?: string; params: OpenAiAsrParams }
-    | { vendor: "google"; language?: string; params: GoogleAsrParams }
-    | { vendor: "amazon"; language?: string; params: AmazonAsrParams }
-    | { vendor: "assemblyai"; language?: string; params?: AssemblyAiParams }
-    | { vendor: "ares"; language?: string; params?: AresParams }
-    | { vendor: "sarvam"; language?: string; params?: SarvamAsrParams }
+    | { vendor: "speechmatics"; language?: InteractionLanguage; params: SpeechmaticsParams }
+    | { vendor: "deepgram"; language?: InteractionLanguage; params?: DeepgramParams }
+    | { vendor: "microsoft"; language?: InteractionLanguage; params: MicrosoftAsrParams }
+    | { vendor: "openai"; language?: InteractionLanguage; params: OpenAiAsrParams }
+    | { vendor: "google"; language?: InteractionLanguage; params: GoogleAsrParams }
+    | { vendor: "amazon"; language?: InteractionLanguage; params: AmazonAsrParams }
+    | { vendor: "assemblyai"; language?: InteractionLanguage; params?: AssemblyAiParams }
+    | { vendor: "ares"; language?: InteractionLanguage; params?: AresParams }
+    | { vendor: "sarvam"; language?: InteractionLanguage; params?: SarvamAsrParams }
     | StartAgentsRequest.Properties.Asr; // Fallback for shorthand/untyped configs
 
 /** ASR configuration — alias for {@link SttConfig} (wire field: `asr`). */
@@ -85,6 +85,41 @@ export type AvatarConfig = StartAgentsRequest.Properties.Avatar;
 
 /** Avatar vendor (akool, liveavatar, anam, generic, deprecated heygen) */
 export type AvatarVendor = StartAgentsRequest.Properties.Avatar.Vendor;
+
+/** BCP-47 language tag identifying the primary language used for agent interaction. */
+export type InteractionLanguage =
+    | "ar-EG"
+    | "ar-JO"
+    | "ar-SA"
+    | "ar-AE"
+    | "bn-IN"
+    | "zh-CN"
+    | "zh-HK"
+    | "zh-TW"
+    | "nl-NL"
+    | "en-IN"
+    | "en-US"
+    | "fil-PH"
+    | "fr-FR"
+    | "de-DE"
+    | "gu-IN"
+    | "he-IL"
+    | "hi-IN"
+    | "id-ID"
+    | "it-IT"
+    | "ja-JP"
+    | "kn-IN"
+    | "ko-KR"
+    | "ms-MY"
+    | "fa-IR"
+    | "pt-PT"
+    | "ru-RU"
+    | "es-ES"
+    | "ta-IN"
+    | "te-IN"
+    | "th-TH"
+    | "tr-TR"
+    | "vi-VN";
 
 /** Turn detection configuration */
 export type TurnDetectionConfig = StartAgentsRequest.Properties.TurnDetection;
@@ -498,6 +533,8 @@ export interface SpeechmaticsParams {
     api_key: string;
     /** Language code for transcription (e.g., 'en', 'es', 'fr') (required) */
     language: string;
+    /** Speechmatics streaming WebSocket URL */
+    uri?: string;
     /** Additional Speechmatics-specific parameters passed directly to Speechmatics API */
     [key: string]: unknown;
 }
@@ -508,7 +545,7 @@ export interface SpeechmaticsParams {
  */
 export interface DeepgramParams {
     /** Deepgram API key */
-    api_key?: string;
+    key?: string;
     /** Model to use (e.g., 'nova-2', 'enhanced', 'base') */
     model?: string;
     /** Language code (e.g., 'en-US', 'es', 'fr') */
@@ -543,8 +580,13 @@ export interface MicrosoftAsrParams {
 export interface OpenAiAsrParams {
     /** OpenAI API key (required) */
     api_key: string;
-    /** Model to use (default: 'whisper-1') */
-    model?: string;
+    /** OpenAI transcription settings */
+    input_audio_transcription?: {
+        model?: string;
+        prompt?: string;
+        language?: string;
+        [key: string]: unknown;
+    };
     /** Additional OpenAI-specific parameters */
     [key: string]: unknown;
 }
@@ -554,10 +596,16 @@ export interface OpenAiAsrParams {
  * @see https://docs.agora.io/en/conversational-ai/models/asr/google
  */
 export interface GoogleAsrParams {
-    /** Google Cloud API key (required) */
-    api_key: string;
+    /** Google Cloud project ID where Speech-to-Text is enabled (required) */
+    project_id: string;
+    /** Google Cloud region for the recognizer (required) */
+    location: string;
+    /** Google service account credentials JSON string (required) */
+    adc_credentials_string: string;
     /** Language code (e.g., 'en-US', 'es-ES') */
     language?: string;
+    /** Recognition model to use */
+    model?: string;
     /** Additional Google Speech-to-Text parameters */
     [key: string]: unknown;
 }
@@ -568,13 +616,13 @@ export interface GoogleAsrParams {
  */
 export interface AmazonAsrParams {
     /** AWS Access Key ID (required) */
-    access_key: string;
+    access_key_id: string;
     /** AWS Secret Access Key (required) */
-    secret_key: string;
+    secret_access_key: string;
     /** AWS region (e.g., 'us-east-1') (required) */
     region: string;
     /** Language code */
-    language?: string;
+    language_code?: string;
     /** Additional Amazon Transcribe parameters */
     [key: string]: unknown;
 }
@@ -588,6 +636,8 @@ export interface AssemblyAiParams {
     api_key: string;
     /** Language code */
     language?: string;
+    /** AssemblyAI streaming WebSocket URL */
+    uri?: string;
     /** Additional AssemblyAI-specific parameters */
     [key: string]: unknown;
 }
@@ -597,8 +647,6 @@ export interface AssemblyAiParams {
  * @see https://docs.agora.io/en/conversational-ai/models/asr/ares
  */
 export interface AresParams {
-    /** Language code for ARES ASR */
-    language?: string;
     /** Additional ARES-specific parameters */
     [key: string]: unknown;
 }

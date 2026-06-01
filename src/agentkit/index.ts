@@ -150,6 +150,7 @@ export type {
     InterruptionConfig,
     InterruptionMode,
     InterruptMode,
+    InteractionLanguage,
     Labels,
     // Core configuration types
     LlmConfig,
