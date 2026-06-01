@@ -242,14 +242,16 @@ For `nova-2` and `nova-3`, omit `apiKey` to use Agora-managed credentials. For a
 
 ### Other STT vendors
 
+Use `Agent.withInteractionLanguage()` for Agora `asr.language`; it defaults to `en-US`. Provider-specific language values stay under `asr.params` and may use a different format.
+
 | Class | Key params |
 |---|---|
-| `SpeechmaticsSTT` | `apiKey`, `language` |
+| `SpeechmaticsSTT` | `apiKey`, `language`, `uri?` |
 | `MicrosoftSTT` | `key`, `region`, `language?` |
-| `OpenAISTT` | `apiKey`, `model?`, `language?` |
-| `GoogleSTT` | `apiKey`, `language?` |
+| `OpenAISTT` | `apiKey`, `model?`, `language?`, `prompt?`, `inputAudioTranscription?` |
+| `GoogleSTT` | `projectId`, `location`, `adcCredentialsString`, `language?`, `model?` |
 | `AmazonSTT` | `accessKey`, `secretKey`, `region`, `language?` |
-| `AssemblyAISTT` | `apiKey`, `language?` |
+| `AssemblyAISTT` | `apiKey`, `language?`, `uri?` |
 | `AresSTT` | `language?` |
 | `SarvamSTT` | `apiKey`, `language` |
 

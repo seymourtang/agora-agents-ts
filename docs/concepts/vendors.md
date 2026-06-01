@@ -68,15 +68,17 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 
 ## STT vendors
 
+`Agent.withInteractionLanguage()` sets Agora `asr.language` and defaults to `en-US` when omitted. STT vendor `language` options are serialized under `asr.params` using each provider's own format.
+
 | Class             | Provider          | Key constructor params                           |
 | ----------------- | ----------------- | ------------------------------------------------ |
-| `SpeechmaticsSTT` | Speechmatics      | `apiKey`, `language`                             |
+| `SpeechmaticsSTT` | Speechmatics      | `apiKey`, `language`, `uri?`                     |
 | `DeepgramSTT`     | Deepgram          | `apiKey?`, `model?`, `language?`, `smartFormat?` |
 | `MicrosoftSTT`    | Azure Speech      | `key`, `region`, `language?`                     |
-| `OpenAISTT`       | OpenAI Whisper    | `apiKey`, `model?`, `language?`                  |
-| `GoogleSTT`       | Google Speech     | `apiKey`, `language?`                            |
+| `OpenAISTT`       | OpenAI Whisper    | `apiKey`, `model?`, `language?`, `prompt?`       |
+| `GoogleSTT`       | Google Speech     | `projectId`, `location`, `adcCredentialsString`  |
 | `AmazonSTT`       | Amazon Transcribe | `accessKey`, `secretKey`, `region`, `language?`  |
-| `AssemblyAISTT`   | AssemblyAI        | `apiKey`, `language?`                            |
+| `AssemblyAISTT`   | AssemblyAI        | `apiKey`, `language?`, `uri?`                    |
 | `AresSTT`         | Agora ARES        | `language?`                                      |
 | `SarvamSTT`       | Sarvam AI         | `apiKey`, `language`                             |
 
