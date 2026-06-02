@@ -103,13 +103,14 @@ describe("STT language serialization", () => {
 
     test("rejects invalid turn detection language", () => {
         expect(() =>
-            new Agent({ turnDetection: { language: "en" as never } }).withLlm(
-                new OpenAI({
-                    apiKey: "llm-key",
-                    model: "gpt-4o-mini",
-                    url: "https://api.openai.com/v1/chat/completions",
-                }),
-            )
+            new Agent({ turnDetection: { language: "en" as never } })
+                .withLlm(
+                    new OpenAI({
+                        apiKey: "llm-key",
+                        model: "gpt-4o-mini",
+                        url: "https://api.openai.com/v1/chat/completions",
+                    }),
+                )
                 .withTts(
                     new ElevenLabsTTS({
                         key: "tts-key",
