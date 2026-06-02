@@ -2,7 +2,7 @@
  * Type-safe STT (Speech-to-Text) vendor classes.
  */
 
-import type { DeepgramPresetModel } from "../presets.js";
+import { DeepgramPresetModels, type DeepgramPresetModel } from "../presets.js";
 import type { InteractionLanguage, SttConfig } from "../types.js";
 import { BaseSTT } from "./base.js";
 
@@ -49,6 +49,10 @@ function toInteractionLanguage(language?: string, interactionLanguage?: Interact
         return interactionLanguage;
     }
     return language !== undefined && INTERACTION_LANGUAGES.has(language) ? (language as InteractionLanguage) : undefined;
+}
+
+function isDeepgramManagedModel(model: string | undefined): model is DeepgramPresetModel {
+    return model !== undefined && DeepgramPresetModels.includes(model.trim().toLowerCase() as DeepgramPresetModel);
 }
 
 /**
@@ -153,6 +157,9 @@ export class DeepgramSTT extends BaseSTT {
 
     constructor(options?: DeepgramSTTOptions) {
         super();
+        if (!options?.apiKey && !isDeepgramManagedModel(options?.model)) {
+            throw new Error("DeepgramSTT requires apiKey unless using a supported Agora-managed model");
+        }
         this.options = options ?? {};
     }
 

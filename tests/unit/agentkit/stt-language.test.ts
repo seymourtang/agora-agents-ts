@@ -95,6 +95,15 @@ describe("STT language serialization", () => {
     });
 
     test("serializes documented provider params without promoting provider language", () => {
+        expect(new DeepgramSTT({ model: "nova-3", language: "en-US" }).toConfig().params).toMatchObject({
+            model: "nova-3",
+            language: "en-US",
+        });
+
+        expect(() => new DeepgramSTT({ model: "enhanced" } as never)).toThrow(
+            "DeepgramSTT requires apiKey unless using a supported Agora-managed model",
+        );
+
         expect(new DeepgramSTT({ apiKey: "dg-key", language: "en" }).toConfig().params).toMatchObject({
             key: "dg-key",
             language: "en",

@@ -176,7 +176,6 @@ Fixed at 24kHz — no configurable sample rate.
 | `voice` | `string` | Yes | Voice name (`'alloy'`, `'echo'`, `'fable'`, `'onyx'`, `'nova'`, `'shimmer'`) |
 | `model` | `string` | BYOK only | Model name (e.g., `'tts-1'`, `'tts-1-hd'`) |
 | `baseUrl` | `string` | BYOK only | OpenAI TTS endpoint URL |
-| `responseFormat` | `string` | No | Audio format (e.g., `'pcm'`) |
 | `speed` | `number` | No | Speech speed multiplier |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
@@ -240,7 +239,7 @@ new DeepgramSTT(options: DeepgramSTTOptions)
 | `punctuation` | `boolean` | No | Enable punctuation |
 | `additionalParams` | `Record<string, unknown>` | No | Additional vendor params |
 
-For `nova-2` and `nova-3`, omit `apiKey` to use Agora-managed credentials. For all other Deepgram models, TypeScript requires `apiKey`.
+For `nova-2` and `nova-3`, omit `apiKey` to use Agora-managed credentials. For all other Deepgram models, AgentKit requires `apiKey`.
 
 ### Other STT vendors
 

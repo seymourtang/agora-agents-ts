@@ -2,10 +2,24 @@
  * Type-safe TTS (Text-to-Speech) vendor classes.
  */
 
-import type { MiniMaxPresetModel, OpenAITtsPresetModel } from "../presets.js";
+import { MiniMaxPresetModels, OpenAITtsPresetModels, type MiniMaxPresetModel, type OpenAITtsPresetModel } from "../presets.js";
 import type { TtsConfig } from "../types.js";
 import type { CartesiaSampleRate, ElevenLabsSampleRate, GoogleTTSSampleRate, MicrosoftSampleRate } from "./base.js";
 import { BaseTTS } from "./base.js";
+
+function requireString(value: unknown, field: string, vendor: string): asserts value is string {
+    if (typeof value !== "string" || value.length === 0) {
+        throw new Error(`${vendor} requires ${field}`);
+    }
+}
+
+function isOpenAITtsManagedModel(model: string | undefined): boolean {
+    return model === undefined || OpenAITtsPresetModels.includes(model.trim().toLowerCase() as OpenAITtsPresetModel);
+}
+
+function isMiniMaxManagedModel(model: string | undefined): model is MiniMaxPresetModel {
+    return model !== undefined && MiniMaxPresetModels.includes(model.trim().toLowerCase() as MiniMaxPresetModel);
+}
 
 /**
  * Constructor options for ElevenLabs TTS.
@@ -168,8 +182,6 @@ type OpenAITTSCommonOptions = {
     voice: string;
     /** Model name (e.g., 'tts-1', 'tts-1-hd') */
     model?: string;
-    /** Audio format (e.g., 'pcm') */
-    responseFormat?: string;
     /** Endpoint URL for the OpenAI TTS service */
     baseUrl?: string;
     /** Custom instructions for voice style, accent, pace, and tone */
@@ -212,11 +224,23 @@ export class OpenAITTS extends BaseTTS<24000> {
 
     constructor(options: OpenAITTSOptions) {
         super();
+        requireString(options.voice, "voice", "OpenAITTS");
+        if (options.apiKey) {
+            requireString(options.model, "model", "OpenAITTS");
+            requireString(options.baseUrl, "baseUrl", "OpenAITTS");
+        } else {
+            if (!isOpenAITtsManagedModel(options.model)) {
+                throw new Error("OpenAITTS requires apiKey unless using the Agora-managed tts-1 model");
+            }
+            if (options.baseUrl) {
+                throw new Error("OpenAITTS baseUrl is only valid when apiKey is set");
+            }
+        }
         this.options = options;
     }
 
     toConfig(): TtsConfig {
-        const { apiKey, voice, model, responseFormat, baseUrl, instructions, speed, skipPatterns } = this.options;
+        const { apiKey, voice, model, baseUrl, instructions, speed, skipPatterns } = this.options;
 
         return {
             vendor: "openai",
@@ -225,7 +249,6 @@ export class OpenAITTS extends BaseTTS<24000> {
                 ...(apiKey && { base_url: baseUrl }),
                 voice,
                 ...(model && { model }),
-                ...(responseFormat && { response_format: responseFormat }),
                 ...(instructions && { instructions }),
                 ...(speed !== undefined && { speed }),
             } as unknown as import("../types.js").OpenAiTtsParams,
@@ -666,6 +689,14 @@ export class MiniMaxTTS extends BaseTTS {
 
     constructor(options: MiniMaxTTSOptions) {
         super();
+        if (options.key) {
+            requireString(options.groupId, "groupId", "MiniMaxTTS");
+            requireString(options.model, "model", "MiniMaxTTS");
+            requireString(options.voiceId, "voiceId", "MiniMaxTTS");
+            requireString(options.url, "url", "MiniMaxTTS");
+        } else if (!isMiniMaxManagedModel(options.model)) {
+            throw new Error("MiniMaxTTS requires key unless using a supported Agora-managed model");
+        }
         this.options = options;
     }
 

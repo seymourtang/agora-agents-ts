@@ -113,4 +113,19 @@ describe("TTS vendor helpers", () => {
             api_key: "murf-key",
         });
     });
+
+    test("rejects invalid managed and BYOK TTS shapes at runtime", () => {
+        expect(() => new OpenAITTS({ voice: "alloy", model: "tts-1-hd" } as never)).toThrow(
+            "OpenAITTS requires apiKey unless using the Agora-managed tts-1 model",
+        );
+        expect(() => new OpenAITTS({ apiKey: "openai-key", voice: "alloy", model: "tts-1-hd" } as never)).toThrow(
+            "OpenAITTS requires baseUrl",
+        );
+        expect(() => new MiniMaxTTS({ model: "speech-02-turbo" } as never)).toThrow(
+            "MiniMaxTTS requires key unless using a supported Agora-managed model",
+        );
+        expect(() => new MiniMaxTTS({ key: "minimax-key", model: "speech-02-turbo" } as never)).toThrow(
+            "MiniMaxTTS requires groupId",
+        );
+    });
 });
