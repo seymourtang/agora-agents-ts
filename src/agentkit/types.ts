@@ -312,6 +312,8 @@ export interface SessionOptions {
 }
 
 /** Session status */
+
+/** Session status */
 export type SessionStatus = ListAgentsResponse.Data.List.Item.Status;
 
 /** Session info (from get endpoint) */

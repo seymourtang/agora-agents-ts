@@ -579,6 +579,7 @@ type MiniMaxTTSCommonOptions = {
     key?: string;
     /** MiniMax group identifier */
     groupId: string;
+
     /** TTS model (e.g., 'speech-02-turbo') */
     model: string;
     /** Voice style identifier (e.g., 'English_captivating_female1') */

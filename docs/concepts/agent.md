@@ -53,6 +53,8 @@ Each method returns a new `Agent` instance with the updated configuration.
 | `withTurnDetection` | `withTurnDetection(config: TurnDetectionConfig): Agent` | Configure cascading-flow SOS/EOS detection; use `withInterruption()` for interruption behavior |
 | `withInstructions` | `withInstructions(text: string): Agent` | Override the system prompt |
 | `withGreeting` | `withGreeting(text: string): Agent` | Override the greeting message |
+
+| `withGreeting` | `withGreeting(text: string): Agent` | Override the greeting message |
 | `withName` | `withName(name: string): Agent` | Override the agent name |
 | `withSal` | `withSal(config: SalConfig): Agent` | Set SAL configuration |
 | `withAdvancedFeatures` | `withAdvancedFeatures(features: AdvancedFeatures): Agent` | Set advanced features |

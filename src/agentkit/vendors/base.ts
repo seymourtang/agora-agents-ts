@@ -158,10 +158,10 @@ export abstract class BaseLLM {
  * @template SR - Sample rate literal type (e.g., 24000, 16000)
  */
 export abstract class BaseTTS<_SR extends number = number> {
-    /**
-     * Converts the vendor configuration to the Agora API format.
-     */
-    abstract toConfig(): TtsConfig;
+  /**
+   * Converts the vendor configuration to the Agora API format.
+   */
+  abstract toConfig(): TtsConfig;
 }
 
 /**

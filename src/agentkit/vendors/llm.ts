@@ -626,3 +626,220 @@ export class Dify extends BaseLLM {
         };
     }
 }
+
+type OpenAIStyleOptions = BaseLlmOptions & {
+    apiKey: string;
+    model: string;
+    url?: string;
+    maxHistory?: number;
+    temperature?: number;
+    topP?: number;
+    maxTokens?: number;
+    systemMessages?: Record<string, unknown>[];
+    greetingMessage?: string;
+    failureMessage?: string;
+    inputModalities?: string[];
+    params?: Record<string, unknown>;
+    headers?: Record<string, string>;
+};
+
+function openAIStyleConfig(options: OpenAIStyleOptions, defaultUrl: string, vendor?: string): LlmConfig {
+    return {
+        url: options.url ?? defaultUrl,
+        api_key: options.apiKey,
+        params: {
+            model: options.model,
+            ...options.params,
+            ...(options.temperature !== undefined && { temperature: options.temperature }),
+            ...(options.topP !== undefined && { top_p: options.topP }),
+            ...(options.maxTokens !== undefined && { max_tokens: options.maxTokens }),
+        },
+        headers: options.headers,
+        max_history: options.maxHistory,
+        system_messages: options.systemMessages,
+        greeting_message: options.greetingMessage,
+        failure_message: options.failureMessage,
+        input_modalities: options.inputModalities ?? ["text"],
+        output_modalities: options.outputModalities,
+        style: "openai",
+        vendor: options.vendor ?? vendor,
+        greeting_configs: options.greetingConfigs,
+        template_variables: options.templateVariables,
+        mcp_servers: options.mcpServers,
+    };
+}
+
+export type GroqOptions = OpenAIStyleOptions;
+
+export class Groq extends BaseLLM {
+    constructor(private readonly options: GroqOptions) {
+        super(options);
+    }
+
+    toConfig(): LlmConfig {
+        return openAIStyleConfig(this.options, "https://api.groq.com/openai/v1/chat/completions");
+    }
+}
+
+export type CustomLLMOptions = OpenAIStyleOptions;
+
+export class CustomLLM extends BaseLLM {
+    constructor(private readonly options: CustomLLMOptions) {
+        super(options);
+    }
+
+    toConfig(): LlmConfig {
+        return openAIStyleConfig(this.options, this.options.url ?? "", "custom");
+    }
+}
+
+export interface VertexAILLMOptions extends BaseLlmOptions {
+    apiKey: string;
+    model: string;
+    projectId: string;
+    location: string;
+    url?: string;
+    maxHistory?: number;
+    temperature?: number;
+    topP?: number;
+    topK?: number;
+    maxOutputTokens?: number;
+    systemMessages?: Record<string, unknown>[];
+    greetingMessage?: string;
+    failureMessage?: string;
+    inputModalities?: string[];
+    params?: Record<string, unknown>;
+    headers?: Record<string, string>;
+}
+
+export class VertexAILLM extends BaseLLM {
+    constructor(private readonly options: VertexAILLMOptions) {
+        super(options);
+    }
+
+    toConfig(): LlmConfig {
+        const o = this.options;
+        return {
+            url: o.url ?? "https://aiplatform.googleapis.com/v1/projects",
+            api_key: o.apiKey,
+            params: {
+                model: o.model,
+                project_id: o.projectId,
+                location: o.location,
+                ...o.params,
+                ...(o.temperature !== undefined && { temperature: o.temperature }),
+                ...(o.topP !== undefined && { topP: o.topP }),
+                ...(o.topK !== undefined && { topK: o.topK }),
+                ...(o.maxOutputTokens !== undefined && { maxOutputTokens: o.maxOutputTokens }),
+            },
+            headers: o.headers,
+            max_history: o.maxHistory,
+            system_messages: o.systemMessages,
+            greeting_message: o.greetingMessage,
+            failure_message: o.failureMessage,
+            input_modalities: o.inputModalities ?? ["text"],
+            output_modalities: this.outputModalities,
+            style: "gemini",
+            vendor: this.vendor,
+            greeting_configs: this.greetingConfigs,
+            template_variables: this.templateVariables,
+            mcp_servers: this.mcpServers,
+        };
+    }
+}
+
+export interface AmazonBedrockOptions extends BaseLlmOptions {
+    apiKey: string;
+    model: string;
+    url: string;
+    maxHistory?: number;
+    maxTokens?: number;
+    temperature?: number;
+    topP?: number;
+    topK?: number;
+    systemMessages?: Record<string, unknown>[];
+    greetingMessage?: string;
+    failureMessage?: string;
+    inputModalities?: string[];
+    params?: Record<string, unknown>;
+    headers?: Record<string, string>;
+}
+
+export class AmazonBedrock extends BaseLLM {
+    constructor(private readonly options: AmazonBedrockOptions) {
+        super(options);
+    }
+
+    toConfig(): LlmConfig {
+        const o = this.options;
+        return {
+            url: o.url,
+            api_key: o.apiKey,
+            params: {
+                model: o.model,
+                ...o.params,
+                ...(o.maxTokens !== undefined && { max_tokens: o.maxTokens }),
+                ...(o.temperature !== undefined && { temperature: o.temperature }),
+                ...(o.topP !== undefined && { top_p: o.topP }),
+                ...(o.topK !== undefined && { top_k: o.topK }),
+            },
+            headers: o.headers,
+            max_history: o.maxHistory,
+            system_messages: o.systemMessages,
+            greeting_message: o.greetingMessage,
+            failure_message: o.failureMessage,
+            input_modalities: o.inputModalities ?? ["text"],
+            output_modalities: this.outputModalities,
+            style: "anthropic",
+            vendor: this.vendor,
+            greeting_configs: this.greetingConfigs,
+            template_variables: this.templateVariables,
+            mcp_servers: this.mcpServers,
+        };
+    }
+}
+
+export interface DifyOptions extends BaseLlmOptions {
+    apiKey: string;
+    url: string;
+    user?: string;
+    conversationId?: string;
+    maxHistory?: number;
+    systemMessages?: Record<string, unknown>[];
+    greetingMessage?: string;
+    failureMessage?: string;
+    inputModalities?: string[];
+    params?: Record<string, unknown>;
+    headers?: Record<string, string>;
+}
+
+export class Dify extends BaseLLM {
+    constructor(private readonly options: DifyOptions) {
+        super(options);
+    }
+
+    toConfig(): LlmConfig {
+        const o = this.options;
+        return {
+            url: o.url,
+            api_key: o.apiKey,
+            params: {
+                ...o.params,
+                ...(o.user !== undefined && { user: o.user }),
+                ...(o.conversationId !== undefined && { conversation_id: o.conversationId }),
+            },
+            headers: o.headers,
+            max_history: o.maxHistory,
+            system_messages: o.systemMessages,
+            greeting_message: o.greetingMessage,
+            failure_message: o.failureMessage,
+            input_modalities: o.inputModalities ?? ["text"],
+            output_modalities: this.outputModalities,
+            style: "dify",
+            vendor: this.vendor,
+            greeting_configs: this.greetingConfigs,
+            template_variables: this.templateVariables,
+            mcp_servers: this.mcpServers,
+        };
+    }
+}
