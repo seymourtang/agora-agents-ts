@@ -359,7 +359,7 @@ export interface AmazonTTSOptions {
     /** Amazon Polly voice ID */
     voiceId: string;
     /** Amazon Polly engine type */
-    engine?: "standard" | "neural" | "long-form" | "generative";
+    engine: "standard" | "neural" | "long-form" | "generative";
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 }
@@ -516,7 +516,7 @@ export interface RimeTTSOptions {
     /** Speaker ID */
     speaker: string;
     /** Model ID */
-    modelId?: string;
+    modelId: string;
     /** WebSocket URL for the Rime streaming API */
     baseUrl?: string;
     /** Skip patterns for bracketed content */
@@ -567,7 +567,7 @@ export interface FishAudioTTSOptions {
     /** Reference ID */
     referenceId: string;
     /** Backend used by Fish Audio */
-    backend?: string;
+    backend: string;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 }
@@ -743,11 +743,11 @@ export interface MurfTTSOptions {
     /** Murf API key */
     key: string;
     /** Voice ID (e.g., 'Ariana', 'Natalie', 'Ken') */
-    voiceId: string;
+    voiceId?: string;
     /** Voice style (e.g., 'Angry', 'Sad', 'Conversational', 'Newscast') */
     style?: string;
     /** WebSocket endpoint for streaming TTS output */
-    baseUrl: string;
+    baseUrl?: string;
     /** Locale for the selected voice */
     locale?: string;
     /** Speech rate adjustment */
@@ -789,16 +789,16 @@ export class MurfTTS extends BaseTTS {
             vendor: "murf",
             params: {
                 api_key: key,
-                base_url: baseUrl,
-                voiceId,
+                ...(baseUrl && { base_url: baseUrl }),
+                ...(voiceId && { voiceId }),
                 ...(style && { style }),
                 ...(locale && { locale }),
                 ...(rate !== undefined && { rate }),
                 ...(pitch !== undefined && { pitch }),
                 ...(model && { model }),
                 ...(sampleRate !== undefined && { sample_rate: sampleRate }),
-            },
+            } as unknown as import("../types.js").MurfTtsParams,
             ...(skipPatterns && { skip_patterns: skipPatterns }),
-        };
+        } as TtsConfig;
     }
 }

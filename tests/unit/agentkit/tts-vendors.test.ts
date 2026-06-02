@@ -48,5 +48,9 @@ describe("TTS vendor helpers", () => {
             base_url: "wss://murf.example/ws",
             voiceId: "Ariana",
         });
+
+        expect(new MurfTTS({ key: "murf-key" }).toConfig().params).toEqual({
+            api_key: "murf-key",
+        });
     });
 });

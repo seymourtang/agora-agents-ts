@@ -905,6 +905,9 @@ export class Agent<TTSSampleRate extends number = number> {
 
     private _resolveAsrConfig(): SttConfig | undefined {
         const asrConfig = { ...(this._stt ?? {}) } as SttConfig & { language?: string };
+        if (this._stt === undefined) {
+            asrConfig.vendor = "ares";
+        }
         const existingLanguage = asrConfig.language;
         const language =
             this._interactionLanguage ??

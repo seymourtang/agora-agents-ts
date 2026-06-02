@@ -83,7 +83,7 @@ describe("STT language serialization", () => {
             remoteUids: ["1002"],
         });
 
-        expect(properties.asr).toEqual({ language: "en-US" });
+        expect(properties.asr).toEqual({ vendor: "ares", language: "en-US" });
     });
 
     test("serializes documented provider params without promoting provider language", () => {
