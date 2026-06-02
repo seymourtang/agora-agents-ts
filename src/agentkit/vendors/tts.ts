@@ -444,8 +444,8 @@ export interface DeepgramTTSOptions {
     baseUrl?: string;
     /** Audio sample rate in Hz */
     sampleRate?: number;
-    /** Additional Deepgram TTS parameters */
-    params?: Record<string, unknown>;
+    /** Additional Deepgram TTS parameters, flattened into tts.params */
+    additionalParams?: Record<string, unknown>;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 }
@@ -462,14 +462,14 @@ export class DeepgramTTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const { apiKey, model, baseUrl, sampleRate, params, skipPatterns } = this.options;
+        const { apiKey, model, baseUrl, sampleRate, additionalParams, skipPatterns } = this.options;
 
         return {
             vendor: "deepgram",
             params: {
                 api_key: apiKey,
                 model,
-                ...params,
+                ...additionalParams,
                 ...(baseUrl && { base_url: baseUrl }),
                 ...(sampleRate !== undefined && { sample_rate: sampleRate }),
             },

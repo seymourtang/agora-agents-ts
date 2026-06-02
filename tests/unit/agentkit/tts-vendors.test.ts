@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
     AmazonTTS,
     CartesiaTTS,
+    DeepgramTTS,
     ElevenLabsTTS,
     FishAudioTTS,
     GoogleTTS,
@@ -53,6 +54,14 @@ describe("TTS vendor helpers", () => {
             base_url: "wss://api.elevenlabs.io/v1",
             model_id: "eleven_flash_v2_5",
             voice_id: "voice",
+        });
+
+        expect(new DeepgramTTS({ apiKey: "deepgram-key", model: "aura-2-thalia-en", baseUrl: "wss://api.deepgram.com/v1/speak", sampleRate: 24000, additionalParams: { encoding: "linear16" } }).toConfig().params).toMatchObject({
+            api_key: "deepgram-key",
+            model: "aura-2-thalia-en",
+            base_url: "wss://api.deepgram.com/v1/speak",
+            sample_rate: 24000,
+            encoding: "linear16",
         });
 
         expect(new OpenAITTS({ apiKey: "openai-key", voice: "coral", model: "gpt-4o-mini-tts", baseUrl: "https://api.openai.com/v1" }).toConfig().params).toMatchObject({

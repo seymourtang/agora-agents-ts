@@ -204,7 +204,7 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 |---|---|
 | `GoogleTTS` | `key`, `voiceName`, `languageCode?` |
 | `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId`, `engine` |
-| `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `params?` |
+| `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `additionalParams?` |
 | `HumeAITTS` | `key`, `voiceId`, `provider`, `configId?`, `baseUrl?`, `speed?`, `trailingSilence?` |
 | `RimeTTS` | `key`, `speaker`, `modelId`, `baseUrl?` |
 | `FishAudioTTS` | `key`, `referenceId`, `backend` |
