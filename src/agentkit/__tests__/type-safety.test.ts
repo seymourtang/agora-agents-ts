@@ -105,6 +105,7 @@ function _validExample5(): Agent<16000> {
             new CartesiaTTS({
                 apiKey: "test",
                 voiceId: "test",
+                modelId: "sonic-2",
                 sampleRate: 16000,
             }),
         )

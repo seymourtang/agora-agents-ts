@@ -5,6 +5,7 @@
 
 import type {
     AgentThinkAgentManagementResponse,
+    Asr,
     AmazonTtsParams as AmazonTtsParamsType,
     AmazonTts as AmazonTtsType,
     CartesiaTtsParams as CartesiaTtsParamsType,
@@ -20,11 +21,15 @@ import type {
     GoogleTts as GoogleTtsType,
     HumeAiTtsParams as HumeAiTtsParamsType,
     HumeAiTts as HumeAiTtsType,
+    Llm,
     ListAgentsResponse,
     MicrosoftTtsParams as MicrosoftTtsParamsType,
     MicrosoftTts as MicrosoftTtsType,
     MinimaxTtsParams as MinimaxTtsParamsType,
     MinimaxTts as MinimaxTtsType,
+    Mllm,
+    MllmTurnDetection,
+    MllmTurnDetection as MllmTurnDetectionNS,
     MurfTtsParams as MurfTtsParamsType,
     MurfTts as MurfTtsType,
     OpenAiTtsParams as OpenAiTtsParamsType,
@@ -46,7 +51,7 @@ import type { PresetInput } from "./presets.js";
 // =============================================================================
 
 /** LLM request style (openai, gemini, anthropic, dify) */
-export type LlmStyle = StartAgentsRequest.Properties.Llm.Style;
+export type LlmStyle = Llm.Style;
 
 /**
  * STT/ASR (Speech-to-Text) configuration with vendor-specific typed parameters.
@@ -55,30 +60,30 @@ export type LlmStyle = StartAgentsRequest.Properties.Llm.Style;
  */
 export type SttConfig =
     | { vendor: "speechmatics"; language?: InteractionLanguage; params: SpeechmaticsParams }
-    | { vendor: "deepgram"; language?: InteractionLanguage; params?: DeepgramParams }
+    | { vendor: "deepgram"; language?: InteractionLanguage; params: DeepgramParams }
     | { vendor: "microsoft"; language?: InteractionLanguage; params: MicrosoftAsrParams }
     | { vendor: "openai"; language?: InteractionLanguage; params: OpenAiAsrParams }
     | { vendor: "google"; language?: InteractionLanguage; params: GoogleAsrParams }
     | { vendor: "amazon"; language?: InteractionLanguage; params: AmazonAsrParams }
-    | { vendor: "assemblyai"; language?: InteractionLanguage; params?: AssemblyAiParams }
+    | { vendor: "assemblyai"; language?: InteractionLanguage; params: AssemblyAiParams }
     | { vendor: "ares"; language?: InteractionLanguage; params?: AresParams }
-    | { vendor: "sarvam"; language?: InteractionLanguage; params?: SarvamAsrParams }
-    | StartAgentsRequest.Properties.Asr; // Fallback for shorthand/untyped configs
+    | { vendor: "sarvam"; language?: InteractionLanguage; params: SarvamAsrParams }
+    | Asr; // Fallback for shorthand/untyped configs
 
 /** ASR configuration — alias for {@link SttConfig} (wire field: `asr`). */
 export type AsrConfig = SttConfig;
 
 /** STT vendor (ares, microsoft, deepgram, openai, etc.) */
-export type SttVendor = StartAgentsRequest.Properties.Asr.Vendor;
+export type SttVendor = string;
 
 /** TTS (Text-to-Speech) configuration - discriminated union */
 export type TtsConfig = Tts;
 
 /** MLLM (Multimodal LLM) configuration */
-export type MllmConfig = StartAgentsRequest.Properties.Mllm;
+export type MllmConfig = Mllm;
 
 /** MLLM vendor (openai, gemini, vertexai, xai) */
-export type MllmVendor = StartAgentsRequest.Properties.Mllm.Vendor;
+export type MllmVendor = Mllm.Vendor;
 
 /** Avatar configuration */
 export type AvatarConfig = StartAgentsRequest.Properties.Avatar;
@@ -224,10 +229,10 @@ export type InterruptionConfig = StartAgentsRequest.Properties.Interruption;
 export type InterruptionMode = StartAgentsRequest.Properties.Interruption.Mode;
 
 /** MLLM turn-detection configuration (`mllm.turn_detection`) */
-export type MllmTurnDetectionConfig = StartAgentsRequest.Properties.Mllm.TurnDetection;
+export type MllmTurnDetectionConfig = MllmTurnDetection;
 
 /** MLLM turn-detection mode (`agora_vad` | `server_vad` | `semantic_vad`) */
-export type MllmTurnDetectionMode = StartAgentsRequest.Properties.Mllm.TurnDetection.Mode;
+export type MllmTurnDetectionMode = MllmTurnDetectionNS.Mode;
 
 /** Options for `AgentSession.think()` */
 export type ThinkOnListeningAction = AgentThinkAgentManagementRequest.OnListeningAction;
@@ -292,13 +297,13 @@ export type Labels = Record<string, string>;
 // =============================================================================
 
 /** LLM greeting broadcast configuration (`llm.greeting_configs`) */
-export type LlmGreetingConfigs = StartAgentsRequest.Properties.Llm.GreetingConfigs;
+export type LlmGreetingConfigs = Record<string, unknown>;
 
 /** Greeting broadcast mode: `"single_every"` | `"single_first"` */
-export type LlmGreetingConfigsMode = StartAgentsRequest.Properties.Llm.GreetingConfigs.Mode;
+export type LlmGreetingConfigsMode = string;
 
 /** MCP server config item (`llm.mcp_servers[]`) */
-export type McpServersItem = StartAgentsRequest.Properties.Llm.McpServers.Item;
+export type McpServersItem = Record<string, unknown>;
 
 // =============================================================================
 // Agent Configuration (combines all the above)
@@ -518,7 +523,7 @@ export type LlmConfig =
     | (BaseLlmConfig & { style: "anthropic"; params: AnthropicLlmParams })
     | (BaseLlmConfig & { style: "dify"; params: DifyLlmParams })
     | (BaseLlmConfig & { style?: undefined; params?: Record<string, unknown> })
-    | StartAgentsRequest.Properties.Llm; // Fallback for shorthand configs
+    | Llm; // Fallback for shorthand configs
 
 // =============================================================================
 // STT/ASR Vendor-Specific Parameter Types

@@ -100,6 +100,13 @@ describe("STT language serialization", () => {
             },
         });
 
+        expect(new OpenAISTT({ apiKey: "openai-key" }).toConfig().params).toEqual({
+            api_key: "openai-key",
+            input_audio_transcription: {
+                model: "whisper-1",
+            },
+        });
+
         expect(
             new GoogleSTT({
                 projectId: "project",

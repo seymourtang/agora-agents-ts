@@ -17,6 +17,12 @@ export interface OpenAIRealtimeOptions {
     apiKey: string;
     /** Model name (e.g., 'gpt-4o-realtime-preview') */
     model?: string;
+    /** Voice identifier for audio output */
+    voice?: string;
+    /** System instructions that define agent behavior */
+    instructions?: string;
+    /** Audio transcription settings */
+    inputAudioTranscription?: Record<string, unknown>;
     /** WebSocket URL for real-time communication */
     url?: string;
     /** Agent greeting message */
@@ -59,6 +65,9 @@ export class OpenAIRealtime extends BaseMLLM {
         const {
             apiKey,
             model,
+            voice,
+            instructions,
+            inputAudioTranscription,
             url,
             greetingMessage,
             inputModalities,
@@ -72,8 +81,19 @@ export class OpenAIRealtime extends BaseMLLM {
         // Previously `...(model && { params: ... })` silently dropped the
         // entire params object when model was undefined — fixed by checking
         // either field independently.
-        const mergedParams = { ...(model !== undefined && { model }), ...params };
-        const hasParams = model !== undefined || params !== undefined;
+        const mergedParams = {
+            ...(model !== undefined && { model }),
+            ...params,
+            ...(voice !== undefined && { voice }),
+            ...(instructions !== undefined && { instructions }),
+            ...(inputAudioTranscription !== undefined && { input_audio_transcription: inputAudioTranscription }),
+        };
+        const hasParams =
+            model !== undefined ||
+            params !== undefined ||
+            voice !== undefined ||
+            instructions !== undefined ||
+            inputAudioTranscription !== undefined;
 
         return {
             vendor: "openai",
@@ -104,6 +124,11 @@ export interface GeminiLiveOptions {
     instructions?: string;
     /** Voice name (e.g., 'Aoede', 'Charon') */
     voice?: string;
+    affectiveDialog?: boolean;
+    proactiveAudio?: boolean;
+    transcribeAgent?: boolean;
+    transcribeUser?: boolean;
+    httpOptions?: Record<string, unknown>;
     /** Agent greeting message */
     greetingMessage?: string;
     /** Input modalities (e.g., ['audio'], ['audio', 'text']) */
@@ -150,6 +175,11 @@ export class GeminiLive extends BaseMLLM {
             url,
             instructions,
             voice,
+            affectiveDialog,
+            proactiveAudio,
+            transcribeAgent,
+            transcribeUser,
+            httpOptions,
             greetingMessage,
             inputModalities,
             outputModalities,
@@ -168,6 +198,11 @@ export class GeminiLive extends BaseMLLM {
                 model,
                 ...(instructions && { instructions }),
                 ...(voice && { voice }),
+                ...(affectiveDialog !== undefined && { affective_dialog: affectiveDialog }),
+                ...(proactiveAudio !== undefined && { proactive_audio: proactiveAudio }),
+                ...(transcribeAgent !== undefined && { transcribe_agent: transcribeAgent }),
+                ...(transcribeUser !== undefined && { transcribe_user: transcribeUser }),
+                ...(httpOptions && { http_options: httpOptions }),
             },
             ...(messages && { messages }),
             ...(greetingMessage && { greeting_message: greetingMessage }),
@@ -197,6 +232,11 @@ export interface VertexAIOptions {
     instructions?: string;
     /** Voice name (e.g., 'Aoede', 'Charon') */
     voice?: string;
+    affectiveDialog?: boolean;
+    proactiveAudio?: boolean;
+    transcribeAgent?: boolean;
+    transcribeUser?: boolean;
+    httpOptions?: Record<string, unknown>;
     /** Agent greeting message */
     greetingMessage?: string;
     /** Input modalities (e.g., ['audio'], ['audio', 'text']) */
@@ -247,6 +287,11 @@ export class VertexAI extends BaseMLLM {
             adcCredentialsString,
             instructions,
             voice,
+            affectiveDialog,
+            proactiveAudio,
+            transcribeAgent,
+            transcribeUser,
+            httpOptions,
             greetingMessage,
             inputModalities,
             outputModalities,
@@ -258,15 +303,20 @@ export class VertexAI extends BaseMLLM {
         return {
             vendor: "vertexai",
             ...(url && { url }),
+            project_id: projectId,
+            location,
+            adc_credentials_string: adcCredentialsString,
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
                 model,
-                project_id: projectId,
-                location,
-                adc_credentials_string: adcCredentialsString,
                 ...(instructions && { instructions }),
                 ...(voice && { voice }),
+                ...(affectiveDialog !== undefined && { affective_dialog: affectiveDialog }),
+                ...(proactiveAudio !== undefined && { proactive_audio: proactiveAudio }),
+                ...(transcribeAgent !== undefined && { transcribe_agent: transcribeAgent }),
+                ...(transcribeUser !== undefined && { transcribe_user: transcribeUser }),
+                ...(httpOptions && { http_options: httpOptions }),
             },
             ...(messages && { messages }),
             ...(greetingMessage && { greeting_message: greetingMessage }),

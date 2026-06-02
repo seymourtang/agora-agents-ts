@@ -532,9 +532,13 @@ export class VertexAILLM extends BaseLLM {
 }
 
 export interface AmazonBedrockOptions extends BaseLlmOptions {
-    apiKey: string;
+    /** AWS access key ID. */
+    accessKey: string;
+    /** AWS secret access key. */
+    secretKey: string;
+    /** AWS region. */
+    region: string;
     model: string;
-    url: string;
     maxHistory?: number;
     maxTokens?: number;
     temperature?: number;
@@ -556,10 +560,11 @@ export class AmazonBedrock extends BaseLLM {
     toConfig(): LlmConfig {
         const o = this.options;
         return {
-            url: o.url,
-            api_key: o.apiKey,
+            access_key: o.accessKey,
+            secret_key: o.secretKey,
+            region: o.region,
+            model: o.model,
             params: {
-                model: o.model,
                 ...o.params,
                 ...(o.maxTokens !== undefined && { max_tokens: o.maxTokens }),
                 ...(o.temperature !== undefined && { temperature: o.temperature }),
@@ -573,7 +578,7 @@ export class AmazonBedrock extends BaseLLM {
             failure_message: o.failureMessage,
             input_modalities: o.inputModalities ?? ["text"],
             output_modalities: this.outputModalities,
-            style: "anthropic",
+            style: "bedrock",
             vendor: this.vendor,
             greeting_configs: this.greetingConfigs,
             template_variables: this.templateVariables,

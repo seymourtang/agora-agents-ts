@@ -180,7 +180,7 @@ export interface MicrosoftSTTOptions {
     /** Azure region (e.g., 'eastus', 'westus') */
     region: string;
     /** Language code (e.g., 'en-US', 'es-ES') */
-    language?: string;
+    language: string;
     /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
     interactionLanguage?: InteractionLanguage;
     /** Additional vendor-specific parameters */
@@ -267,6 +267,7 @@ export class OpenAISTT extends BaseSTT {
         const { apiKey, model, language, prompt, inputAudioTranscription, interactionLanguage, additionalParams } = this.options;
         const asrLanguage = toInteractionLanguage(language, interactionLanguage);
         const transcription = {
+            model: "whisper-1",
             ...inputAudioTranscription,
             ...(model && { model }),
             ...(prompt && { prompt }),
@@ -280,7 +281,7 @@ export class OpenAISTT extends BaseSTT {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
                 api_key: apiKey,
-                ...(Object.keys(transcription).length > 0 && { input_audio_transcription: transcription }),
+                input_audio_transcription: transcription,
             },
         };
     }
@@ -297,7 +298,7 @@ export interface GoogleSTTOptions {
     /** Google service account credentials JSON string */
     adcCredentialsString: string;
     /** Language code (e.g., 'en-US', 'es-ES') */
-    language?: string;
+    language: string;
     /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
     interactionLanguage?: InteractionLanguage;
     /** Recognition model to use */
@@ -358,7 +359,7 @@ export interface AmazonSTTOptions {
     /** AWS region (e.g., 'us-east-1') */
     region: string;
     /** Language code */
-    language?: string;
+    language: string;
     /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
     interactionLanguage?: InteractionLanguage;
     /** Additional vendor-specific parameters */
@@ -411,7 +412,7 @@ export interface AssemblyAISTTOptions {
     /** AssemblyAI API key */
     apiKey: string;
     /** Language code */
-    language?: string;
+    language: string;
     /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
     interactionLanguage?: InteractionLanguage;
     /** AssemblyAI streaming WebSocket URL */

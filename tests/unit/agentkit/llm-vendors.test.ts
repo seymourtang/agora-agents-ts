@@ -41,17 +41,20 @@ describe("LLM vendor helpers", () => {
         });
     });
 
-    test("AmazonBedrock serializes as Anthropic-style", () => {
+    test("AmazonBedrock serializes as Bedrock-style with top-level AWS routing", () => {
         expect(
             new AmazonBedrock({
-                apiKey: "bedrock-key",
-                url: "https://bedrock.example.com/messages",
+                accessKey: "aws-access",
+                secretKey: "aws-secret",
+                region: "us-east-1",
                 model: "anthropic.claude-3-5-sonnet-20241022-v2:0",
             }).toConfig(),
         ).toMatchObject({
-            api_key: "bedrock-key",
-            style: "anthropic",
-            params: { model: "anthropic.claude-3-5-sonnet-20241022-v2:0" },
+            access_key: "aws-access",
+            secret_key: "aws-secret",
+            region: "us-east-1",
+            model: "anthropic.claude-3-5-sonnet-20241022-v2:0",
+            style: "bedrock",
         });
     });
 

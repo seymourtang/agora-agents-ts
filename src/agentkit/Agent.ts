@@ -852,7 +852,7 @@ export class Agent<TTSSampleRate extends number = number> {
             }
         }
 
-        const llmConfig: Agora.StartAgentsRequest.Properties.Llm | undefined = this._llm
+        const llmConfig: Agora.Llm | undefined = this._llm
             ? {
                   ...this._llm,
                   system_messages: this._instructions
@@ -865,7 +865,7 @@ export class Agent<TTSSampleRate extends number = number> {
               }
             : undefined;
 
-        return { ...base, llm: llmConfig, tts: this._tts, asr: this._resolveAsrConfig() };
+        return { ...base, llm: llmConfig, tts: this._tts, asr: this._resolveAsrConfig() as Agora.Asr | undefined };
     }
 
     /**

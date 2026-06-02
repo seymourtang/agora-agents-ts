@@ -114,7 +114,7 @@ function omitUndefinedKeys<T extends Record<string, unknown>>(value: T): T | und
     return Object.keys(next).length > 0 ? next : undefined;
 }
 
-function inferAsrPreset(asr?: Agora.StartAgentsRequest.Properties.Asr): AsrInference | undefined {
+function inferAsrPreset(asr?: Agora.Asr): AsrInference | undefined {
     if (!asr || asr.vendor !== "deepgram" || asr.params?.api_key) return undefined;
     const preset = deepgramModelToPreset[normalizeModelName(asr.params?.model) ?? ""];
     if (!preset) return undefined;
@@ -125,7 +125,7 @@ function inferAsrPreset(asr?: Agora.StartAgentsRequest.Properties.Asr): AsrInfer
     };
 }
 
-function inferLlmPreset(llm?: Agora.StartAgentsRequest.Properties.Llm): LlmInference | undefined {
+function inferLlmPreset(llm?: Agora.Llm): LlmInference | undefined {
     if (!llm || llm.api_key) return undefined;
     if (llm.vendor && llm.vendor !== "openai") return undefined;
     if (llm.url && llm.url !== OPENAI_CHAT_COMPLETIONS_URL) return undefined;
@@ -180,7 +180,7 @@ function stripInferredPresetFields(
                 api_key: undefined,
                 model: asrInference.stripModel ? undefined : asr.params?.model,
             }),
-        };
+        } as Agora.Asr;
     }
 
     let llm = properties.llm;
@@ -195,7 +195,7 @@ function stripInferredPresetFields(
                 ...llm.params,
                 model: llmInference.stripModel ? undefined : llm.params?.model,
             }),
-        } as unknown as Agora.StartAgentsRequest.Properties.Llm;
+        } as unknown as Agora.Llm;
     }
 
     let tts = properties.tts;
