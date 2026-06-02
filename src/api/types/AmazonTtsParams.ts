@@ -4,12 +4,27 @@
  * Amazon Polly TTS configuration parameters.
  */
 export interface AmazonTtsParams {
-    /** AWS access key */
-    access_key: string;
+    /** AWS access key ID */
+    aws_access_key_id: string;
     /** AWS secret key */
-    secret_key: string;
+    aws_secret_access_key: string;
     /** AWS region (e.g., "us-east-1") */
-    region: string;
+    region_name: string;
     /** Amazon Polly voice ID */
-    voice_id: string;
+    voice: string;
+    /** Amazon Polly engine type */
+    engine: AmazonTtsParams.Engine;
+    /** Accepts any additional properties */
+    [key: string]: any;
+}
+
+export namespace AmazonTtsParams {
+    /** Amazon Polly engine type */
+    export const Engine = {
+        Standard: "standard",
+        Neural: "neural",
+        LongForm: "long-form",
+        Generative: "generative",
+    } as const;
+    export type Engine = (typeof Engine)[keyof typeof Engine];
 }
