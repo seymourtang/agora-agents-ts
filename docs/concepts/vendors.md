@@ -18,8 +18,8 @@ Each vendor is a typed class that validates options at construction time and ser
 | `Gemini`      | Google Gemini           | `apiKey`, `model`, `url?`, `maxHistory?`                                        |
 | `Groq`        | Groq                    | `apiKey`, `model`, `url?`, `maxHistory?`                                        |
 | `VertexAILLM` | Google Vertex AI        | `apiKey`, `model`, `projectId`, `location`, `url?`                              |
-| `AmazonBedrock` | Amazon Bedrock        | `apiKey`, `url`, `model`                                                        |
-| `Dify`        | Dify                    | `apiKey`, `url`, `user?`, `conversationId?`                                     |
+| `AmazonBedrock` | Amazon Bedrock        | `accessKey`, `secretKey`, `region`, `model`                                     |
+| `Dify`        | Dify                    | `apiKey`, `url`, `model`, `user?`, `conversationId?`                            |
 | `CustomLLM`   | OpenAI-compatible LLM   | `apiKey`, `model`, `url`                                                        |
 
 <!-- snippet: executable -->

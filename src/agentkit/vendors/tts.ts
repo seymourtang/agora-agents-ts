@@ -755,8 +755,6 @@ export interface MurfTTSOptions {
     key: string;
     /** Voice ID (e.g., 'Ariana', 'Natalie', 'Ken') */
     voiceId?: string;
-    /** Voice style (e.g., 'Angry', 'Sad', 'Conversational', 'Newscast') */
-    style?: string;
     /** WebSocket endpoint for streaming TTS output */
     baseUrl?: string;
     /** Locale for the selected voice */
@@ -781,7 +779,6 @@ export interface MurfTTSOptions {
  * const tts = new MurfTTS({
  *   key: process.env.MURF_API_KEY,
  *   voiceId: 'Ariana',
- *   style: 'Conversational',
  * });
  * ```
  */
@@ -794,7 +791,7 @@ export class MurfTTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const { key, voiceId, style, baseUrl, locale, rate, pitch, model, sampleRate, skipPatterns } = this.options;
+        const { key, voiceId, baseUrl, locale, rate, pitch, model, sampleRate, skipPatterns } = this.options;
 
         return {
             vendor: "murf",
@@ -802,7 +799,6 @@ export class MurfTTS extends BaseTTS {
                 api_key: key,
                 ...(baseUrl && { base_url: baseUrl }),
                 ...(voiceId && { voiceId }),
-                ...(style && { style }),
                 ...(locale && { locale }),
                 ...(rate !== undefined && { rate }),
                 ...(pitch !== undefined && { pitch }),

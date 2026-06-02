@@ -72,6 +72,12 @@ function isInteractionLanguage(value: string): value is InteractionLanguage {
     return INTERACTION_LANGUAGES.has(value);
 }
 
+function assertInteractionLanguage(value: string): asserts value is InteractionLanguage {
+    if (!isInteractionLanguage(value)) {
+        throw new Error(`Invalid interaction language: ${value}`);
+    }
+}
+
 /**
  * Configuration options for creating an Agent.
  *
@@ -195,6 +201,7 @@ export class Agent<TTSSampleRate extends number = number> {
             this._parameters = options.parameters;
         }
         if (options.interactionLanguage) {
+            assertInteractionLanguage(options.interactionLanguage);
             this._interactionLanguage = options.interactionLanguage;
         }
         if (options.geofence) {
@@ -271,6 +278,7 @@ export class Agent<TTSSampleRate extends number = number> {
      * under `asr.params`, for example `asr.params.language`.
      */
     withInteractionLanguage(language: InteractionLanguage): Agent<TTSSampleRate> {
+        assertInteractionLanguage(language);
         const newAgent = this._clone();
         newAgent._interactionLanguage = language;
         return newAgent;

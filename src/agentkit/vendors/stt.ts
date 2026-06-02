@@ -42,7 +42,12 @@ const INTERACTION_LANGUAGES = new Set<string>([
 ]);
 
 function toInteractionLanguage(language?: string, interactionLanguage?: InteractionLanguage): InteractionLanguage | undefined {
-    if (interactionLanguage !== undefined) return interactionLanguage;
+    if (interactionLanguage !== undefined) {
+        if (!INTERACTION_LANGUAGES.has(interactionLanguage)) {
+            throw new Error(`Invalid interaction language: ${interactionLanguage}`);
+        }
+        return interactionLanguage;
+    }
     return language !== undefined && INTERACTION_LANGUAGES.has(language) ? (language as InteractionLanguage) : undefined;
 }
 

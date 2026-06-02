@@ -122,8 +122,8 @@ The SDK also includes named helpers for the remaining Agora-supported LLM provid
 |---|---|---|
 | `Groq` | Groq | `apiKey`, `model`, `url?` |
 | `VertexAILLM` | Google Vertex AI | `apiKey`, `model`, `projectId`, `location`, `url?` |
-| `AmazonBedrock` | Amazon Bedrock | `apiKey`, `url`, `model` |
-| `Dify` | Dify | `apiKey`, `url`, `user?`, `conversationId?` |
+| `AmazonBedrock` | Amazon Bedrock | `accessKey`, `secretKey`, `region`, `model` |
+| `Dify` | Dify | `apiKey`, `url`, `model`, `user?`, `conversationId?` |
 | `CustomLLM` | OpenAI-compatible LLM | `apiKey`, `model`, `url` |
 
 ---
@@ -210,7 +210,7 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `RimeTTS` | `key`, `speaker`, `modelId`, `baseUrl?` |
 | `FishAudioTTS` | `key`, `referenceId`, `backend` |
 | `MiniMaxTTS` | `key?`, `groupId?`, `model`, `voiceId?`, `url?` |
-| `MurfTTS` | `key`, `voiceId?`, `baseUrl?`, `style?`, `locale?`, `rate?`, `pitch?`, `model?`, `sampleRate?` |
+| `MurfTTS` | `key`, `voiceId?`, `baseUrl?`, `locale?`, `rate?`, `pitch?`, `model?`, `sampleRate?` |
 | `SarvamTTS` | `key`, `speaker`, `targetLanguageCode` |
 
 For `MiniMaxTTS`, `key` is optional only for Agora-managed models:

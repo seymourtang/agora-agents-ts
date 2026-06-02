@@ -75,6 +75,14 @@ describe("STT language serialization", () => {
         expect(properties.turn_detection).toBeUndefined();
     });
 
+    test("rejects invalid explicit interaction language", () => {
+        expect(() => new Agent({ interactionLanguage: "en" as never })).toThrow("Invalid interaction language: en");
+        expect(() => baseAgent().withInteractionLanguage("xx-YY" as never)).toThrow("Invalid interaction language: xx-YY");
+        expect(() => new SpeechmaticsSTT({ apiKey: "stt-key", language: "en", interactionLanguage: "xx-YY" as never }).toConfig()).toThrow(
+            "Invalid interaction language: xx-YY",
+        );
+    });
+
     test("sends default interaction language when STT is omitted", () => {
         const properties = baseAgent().toProperties({
             channel: "channel",
