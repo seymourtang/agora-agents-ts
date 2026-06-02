@@ -176,6 +176,7 @@ Fixed at 24kHz — no configurable sample rate.
 | `voice` | `string` | Yes | Voice name (`'alloy'`, `'echo'`, `'fable'`, `'onyx'`, `'nova'`, `'shimmer'`) |
 | `model` | `string` | BYOK only | Model name (e.g., `'tts-1'`, `'tts-1-hd'`) |
 | `baseUrl` | `string` | BYOK only | OpenAI TTS endpoint URL |
+| `instructions` | `string` | No | Custom instructions for voice style, accent, pace, and tone |
 | `speed` | `number` | No | Speech speed multiplier |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 

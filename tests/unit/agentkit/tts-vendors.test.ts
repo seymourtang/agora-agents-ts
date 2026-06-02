@@ -64,11 +64,12 @@ describe("TTS vendor helpers", () => {
             encoding: "linear16",
         });
 
-        expect(new OpenAITTS({ apiKey: "openai-key", voice: "coral", model: "gpt-4o-mini-tts", baseUrl: "https://api.openai.com/v1" }).toConfig().params).toMatchObject({
+        expect(new OpenAITTS({ apiKey: "openai-key", voice: "coral", model: "gpt-4o-mini-tts", baseUrl: "https://api.openai.com/v1", instructions: "speak clearly" }).toConfig().params).toMatchObject({
             api_key: "openai-key",
             base_url: "https://api.openai.com/v1",
             model: "gpt-4o-mini-tts",
             voice: "coral",
+            instructions: "speak clearly",
         });
 
         expect(new OpenAITTS({ voice: "coral" }).toConfig().params).toEqual({
