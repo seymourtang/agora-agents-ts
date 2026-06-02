@@ -60,12 +60,12 @@ import { Agent, ElevenLabsTTS, HeyGenAvatar } from 'agora-agents';
 
 // This works — ElevenLabs at 24kHz matches HeyGen's requirement
 const good = new Agent({ name: 'avatar-agent' })
-  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 24000 }))
+  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withAvatar(new HeyGenAvatar({ apiKey: 'your-heygen-key', quality: 'high', agoraUid: '12345' }));
 
 // This fails at compile time — 16kHz does not match HeyGen's required 24kHz
 const bad = new Agent({ name: 'avatar-agent' })
-  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 16000 }))
+  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 16000 }))
   .withAvatar(new HeyGenAvatar({ apiKey: 'your-heygen-key', quality: 'high', agoraUid: '12345' }));
   //         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   // TypeScript error: 'this' context of type 'Agent<16000>' is not assignable to
@@ -119,6 +119,7 @@ const agent = new Agent({ name: 'liveavatar-agent' })
     key: 'your-elevenlabs-key',
     modelId: 'eleven_flash_v2_5',
     voiceId: 'your-voice-id',
+    baseUrl: 'wss://api.elevenlabs.io/v1',
     sampleRate: 24000,  // Required for LiveAvatar
   }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }))
@@ -186,6 +187,7 @@ const agent = new Agent({ name: 'akool-agent' })
     key: 'your-elevenlabs-key',
     modelId: 'eleven_flash_v2_5',
     voiceId: 'your-voice-id',
+    baseUrl: 'wss://api.elevenlabs.io/v1',
     sampleRate: 16000,  // Required for Akool
   }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }))

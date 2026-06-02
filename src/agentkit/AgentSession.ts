@@ -107,7 +107,7 @@ export interface AgentSessionOptions {
  *
  * const agent = new Agent({ name: 'support-assistant', instructions: 'You are a helpful voice assistant.' })
  *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4o-mini' }))
- *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', sampleRate: 24000 }))
+ *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
  *   .withStt(new DeepgramSTT({ apiKey: '...', language: 'en-US' }));
  *
  * const session = agent.createSession(client, {

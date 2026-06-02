@@ -108,7 +108,7 @@ const base = new Agent()
     model: 'gpt-4o-mini',
     systemMessages: [{ role: 'system', content: 'You are helpful.' }],
   }))
-  .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 24000 }))
+  .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }));
 
 // Two sessions from the same agent config — safe, no shared mutable state

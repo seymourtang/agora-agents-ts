@@ -49,6 +49,7 @@ export interface ElevenLabsTTSOptions<SR extends ElevenLabsSampleRate = ElevenLa
  *   key: process.env.ELEVENLABS_API_KEY,
  *   modelId: 'eleven_flash_v2_5',
  *   voiceId: 'pNInz6obpgDQGcFmaJgB',
+ *   baseUrl: 'wss://api.elevenlabs.io/v1',
  *   sampleRate: 24000, // For HeyGen avatar
  * });
  * ```
@@ -377,6 +378,7 @@ export interface AmazonTTSOptions {
  *   secretKey: process.env.AWS_SECRET_ACCESS_KEY,
  *   region: 'us-east-1',
  *   voiceId: 'Joanna',
+ *   engine: 'neural',
  * });
  * ```
  */
@@ -536,6 +538,7 @@ export interface RimeTTSOptions {
  * const tts = new RimeTTS({
  *   key: process.env.RIME_API_KEY,
  *   speaker: 'speaker-id',
+ *   modelId: 'mist',
  * });
  * ```
  */
@@ -585,6 +588,7 @@ export interface FishAudioTTSOptions {
  * const tts = new FishAudioTTS({
  *   key: process.env.FISH_AUDIO_API_KEY,
  *   referenceId: 'reference-id',
+ *   backend: 'speech-1.5',
  * });
  * ```
  */

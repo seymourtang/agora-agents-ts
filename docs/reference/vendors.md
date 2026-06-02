@@ -141,7 +141,7 @@ new ElevenLabsTTS<SR extends ElevenLabsSampleRate>(options: ElevenLabsTTSOptions
 | `key` | `string` | Yes | ElevenLabs API key |
 | `modelId` | `string` | Yes | Model ID (e.g., `'eleven_flash_v2_5'`) |
 | `voiceId` | `string` | Yes | Voice ID |
-| `baseUrl` | `string` | No | WebSocket base URL |
+| `baseUrl` | `string` | Yes | WebSocket base URL |
 | `sampleRate` | `16000 \| 22050 \| 24000 \| 44100` | No | Audio sample rate in Hz |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
@@ -191,7 +191,7 @@ new CartesiaTTS<SR extends CartesiaSampleRate>(options: CartesiaTTSOptions<SR>)
 |---|---|---|---|
 | `apiKey` | `string` | Yes | Cartesia API key |
 | `voiceId` | `string` | Yes | Voice ID (serialized as `{"mode": "id", "id": "..."}`) |
-| `modelId` | `string` | No | Model ID |
+| `modelId` | `string` | Yes | Model ID |
 | `sampleRate` | `8000 \| 16000 \| 22050 \| 24000 \| 44100 \| 48000` | No | Audio sample rate in Hz |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
@@ -202,13 +202,13 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | Class | Key params |
 |---|---|
 | `GoogleTTS` | `key`, `voiceName`, `languageCode?` |
-| `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId` |
+| `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId`, `engine` |
 | `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `params?` |
-| `HumeAITTS` | `key`, `configId?` |
-| `RimeTTS` | `key`, `speaker`, `modelId?`, `lang?`, `samplingRate?`, `speedAlpha?` |
-| `FishAudioTTS` | `key`, `referenceId` |
+| `HumeAITTS` | `key`, `voiceId`, `provider`, `configId?`, `baseUrl?`, `speed?`, `trailingSilence?` |
+| `RimeTTS` | `key`, `speaker`, `modelId`, `baseUrl?` |
+| `FishAudioTTS` | `key`, `referenceId`, `backend` |
 | `MiniMaxTTS` | `key?`, `groupId?`, `model`, `voiceId?`, `url?` |
-| `MurfTTS` | `key`, `voiceId`, `style?` |
+| `MurfTTS` | `key`, `voiceId?`, `baseUrl?`, `style?`, `locale?`, `rate?`, `pitch?`, `model?`, `sampleRate?` |
 | `SarvamTTS` | `key`, `speaker`, `targetLanguageCode` |
 
 For `MiniMaxTTS`, `key` is optional only for Agora-managed models:

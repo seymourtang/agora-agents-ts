@@ -57,6 +57,7 @@ async function main(): Promise<void> {
         key: process.env.ELEVENLABS_API_KEY!,
         modelId: 'eleven_flash_v2_5',
         voiceId: process.env.ELEVENLABS_VOICE_ID!,
+        baseUrl: 'wss://api.elevenlabs.io/v1',
         sampleRate: 24000,
       }),
     );

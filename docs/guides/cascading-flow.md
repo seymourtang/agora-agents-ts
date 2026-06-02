@@ -46,6 +46,7 @@ const agent = new Agent({ name: 'cascading-assistant' })
     key: 'your-elevenlabs-key',
     modelId: 'eleven_flash_v2_5',
     voiceId: 'your-voice-id',
+    baseUrl: 'wss://api.elevenlabs.io/v1',
     sampleRate: 24000,
   }))
   .withStt(new DeepgramSTT({
@@ -113,6 +114,7 @@ const response = await client.agents.start({
         key: 'your-elevenlabs-key',
         model_id: 'eleven_flash_v2_5',
         voice_id: 'your-voice-id',
+        base_url: 'wss://api.elevenlabs.io/v1',
         sample_rate: 24000,
       },
     },

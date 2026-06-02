@@ -43,7 +43,7 @@ const agent = new Agent({
     model: 'gpt-4o-mini',
     systemMessages: [{ role: 'system', content: 'You are a helpful assistant.' }],
   }))
-  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 24000 }))
+  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-key', model: 'nova-2', language: 'en-US' }))
   .withAdvancedFeatures({ enable_sal: true })
   .withSal({
@@ -243,7 +243,7 @@ const agent = new Agent({ name: 'full-featured-assistant' })
     failureMessage: 'Sorry, I had trouble processing that.',
     maxHistory: 20,
   }))
-  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 24000 }))
+  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-key', model: 'nova-2', language: 'en-US' }))
   .withAdvancedFeatures({ enable_rtm: true })
   .withParameters({

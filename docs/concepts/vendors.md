@@ -60,6 +60,7 @@ const tts = new ElevenLabsTTS({
   key: 'your-elevenlabs-key',
   modelId: 'eleven_flash_v2_5',
   voiceId: 'your-voice-id',
+  baseUrl: 'wss://api.elevenlabs.io/v1',
   sampleRate: 24000,
 });
 ```

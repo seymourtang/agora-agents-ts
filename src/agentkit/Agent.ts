@@ -142,7 +142,7 @@ export interface AgentOptions {
  * // Use the fluent builder pattern to configure vendors
  * const agent = new Agent({ instructions: 'You are helpful.' })
  *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4' }))
- *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', sampleRate: 24000 }))
+ *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
  *   .withStt(new DeepgramSTT({ apiKey: '...', model: 'nova-2' }));
  * ```
  */
@@ -231,7 +231,7 @@ export class Agent<TTSSampleRate extends number = number> {
      * The sample rate type is tracked for compile-time avatar compatibility checking.
      *
      * @template SR - Sample rate literal type
-     * @param vendor - TTS vendor instance (e.g., new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', sampleRate: 24000 }))
+     * @param vendor - TTS vendor instance (e.g., new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
      * @returns Agent with tracked sample rate type
      */
     withTts<SR extends number>(vendor: BaseTTS<SR>): Agent<SR> {
@@ -329,6 +329,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *     key: '...',
      *     modelId: '...',
      *     voiceId: '...',
+     *     baseUrl: 'wss://api.elevenlabs.io/v1',
      *     sampleRate: 24000, // Required for HeyGen
      *   }))
      *   .withAvatar(new HeyGenAvatar({
