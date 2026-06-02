@@ -5,9 +5,13 @@
  */
 export interface RimeTtsParams {
     /** Rime API key */
-    key: string;
+    api_key: string;
     /** Rime speaker ID */
     speaker: string;
-    /** Model ID (optional) */
-    model_id?: string;
+    /** Rime TTS model ID */
+    modelId: string;
+    /** WebSocket URL for the Rime streaming API */
+    base_url?: string;
+    /** Accepts any additional properties */
+    [key: string]: any;
 }
