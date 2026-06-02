@@ -63,7 +63,6 @@ type MiniMaxTtsInference = {
     stripModel: boolean;
 };
 type TtsInference = OpenAITtsInference | MiniMaxTtsInference;
-type PresetInference = AsrInference | LlmInference | TtsInference;
 type InferenceMap = {
     asr?: AsrInference;
     llm?: LlmInference;

@@ -2,7 +2,12 @@
  * Type-safe TTS (Text-to-Speech) vendor classes.
  */
 
-import { MiniMaxPresetModels, OpenAITtsPresetModels, type MiniMaxPresetModel, type OpenAITtsPresetModel } from "../presets.js";
+import {
+    type MiniMaxPresetModel,
+    MiniMaxPresetModels,
+    type OpenAITtsPresetModel,
+    OpenAITtsPresetModels,
+} from "../presets.js";
 import type { TtsConfig } from "../types.js";
 import type { CartesiaSampleRate, ElevenLabsSampleRate, GoogleTTSSampleRate, MicrosoftSampleRate } from "./base.js";
 import { BaseTTS } from "./base.js";

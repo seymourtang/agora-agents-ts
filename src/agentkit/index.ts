@@ -147,10 +147,10 @@ export type {
     GoogleTtsParams,
     HumeAiTts,
     HumeAiTtsParams,
+    InteractionLanguage,
     InterruptionConfig,
     InterruptionMode,
     InterruptMode,
-    InteractionLanguage,
     Labels,
     // Core configuration types
     LlmConfig,

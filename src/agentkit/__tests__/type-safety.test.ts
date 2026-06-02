@@ -124,7 +124,12 @@ function _validExample5(): Agent<16000> {
 new DeepgramSTT({ model: "nova-3" });
 new OpenAI({ model: "gpt-5-mini" });
 new OpenAITTS({ voice: "alloy" });
-new OpenAI({ apiKey: "test", model: "gpt-5-mini", url: "https://api.openai.com/v1/chat/completions", vendor: "custom" });
+new OpenAI({
+    apiKey: "test",
+    model: "gpt-5-mini",
+    url: "https://api.openai.com/v1/chat/completions",
+    vendor: "custom",
+});
 new MiniMaxTTS({
     model: "speech-2.6-turbo",
 });
@@ -289,7 +294,7 @@ function _edgeCase2() {
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
             baseUrl: "wss://api.elevenlabs.io/v1",
-                sampleRate: 16000,
+            sampleRate: 16000,
         }),
     );
 }
@@ -328,7 +333,7 @@ function _typeInference1() {
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
             baseUrl: "wss://api.elevenlabs.io/v1",
-                sampleRate: 24000,
+            sampleRate: 24000,
         }),
     );
 
@@ -344,7 +349,7 @@ function _typeInference2() {
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
             baseUrl: "wss://api.elevenlabs.io/v1",
-                sampleRate: 16000,
+            sampleRate: 16000,
         }),
     );
 
@@ -358,8 +363,8 @@ function _typeInference3() {
         new OpenAITTS({
             apiKey: "test",
             voice: "alloy",
-                model: "gpt-4o-mini-tts",
-                baseUrl: "https://api.openai.com/v1",
+            model: "gpt-4o-mini-tts",
+            baseUrl: "https://api.openai.com/v1",
         }),
     );
 

@@ -1,13 +1,29 @@
 import { describe, expect, test } from "vitest";
 import { Agent } from "../../../src/agentkit/Agent.js";
 import { OpenAI } from "../../../src/agentkit/vendors/llm.js";
-import { AmazonSTT, AssemblyAISTT, DeepgramSTT, GoogleSTT, OpenAISTT, SpeechmaticsSTT } from "../../../src/agentkit/vendors/stt.js";
+import {
+    AmazonSTT,
+    AssemblyAISTT,
+    DeepgramSTT,
+    GoogleSTT,
+    OpenAISTT,
+    SpeechmaticsSTT,
+} from "../../../src/agentkit/vendors/stt.js";
 import { ElevenLabsTTS } from "../../../src/agentkit/vendors/tts.js";
 
 function baseAgent() {
     return new Agent()
-        .withLlm(new OpenAI({ apiKey: "llm-key", model: "gpt-4o-mini", url: "https://api.openai.com/v1/chat/completions" }))
-        .withTts(new ElevenLabsTTS({ key: "tts-key", voiceId: "voice", modelId: "eleven_flash_v2_5", baseUrl: "wss://api.elevenlabs.io/v1" }));
+        .withLlm(
+            new OpenAI({ apiKey: "llm-key", model: "gpt-4o-mini", url: "https://api.openai.com/v1/chat/completions" }),
+        )
+        .withTts(
+            new ElevenLabsTTS({
+                key: "tts-key",
+                voiceId: "voice",
+                modelId: "eleven_flash_v2_5",
+                baseUrl: "wss://api.elevenlabs.io/v1",
+            }),
+        );
 }
 
 describe("STT language serialization", () => {
@@ -55,8 +71,21 @@ describe("STT language serialization", () => {
 
     test("uses explicit interaction language when it differs from provider language", () => {
         const properties = new Agent({ interactionLanguage: "en-US" })
-            .withLlm(new OpenAI({ apiKey: "llm-key", model: "gpt-4o-mini", url: "https://api.openai.com/v1/chat/completions" }))
-            .withTts(new ElevenLabsTTS({ key: "tts-key", voiceId: "voice", modelId: "eleven_flash_v2_5", baseUrl: "wss://api.elevenlabs.io/v1" }))
+            .withLlm(
+                new OpenAI({
+                    apiKey: "llm-key",
+                    model: "gpt-4o-mini",
+                    url: "https://api.openai.com/v1/chat/completions",
+                }),
+            )
+            .withTts(
+                new ElevenLabsTTS({
+                    key: "tts-key",
+                    voiceId: "voice",
+                    modelId: "eleven_flash_v2_5",
+                    baseUrl: "wss://api.elevenlabs.io/v1",
+                }),
+            )
             .withStt(new SpeechmaticsSTT({ apiKey: "stt-key", language: "en" }))
             .toProperties({
                 channel: "channel",
@@ -77,10 +106,16 @@ describe("STT language serialization", () => {
 
     test("rejects invalid explicit interaction language", () => {
         expect(() => new Agent({ interactionLanguage: "en" as never })).toThrow("Invalid interaction language: en");
-        expect(() => baseAgent().withInteractionLanguage("xx-YY" as never)).toThrow("Invalid interaction language: xx-YY");
-        expect(() => new SpeechmaticsSTT({ apiKey: "stt-key", language: "en", interactionLanguage: "xx-YY" as never }).toConfig()).toThrow(
+        expect(() => baseAgent().withInteractionLanguage("xx-YY" as never)).toThrow(
             "Invalid interaction language: xx-YY",
         );
+        expect(() =>
+            new SpeechmaticsSTT({
+                apiKey: "stt-key",
+                language: "en",
+                interactionLanguage: "xx-YY" as never,
+            }).toConfig(),
+        ).toThrow("Invalid interaction language: xx-YY");
     });
 
     test("sends default interaction language when STT is omitted", () => {
@@ -109,7 +144,9 @@ describe("STT language serialization", () => {
             language: "en",
         });
 
-        expect(new OpenAISTT({ apiKey: "openai-key", model: "gpt-4o-mini-transcribe", language: "en" }).toConfig().params).toEqual({
+        expect(
+            new OpenAISTT({ apiKey: "openai-key", model: "gpt-4o-mini-transcribe", language: "en" }).toConfig().params,
+        ).toEqual({
             api_key: "openai-key",
             input_audio_transcription: {
                 model: "gpt-4o-mini-transcribe",
@@ -140,14 +177,24 @@ describe("STT language serialization", () => {
             model: "long",
         });
 
-        expect(new AmazonSTT({ accessKey: "access", secretKey: "secret", region: "us-east-1", language: "en-US" }).toConfig().params).toMatchObject({
+        expect(
+            new AmazonSTT({
+                accessKey: "access",
+                secretKey: "secret",
+                region: "us-east-1",
+                language: "en-US",
+            }).toConfig().params,
+        ).toMatchObject({
             access_key_id: "access",
             secret_access_key: "secret",
             region: "us-east-1",
             language_code: "en-US",
         });
 
-        expect(new AssemblyAISTT({ apiKey: "assembly-key", language: "en-US", uri: "wss://example.test/ws" }).toConfig().params).toMatchObject({
+        expect(
+            new AssemblyAISTT({ apiKey: "assembly-key", language: "en-US", uri: "wss://example.test/ws" }).toConfig()
+                .params,
+        ).toMatchObject({
             api_key: "assembly-key",
             language: "en-US",
             uri: "wss://example.test/ws",

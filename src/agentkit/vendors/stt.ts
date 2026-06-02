@@ -2,7 +2,7 @@
  * Type-safe STT (Speech-to-Text) vendor classes.
  */
 
-import { DeepgramPresetModels, type DeepgramPresetModel } from "../presets.js";
+import { type DeepgramPresetModel, DeepgramPresetModels } from "../presets.js";
 import type { InteractionLanguage, SttConfig } from "../types.js";
 import { BaseSTT } from "./base.js";
 
@@ -41,14 +41,19 @@ const INTERACTION_LANGUAGES = new Set<string>([
     "vi-VN",
 ]);
 
-function toInteractionLanguage(language?: string, interactionLanguage?: InteractionLanguage): InteractionLanguage | undefined {
+function toInteractionLanguage(
+    language?: string,
+    interactionLanguage?: InteractionLanguage,
+): InteractionLanguage | undefined {
     if (interactionLanguage !== undefined) {
         if (!INTERACTION_LANGUAGES.has(interactionLanguage)) {
             throw new Error(`Invalid interaction language: ${interactionLanguage}`);
         }
         return interactionLanguage;
     }
-    return language !== undefined && INTERACTION_LANGUAGES.has(language) ? (language as InteractionLanguage) : undefined;
+    return language !== undefined && INTERACTION_LANGUAGES.has(language)
+        ? (language as InteractionLanguage)
+        : undefined;
 }
 
 function isDeepgramManagedModel(model: string | undefined): model is DeepgramPresetModel {
@@ -164,7 +169,8 @@ export class DeepgramSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, model, language, interactionLanguage, smartFormat, punctuation, additionalParams } = this.options;
+        const { apiKey, model, language, interactionLanguage, smartFormat, punctuation, additionalParams } =
+            this.options;
         const asrLanguage = toInteractionLanguage(language, interactionLanguage);
 
         return {
@@ -276,7 +282,8 @@ export class OpenAISTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, model, language, prompt, inputAudioTranscription, interactionLanguage, additionalParams } = this.options;
+        const { apiKey, model, language, prompt, inputAudioTranscription, interactionLanguage, additionalParams } =
+            this.options;
         const asrLanguage = toInteractionLanguage(language, interactionLanguage);
         const transcription = {
             model: "whisper-1",
@@ -341,7 +348,8 @@ export class GoogleSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { projectId, location, adcCredentialsString, language, interactionLanguage, model, additionalParams } = this.options;
+        const { projectId, location, adcCredentialsString, language, interactionLanguage, model, additionalParams } =
+            this.options;
         const asrLanguage = toInteractionLanguage(language, interactionLanguage);
 
         return {
