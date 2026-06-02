@@ -16,4 +16,6 @@ export interface DeepgramTtsParams {
     params?: Record<string, unknown>;
     /** Controls whether the TTS module skips bracketed content when reading LLM response text. */
     skip_patterns?: number[];
+    /** Accepts any additional properties */
+    [key: string]: any;
 }

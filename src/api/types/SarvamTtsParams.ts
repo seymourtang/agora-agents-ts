@@ -5,9 +5,37 @@
  */
 export interface SarvamTtsParams {
     /** Sarvam API subscription key */
-    key: string;
+    api_subscription_key: string;
     /** Voice ID (e.g., anushka, abhilash, karun, hitesh, manisha, vidya, arya) */
     speaker: string;
     /** Target language code (e.g., en-IN) */
-    target_language_code: string;
+    target_language_code: SarvamTtsParams.TargetLanguageCode;
+    /** Pitch adjustment for the voice */
+    pitch?: number;
+    /** Speed of speech */
+    pace?: number;
+    /** Volume level of the speech */
+    loudness?: number;
+    /** Audio sample rate in Hz */
+    sample_rate?: number;
+    /** Accepts any additional properties */
+    [key: string]: any;
+}
+
+export namespace SarvamTtsParams {
+    /** Target language code (e.g., en-IN) */
+    export const TargetLanguageCode = {
+        EnIn: "en-IN",
+        HiIn: "hi-IN",
+        BnIn: "bn-IN",
+        TaIn: "ta-IN",
+        TeIn: "te-IN",
+        KnIn: "kn-IN",
+        MlIn: "ml-IN",
+        MrIn: "mr-IN",
+        GuIn: "gu-IN",
+        PaIn: "pa-IN",
+        OrIn: "or-IN",
+    } as const;
+    export type TargetLanguageCode = (typeof TargetLanguageCode)[keyof typeof TargetLanguageCode];
 }

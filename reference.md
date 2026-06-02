@@ -37,7 +37,8 @@ await client.agents.start({
         remote_rtc_uids: ["1002"],
         idle_timeout: 120,
         asr: {
-            language: "en-US"
+            vendor: "ares",
+            vendor: "ares"
         },
         tts: {
             vendor: "microsoft",
@@ -55,7 +56,7 @@ await client.agents.start({
                     "content": "You are a helpful chatbot."
                 }],
             params: {
-                "model": "gpt-4o-mini"
+                model: "gpt-4o-mini"
             },
             max_history: 32,
             greeting_message: "Hello, how can I assist you today?",

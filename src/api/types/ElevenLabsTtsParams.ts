@@ -14,4 +14,16 @@ export interface ElevenLabsTtsParams {
     voice_id: string;
     /** Audio sample rate in Hz (16kHz for Akool, 24kHz for HeyGen) */
     sample_rate?: number;
+    /** Speech speed multiplier. */
+    speed?: number;
+    /** Voice stability. Higher values produce more consistent speech. */
+    stability?: number;
+    /** Similarity boost for the selected voice. */
+    similarity_boost?: number;
+    /** Speaking style and expressiveness control. */
+    style?: number;
+    /** Whether to improve voice quality and similarity. */
+    use_speaker_boost?: boolean;
+    /** Accepts any additional properties */
+    [key: string]: any;
 }

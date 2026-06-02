@@ -4,10 +4,18 @@
  * OpenAI TTS configuration parameters.
  */
 export interface OpenAiTtsParams {
-    /** OpenAI API key. Optional for Agora-managed OpenAI TTS usage. */
+    /** OpenAI API key. Optional for preset-backed OpenAI TTS usage. */
     api_key?: string;
+    /** Endpoint URL for the OpenAI TTS service. */
+    base_url?: string;
     /** Voice name (e.g., "alloy", "echo", "fable", "onyx", "nova", "shimmer") */
     voice: string;
     /** Model name (e.g., "tts-1", "tts-1-hd") */
     model?: string;
+    /** Custom instructions for voice style, accent, pace, and tone. */
+    instructions?: string;
+    /** Speaking rate multiplier. */
+    speed?: number;
+    /** Accepts any additional properties */
+    [key: string]: any;
 }
