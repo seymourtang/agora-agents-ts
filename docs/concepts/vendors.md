@@ -76,9 +76,9 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 | ----------------- | ----------------- | ------------------------------------------------ |
 | `SpeechmaticsSTT` | Speechmatics      | `apiKey`, `language`, `uri?`                     |
 | `DeepgramSTT`     | Deepgram          | `apiKey?`, `model?`, `language?`, `smartFormat?` |
-| `MicrosoftSTT`    | Azure Speech      | `key`, `region`, `language?`                     |
+| `MicrosoftSTT`    | Azure Speech      | `key`, `region`, `language`                      |
 | `OpenAISTT`       | OpenAI Whisper    | `apiKey`, `model?`, `language?`, `prompt?`       |
-| `GoogleSTT`       | Google Speech     | `projectId`, `location`, `adcCredentialsString`  |
+| `GoogleSTT`       | Google Speech     | `projectId`, `location`, `adcCredentialsString`, `language` |
 | `AmazonSTT`       | Amazon Transcribe | `accessKey`, `secretKey`, `region`, `language`   |
 | `AssemblyAISTT`   | AssemblyAI        | `apiKey`, `language`, `uri?`                     |
 | `AresSTT`         | Agora ARES        | `language?`                                      |

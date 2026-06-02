@@ -172,14 +172,15 @@ Fixed at 24kHz — no configurable sample rate.
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `apiKey` | `string` | Usually | OpenAI API key |
+| `apiKey` | `string` | BYOK only | OpenAI API key |
 | `voice` | `string` | Yes | Voice name (`'alloy'`, `'echo'`, `'fable'`, `'onyx'`, `'nova'`, `'shimmer'`) |
-| `model` | `string` | No | Model name (e.g., `'tts-1'`, `'tts-1-hd'`) |
+| `model` | `string` | BYOK only | Model name (e.g., `'tts-1'`, `'tts-1-hd'`) |
+| `baseUrl` | `string` | BYOK only | OpenAI TTS endpoint URL |
 | `responseFormat` | `string` | No | Audio format (e.g., `'pcm'`) |
 | `speed` | `number` | No | Speech speed multiplier |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
-`apiKey` is optional only for the Agora-managed `tts-1` path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit sends the matching Agora-managed configuration. If provided, the request stays in BYOK mode.
+`apiKey`, `model`, and `baseUrl` are required together for BYOK. `apiKey` is optional only for the Agora-managed `tts-1` path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit sends the matching Agora-managed configuration.
 
 ### CartesiaTTS
 
