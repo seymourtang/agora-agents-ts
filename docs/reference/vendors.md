@@ -78,15 +78,16 @@ new Anthropic(options: AnthropicOptions)
 |---|---|---|---|
 | `apiKey` | `string` | Yes | Anthropic API key |
 | `model` | `string` | Yes | Model name (e.g., `'claude-3-5-sonnet-20241022'`) |
-| `url` | `string` | No | API endpoint URL (default: `https://api.anthropic.com/v1/messages`) |
+| `url` | `string` | Yes | API endpoint URL (for example, `https://api.anthropic.com/v1/messages`) |
 | `maxHistory` | `number` | No | Max conversation history to cache |
+| `maxTokens` | `number` | Yes | Maximum tokens to generate |
+| `headers` | `Record<string, string>` | Yes | Custom HTTP headers forwarded to the LLM provider, including Anthropic API version |
 | `systemMessages` | `Record<string, unknown>[]` | No | System messages |
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
 | `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
-| `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
 | `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
 | `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
@@ -247,11 +248,11 @@ Use `Agent.withInteractionLanguage()` for Agora `asr.language`; it defaults to `
 | Class | Key params |
 |---|---|
 | `SpeechmaticsSTT` | `apiKey`, `language`, `uri?` |
-| `MicrosoftSTT` | `key`, `region`, `language?` |
+| `MicrosoftSTT` | `key`, `region`, `language` |
 | `OpenAISTT` | `apiKey`, `model?`, `language?`, `prompt?`, `inputAudioTranscription?` |
-| `GoogleSTT` | `projectId`, `location`, `adcCredentialsString`, `language?`, `model?` |
-| `AmazonSTT` | `accessKey`, `secretKey`, `region`, `language?` |
-| `AssemblyAISTT` | `apiKey`, `language?`, `uri?` |
+| `GoogleSTT` | `projectId`, `location`, `adcCredentialsString`, `language`, `model?` |
+| `AmazonSTT` | `accessKey`, `secretKey`, `region`, `language` |
+| `AssemblyAISTT` | `apiKey`, `language`, `uri?` |
 | `AresSTT` | `language?` |
 | `SarvamSTT` | `apiKey`, `language` |
 

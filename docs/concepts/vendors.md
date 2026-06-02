@@ -14,7 +14,7 @@ Each vendor is a typed class that validates options at construction time and ser
 | ------------- | ----------------------- | ------------------------------------------------------------------------------- |
 | `OpenAI`      | OpenAI Chat Completions | `apiKey`, `model`, `url?`, `maxHistory?`, `greetingMessage?`, `failureMessage?` |
 | `AzureOpenAI` | Azure OpenAI            | `apiKey`, `model`, `resourceName`, `deploymentName`, `apiVersion?`              |
-| `Anthropic`   | Anthropic Claude        | `apiKey`, `model`, `url?`, `maxHistory?`                                        |
+| `Anthropic`   | Anthropic Claude        | `apiKey`, `model`, `url`, `headers`, `maxTokens`, `maxHistory?`                 |
 | `Gemini`      | Google Gemini           | `apiKey`, `model`, `url?`, `maxHistory?`                                        |
 | `Groq`        | Groq                    | `apiKey`, `model`, `url?`, `maxHistory?`                                        |
 | `VertexAILLM` | Google Vertex AI        | `apiKey`, `model`, `projectId`, `location`, `url?`                              |
@@ -29,6 +29,7 @@ import { OpenAI } from 'agora-agents';
 
 const llm = new OpenAI({
   apiKey: 'your-openai-key',
+  url: 'https://api.openai.com/v1/chat/completions',
   model: 'gpt-4o-mini',
 });
 ```
@@ -78,8 +79,8 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 | `MicrosoftSTT`    | Azure Speech      | `key`, `region`, `language?`                     |
 | `OpenAISTT`       | OpenAI Whisper    | `apiKey`, `model?`, `language?`, `prompt?`       |
 | `GoogleSTT`       | Google Speech     | `projectId`, `location`, `adcCredentialsString`  |
-| `AmazonSTT`       | Amazon Transcribe | `accessKey`, `secretKey`, `region`, `language?`  |
-| `AssemblyAISTT`   | AssemblyAI        | `apiKey`, `language?`, `uri?`                    |
+| `AmazonSTT`       | Amazon Transcribe | `accessKey`, `secretKey`, `region`, `language`   |
+| `AssemblyAISTT`   | AssemblyAI        | `apiKey`, `language`, `uri?`                     |
 | `AresSTT`         | Agora ARES        | `language?`                                      |
 | `SarvamSTT`       | Sarvam AI         | `apiKey`, `language`                             |
 

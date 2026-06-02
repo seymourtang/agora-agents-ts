@@ -58,6 +58,7 @@ export type OpenAIOptions =
  * const llm = new OpenAI({
  *   apiKey: process.env.OPENAI_API_KEY,
  *   model: 'gpt-4o',
+ *   url: 'https://api.openai.com/v1/chat/completions',
  * });
  * ```
  */
@@ -257,6 +258,8 @@ export interface AnthropicOptions extends BaseLlmOptions {
  * const llm = new Anthropic({
  *   apiKey: process.env.ANTHROPIC_API_KEY,
  *   model: 'claude-3-5-sonnet-20241022',
+ *   url: 'https://api.anthropic.com/v1/messages',
+ *   headers: { 'anthropic-version': '2023-06-01' },
  *   maxTokens: 1024,
  * });
  * ```

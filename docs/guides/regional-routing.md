@@ -68,6 +68,7 @@ const client = new AgoraClient({
 const agent = new Agent({ name: 'failover-demo' })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
     model: 'gpt-4o-mini',
     systemMessages: [{ role: 'system', content: 'You are helpful.' }],
   }))

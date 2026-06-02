@@ -112,6 +112,7 @@ const client = new AgoraClient({
 const agent = new Agent({ name: 'liveavatar-agent' })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
     model: 'gpt-4o-mini',
     systemMessages: [{ role: 'system', content: 'You are a friendly avatar assistant.' }],
   }))
@@ -146,8 +147,8 @@ await session.start();
 import { Agent, GenericAvatar, OpenAI, OpenAITTS, AresSTT } from 'agora-agents';
 
 const agent = new Agent({ name: 'generic-avatar-agent' })
-  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
-  .withTts(new OpenAITTS({ apiKey: 'your-openai-tts-key', model: 'tts-1', voice: 'alloy' }))
+  .withLlm(new OpenAI({ apiKey: 'your-openai-key', url: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o-mini' }))
+  .withTts(new OpenAITTS({ apiKey: 'your-openai-tts-key', model: 'tts-1', baseUrl: 'https://api.openai.com/v1', voice: 'alloy' }))
   .withStt(new AresSTT())
   .withAvatar(new GenericAvatar({
     apiKey: 'your-avatar-provider-key',
@@ -180,6 +181,7 @@ const client = new AgoraClient({
 const agent = new Agent({ name: 'akool-agent' })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
     model: 'gpt-4o-mini',
     systemMessages: [{ role: 'system', content: 'You are a friendly avatar assistant.' }],
   }))

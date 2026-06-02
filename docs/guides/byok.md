@@ -46,6 +46,7 @@ async function main(): Promise<void> {
     .withLlm(
       new OpenAI({
         apiKey: process.env.OPENAI_API_KEY!,
+        url: 'https://api.openai.com/v1/chat/completions',
         model: 'gpt-4o-mini',
         systemMessages: [{ role: 'system', content: 'You are a concise support voice assistant.' }],
         greetingMessage: 'Hello! How can I help you today?',

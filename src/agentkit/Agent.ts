@@ -141,7 +141,7 @@ export interface AgentOptions {
  *
  * // Use the fluent builder pattern to configure vendors
  * const agent = new Agent({ instructions: 'You are helpful.' })
- *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4' }))
+ *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4', url: 'https://api.openai.com/v1/chat/completions' }))
  *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
  *   .withStt(new DeepgramSTT({ apiKey: '...', model: 'nova-2' }));
  * ```
@@ -217,7 +217,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified LLM vendor.
      *
-     * @param vendor - LLM vendor instance (e.g., new OpenAI({ apiKey: '...', model: 'gpt-4' }))
+     * @param vendor - LLM vendor instance (e.g., new OpenAI({ apiKey: '...', model: 'gpt-4', url: 'https://api.openai.com/v1/chat/completions' }))
      */
     withLlm(vendor: BaseLLM): Agent<TTSSampleRate> {
         const newAgent = this._clone();

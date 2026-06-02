@@ -37,6 +37,7 @@ const client = new AgoraClient({
 const agent = new Agent({ name: 'cascading-assistant' })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
     model: 'gpt-4o-mini',
     systemMessages: [{ role: 'system', content: 'You are a friendly voice assistant. Keep answers short and natural.' }],
     greetingMessage: 'Hi there! What can I do for you?',

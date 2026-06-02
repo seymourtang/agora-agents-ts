@@ -201,6 +201,8 @@ export type OpenAITTSOptions =
  * ```typescript
  * const tts = new OpenAITTS({
  *   apiKey: process.env.OPENAI_API_KEY,
+ *   model: 'gpt-4o-mini-tts',
+ *   baseUrl: 'https://api.openai.com/v1',
  *   voice: 'alloy',
  * });
  * ```

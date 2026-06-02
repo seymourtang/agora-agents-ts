@@ -375,6 +375,7 @@ export interface AmazonSTTOptions {
  *   accessKey: process.env.AWS_ACCESS_KEY_ID,
  *   secretKey: process.env.AWS_SECRET_ACCESS_KEY,
  *   region: 'us-east-1',
+ *   language: 'en-US',
  * });
  * ```
  */
@@ -428,6 +429,7 @@ export interface AssemblyAISTTOptions {
  * ```typescript
  * const stt = new AssemblyAISTT({
  *   apiKey: process.env.ASSEMBLYAI_API_KEY,
+ *   language: 'en-US',
  * });
  * ```
  */
@@ -473,7 +475,7 @@ export interface AresSTTOptions {
  * @example
  * ```typescript
  * const stt = new AresSTT({
- *   language: 'en',
+ *   language: 'en-US',
  * });
  * ```
  */

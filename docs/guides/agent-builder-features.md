@@ -40,6 +40,7 @@ const agent = new Agent({
 })
   .withLlm(new OpenAI({
     apiKey: 'your-key',
+    url: 'https://api.openai.com/v1/chat/completions',
     model: 'gpt-4o-mini',
     systemMessages: [{ role: 'system', content: 'You are a helpful assistant.' }],
   }))
@@ -105,6 +106,7 @@ const agent = new Agent({ name: 'params-agent' })
 const agent2 = new Agent()
   .withLlm(new OpenAI({
     apiKey: 'your-key',
+    url: 'https://api.openai.com/v1/chat/completions',
     model: 'gpt-4o-mini',
     failureMessage: 'Something went wrong.',
     maxHistory: 15,
@@ -237,6 +239,7 @@ const client = new AgoraClient({
 const agent = new Agent({ name: 'full-featured-assistant' })
   .withLlm(new OpenAI({
     apiKey: 'your-key',
+    url: 'https://api.openai.com/v1/chat/completions',
     model: 'gpt-4o-mini',
     systemMessages: [{ role: 'system', content: 'You are a helpful voice assistant.' }],
     greetingMessage: 'Hello! How can I help?',

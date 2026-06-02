@@ -17,6 +17,7 @@ import { Agent, OpenAI } from 'agora-agents';
 const agent = new Agent({ name: 'my-assistant' }).withLlm(
   new OpenAI({
     apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
     model: 'gpt-4o-mini',
     systemMessages: [{ role: 'system', content: 'You are a helpful voice assistant.' }],
     greetingMessage: 'Hello! How can I help?',
@@ -105,6 +106,7 @@ import { Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agents';
 const base = new Agent()
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
     model: 'gpt-4o-mini',
     systemMessages: [{ role: 'system', content: 'You are helpful.' }],
   }))
