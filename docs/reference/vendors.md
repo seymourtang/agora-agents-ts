@@ -19,9 +19,9 @@ new OpenAI(options: OpenAIOptions)
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `apiKey` | `string` | Usually | OpenAI API key |
+| `apiKey` | `string` | BYOK only | OpenAI API key. Optional for supported Agora-managed OpenAI models. |
 | `model` | `string` | Yes | Model name (e.g., `'gpt-4o-mini'`, `'gpt-4'`) |
-| `url` | `string` | No | API endpoint URL (default: `https://api.openai.com/v1/chat/completions`) |
+| `url` | `string` | BYOK only | API endpoint URL. Required when `apiKey` is set. |
 | `maxHistory` | `number` | No | Max conversation history to cache |
 | `systemMessages` | `Record<string, unknown>[]` | No | System messages for context |
 | `greetingMessage` | `string` | No | Agent greeting message |
@@ -120,7 +120,7 @@ The SDK also includes named helpers for the remaining Agora-supported LLM provid
 
 | Class | Provider | Key options |
 |---|---|---|
-| `Groq` | Groq | `apiKey`, `model`, `url?` |
+| `Groq` | Groq | `apiKey`, `model`, `url` |
 | `VertexAILLM` | Google Vertex AI | `apiKey`, `model`, `projectId`, `location`, `url?` |
 | `AmazonBedrock` | Amazon Bedrock | `accessKey`, `secretKey`, `region`, `model` |
 | `Dify` | Dify | `apiKey`, `url`, `model`, `user?`, `conversationId?` |

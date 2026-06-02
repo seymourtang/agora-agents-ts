@@ -2,9 +2,31 @@
  * Type-safe LLM (Large Language Model) vendor classes.
  */
 
-import type { OpenAIPresetModel } from "../presets.js";
+import { OpenAIPresetModels, type OpenAIPresetModel } from "../presets.js";
 import type { LlmConfig } from "../types.js";
 import { BaseLLM, type BaseLlmOptions } from "./base.js";
+
+function requireString(value: unknown, field: string, vendor: string): asserts value is string {
+    if (typeof value !== "string" || value.length === 0) {
+        throw new Error(`${vendor} requires ${field}`);
+    }
+}
+
+function requireNumber(value: unknown, field: string, vendor: string): asserts value is number {
+    if (typeof value !== "number" || Number.isNaN(value)) {
+        throw new Error(`${vendor} requires ${field}`);
+    }
+}
+
+function requireRecord(value: unknown, field: string, vendor: string): asserts value is Record<string, string> {
+    if (value == null || typeof value !== "object" || Array.isArray(value)) {
+        throw new Error(`${vendor} requires ${field}`);
+    }
+}
+
+function isOpenAIManagedModel(model: string): model is OpenAIPresetModel {
+    return OpenAIPresetModels.includes(model.trim().toLowerCase() as OpenAIPresetModel);
+}
 
 /**
  * Constructor options for OpenAI LLM.
@@ -67,6 +89,20 @@ export class OpenAI extends BaseLLM {
 
     constructor(options: OpenAIOptions) {
         super(options);
+        requireString(options.model, "model", "OpenAI");
+        if (options.apiKey) {
+            requireString(options.url, "url", "OpenAI");
+        } else {
+            if (!isOpenAIManagedModel(options.model)) {
+                throw new Error("OpenAI requires apiKey unless using a supported Agora-managed model");
+            }
+            if (options.url) {
+                throw new Error("OpenAI Agora-managed mode does not allow url");
+            }
+            if (options.vendor) {
+                throw new Error("OpenAI Agora-managed mode does not allow vendor");
+            }
+        }
         this.options = options;
     }
 
@@ -168,6 +204,10 @@ export class AzureOpenAI extends BaseLLM {
 
     constructor(options: AzureOpenAIOptions) {
         super(options);
+        requireString(options.apiKey, "apiKey", "AzureOpenAI");
+        requireString(options.model, "model", "AzureOpenAI");
+        requireString(options.resourceName, "resourceName", "AzureOpenAI");
+        requireString(options.deploymentName, "deploymentName", "AzureOpenAI");
         this.options = options;
     }
 
@@ -269,6 +309,11 @@ export class Anthropic extends BaseLLM {
 
     constructor(options: AnthropicOptions) {
         super(options);
+        requireString(options.apiKey, "apiKey", "Anthropic");
+        requireString(options.model, "model", "Anthropic");
+        requireString(options.url, "url", "Anthropic");
+        requireRecord(options.headers, "headers", "Anthropic");
+        requireNumber(options.maxTokens, "maxTokens", "Anthropic");
         this.options = options;
     }
 
@@ -366,6 +411,8 @@ export class Gemini extends BaseLLM {
 
     constructor(options: GeminiOptions) {
         super(options);
+        requireString(options.apiKey, "apiKey", "Gemini");
+        requireString(options.model, "model", "Gemini");
         this.options = options;
     }
 
@@ -462,6 +509,9 @@ export type GroqOptions = OpenAIStyleOptions;
 export class Groq extends BaseLLM {
     constructor(private readonly options: GroqOptions) {
         super(options);
+        requireString(options.apiKey, "apiKey", "Groq");
+        requireString(options.model, "model", "Groq");
+        requireString(options.url, "url", "Groq");
     }
 
     toConfig(): LlmConfig {
@@ -474,6 +524,9 @@ export type CustomLLMOptions = OpenAIStyleOptions;
 export class CustomLLM extends BaseLLM {
     constructor(private readonly options: CustomLLMOptions) {
         super(options);
+        requireString(options.apiKey, "apiKey", "CustomLLM");
+        requireString(options.model, "model", "CustomLLM");
+        requireString(options.url, "url", "CustomLLM");
     }
 
     toConfig(): LlmConfig {
@@ -503,6 +556,10 @@ export interface VertexAILLMOptions extends BaseLlmOptions {
 export class VertexAILLM extends BaseLLM {
     constructor(private readonly options: VertexAILLMOptions) {
         super(options);
+        requireString(options.apiKey, "apiKey", "VertexAILLM");
+        requireString(options.model, "model", "VertexAILLM");
+        requireString(options.projectId, "projectId", "VertexAILLM");
+        requireString(options.location, "location", "VertexAILLM");
     }
 
     toConfig(): LlmConfig {
@@ -516,9 +573,9 @@ export class VertexAILLM extends BaseLLM {
                 location: o.location,
                 ...o.params,
                 ...(o.temperature !== undefined && { temperature: o.temperature }),
-                ...(o.topP !== undefined && { topP: o.topP }),
-                ...(o.topK !== undefined && { topK: o.topK }),
-                ...(o.maxOutputTokens !== undefined && { maxOutputTokens: o.maxOutputTokens }),
+                ...(o.topP !== undefined && { top_p: o.topP }),
+                ...(o.topK !== undefined && { top_k: o.topK }),
+                ...(o.maxOutputTokens !== undefined && { max_output_tokens: o.maxOutputTokens }),
             },
             headers: o.headers,
             max_history: o.maxHistory,
@@ -560,6 +617,10 @@ export interface AmazonBedrockOptions extends BaseLlmOptions {
 export class AmazonBedrock extends BaseLLM {
     constructor(private readonly options: AmazonBedrockOptions) {
         super(options);
+        requireString(options.accessKey, "accessKey", "AmazonBedrock");
+        requireString(options.secretKey, "secretKey", "AmazonBedrock");
+        requireString(options.region, "region", "AmazonBedrock");
+        requireString(options.model, "model", "AmazonBedrock");
     }
 
     toConfig(): LlmConfig {
@@ -611,6 +672,9 @@ export interface DifyOptions extends BaseLlmOptions {
 export class Dify extends BaseLLM {
     constructor(private readonly options: DifyOptions) {
         super(options);
+        requireString(options.apiKey, "apiKey", "Dify");
+        requireString(options.url, "url", "Dify");
+        requireString(options.model, "model", "Dify");
     }
 
     toConfig(): LlmConfig {

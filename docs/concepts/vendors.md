@@ -12,11 +12,11 @@ Each vendor is a typed class that validates options at construction time and ser
 
 | Class         | Provider                | Key constructor params                                                          |
 | ------------- | ----------------------- | ------------------------------------------------------------------------------- |
-| `OpenAI`      | OpenAI Chat Completions | `apiKey`, `model`, `url?`, `maxHistory?`, `greetingMessage?`, `failureMessage?` |
+| `OpenAI`      | OpenAI Chat Completions | `model` for Agora-managed models; `apiKey`, `url`, `model` for BYOK; `maxHistory?`, `greetingMessage?`, `failureMessage?` |
 | `AzureOpenAI` | Azure OpenAI            | `apiKey`, `model`, `resourceName`, `deploymentName`, `apiVersion?`              |
 | `Anthropic`   | Anthropic Claude        | `apiKey`, `model`, `url`, `headers`, `maxTokens`, `maxHistory?`                 |
 | `Gemini`      | Google Gemini           | `apiKey`, `model`, `url?`, `maxHistory?`                                        |
-| `Groq`        | Groq                    | `apiKey`, `model`, `url?`, `maxHistory?`                                        |
+| `Groq`        | Groq                    | `apiKey`, `model`, `url`, `maxHistory?`                                         |
 | `VertexAILLM` | Google Vertex AI        | `apiKey`, `model`, `projectId`, `location`, `url?`                              |
 | `AmazonBedrock` | Amazon Bedrock        | `accessKey`, `secretKey`, `region`, `model`                                     |
 | `Dify`        | Dify                    | `apiKey`, `url`, `model`, `user?`, `conversationId?`                            |

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { AmazonBedrock, Anthropic, CustomLLM, Dify, Groq, VertexAILLM } from "../../../src/agentkit/vendors/llm.js";
+import { AmazonBedrock, Anthropic, CustomLLM, Dify, Gemini, Groq, OpenAI, VertexAILLM } from "../../../src/agentkit/vendors/llm.js";
 
 describe("LLM vendor helpers", () => {
     test("Groq serializes as OpenAI-compatible without exposing style choice", () => {
@@ -42,6 +42,9 @@ describe("LLM vendor helpers", () => {
                 model: "gemini-2.0-flash",
                 projectId: "project",
                 location: "us-central1",
+                topP: 0.8,
+                topK: 40,
+                maxOutputTokens: 1024,
             }).toConfig(),
         ).toMatchObject({
             api_key: "vertex-token",
@@ -50,6 +53,9 @@ describe("LLM vendor helpers", () => {
                 model: "gemini-2.0-flash",
                 project_id: "project",
                 location: "us-central1",
+                top_p: 0.8,
+                top_k: 40,
+                max_output_tokens: 1024,
             },
         });
     });
@@ -86,5 +92,21 @@ describe("LLM vendor helpers", () => {
             style: "dify",
             params: { model: "default", user: "user-1", conversation_id: "conversation-1" },
         });
+    });
+
+    test("rejects missing required LLM fields at runtime", () => {
+        expect(() => new OpenAI({ apiKey: "openai-key", model: "gpt-4o" } as never)).toThrow("OpenAI requires url");
+        expect(() => new OpenAI({ model: "gpt-4o" } as never)).toThrow("OpenAI requires apiKey unless using a supported Agora-managed model");
+        expect(() => new OpenAI({ model: "gpt-5-mini", url: "https://api.openai.com/v1/chat/completions" } as never)).toThrow(
+            "OpenAI Agora-managed mode does not allow url",
+        );
+        expect(() => new Anthropic({ apiKey: "anthropic-key", url: "https://api.anthropic.com/v1/messages", headers: { "anthropic-version": "2023-06-01" }, maxTokens: 1024 } as never)).toThrow(
+            "Anthropic requires model",
+        );
+        expect(() => new Gemini({ apiKey: "google-key" } as never)).toThrow("Gemini requires model");
+        expect(() => new Groq({ apiKey: "groq-key", url: "https://api.groq.com/openai/v1/chat/completions" } as never)).toThrow("Groq requires model");
+        expect(() => new VertexAILLM({ apiKey: "vertex-token", projectId: "project", location: "us-central1" } as never)).toThrow("VertexAILLM requires model");
+        expect(() => new AmazonBedrock({ accessKey: "aws-access", secretKey: "aws-secret", region: "us-east-1" } as never)).toThrow("AmazonBedrock requires model");
+        expect(() => new Dify({ apiKey: "dify-key", url: "https://api.dify.ai/v1/chat-messages" } as never)).toThrow("Dify requires model");
     });
 });
