@@ -13,11 +13,15 @@ export interface MinimaxTtsParams {
     voice_setting: MinimaxTtsParams.VoiceSetting;
     /** WebSocket endpoint (e.g., wss://api-uw.minimax.io/ws/v1/t2a_v2) */
     url: string;
+    /** Accepts any additional properties */
+    [key: string]: any;
 }
 
 export namespace MinimaxTtsParams {
     export interface VoiceSetting {
         /** Voice style identifier (e.g., English_captivating_female1) */
         voice_id: string;
+        /** Accepts any additional properties */
+        [key: string]: any;
     }
 }

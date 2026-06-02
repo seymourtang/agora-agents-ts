@@ -5,7 +5,11 @@
  */
 export interface FishAudioTtsParams {
     /** Fish Audio API key */
-    key: string;
+    api_key: string;
     /** Fish Audio reference ID */
     reference_id: string;
+    /** Backend model version to use */
+    backend?: string;
+    /** Accepts any additional properties */
+    [key: string]: any;
 }
