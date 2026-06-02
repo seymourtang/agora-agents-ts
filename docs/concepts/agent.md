@@ -33,7 +33,7 @@ const agent = new Agent({ name: 'my-assistant' }).withLlm(
 | `greeting` | `string` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
 | `failureMessage` | `string` | Deprecated. Use LLM/MLLM vendor `failureMessage` instead. |
 | `maxHistory` | `number` | Deprecated. Use LLM vendor `maxHistory` instead. |
-| `turnDetection` | `TurnDetectionConfig` | Voice activity detection settings |
+| `turnDetection` | `TurnDetectionConfig` | Interaction language and voice activity detection settings |
 | `sal` | `SalConfig` | Selective Attention Locking configuration |
 | `avatar` | `AvatarConfig` | Avatar configuration (prefer `withAvatar()` for type safety) |
 | `advancedFeatures` | `AdvancedFeatures` | Enable MLLM mode, AI-VAD, etc. |
@@ -54,7 +54,7 @@ Each method returns a new `Agent` instance with the updated configuration.
 | `withStt` | `withStt(vendor: BaseSTT): Agent` | Set the STT vendor |
 | `withMllm` | `withMllm(vendor: BaseMLLM): Agent` | Set the MLLM vendor (for multimodal flow). Not compatible with `withAvatar()`. |
 | `withAvatar` | `withAvatar<SR>(vendor: BaseAvatar<SR>): Agent` | Set the avatar vendor (enforces TTS sample rate match). Requires the cascading pipeline; not supported with `withMllm()`. |
-| `withTurnDetection` | `withTurnDetection(config: TurnDetectionConfig): Agent` | Configure cascading-flow SOS/EOS detection; use `withInterruption()` for interruption behavior |
+| `withTurnDetection` | `withTurnDetection(config: TurnDetectionConfig): Agent` | Configure `turn_detection.language` and cascading-flow SOS/EOS detection; use `withInterruption()` for interruption behavior |
 | `withInstructions` | `withInstructions(text: string): Agent` | Deprecated. Use LLM vendor `systemMessages` instead. |
 | `withGreeting` | `withGreeting(text: string): Agent` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
 | `withName` | `withName(name: string): Agent` | Override the agent name |

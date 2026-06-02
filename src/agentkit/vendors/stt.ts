@@ -3,7 +3,7 @@
  */
 
 import { type DeepgramPresetModel, DeepgramPresetModels } from "../presets.js";
-import type { InteractionLanguage, SttConfig } from "../types.js";
+import type { SttConfig, TurnDetectionLanguage } from "../types.js";
 import { BaseSTT } from "./base.js";
 
 const INTERACTION_LANGUAGES = new Set<string>([
@@ -41,18 +41,9 @@ const INTERACTION_LANGUAGES = new Set<string>([
     "vi-VN",
 ]);
 
-function toInteractionLanguage(
-    language?: string,
-    interactionLanguage?: InteractionLanguage,
-): InteractionLanguage | undefined {
-    if (interactionLanguage !== undefined) {
-        if (!INTERACTION_LANGUAGES.has(interactionLanguage)) {
-            throw new Error(`Invalid interaction language: ${interactionLanguage}`);
-        }
-        return interactionLanguage;
-    }
+function toTurnDetectionLanguage(language?: string): TurnDetectionLanguage | undefined {
     return language !== undefined && INTERACTION_LANGUAGES.has(language)
-        ? (language as InteractionLanguage)
+        ? (language as TurnDetectionLanguage)
         : undefined;
 }
 
@@ -68,8 +59,6 @@ export interface SpeechmaticsSTTOptions {
     apiKey: string;
     /** Language code (e.g., 'en', 'es', 'fr') */
     language: string;
-    /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
-    interactionLanguage?: InteractionLanguage;
     /** Model name */
     model?: string;
     /** Speechmatics streaming WebSocket URL (for example, wss://eu2.rt.speechmatics.com/v2) */
@@ -98,12 +87,12 @@ export class SpeechmaticsSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, language, interactionLanguage, model, uri, additionalParams } = this.options;
-        const asrLanguage = toInteractionLanguage(language, interactionLanguage);
+        const { apiKey, language, model, uri, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "speechmatics",
-            ...(asrLanguage && { language: asrLanguage }),
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -126,8 +115,6 @@ type DeepgramSTTCommonOptions = {
     model?: string;
     /** Language code (e.g., 'en-US', 'es', 'fr') */
     language?: string;
-    /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
-    interactionLanguage?: InteractionLanguage;
     /** Enable smart formatting */
     smartFormat?: boolean;
     /** Enable punctuation */
@@ -169,13 +156,12 @@ export class DeepgramSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, model, language, interactionLanguage, smartFormat, punctuation, additionalParams } =
-            this.options;
-        const asrLanguage = toInteractionLanguage(language, interactionLanguage);
+        const { apiKey, model, language, smartFormat, punctuation, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "deepgram",
-            ...(asrLanguage && { language: asrLanguage }),
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -199,8 +185,6 @@ export interface MicrosoftSTTOptions {
     region: string;
     /** Language code (e.g., 'en-US', 'es-ES') */
     language: string;
-    /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
-    interactionLanguage?: InteractionLanguage;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -226,12 +210,12 @@ export class MicrosoftSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { key, region, language, interactionLanguage, additionalParams } = this.options;
-        const asrLanguage = toInteractionLanguage(language, interactionLanguage);
+        const { key, region, language, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "microsoft",
-            ...(asrLanguage && { language: asrLanguage }),
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -257,8 +241,6 @@ export interface OpenAISTTOptions {
     prompt?: string;
     /** Full OpenAI input_audio_transcription override */
     inputAudioTranscription?: Record<string, unknown>;
-    /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
-    interactionLanguage?: InteractionLanguage;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -282,9 +264,8 @@ export class OpenAISTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, model, language, prompt, inputAudioTranscription, interactionLanguage, additionalParams } =
-            this.options;
-        const asrLanguage = toInteractionLanguage(language, interactionLanguage);
+        const { apiKey, model, language, prompt, inputAudioTranscription, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
         const transcription = {
             model: "whisper-1",
             ...inputAudioTranscription,
@@ -295,7 +276,7 @@ export class OpenAISTT extends BaseSTT {
 
         return {
             vendor: "openai",
-            ...(asrLanguage && { language: asrLanguage }),
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -318,8 +299,6 @@ export interface GoogleSTTOptions {
     adcCredentialsString: string;
     /** Language code (e.g., 'en-US', 'es-ES') */
     language: string;
-    /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
-    interactionLanguage?: InteractionLanguage;
     /** Recognition model to use */
     model?: string;
     /** Additional vendor-specific parameters */
@@ -348,13 +327,12 @@ export class GoogleSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { projectId, location, adcCredentialsString, language, interactionLanguage, model, additionalParams } =
-            this.options;
-        const asrLanguage = toInteractionLanguage(language, interactionLanguage);
+        const { projectId, location, adcCredentialsString, language, model, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "google",
-            ...(asrLanguage && { language: asrLanguage }),
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -380,8 +358,6 @@ export interface AmazonSTTOptions {
     region: string;
     /** Language code */
     language: string;
-    /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
-    interactionLanguage?: InteractionLanguage;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -408,12 +384,12 @@ export class AmazonSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { accessKey, secretKey, region, language, interactionLanguage, additionalParams } = this.options;
-        const asrLanguage = toInteractionLanguage(language, interactionLanguage);
+        const { accessKey, secretKey, region, language, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "amazon",
-            ...(asrLanguage && { language: asrLanguage }),
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -434,8 +410,6 @@ export interface AssemblyAISTTOptions {
     apiKey: string;
     /** Language code */
     language: string;
-    /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
-    interactionLanguage?: InteractionLanguage;
     /** AssemblyAI streaming WebSocket URL */
     uri?: string;
     /** Additional vendor-specific parameters */
@@ -462,12 +436,12 @@ export class AssemblyAISTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, language, interactionLanguage, uri, additionalParams } = this.options;
-        const asrLanguage = toInteractionLanguage(language, interactionLanguage);
+        const { apiKey, language, uri, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "assemblyai",
-            ...(asrLanguage && { language: asrLanguage }),
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -484,7 +458,7 @@ export class AssemblyAISTT extends BaseSTT {
  */
 export interface AresSTTOptions {
     /** Language code for ARES ASR */
-    language?: InteractionLanguage;
+    language?: TurnDetectionLanguage;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -526,8 +500,6 @@ export interface SarvamSTTOptions {
     apiKey: string;
     /** Language code (e.g., 'en', 'hi', 'ta') */
     language: string;
-    /** Agora interaction language for `asr.language` (BCP-47, finite supported set). */
-    interactionLanguage?: InteractionLanguage;
     /** Model name */
     model?: string;
     /** Additional vendor-specific parameters */
@@ -554,12 +526,12 @@ export class SarvamSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, language, interactionLanguage, model, additionalParams } = this.options;
-        const asrLanguage = toInteractionLanguage(language, interactionLanguage);
+        const { apiKey, language, model, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "sarvam",
-            ...(asrLanguage && { language: asrLanguage }),
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,

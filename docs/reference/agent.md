@@ -27,7 +27,7 @@ new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 | `greeting` | `string` | `undefined` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
 | `failureMessage` | `string` | `undefined` | Deprecated. Use LLM/MLLM vendor `failureMessage` instead. |
 | `maxHistory` | `number` | `undefined` | Deprecated. Use LLM vendor `maxHistory` instead. |
-| `turnDetection` | `TurnDetectionConfig` | `undefined` | Voice activity detection settings |
+| `turnDetection` | `TurnDetectionConfig` | `undefined` | Interaction language and voice activity detection settings |
 | `interruption` | `InterruptionConfig` | `undefined` | Unified interruption control settings |
 | `sal` | `SalConfig` | `undefined` | Selective Attention Locking configuration |
 | `avatar` | `AvatarConfig` | `undefined` | Avatar configuration |
@@ -68,7 +68,7 @@ Set the avatar vendor. The `this` constraint enforces that the Agent's TTS sampl
 
 ### `withTurnDetection(config: TurnDetectionConfig): Agent<TTSSampleRate>`
 
-Configure cascading-flow turn detection. Use `config.start_of_speech` and `config.end_of_speech` for SOS/EOS detection. Use `withInterruption()` for interruption behavior and MLLM vendor `turnDetection` for MLLM turn detection.
+Configure cascading-flow turn detection. Use `language` for the Agora interaction language, `config.start_of_speech` and `config.end_of_speech` for SOS/EOS detection, `withInterruption()` for interruption behavior, and MLLM vendor `turnDetection` for MLLM turn detection.
 
 ### `withInterruption(config: InterruptionConfig): Agent<TTSSampleRate>`
 
@@ -145,7 +145,7 @@ Set filler words configuration (played while waiting for LLM response).
 | `stt` | `SttConfig \| undefined` | STT config (set via `withStt`) |
 | `mllm` | `MllmConfig \| undefined` | MLLM config (set via `withMllm`) |
 | `avatar` | `AvatarConfig \| undefined` | Avatar config (set via `withAvatar`) |
-| `turnDetection` | `TurnDetectionConfig \| undefined` | Turn detection config |
+| `turnDetection` | `TurnDetectionConfig \| undefined` | Interaction language and turn detection config |
 | `interruption` | `InterruptionConfig \| undefined` | Interruption config |
 | `instructions` | `string \| undefined` | System prompt |
 | `greeting` | `string \| undefined` | Greeting message |

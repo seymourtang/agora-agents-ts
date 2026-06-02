@@ -147,7 +147,6 @@ export type {
     GoogleTtsParams,
     HumeAiTts,
     HumeAiTtsParams,
-    InteractionLanguage,
     InterruptionConfig,
     InterruptionMode,
     InterruptMode,
@@ -208,6 +207,7 @@ export type {
     ThinkResponse,
     TtsConfig,
     TurnDetectionConfig,
+    TurnDetectionLanguage,
     TurnDetectionNestedConfig,
     TurnDetectionType,
 } from "./types.js";

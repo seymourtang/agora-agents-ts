@@ -27,7 +27,7 @@ function baseAgent() {
 }
 
 describe("STT language serialization", () => {
-    test("sends matching BCP-47 STT language as asr.language and vendor param", () => {
+    test("sends matching BCP-47 STT language as turn_detection.language and vendor param", () => {
         const properties = baseAgent()
             .withStt(new SpeechmaticsSTT({ apiKey: "stt-key", language: "en-US" }))
             .toProperties({
@@ -39,13 +39,12 @@ describe("STT language serialization", () => {
 
         expect(properties.asr).toMatchObject({
             vendor: "speechmatics",
-            language: "en-US",
             params: {
                 api_key: "stt-key",
                 language: "en-US",
             },
         });
-        expect(properties.turn_detection).toBeUndefined();
+        expect(properties.turn_detection).toMatchObject({ language: "en-US" });
     });
 
     test("keeps bare Speechmatics language as a vendor param only", () => {
@@ -58,10 +57,9 @@ describe("STT language serialization", () => {
                 remoteUids: ["1002"],
             });
 
-        expect(properties.turn_detection).toBeUndefined();
+        expect(properties.turn_detection).toMatchObject({ language: "en-US" });
         expect(properties.asr).toMatchObject({
             vendor: "speechmatics",
-            language: "en-US",
             params: {
                 api_key: "stt-key",
                 language: "en",
@@ -69,8 +67,8 @@ describe("STT language serialization", () => {
         });
     });
 
-    test("uses explicit interaction language when it differs from provider language", () => {
-        const properties = new Agent({ interactionLanguage: "en-US" })
+    test("uses turn detection language when it differs from provider language", () => {
+        const properties = new Agent({ turnDetection: { language: "fr-FR" } })
             .withLlm(
                 new OpenAI({
                     apiKey: "llm-key",
@@ -96,26 +94,37 @@ describe("STT language serialization", () => {
 
         expect(properties.asr).toMatchObject({
             vendor: "speechmatics",
-            language: "en-US",
             params: {
                 language: "en",
             },
         });
-        expect(properties.turn_detection).toBeUndefined();
+        expect(properties.turn_detection).toMatchObject({ language: "fr-FR" });
     });
 
-    test("rejects invalid explicit interaction language", () => {
-        expect(() => new Agent({ interactionLanguage: "en" as never })).toThrow("Invalid interaction language: en");
-        expect(() => baseAgent().withInteractionLanguage("xx-YY" as never)).toThrow(
-            "Invalid interaction language: xx-YY",
-        );
+    test("rejects invalid turn detection language", () => {
         expect(() =>
-            new SpeechmaticsSTT({
-                apiKey: "stt-key",
-                language: "en",
-                interactionLanguage: "xx-YY" as never,
-            }).toConfig(),
-        ).toThrow("Invalid interaction language: xx-YY");
+            new Agent({ turnDetection: { language: "en" as never } }).withLlm(
+                new OpenAI({
+                    apiKey: "llm-key",
+                    model: "gpt-4o-mini",
+                    url: "https://api.openai.com/v1/chat/completions",
+                }),
+            )
+                .withTts(
+                    new ElevenLabsTTS({
+                        key: "tts-key",
+                        voiceId: "voice",
+                        modelId: "eleven_flash_v2_5",
+                        baseUrl: "wss://api.elevenlabs.io/v1",
+                    }),
+                )
+                .toProperties({
+                    channel: "channel",
+                    token: "token",
+                    agentUid: "1001",
+                    remoteUids: ["1002"],
+                }),
+        ).toThrow("Invalid interaction language: en");
     });
 
     test("sends default interaction language when STT is omitted", () => {
@@ -126,7 +135,8 @@ describe("STT language serialization", () => {
             remoteUids: ["1002"],
         });
 
-        expect(properties.asr).toEqual({ vendor: "ares", language: "en-US" });
+        expect(properties.asr).toEqual({ vendor: "ares" });
+        expect(properties.turn_detection).toEqual({ language: "en-US" });
     });
 
     test("serializes documented provider params without promoting provider language", () => {

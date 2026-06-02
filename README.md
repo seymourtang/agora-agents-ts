@@ -16,7 +16,7 @@ npm install agora-agents
 ## Quick Start
 
 Start with the `Agent` builder: create a client with app credentials, choose your ASR, LLM, and TTS providers, then start a session. Omit vendor API keys for supported Agora-managed models, or provide keys when you want BYOK.
-Use `withInteractionLanguage()` for Agora `asr.language`; provider-specific STT language values remain under `asr.params`.
+Set Agora interaction language with `turnDetection.language`; provider-specific STT language values remain under `asr.params`.
 
 ```typescript
 import {
@@ -46,6 +46,7 @@ export async function startConversation(): Promise<string> {
   const agent = new Agent({
     name: `conversation-${Date.now()}`,
     turnDetection: {
+      language: 'en-US',
       config: {
         speech_threshold: 0.5,
         start_of_speech: {
@@ -72,7 +73,6 @@ export async function startConversation(): Promise<string> {
       enable_error_message: true,
     },
   })
-    .withInteractionLanguage('en-US')
     .withStt(
       new DeepgramSTT({
         model: 'nova-3',
@@ -122,8 +122,7 @@ export async function startConversation(): Promise<string> {
 Use the same `Agent` builder shape, but provide credentials explicitly when you want vendor-managed billing and routing instead of Agora-managed models.
 
 ```typescript
-const agent = new Agent()
-  .withInteractionLanguage('en-US')
+const agent = new Agent({ turnDetection: { language: 'en-US' } })
   .withStt(
     new DeepgramSTT({
       apiKey: process.env.DEEPGRAM_API_KEY!,

@@ -8,6 +8,7 @@ import type {
     AmazonTtsParams as AmazonTtsParamsType,
     AmazonTts as AmazonTtsType,
     Asr,
+    AsrLanguage,
     CartesiaTtsParams as CartesiaTtsParamsType,
     CartesiaTts as CartesiaTtsType,
     ElevenLabsTtsParams as ElevenLabsTtsParamsType,
@@ -59,15 +60,15 @@ export type LlmStyle = Llm.Style;
  * When using shorthand strings or minimal configs, the untyped variant is available.
  */
 export type SttConfig =
-    | { vendor: "speechmatics"; language?: InteractionLanguage; params: SpeechmaticsParams }
-    | { vendor: "deepgram"; language?: InteractionLanguage; params: DeepgramParams }
-    | { vendor: "microsoft"; language?: InteractionLanguage; params: MicrosoftAsrParams }
-    | { vendor: "openai"; language?: InteractionLanguage; params: OpenAiAsrParams }
-    | { vendor: "google"; language?: InteractionLanguage; params: GoogleAsrParams }
-    | { vendor: "amazon"; language?: InteractionLanguage; params: AmazonAsrParams }
-    | { vendor: "assemblyai"; language?: InteractionLanguage; params: AssemblyAiParams }
-    | { vendor: "ares"; language?: InteractionLanguage; params?: AresParams }
-    | { vendor: "sarvam"; language?: InteractionLanguage; params: SarvamAsrParams }
+    | { vendor: "speechmatics"; language?: TurnDetectionLanguage; params: SpeechmaticsParams }
+    | { vendor: "deepgram"; language?: TurnDetectionLanguage; params: DeepgramParams }
+    | { vendor: "microsoft"; language?: TurnDetectionLanguage; params: MicrosoftAsrParams }
+    | { vendor: "openai"; language?: TurnDetectionLanguage; params: OpenAiAsrParams }
+    | { vendor: "google"; language?: TurnDetectionLanguage; params: GoogleAsrParams }
+    | { vendor: "amazon"; language?: TurnDetectionLanguage; params: AmazonAsrParams }
+    | { vendor: "assemblyai"; language?: TurnDetectionLanguage; params: AssemblyAiParams }
+    | { vendor: "ares"; language?: TurnDetectionLanguage; params?: AresParams }
+    | { vendor: "sarvam"; language?: TurnDetectionLanguage; params: SarvamAsrParams }
     | Asr; // Fallback for shorthand/untyped configs
 
 /** ASR configuration — alias for {@link SttConfig} (wire field: `asr`). */
@@ -91,40 +92,8 @@ export type AvatarConfig = StartAgentsRequest.Properties.Avatar;
 /** Avatar vendor (akool, liveavatar, anam, generic, deprecated heygen) */
 export type AvatarVendor = StartAgentsRequest.Properties.Avatar.Vendor;
 
-/** BCP-47 language tag identifying the primary language used for agent interaction. */
-export type InteractionLanguage =
-    | "ar-EG"
-    | "ar-JO"
-    | "ar-SA"
-    | "ar-AE"
-    | "bn-IN"
-    | "zh-CN"
-    | "zh-HK"
-    | "zh-TW"
-    | "nl-NL"
-    | "en-IN"
-    | "en-US"
-    | "fil-PH"
-    | "fr-FR"
-    | "de-DE"
-    | "gu-IN"
-    | "he-IL"
-    | "hi-IN"
-    | "id-ID"
-    | "it-IT"
-    | "ja-JP"
-    | "kn-IN"
-    | "ko-KR"
-    | "ms-MY"
-    | "fa-IR"
-    | "pt-PT"
-    | "ru-RU"
-    | "es-ES"
-    | "ta-IN"
-    | "te-IN"
-    | "th-TH"
-    | "tr-TR"
-    | "vi-VN";
+/** BCP-47 language tag used by `turn_detection.language`. */
+export type TurnDetectionLanguage = AsrLanguage;
 
 /** Turn detection configuration */
 export type TurnDetectionConfig = StartAgentsRequest.Properties.TurnDetection;

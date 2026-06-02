@@ -14,7 +14,6 @@ import type {
     AvatarConfig,
     FillerWordsConfig,
     GeofenceConfig,
-    InteractionLanguage,
     InterruptionConfig,
     Labels,
     LlmConfig,
@@ -28,10 +27,11 @@ import type {
     SttConfig,
     TtsConfig,
     TurnDetectionConfig,
+    TurnDetectionLanguage,
 } from "./types.js";
 import type { BaseAvatar, BaseLLM, BaseMLLM, BaseSTT, BaseTTS } from "./vendors/base.js";
 
-const DEFAULT_INTERACTION_LANGUAGE: InteractionLanguage = "en-US";
+const DEFAULT_TURN_DETECTION_LANGUAGE: TurnDetectionLanguage = "en-US";
 
 const INTERACTION_LANGUAGES = new Set<string>([
     "ar-EG",
@@ -68,12 +68,12 @@ const INTERACTION_LANGUAGES = new Set<string>([
     "vi-VN",
 ]);
 
-function isInteractionLanguage(value: string): value is InteractionLanguage {
+function isTurnDetectionLanguage(value: string): value is TurnDetectionLanguage {
     return INTERACTION_LANGUAGES.has(value);
 }
 
-function assertInteractionLanguage(value: string): asserts value is InteractionLanguage {
-    if (!isInteractionLanguage(value)) {
+function assertTurnDetectionLanguage(value: string): asserts value is TurnDetectionLanguage {
+    if (!isTurnDetectionLanguage(value)) {
         throw new Error(`Invalid interaction language: ${value}`);
     }
 }
@@ -104,8 +104,6 @@ export interface AgentOptions {
     advancedFeatures?: AdvancedFeatures;
     /** Session parameters */
     parameters?: SessionParamsInput;
-    /** Agora interaction language serialized to `asr.language`. */
-    interactionLanguage?: InteractionLanguage;
     /**
      * Greeting message.
      * @deprecated Configure this on the LLM or MLLM vendor with `greetingMessage` instead.
@@ -173,7 +171,6 @@ export class Agent<TTSSampleRate extends number = number> {
     private _rtc?: RtcConfig;
     private _fillerWords?: FillerWordsConfig;
     private _greetingConfigs?: LlmGreetingConfigs;
-    private _interactionLanguage?: InteractionLanguage;
 
     constructor(options: AgentOptions = {}) {
         this._name = options.name;
@@ -199,10 +196,6 @@ export class Agent<TTSSampleRate extends number = number> {
         }
         if (options.parameters) {
             this._parameters = options.parameters;
-        }
-        if (options.interactionLanguage) {
-            assertInteractionLanguage(options.interactionLanguage);
-            this._interactionLanguage = options.interactionLanguage;
         }
         if (options.geofence) {
             this._geofence = options.geofence;
@@ -268,19 +261,6 @@ export class Agent<TTSSampleRate extends number = number> {
     withStt(vendor: BaseSTT): Agent<TTSSampleRate> {
         const newAgent = this._clone();
         newAgent._stt = vendor.toConfig();
-        return newAgent;
-    }
-
-    /**
-     * Returns a new Agent with the Agora interaction language.
-     *
-     * This serializes to `asr.language`. Vendor-specific language values remain
-     * under `asr.params`, for example `asr.params.language`.
-     */
-    withInteractionLanguage(language: InteractionLanguage): Agent<TTSSampleRate> {
-        assertInteractionLanguage(language);
-        const newAgent = this._clone();
-        newAgent._interactionLanguage = language;
         return newAgent;
     }
 
@@ -824,7 +804,6 @@ export class Agent<TTSSampleRate extends number = number> {
             idle_timeout: opts.idleTimeout,
             enable_string_uid: opts.enableStringUid,
             mllm: this._mllm,
-            turn_detection: this._turnDetection,
             interruption: this._interruption,
             sal: this._sal,
             avatar: this._avatar,
@@ -849,7 +828,7 @@ export class Agent<TTSSampleRate extends number = number> {
                     c.failure_message = this._failureMessage;
                 }
             }
-            return { ...base, mllm: mllmConfig };
+            return { ...base, mllm: mllmConfig, turn_detection: this._turnDetection };
         }
 
         if (!opts.skipVendorValidation) {
@@ -874,7 +853,10 @@ export class Agent<TTSSampleRate extends number = number> {
               }
             : undefined;
 
-        return { ...base, llm: llmConfig, tts: this._tts, asr: this._resolveAsrConfig() as Agora.Asr | undefined };
+        const asrConfig = this._resolveAsrConfig() as Agora.Asr | undefined;
+        const turnDetectionConfig = this._resolveTurnDetectionConfig();
+
+        return { ...base, turn_detection: turnDetectionConfig, llm: llmConfig, tts: this._tts, asr: asrConfig };
     }
 
     /**
@@ -908,7 +890,6 @@ export class Agent<TTSSampleRate extends number = number> {
         newAgent._rtc = this._rtc;
         newAgent._fillerWords = this._fillerWords;
         newAgent._greetingConfigs = this._greetingConfigs;
-        newAgent._interactionLanguage = this._interactionLanguage;
         return newAgent;
     }
 
@@ -917,16 +898,25 @@ export class Agent<TTSSampleRate extends number = number> {
         if (this._stt === undefined) {
             asrConfig.vendor = "ares";
         }
-        const existingLanguage = asrConfig.language;
-        const language =
-            this._interactionLanguage ??
-            (existingLanguage !== undefined && isInteractionLanguage(existingLanguage)
-                ? existingLanguage
-                : DEFAULT_INTERACTION_LANGUAGE);
-
-        asrConfig.language = language;
+        delete asrConfig.language;
 
         return Object.keys(asrConfig).length > 0 ? asrConfig : undefined;
+    }
+
+    private _resolveTurnDetectionConfig(): TurnDetectionConfig {
+        const turnDetection = { ...(this._turnDetection ?? {}) } as TurnDetectionConfig & { language?: string };
+        const existingTurnDetectionLanguage = turnDetection.language;
+        const existingAsrLanguage = this._stt?.language;
+        const language =
+            existingTurnDetectionLanguage ??
+            (existingAsrLanguage !== undefined && isTurnDetectionLanguage(existingAsrLanguage)
+                ? existingAsrLanguage
+                : DEFAULT_TURN_DETECTION_LANGUAGE);
+
+        assertTurnDetectionLanguage(language);
+        turnDetection.language = language;
+
+        return turnDetection;
     }
 }
 
