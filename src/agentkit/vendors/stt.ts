@@ -2,9 +2,54 @@
  * Type-safe STT (Speech-to-Text) vendor classes.
  */
 
-import type { DeepgramPresetModel } from "../presets.js";
-import type { SttConfig } from "../types.js";
+import { type DeepgramPresetModel, DeepgramPresetModels } from "../presets.js";
+import type { SttConfig, TurnDetectionLanguage } from "../types.js";
 import { BaseSTT } from "./base.js";
+
+const INTERACTION_LANGUAGES = new Set<string>([
+    "ar-EG",
+    "ar-JO",
+    "ar-SA",
+    "ar-AE",
+    "bn-IN",
+    "zh-CN",
+    "zh-HK",
+    "zh-TW",
+    "nl-NL",
+    "en-IN",
+    "en-US",
+    "fil-PH",
+    "fr-FR",
+    "de-DE",
+    "gu-IN",
+    "he-IL",
+    "hi-IN",
+    "id-ID",
+    "it-IT",
+    "ja-JP",
+    "kn-IN",
+    "ko-KR",
+    "ms-MY",
+    "fa-IR",
+    "pt-PT",
+    "ru-RU",
+    "es-ES",
+    "ta-IN",
+    "te-IN",
+    "th-TH",
+    "tr-TR",
+    "vi-VN",
+]);
+
+function toTurnDetectionLanguage(language?: string): TurnDetectionLanguage | undefined {
+    return language !== undefined && INTERACTION_LANGUAGES.has(language)
+        ? (language as TurnDetectionLanguage)
+        : undefined;
+}
+
+function isDeepgramManagedModel(model: string | undefined): model is DeepgramPresetModel {
+    return model !== undefined && DeepgramPresetModels.includes(model.trim().toLowerCase() as DeepgramPresetModel);
+}
 
 /**
  * Constructor options for Speechmatics STT.
@@ -16,6 +61,8 @@ export interface SpeechmaticsSTTOptions {
     language: string;
     /** Model name */
     model?: string;
+    /** Speechmatics streaming WebSocket URL (for example, wss://eu2.rt.speechmatics.com/v2) */
+    uri?: string;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -40,20 +87,19 @@ export class SpeechmaticsSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, language, model, additionalParams } = this.options;
+        const { apiKey, language, model, uri, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "speechmatics",
-            // Top-level language is used by the Agora platform for routing/filtering.
-            // language inside params is forwarded directly to the Speechmatics API.
-            // Both are intentionally set to the same value.
-            language,
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
                 api_key: apiKey,
                 language,
                 ...(model !== undefined && { model }),
+                ...(uri !== undefined && { uri }),
             },
         };
     }
@@ -103,19 +149,23 @@ export class DeepgramSTT extends BaseSTT {
 
     constructor(options?: DeepgramSTTOptions) {
         super();
+        if (!options?.apiKey && !isDeepgramManagedModel(options?.model)) {
+            throw new Error("DeepgramSTT requires apiKey unless using a supported Agora-managed model");
+        }
         this.options = options ?? {};
     }
 
     toConfig(): SttConfig {
         const { apiKey, model, language, smartFormat, punctuation, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "deepgram",
-            language,
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
-                ...(apiKey && { api_key: apiKey }),
+                ...(apiKey && { key: apiKey }),
                 ...(model && { model }),
                 ...(language && { language }),
                 ...(smartFormat !== undefined && { smart_format: smartFormat }),
@@ -134,7 +184,7 @@ export interface MicrosoftSTTOptions {
     /** Azure region (e.g., 'eastus', 'westus') */
     region: string;
     /** Language code (e.g., 'en-US', 'es-ES') */
-    language?: string;
+    language: string;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -161,10 +211,11 @@ export class MicrosoftSTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { key, region, language, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "microsoft",
-            language,
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -186,6 +237,10 @@ export interface OpenAISTTOptions {
     model?: string;
     /** Language code */
     language?: string;
+    /** Prompt that guides OpenAI transcription */
+    prompt?: string;
+    /** Full OpenAI input_audio_transcription override */
+    inputAudioTranscription?: Record<string, unknown>;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -209,16 +264,24 @@ export class OpenAISTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, model, language, additionalParams } = this.options;
+        const { apiKey, model, language, prompt, inputAudioTranscription, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
+        const transcription = {
+            model: "whisper-1",
+            ...inputAudioTranscription,
+            ...(model && { model }),
+            ...(prompt && { prompt }),
+            ...(language && { language }),
+        };
 
         return {
             vendor: "openai",
-            language,
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
                 api_key: apiKey,
-                ...(model && { model }),
+                input_audio_transcription: transcription,
             },
         };
     }
@@ -228,10 +291,16 @@ export class OpenAISTT extends BaseSTT {
  * Constructor options for Google Cloud Speech-to-Text STT.
  */
 export interface GoogleSTTOptions {
-    /** Google Cloud API key */
-    apiKey: string;
+    /** Google Cloud project ID where Speech-to-Text is enabled */
+    projectId: string;
+    /** Google Cloud region for the recognizer (for example, global) */
+    location: string;
+    /** Google service account credentials JSON string */
+    adcCredentialsString: string;
     /** Language code (e.g., 'en-US', 'es-ES') */
-    language?: string;
+    language: string;
+    /** Recognition model to use */
+    model?: string;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -242,7 +311,9 @@ export interface GoogleSTTOptions {
  * @example
  * ```typescript
  * const stt = new GoogleSTT({
- *   apiKey: process.env.GOOGLE_API_KEY,
+ *   projectId: process.env.GOOGLE_ASR_PROJECT_ID,
+ *   location: 'global',
+ *   adcCredentialsString: process.env.GOOGLE_APPLICATION_CREDENTIALS_STRING,
  *   language: 'en-US',
  * });
  * ```
@@ -256,16 +327,20 @@ export class GoogleSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, language, additionalParams } = this.options;
+        const { projectId, location, adcCredentialsString, language, model, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "google",
-            language,
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
-                api_key: apiKey,
+                project_id: projectId,
+                location,
+                adc_credentials_string: adcCredentialsString,
                 ...(language && { language }),
+                ...(model && { model }),
             },
         };
     }
@@ -282,7 +357,7 @@ export interface AmazonSTTOptions {
     /** AWS region (e.g., 'us-east-1') */
     region: string;
     /** Language code */
-    language?: string;
+    language: string;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -296,6 +371,7 @@ export interface AmazonSTTOptions {
  *   accessKey: process.env.AWS_ACCESS_KEY_ID,
  *   secretKey: process.env.AWS_SECRET_ACCESS_KEY,
  *   region: 'us-east-1',
+ *   language: 'en-US',
  * });
  * ```
  */
@@ -309,17 +385,18 @@ export class AmazonSTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { accessKey, secretKey, region, language, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "amazon",
-            language,
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
-                access_key: accessKey,
-                secret_key: secretKey,
+                access_key_id: accessKey,
+                secret_access_key: secretKey,
                 region,
-                ...(language && { language }),
+                ...(language && { language_code: language }),
             },
         };
     }
@@ -332,7 +409,9 @@ export interface AssemblyAISTTOptions {
     /** AssemblyAI API key */
     apiKey: string;
     /** Language code */
-    language?: string;
+    language: string;
+    /** AssemblyAI streaming WebSocket URL */
+    uri?: string;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -344,6 +423,7 @@ export interface AssemblyAISTTOptions {
  * ```typescript
  * const stt = new AssemblyAISTT({
  *   apiKey: process.env.ASSEMBLYAI_API_KEY,
+ *   language: 'en-US',
  * });
  * ```
  */
@@ -356,15 +436,18 @@ export class AssemblyAISTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, language, additionalParams } = this.options;
+        const { apiKey, language, uri, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "assemblyai",
-            language,
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
                 api_key: apiKey,
+                ...(language && { language }),
+                ...(uri && { uri }),
             },
         };
     }
@@ -375,7 +458,7 @@ export class AssemblyAISTT extends BaseSTT {
  */
 export interface AresSTTOptions {
     /** Language code for ARES ASR */
-    language?: string;
+    language?: TurnDetectionLanguage;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -386,7 +469,7 @@ export interface AresSTTOptions {
  * @example
  * ```typescript
  * const stt = new AresSTT({
- *   language: 'en',
+ *   language: 'en-US',
  * });
  * ```
  */
@@ -444,13 +527,11 @@ export class SarvamSTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { apiKey, language, model, additionalParams } = this.options;
+        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "sarvam",
-            // Top-level language is used by the Agora platform for routing/filtering.
-            // language inside params is forwarded directly to the Sarvam API.
-            // Both are intentionally set to the same value.
-            language,
+            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,

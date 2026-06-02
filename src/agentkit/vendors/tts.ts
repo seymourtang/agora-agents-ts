@@ -2,10 +2,29 @@
  * Type-safe TTS (Text-to-Speech) vendor classes.
  */
 
-import type { MiniMaxPresetModel, OpenAITtsPresetModel } from "../presets.js";
+import {
+    type MiniMaxPresetModel,
+    MiniMaxPresetModels,
+    type OpenAITtsPresetModel,
+    OpenAITtsPresetModels,
+} from "../presets.js";
 import type { TtsConfig } from "../types.js";
 import type { CartesiaSampleRate, ElevenLabsSampleRate, GoogleTTSSampleRate, MicrosoftSampleRate } from "./base.js";
 import { BaseTTS } from "./base.js";
+
+function requireString(value: unknown, field: string, vendor: string): asserts value is string {
+    if (typeof value !== "string" || value.length === 0) {
+        throw new Error(`${vendor} requires ${field}`);
+    }
+}
+
+function isOpenAITtsManagedModel(model: string | undefined): boolean {
+    return model === undefined || OpenAITtsPresetModels.includes(model.trim().toLowerCase() as OpenAITtsPresetModel);
+}
+
+function isMiniMaxManagedModel(model: string | undefined): model is MiniMaxPresetModel {
+    return model !== undefined && MiniMaxPresetModels.includes(model.trim().toLowerCase() as MiniMaxPresetModel);
+}
 
 /**
  * Constructor options for ElevenLabs TTS.
@@ -17,8 +36,8 @@ export interface ElevenLabsTTSOptions<SR extends ElevenLabsSampleRate = ElevenLa
     modelId: string;
     /** Voice ID */
     voiceId: string;
-    /** WebSocket base URL (defaults to ElevenLabs endpoint) */
-    baseUrl?: string;
+    /** WebSocket base URL */
+    baseUrl: string;
     /**
      * Audio sample rate in Hz.
      * - 16000 Hz: Required for Akool avatars
@@ -49,6 +68,7 @@ export interface ElevenLabsTTSOptions<SR extends ElevenLabsSampleRate = ElevenLa
  *   key: process.env.ELEVENLABS_API_KEY,
  *   modelId: 'eleven_flash_v2_5',
  *   voiceId: 'pNInz6obpgDQGcFmaJgB',
+ *   baseUrl: 'wss://api.elevenlabs.io/v1',
  *   sampleRate: 24000, // For HeyGen avatar
  * });
  * ```
@@ -80,9 +100,9 @@ export class ElevenLabsTTS<SR extends ElevenLabsSampleRate = ElevenLabsSampleRat
             vendor: "elevenlabs",
             params: {
                 key,
+                base_url: baseUrl,
                 model_id: modelId,
                 voice_id: voiceId,
-                ...(baseUrl && { base_url: baseUrl }),
                 ...(sampleRate && { sample_rate: sampleRate }),
                 ...(optimizeStreamingLatency !== undefined && { optimize_streaming_latency: optimizeStreamingLatency }),
                 ...(stability !== undefined && { stability }),
@@ -112,6 +132,10 @@ export interface MicrosoftTTSOptions<SR extends MicrosoftSampleRate = MicrosoftS
     sampleRate?: SR;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
+    /** Speaking rate multiplier. Values between 0.5 and 2.0. */
+    speed?: number;
+    /** Audio volume. Values between 0.0 and 100.0. */
+    volume?: number;
 }
 
 /**
@@ -136,7 +160,7 @@ export class MicrosoftTTS<SR extends MicrosoftSampleRate = MicrosoftSampleRate> 
     }
 
     toConfig(): TtsConfig {
-        const { key, region, voiceName, sampleRate, skipPatterns } = this.options;
+        const { key, region, voiceName, sampleRate, skipPatterns, speed, volume } = this.options;
 
         return {
             vendor: "microsoft",
@@ -145,6 +169,8 @@ export class MicrosoftTTS<SR extends MicrosoftSampleRate = MicrosoftSampleRate> 
                 region,
                 voice_name: voiceName,
                 ...(sampleRate && { sample_rate: sampleRate }),
+                ...(speed !== undefined && { speed }),
+                ...(volume !== undefined && { volume }),
             },
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         };
@@ -161,8 +187,10 @@ type OpenAITTSCommonOptions = {
     voice: string;
     /** Model name (e.g., 'tts-1', 'tts-1-hd') */
     model?: string;
-    /** Audio format (e.g., 'pcm') */
-    responseFormat?: string;
+    /** Endpoint URL for the OpenAI TTS service */
+    baseUrl?: string;
+    /** Custom instructions for voice style, accent, pace, and tone */
+    instructions?: string;
     /** Speech speed multiplier */
     speed?: number;
     /** Skip patterns for bracketed content */
@@ -172,10 +200,13 @@ type OpenAITTSCommonOptions = {
 export type OpenAITTSOptions =
     | (OpenAITTSCommonOptions & {
           apiKey: string;
+          model: string;
+          baseUrl: string;
       })
-    | (Omit<OpenAITTSCommonOptions, "model"> & {
+    | (Omit<OpenAITTSCommonOptions, "model" | "baseUrl"> & {
           apiKey?: undefined;
           model?: OpenAITtsPresetModel;
+          baseUrl?: undefined;
       });
 
 /**
@@ -187,6 +218,8 @@ export type OpenAITTSOptions =
  * ```typescript
  * const tts = new OpenAITTS({
  *   apiKey: process.env.OPENAI_API_KEY,
+ *   model: 'gpt-4o-mini-tts',
+ *   baseUrl: 'https://api.openai.com/v1',
  *   voice: 'alloy',
  * });
  * ```
@@ -196,19 +229,32 @@ export class OpenAITTS extends BaseTTS<24000> {
 
     constructor(options: OpenAITTSOptions) {
         super();
+        requireString(options.voice, "voice", "OpenAITTS");
+        if (options.apiKey) {
+            requireString(options.model, "model", "OpenAITTS");
+            requireString(options.baseUrl, "baseUrl", "OpenAITTS");
+        } else {
+            if (!isOpenAITtsManagedModel(options.model)) {
+                throw new Error("OpenAITTS requires apiKey unless using the Agora-managed tts-1 model");
+            }
+            if (options.baseUrl) {
+                throw new Error("OpenAITTS baseUrl is only valid when apiKey is set");
+            }
+        }
         this.options = options;
     }
 
     toConfig(): TtsConfig {
-        const { apiKey, voice, model, responseFormat, speed, skipPatterns } = this.options;
+        const { apiKey, voice, model, baseUrl, instructions, speed, skipPatterns } = this.options;
 
         return {
             vendor: "openai",
             params: {
                 ...(apiKey && { api_key: apiKey }),
+                ...(apiKey && { base_url: baseUrl }),
                 voice,
                 ...(model && { model }),
-                ...(responseFormat && { response_format: responseFormat }),
+                ...(instructions && { instructions }),
                 ...(speed !== undefined && { speed }),
             } as unknown as import("../types.js").OpenAiTtsParams,
             ...(skipPatterns && { skip_patterns: skipPatterns }),
@@ -225,7 +271,11 @@ export interface CartesiaTTSOptions<SR extends CartesiaSampleRate = CartesiaSamp
     /** Voice ID */
     voiceId: string;
     /** Model ID */
-    modelId?: string;
+    modelId: string;
+    /** WebSocket URL for the Cartesia streaming API */
+    baseUrl?: string;
+    /** Target language for speech synthesis */
+    language?: string;
     /**
      * Audio sample rate in Hz.
      * Supported values: 8000, 16000, 22050, 24000, 44100, 48000
@@ -256,15 +306,17 @@ export class CartesiaTTS<SR extends CartesiaSampleRate = CartesiaSampleRate> ext
     }
 
     toConfig(): TtsConfig {
-        const { apiKey, voiceId, modelId, sampleRate, skipPatterns } = this.options;
+        const { apiKey, voiceId, modelId, baseUrl, language, sampleRate, skipPatterns } = this.options;
 
         return {
             vendor: "cartesia",
             params: {
                 api_key: apiKey,
                 voice: { mode: "id", id: voiceId },
-                ...(modelId && { model_id: modelId }),
-                ...(sampleRate && { sample_rate: sampleRate }),
+                model_id: modelId,
+                ...(baseUrl && { base_url: baseUrl }),
+                ...(sampleRate && { output_format: { container: "raw", sample_rate: sampleRate } }),
+                ...(language && { language }),
             } as unknown as import("../types.js").CartesiaTtsParams,
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         } as TtsConfig;
@@ -275,7 +327,7 @@ export class CartesiaTTS<SR extends CartesiaSampleRate = CartesiaSampleRate> ext
  * Constructor options for Google TTS.
  */
 export interface GoogleTTSOptions<SR extends GoogleTTSSampleRate = GoogleTTSSampleRate> {
-    /** Google Cloud API key */
+    /** Google Cloud service account credentials JSON string */
     key: string;
     /** Voice name */
     voiceName: string;
@@ -316,10 +368,12 @@ export class GoogleTTS<SR extends GoogleTTSSampleRate = GoogleTTSSampleRate> ext
         return {
             vendor: "google",
             params: {
-                key,
-                voice_name: voiceName,
-                ...(languageCode && { language_code: languageCode }),
-                ...(sampleRate && { sample_rate_hertz: sampleRate }),
+                credentials: key,
+                VoiceSelectionParams: {
+                    name: voiceName,
+                    ...(languageCode && { language_code: languageCode }),
+                },
+                ...(sampleRate && { AudioConfig: { sample_rate_hertz: sampleRate } }),
             },
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         };
@@ -338,6 +392,8 @@ export interface AmazonTTSOptions {
     region: string;
     /** Amazon Polly voice ID */
     voiceId: string;
+    /** Amazon Polly engine type */
+    engine: "standard" | "neural" | "long-form" | "generative";
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 }
@@ -352,6 +408,7 @@ export interface AmazonTTSOptions {
  *   secretKey: process.env.AWS_SECRET_ACCESS_KEY,
  *   region: 'us-east-1',
  *   voiceId: 'Joanna',
+ *   engine: 'neural',
  * });
  * ```
  */
@@ -364,15 +421,16 @@ export class AmazonTTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const { accessKey, secretKey, region, voiceId, skipPatterns } = this.options;
+        const { accessKey, secretKey, region, voiceId, engine, skipPatterns } = this.options;
 
         return {
             vendor: "amazon",
             params: {
-                access_key: accessKey,
-                secret_key: secretKey,
-                region,
-                voice_id: voiceId,
+                aws_access_key_id: accessKey,
+                aws_secret_access_key: secretKey,
+                region_name: region,
+                voice: voiceId,
+                ...(engine && { engine }),
             },
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         };
@@ -391,8 +449,8 @@ export interface DeepgramTTSOptions {
     baseUrl?: string;
     /** Audio sample rate in Hz */
     sampleRate?: number;
-    /** Additional Deepgram TTS parameters */
-    params?: Record<string, unknown>;
+    /** Additional Deepgram TTS parameters, flattened into tts.params */
+    additionalParams?: Record<string, unknown>;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 }
@@ -409,14 +467,14 @@ export class DeepgramTTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const { apiKey, model, baseUrl, sampleRate, params, skipPatterns } = this.options;
+        const { apiKey, model, baseUrl, sampleRate, additionalParams, skipPatterns } = this.options;
 
         return {
             vendor: "deepgram",
             params: {
                 api_key: apiKey,
                 model,
-                ...params,
+                ...additionalParams,
                 ...(baseUrl && { base_url: baseUrl }),
                 ...(sampleRate !== undefined && { sample_rate: sampleRate }),
             },
@@ -433,6 +491,16 @@ export interface HumeAITTSOptions {
     key: string;
     /** Configuration ID */
     configId?: string;
+    /** Hume AI voice ID */
+    voiceId: string;
+    /** Base URL for the Hume AI API */
+    baseUrl?: string;
+    /** Voice provider type */
+    provider: "HUME_AI" | "CUSTOM_VOICE";
+    /** Playback speed of the generated speech */
+    speed?: number;
+    /** Duration of silence in seconds to add at the end of each utterance */
+    trailingSilence?: number;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 }
@@ -444,6 +512,8 @@ export interface HumeAITTSOptions {
  * ```typescript
  * const tts = new HumeAITTS({
  *   key: process.env.HUME_API_KEY,
+ *   voiceId: 'voice-id',
+ *   provider: 'CUSTOM_VOICE',
  * });
  * ```
  */
@@ -456,12 +526,17 @@ export class HumeAITTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const { key, configId, skipPatterns } = this.options;
+        const { key, configId, voiceId, baseUrl, provider, speed, trailingSilence, skipPatterns } = this.options;
 
         return {
             vendor: "humeai",
             params: {
                 key,
+                voice_id: voiceId,
+                ...(baseUrl && { base_url: baseUrl }),
+                provider,
+                ...(speed !== undefined && { speed }),
+                ...(trailingSilence !== undefined && { trailing_silence: trailingSilence }),
                 ...(configId && { config_id: configId }),
             },
             ...(skipPatterns && { skip_patterns: skipPatterns }),
@@ -478,13 +553,9 @@ export interface RimeTTSOptions {
     /** Speaker ID */
     speaker: string;
     /** Model ID */
-    modelId?: string;
-    /** Language code */
-    lang?: string;
-    /** Sampling rate in Hz */
-    samplingRate?: number;
-    /** Speed multiplier */
-    speedAlpha?: number;
+    modelId: string;
+    /** WebSocket URL for the Rime streaming API */
+    baseUrl?: string;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 }
@@ -497,6 +568,7 @@ export interface RimeTTSOptions {
  * const tts = new RimeTTS({
  *   key: process.env.RIME_API_KEY,
  *   speaker: 'speaker-id',
+ *   modelId: 'mist',
  * });
  * ```
  */
@@ -509,17 +581,15 @@ export class RimeTTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const { key, speaker, modelId, lang, samplingRate, speedAlpha, skipPatterns } = this.options;
+        const { key, speaker, modelId, baseUrl, skipPatterns } = this.options;
 
         return {
             vendor: "rime",
             params: {
-                key,
+                api_key: key,
                 speaker,
-                ...(modelId && { model_id: modelId }),
-                ...(lang && { lang }),
-                ...(samplingRate !== undefined && { samplingRate }),
-                ...(speedAlpha !== undefined && { speedAlpha }),
+                modelId,
+                ...(baseUrl && { base_url: baseUrl }),
             },
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         };
@@ -534,6 +604,8 @@ export interface FishAudioTTSOptions {
     key: string;
     /** Reference ID */
     referenceId: string;
+    /** Backend used by Fish Audio */
+    backend: string;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 }
@@ -546,6 +618,7 @@ export interface FishAudioTTSOptions {
  * const tts = new FishAudioTTS({
  *   key: process.env.FISH_AUDIO_API_KEY,
  *   referenceId: 'reference-id',
+ *   backend: 'speech-1.5',
  * });
  * ```
  */
@@ -558,13 +631,14 @@ export class FishAudioTTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const { key, referenceId, skipPatterns } = this.options;
+        const { key, referenceId, backend, skipPatterns } = this.options;
 
         return {
             vendor: "fishaudio",
             params: {
-                key,
+                api_key: key,
                 reference_id: referenceId,
+                backend,
             },
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         };
@@ -620,6 +694,14 @@ export class MiniMaxTTS extends BaseTTS {
 
     constructor(options: MiniMaxTTSOptions) {
         super();
+        if (options.key) {
+            requireString(options.groupId, "groupId", "MiniMaxTTS");
+            requireString(options.model, "model", "MiniMaxTTS");
+            requireString(options.voiceId, "voiceId", "MiniMaxTTS");
+            requireString(options.url, "url", "MiniMaxTTS");
+        } else if (!isMiniMaxManagedModel(options.model)) {
+            throw new Error("MiniMaxTTS requires key unless using a supported Agora-managed model");
+        }
         this.options = options;
     }
 
@@ -649,7 +731,15 @@ export interface SarvamTTSOptions {
     /** Speaker/voice ID (e.g., 'anushka', 'abhilash', 'karun', 'hitesh', 'manisha', 'vidya', 'arya') */
     speaker: string;
     /** Target language code (e.g., 'en-IN', 'hi-IN', 'ta-IN') */
-    targetLanguageCode: string;
+    targetLanguageCode: import("../types.js").SarvamTtsParams["target_language_code"];
+    /** Pitch adjustment for the voice */
+    pitch?: number;
+    /** Speed of speech */
+    pace?: number;
+    /** Volume level of the speech */
+    loudness?: number;
+    /** Audio sample rate in Hz */
+    sampleRate?: number;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 }
@@ -675,14 +765,18 @@ export class SarvamTTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const { key, speaker, targetLanguageCode, skipPatterns } = this.options;
+        const { key, speaker, targetLanguageCode, pitch, pace, loudness, sampleRate, skipPatterns } = this.options;
 
         return {
             vendor: "sarvam",
             params: {
-                key,
+                api_subscription_key: key,
                 speaker,
                 target_language_code: targetLanguageCode,
+                ...(pitch !== undefined && { pitch }),
+                ...(pace !== undefined && { pace }),
+                ...(loudness !== undefined && { loudness }),
+                ...(sampleRate !== undefined && { sample_rate: sampleRate }),
             },
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         };
@@ -696,9 +790,19 @@ export interface MurfTTSOptions {
     /** Murf API key */
     key: string;
     /** Voice ID (e.g., 'Ariana', 'Natalie', 'Ken') */
-    voiceId: string;
-    /** Voice style (e.g., 'Angry', 'Sad', 'Conversational', 'Newscast') */
-    style?: string;
+    voiceId?: string;
+    /** WebSocket endpoint for streaming TTS output */
+    baseUrl?: string;
+    /** Locale for the selected voice */
+    locale?: string;
+    /** Speech rate adjustment */
+    rate?: number;
+    /** Pitch adjustment */
+    pitch?: number;
+    /** TTS model to use */
+    model?: string;
+    /** Audio sample rate in Hz */
+    sampleRate?: number;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 }
@@ -711,7 +815,6 @@ export interface MurfTTSOptions {
  * const tts = new MurfTTS({
  *   key: process.env.MURF_API_KEY,
  *   voiceId: 'Ariana',
- *   style: 'Conversational',
  * });
  * ```
  */
@@ -724,16 +827,21 @@ export class MurfTTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const { key, voiceId, style, skipPatterns } = this.options;
+        const { key, voiceId, baseUrl, locale, rate, pitch, model, sampleRate, skipPatterns } = this.options;
 
         return {
             vendor: "murf",
             params: {
-                key,
-                voice_id: voiceId,
-                ...(style && { style }),
-            },
+                api_key: key,
+                ...(baseUrl && { base_url: baseUrl }),
+                ...(voiceId && { voiceId }),
+                ...(locale && { locale }),
+                ...(rate !== undefined && { rate }),
+                ...(pitch !== undefined && { pitch }),
+                ...(model && { model }),
+                ...(sampleRate !== undefined && { sample_rate: sampleRate }),
+            } as unknown as import("../types.js").MurfTtsParams,
             ...(skipPatterns && { skip_patterns: skipPatterns }),
-        };
+        } as TtsConfig;
     }
 }

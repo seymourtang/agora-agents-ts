@@ -16,6 +16,7 @@ npm install agora-agents
 ## Quick Start
 
 Start with the `Agent` builder: create a client with app credentials, choose your ASR, LLM, and TTS providers, then start a session. Omit vendor API keys for supported Agora-managed models, or provide keys when you want BYOK.
+Set Agora interaction language with `turnDetection.language`; provider-specific STT language values remain under `asr.params`.
 
 ```typescript
 import {
@@ -44,11 +45,8 @@ export async function startConversation(): Promise<string> {
 
   const agent = new Agent({
     name: `conversation-${Date.now()}`,
-    instructions: AGENT_PROMPT,
-    greeting: GREETING,
-    failureMessage: 'Please wait a moment.',
-    maxHistory: 50,
     turnDetection: {
+      language: 'en-US',
       config: {
         speech_threshold: 0.5,
         start_of_speech: {
@@ -84,9 +82,10 @@ export async function startConversation(): Promise<string> {
     .withLlm(
       new OpenAI({
         model: 'gpt-4o-mini',
+        systemMessages: [{ role: 'system', content: AGENT_PROMPT }],
         greetingMessage: GREETING,
         failureMessage: 'Please wait a moment.',
-        maxHistory: 15,
+        maxHistory: 50,
         params: {
           max_tokens: 1024,
           temperature: 0.7,
@@ -118,15 +117,42 @@ export async function startConversation(): Promise<string> {
 
 `AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically when you provide `appId` and `appCertificate`. For supported Agora-managed models, leave vendor API keys unset; provide keys when you want BYOK.
 
+## AI Studio pipeline IDs
+
+Use `pipelineId` when you want a published AI Studio pipeline to provide the base agent configuration:
+
+```typescript
+const agent = new Agent({
+  name: 'support',
+  pipelineId: 'studio-pipeline-id',
+});
+
+const session = agent.createSession(client, {
+  channel: 'support-room',
+  agentUid: '1',
+  remoteUids: ['100'],
+});
+```
+
+You can override it per session:
+
+```typescript
+const session = agent.createSession(client, {
+  channel: 'support-room',
+  agentUid: '1',
+  remoteUids: ['100'],
+  pipelineId: 'session-pipeline-id',
+});
+```
+
+AgentKit sends the resolved value as the top-level `/join` field `pipeline_id`, not inside `properties`. Explicit Agent config such as `.withLlm()`, `.withTts()`, `.withStt()`, `.withMllm()`, and `advancedFeatures` may send `properties` fields that override the saved pipeline settings.
+
 ### BYOK version
 
 Use the same `Agent` builder shape, but provide credentials explicitly when you want vendor-managed billing and routing instead of Agora-managed models.
 
 ```typescript
-const agent = new Agent({
-  instructions: SUPPORT_PROMPT,
-  greeting: GREETING,
-})
+const agent = new Agent({ turnDetection: { language: 'en-US' } })
   .withStt(
     new DeepgramSTT({
       apiKey: process.env.DEEPGRAM_API_KEY!,
@@ -137,7 +163,10 @@ const agent = new Agent({
   .withLlm(
     new OpenAI({
       apiKey: process.env.OPENAI_API_KEY!,
+      url: 'https://api.openai.com/v1/chat/completions',
       model: 'gpt-4o-mini',
+      systemMessages: [{ role: 'system', content: SUPPORT_PROMPT }],
+      greetingMessage: GREETING,
       maxTokens: 1024,
       temperature: 0.7,
       topP: 0.95,

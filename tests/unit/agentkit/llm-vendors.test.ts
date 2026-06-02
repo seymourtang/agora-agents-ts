@@ -1,9 +1,24 @@
 import { describe, expect, test } from "vitest";
-import { AmazonBedrock, CustomLLM, Dify, Groq, VertexAILLM } from "../../../src/agentkit/vendors/llm.js";
+import {
+    AmazonBedrock,
+    Anthropic,
+    CustomLLM,
+    Dify,
+    Gemini,
+    Groq,
+    OpenAI,
+    VertexAILLM,
+} from "../../../src/agentkit/vendors/llm.js";
 
 describe("LLM vendor helpers", () => {
     test("Groq serializes as OpenAI-compatible without exposing style choice", () => {
-        expect(new Groq({ apiKey: "groq-key", model: "llama-3.3-70b-versatile" }).toConfig()).toMatchObject({
+        expect(
+            new Groq({
+                apiKey: "groq-key",
+                model: "llama-3.3-70b-versatile",
+                url: "https://api.groq.com/openai/v1/chat/completions",
+            }).toConfig(),
+        ).toMatchObject({
             url: "https://api.groq.com/openai/v1/chat/completions",
             api_key: "groq-key",
             style: "openai",
@@ -22,6 +37,27 @@ describe("LLM vendor helpers", () => {
         });
     });
 
+    test("Anthropic serializes required Claude fields", () => {
+        expect(
+            new Anthropic({
+                apiKey: "anthropic-key",
+                model: "claude-3-5-sonnet-20241022",
+                url: "https://api.anthropic.com/v1/messages",
+                headers: { "anthropic-version": "2023-06-01" },
+                maxTokens: 1024,
+            }).toConfig(),
+        ).toMatchObject({
+            url: "https://api.anthropic.com/v1/messages",
+            api_key: "anthropic-key",
+            style: "anthropic",
+            headers: { "anthropic-version": "2023-06-01" },
+            params: {
+                model: "claude-3-5-sonnet-20241022",
+                max_tokens: 1024,
+            },
+        });
+    });
+
     test("VertexAILLM includes project routing in Gemini-style params", () => {
         expect(
             new VertexAILLM({
@@ -29,6 +65,9 @@ describe("LLM vendor helpers", () => {
                 model: "gemini-2.0-flash",
                 projectId: "project",
                 location: "us-central1",
+                topP: 0.8,
+                topK: 40,
+                maxOutputTokens: 1024,
             }).toConfig(),
         ).toMatchObject({
             api_key: "vertex-token",
@@ -37,21 +76,28 @@ describe("LLM vendor helpers", () => {
                 model: "gemini-2.0-flash",
                 project_id: "project",
                 location: "us-central1",
+                top_p: 0.8,
+                top_k: 40,
+                max_output_tokens: 1024,
             },
         });
     });
 
-    test("AmazonBedrock serializes as Anthropic-style", () => {
+    test("AmazonBedrock serializes as Bedrock-style with top-level AWS routing", () => {
         expect(
             new AmazonBedrock({
-                apiKey: "bedrock-key",
-                url: "https://bedrock.example.com/messages",
+                accessKey: "aws-access",
+                secretKey: "aws-secret",
+                region: "us-east-1",
                 model: "anthropic.claude-3-5-sonnet-20241022-v2:0",
             }).toConfig(),
         ).toMatchObject({
-            api_key: "bedrock-key",
-            style: "anthropic",
-            params: { model: "anthropic.claude-3-5-sonnet-20241022-v2:0" },
+            url: "https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-5-sonnet-20241022-v2:0/converse-stream",
+            access_key: "aws-access",
+            secret_key: "aws-secret",
+            region: "us-east-1",
+            model: "anthropic.claude-3-5-sonnet-20241022-v2:0",
+            style: "bedrock",
         });
     });
 
@@ -60,13 +106,46 @@ describe("LLM vendor helpers", () => {
             new Dify({
                 apiKey: "dify-key",
                 url: "https://api.dify.ai/v1/chat-messages",
+                model: "default",
                 user: "user-1",
                 conversationId: "conversation-1",
             }).toConfig(),
         ).toMatchObject({
             api_key: "dify-key",
             style: "dify",
-            params: { user: "user-1", conversation_id: "conversation-1" },
+            params: { model: "default", user: "user-1", conversation_id: "conversation-1" },
         });
+    });
+
+    test("rejects missing required LLM fields at runtime", () => {
+        expect(() => new OpenAI({ apiKey: "openai-key", model: "gpt-4o" } as never)).toThrow("OpenAI requires url");
+        expect(() => new OpenAI({ model: "gpt-4o" } as never)).toThrow(
+            "OpenAI requires apiKey unless using a supported Agora-managed model",
+        );
+        expect(
+            () => new OpenAI({ model: "gpt-5-mini", url: "https://api.openai.com/v1/chat/completions" } as never),
+        ).toThrow("OpenAI Agora-managed mode does not allow url");
+        expect(
+            () =>
+                new Anthropic({
+                    apiKey: "anthropic-key",
+                    url: "https://api.anthropic.com/v1/messages",
+                    headers: { "anthropic-version": "2023-06-01" },
+                    maxTokens: 1024,
+                } as never),
+        ).toThrow("Anthropic requires model");
+        expect(() => new Gemini({ apiKey: "google-key" } as never)).toThrow("Gemini requires model");
+        expect(
+            () => new Groq({ apiKey: "groq-key", url: "https://api.groq.com/openai/v1/chat/completions" } as never),
+        ).toThrow("Groq requires model");
+        expect(
+            () => new VertexAILLM({ apiKey: "vertex-token", projectId: "project", location: "us-central1" } as never),
+        ).toThrow("VertexAILLM requires model");
+        expect(
+            () => new AmazonBedrock({ accessKey: "aws-access", secretKey: "aws-secret", region: "us-east-1" } as never),
+        ).toThrow("AmazonBedrock requires model");
+        expect(() => new Dify({ apiKey: "dify-key", url: "https://api.dify.ai/v1/chat-messages" } as never)).toThrow(
+            "Dify requires model",
+        );
     });
 });

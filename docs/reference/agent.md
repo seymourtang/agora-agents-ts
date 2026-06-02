@@ -23,11 +23,11 @@ new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `name` | `string` | `undefined` | Agent name (used as default session name) |
-| `instructions` | `string` | `undefined` | System prompt injected as a system message to the LLM |
-| `greeting` | `string` | `undefined` | First message spoken when the session starts |
-| `failureMessage` | `string` | `undefined` | Message spoken when an LLM call fails |
-| `maxHistory` | `number` | `undefined` | Max conversation turns kept in standard LLM context; does not apply to MLLM |
-| `turnDetection` | `TurnDetectionConfig` | `undefined` | Voice activity detection settings |
+| `instructions` | `string` | `undefined` | Deprecated. Use LLM vendor `systemMessages` instead. |
+| `greeting` | `string` | `undefined` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
+| `failureMessage` | `string` | `undefined` | Deprecated. Use LLM/MLLM vendor `failureMessage` instead. |
+| `maxHistory` | `number` | `undefined` | Deprecated. Use LLM vendor `maxHistory` instead. |
+| `turnDetection` | `TurnDetectionConfig` | `undefined` | Interaction language and voice activity detection settings |
 | `interruption` | `InterruptionConfig` | `undefined` | Unified interruption control settings |
 | `sal` | `SalConfig` | `undefined` | Selective Attention Locking configuration |
 | `avatar` | `AvatarConfig` | `undefined` | Avatar configuration |
@@ -37,6 +37,8 @@ new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 | `labels` | `Labels` | `undefined` | Custom key-value labels (returned in callbacks) |
 | `rtc` | `RtcConfig` | `undefined` | RTC media encryption |
 | `fillerWords` | `FillerWordsConfig` | `undefined` | Filler words while waiting for LLM |
+
+The Agent-level `instructions`, `greeting`, `failureMessage`, `maxHistory`, and `greetingConfigs` fields are compatibility shims. New code should configure those values on the LLM or MLLM vendor because that matches the core request schema.
 
 ## Builder methods
 
@@ -66,7 +68,7 @@ Set the avatar vendor. The `this` constraint enforces that the Agent's TTS sampl
 
 ### `withTurnDetection(config: TurnDetectionConfig): Agent<TTSSampleRate>`
 
-Configure cascading-flow turn detection. Use `config.start_of_speech` and `config.end_of_speech` for SOS/EOS detection. Use `withInterruption()` for interruption behavior and MLLM vendor `turnDetection` for MLLM turn detection.
+Configure cascading-flow turn detection. Use `language` for the Agora interaction language, `config.start_of_speech` and `config.end_of_speech` for SOS/EOS detection, `withInterruption()` for interruption behavior, and MLLM vendor `turnDetection` for MLLM turn detection.
 
 ### `withInterruption(config: InterruptionConfig): Agent<TTSSampleRate>`
 
@@ -74,11 +76,11 @@ Configure unified interruption behavior using the top-level `interruption` objec
 
 ### `withInstructions(instructions: string): Agent<TTSSampleRate>`
 
-Override the system prompt.
+Deprecated. Configure `systemMessages` on the LLM vendor instead.
 
 ### `withGreeting(greeting: string): Agent<TTSSampleRate>`
 
-Override the greeting message.
+Deprecated. Configure `greetingMessage` on the LLM or MLLM vendor instead.
 
 ### `withName(name: string): Agent<TTSSampleRate>`
 
@@ -111,11 +113,11 @@ agent.withAudioScenario(AudioScenario.Aiserver)
 
 ### `withFailureMessage(message: string): Agent<TTSSampleRate>`
 
-Set the message spoken via TTS when the LLM call fails.
+Deprecated. Configure `failureMessage` on the LLM or MLLM vendor instead.
 
 ### `withMaxHistory(maxHistory: number): Agent<TTSSampleRate>`
 
-Set the maximum conversation history length for the standard LLM pipeline. The v2.7 MLLM core schema does not expose a `max_history` field.
+Deprecated. Configure `maxHistory` on the LLM vendor instead.
 
 ### `withGeofence(geofence: GeofenceConfig): Agent<TTSSampleRate>`
 
@@ -138,12 +140,13 @@ Set filler words configuration (played while waiting for LLM response).
 | Property | Type | Description |
 |---|---|---|
 | `name` | `string \| undefined` | The agent name |
+| `pipelineId` | `string \| undefined` | Published AI Studio pipeline ID used as the agent's base configuration |
 | `llm` | `LlmConfig \| undefined` | LLM config (set via `withLlm`) |
 | `tts` | `TtsConfig \| undefined` | TTS config (set via `withTts`) |
 | `stt` | `SttConfig \| undefined` | STT config (set via `withStt`) |
 | `mllm` | `MllmConfig \| undefined` | MLLM config (set via `withMllm`) |
 | `avatar` | `AvatarConfig \| undefined` | Avatar config (set via `withAvatar`) |
-| `turnDetection` | `TurnDetectionConfig \| undefined` | Turn detection config |
+| `turnDetection` | `TurnDetectionConfig \| undefined` | Interaction language and turn detection config |
 | `interruption` | `InterruptionConfig \| undefined` | Interruption config |
 | `instructions` | `string \| undefined` | System prompt |
 | `greeting` | `string \| undefined` | Greeting message |
@@ -183,11 +186,13 @@ createSession(
 | `idleTimeout` | `number` | No | Seconds before auto-exit if no audio (0 = disabled) |
 | `enableStringUid` | `boolean` | No | Use string UIDs instead of numeric |
 | `preset` | `string \| AgentPreset[]` | No | Advanced project-specific presets. Use only when Agora provides a specific preset ID for your project. |
-| `pipelineId` | `string` | No | Published AI Studio pipeline ID to use as the base configuration |
+| `pipelineId` | `string` | No | Published AI Studio pipeline ID to use as this session's base configuration. Overrides `agent.pipelineId`. |
 | `debug` | `boolean` | No | Log API requests to console |
 | `warn` | `(message: string) => void` | No | Custom warning logger; pass a no-op to silence warnings |
 
 `preset` is session-scoped because the Agora start/join API applies project-specific settings per session, not per reusable `Agent` definition. Most applications should leave it unset.
+
+`pipelineId` can be set on `new Agent({ pipelineId })` as a reusable AI Studio base configuration, or on `agent.createSession(...)` for a session-specific override. AgentKit sends it as the top-level `/join` field `pipeline_id`; it is not included inside `properties`. Explicit Agent config such as `.withLlm()`, `.withTts()`, `.withStt()`, `.withMllm()`, `advancedFeatures`, and other builder options may send fields in `properties` that override the saved pipeline settings.
 
 When you omit credentials for supported Agora-managed models, AgentKit sends the matching Agora-managed configuration automatically:
 

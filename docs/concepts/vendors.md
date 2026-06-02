@@ -12,14 +12,14 @@ Each vendor is a typed class that validates options at construction time and ser
 
 | Class         | Provider                | Key constructor params                                                          |
 | ------------- | ----------------------- | ------------------------------------------------------------------------------- |
-| `OpenAI`      | OpenAI Chat Completions | `apiKey`, `model`, `url?`, `maxHistory?`, `greetingMessage?`, `failureMessage?` |
+| `OpenAI`      | OpenAI Chat Completions | `model` for Agora-managed models; `apiKey`, `url`, `model` for BYOK; `maxHistory?`, `greetingMessage?`, `failureMessage?` |
 | `AzureOpenAI` | Azure OpenAI            | `apiKey`, `model`, `resourceName`, `deploymentName`, `apiVersion?`              |
-| `Anthropic`   | Anthropic Claude        | `apiKey`, `model`, `url?`, `maxHistory?`                                        |
+| `Anthropic`   | Anthropic Claude        | `apiKey`, `model`, `url`, `headers`, `maxTokens`, `maxHistory?`                 |
 | `Gemini`      | Google Gemini           | `apiKey`, `model`, `url?`, `maxHistory?`                                        |
-| `Groq`        | Groq                    | `apiKey`, `model`, `url?`, `maxHistory?`                                        |
+| `Groq`        | Groq                    | `apiKey`, `model`, `url`, `maxHistory?`                                         |
 | `VertexAILLM` | Google Vertex AI        | `apiKey`, `model`, `projectId`, `location`, `url?`                              |
-| `AmazonBedrock` | Amazon Bedrock        | `apiKey`, `url`, `model`                                                        |
-| `Dify`        | Dify                    | `apiKey`, `url`, `user?`, `conversationId?`                                     |
+| `AmazonBedrock` | Amazon Bedrock        | `accessKey`, `secretKey`, `region`, `model`                                     |
+| `Dify`        | Dify                    | `apiKey`, `url`, `model`, `user?`, `conversationId?`                            |
 | `CustomLLM`   | OpenAI-compatible LLM   | `apiKey`, `model`, `url`                                                        |
 
 <!-- snippet: executable -->
@@ -29,6 +29,7 @@ import { OpenAI } from 'agora-agents';
 
 const llm = new OpenAI({
   apiKey: 'your-openai-key',
+  url: 'https://api.openai.com/v1/chat/completions',
   model: 'gpt-4o-mini',
 });
 ```
@@ -60,6 +61,7 @@ const tts = new ElevenLabsTTS({
   key: 'your-elevenlabs-key',
   modelId: 'eleven_flash_v2_5',
   voiceId: 'your-voice-id',
+  baseUrl: 'wss://api.elevenlabs.io/v1',
   sampleRate: 24000,
 });
 ```
@@ -68,15 +70,17 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 
 ## STT vendors
 
+`turnDetection.language` sets the Agora interaction language and defaults to `en-US` when omitted. STT vendor `language` options are serialized under `asr.params` using each provider's own format.
+
 | Class             | Provider          | Key constructor params                           |
 | ----------------- | ----------------- | ------------------------------------------------ |
-| `SpeechmaticsSTT` | Speechmatics      | `apiKey`, `language`                             |
-| `DeepgramSTT`     | Deepgram          | `apiKey?`, `model?`, `language?`, `smartFormat?` |
-| `MicrosoftSTT`    | Azure Speech      | `key`, `region`, `language?`                     |
-| `OpenAISTT`       | OpenAI Whisper    | `apiKey`, `model?`, `language?`                  |
-| `GoogleSTT`       | Google Speech     | `apiKey`, `language?`                            |
-| `AmazonSTT`       | Amazon Transcribe | `accessKey`, `secretKey`, `region`, `language?`  |
-| `AssemblyAISTT`   | AssemblyAI        | `apiKey`, `language?`                            |
+| `SpeechmaticsSTT` | Speechmatics      | `apiKey`, `language`, `uri?`                     |
+| `DeepgramSTT`     | Deepgram          | `model` for Agora-managed `nova-2`/`nova-3`; `apiKey` for BYOK; `language?`, `smartFormat?` |
+| `MicrosoftSTT`    | Azure Speech      | `key`, `region`, `language`                      |
+| `OpenAISTT`       | OpenAI Whisper    | `apiKey`, `model?`, `language?`, `prompt?`       |
+| `GoogleSTT`       | Google Speech     | `projectId`, `location`, `adcCredentialsString`, `language` |
+| `AmazonSTT`       | Amazon Transcribe | `accessKey`, `secretKey`, `region`, `language`   |
+| `AssemblyAISTT`   | AssemblyAI        | `apiKey`, `language`, `uri?`                     |
 | `AresSTT`         | Agora ARES        | `language?`                                      |
 | `SarvamSTT`       | Sarvam AI         | `apiKey`, `language`                             |
 

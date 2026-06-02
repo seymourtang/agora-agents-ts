@@ -65,9 +65,14 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'failover-demo', instructions: 'You are helpful.' })
-  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
-  .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 24000 }))
+const agent = new Agent({ name: 'failover-demo' })
+  .withLlm(new OpenAI({
+    apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are helpful.' }],
+  }))
+  .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key' }));
 
 const session = agent.createSession(client, {

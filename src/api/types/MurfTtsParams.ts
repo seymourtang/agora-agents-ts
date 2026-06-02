@@ -5,9 +5,21 @@
  */
 export interface MurfTtsParams {
     /** Murf API key */
-    key: string;
-    /** Voice ID (e.g., Ariana, Natalie, Ken) */
-    voice_id: string;
-    /** Voice style (e.g., Angry, Sad, Conversational, Newscast) */
-    style?: string;
+    api_key: string;
+    /** WebSocket endpoint for streaming TTS output */
+    base_url?: string;
+    /** Voice ID (e.g., Matthew) */
+    voiceId?: string;
+    /** Locale for the selected voice */
+    locale?: string;
+    /** Speech rate adjustment */
+    rate?: number;
+    /** Pitch adjustment */
+    pitch?: number;
+    /** TTS model to use */
+    model?: string;
+    /** Audio sample rate in Hz */
+    sample_rate?: number;
+    /** Accepts any additional properties */
+    [key: string]: any;
 }

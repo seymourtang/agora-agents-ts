@@ -67,6 +67,7 @@ export interface AkoolAvatarOptions {
  *   key: process.env.ELEVENLABS_API_KEY,
  *   modelId: 'eleven_flash_v2_5',
  *   voiceId: 'voice-id',
+ *   baseUrl: 'wss://api.elevenlabs.io/v1',
  *   sampleRate: 16000, // Required for Akool
  * });
  *
@@ -134,9 +135,10 @@ export class AkoolAvatar extends BaseAvatar<AkoolSampleRate> {
  * });
  *
  * const tts = new ElevenLabsTTS({
- *   apiKey: process.env.ELEVENLABS_API_KEY,
+ *   key: process.env.ELEVENLABS_API_KEY,
  *   modelId: 'eleven_flash_v2_5',
  *   voiceId: 'voice-id',
+ *   baseUrl: 'wss://api.elevenlabs.io/v1',
  *   sampleRate: 24000, // Required for LiveAvatar
  * });
  *

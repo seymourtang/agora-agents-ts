@@ -8,9 +8,14 @@ import type * as Agora from "../index.js";
 export interface CartesiaTtsParams {
     /** Cartesia API key */
     api_key: string;
+    /** Model ID (for example, sonic-2) */
+    model_id: string;
+    /** WebSocket URL for the Cartesia streaming API */
+    base_url?: string;
     voice: Agora.CartesiaTtsVoice;
-    /** Model ID (optional) */
-    model_id?: string;
-    /** Audio sampling rate in Hz */
-    sample_rate?: number;
+    output_format?: Agora.CartesiaTtsOutputFormat;
+    /** Target language for speech synthesis */
+    language?: string;
+    /** Accepts any additional properties */
+    [key: string]: any;
 }

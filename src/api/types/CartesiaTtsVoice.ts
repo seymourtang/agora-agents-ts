@@ -8,4 +8,6 @@ export interface CartesiaTtsVoice {
     mode: "id";
     /** Cartesia voice ID */
     id: string;
+    /** Accepts any additional properties */
+    [key: string]: any;
 }

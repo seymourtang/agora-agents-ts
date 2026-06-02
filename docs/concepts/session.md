@@ -65,9 +65,12 @@ When you omit credentials for supported Agora-managed models on the builder, Age
 
 <!-- snippet: fragment -->
 ```typescript
-const agent = new Agent({ instructions: 'Be concise.' })
+const agent = new Agent()
   .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
-  .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
+  .withLlm(new OpenAI({
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'Be concise.' }],
+  }))
   .withTts(new OpenAITTS({ voice: 'alloy' }));
 ```
 
@@ -100,9 +103,14 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'event-demo', instructions: 'You are helpful.' })
-  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
-  .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 24000 }))
+const agent = new Agent({ name: 'event-demo' })
+  .withLlm(new OpenAI({
+    apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are helpful.' }],
+  }))
+  .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }));
 
 const session = agent.createSession(client, {

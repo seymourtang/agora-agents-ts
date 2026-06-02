@@ -25,14 +25,14 @@ async function main(): Promise<void> {
     appCertificate: 'your-app-certificate',
   });
 
-  const agent = new Agent({
-    name: 'support-assistant',
-    instructions: 'You are a concise support voice assistant.',
-    greeting: 'Hello! How can I help you today?',
-    maxHistory: 10,
-  })
+  const agent = new Agent({ name: 'support-assistant' })
     .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
-    .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
+    .withLlm(new OpenAI({
+      model: 'gpt-4o-mini',
+      systemMessages: [{ role: 'system', content: 'You are a concise support voice assistant.' }],
+      greetingMessage: 'Hello! How can I help you today?',
+      maxHistory: 10,
+    }))
     .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
 
   const session = agent.createSession(client, {

@@ -27,8 +27,56 @@ import type {
     SttConfig,
     TtsConfig,
     TurnDetectionConfig,
+    TurnDetectionLanguage,
 } from "./types.js";
 import type { BaseAvatar, BaseLLM, BaseMLLM, BaseSTT, BaseTTS } from "./vendors/base.js";
+
+const DEFAULT_TURN_DETECTION_LANGUAGE: TurnDetectionLanguage = "en-US";
+
+const INTERACTION_LANGUAGES = new Set<string>([
+    "ar-EG",
+    "ar-JO",
+    "ar-SA",
+    "ar-AE",
+    "bn-IN",
+    "zh-CN",
+    "zh-HK",
+    "zh-TW",
+    "nl-NL",
+    "en-IN",
+    "en-US",
+    "fil-PH",
+    "fr-FR",
+    "de-DE",
+    "gu-IN",
+    "he-IL",
+    "hi-IN",
+    "id-ID",
+    "it-IT",
+    "ja-JP",
+    "kn-IN",
+    "ko-KR",
+    "ms-MY",
+    "fa-IR",
+    "pt-PT",
+    "ru-RU",
+    "es-ES",
+    "ta-IN",
+    "te-IN",
+    "th-TH",
+    "tr-TR",
+    "vi-VN",
+]);
+
+function isTurnDetectionLanguage(value: string): value is TurnDetectionLanguage {
+    return INTERACTION_LANGUAGES.has(value);
+}
+
+function assertTurnDetectionLanguage(value: string): asserts value is TurnDetectionLanguage {
+    if (!isTurnDetectionLanguage(value)) {
+        throw new Error(`Invalid interaction language: ${value}`);
+    }
+}
 
 /**
  * Configuration options for creating an Agent.
@@ -39,7 +87,17 @@ import type { BaseAvatar, BaseLLM, BaseMLLM, BaseSTT, BaseTTS } from "./vendors/
 export interface AgentOptions {
     /** Optional name for the agent (used as default session name) */
     name?: string;
-    /** System instructions for the agent */
+    /**
+     * Published AI Studio pipeline ID to use as this agent's base configuration.
+     * Explicit Agent config such as .withLlm(), .withTts(), .withStt(),
+     * advancedFeatures, and other builder options may send fields in
+     * `properties` that override the saved pipeline settings.
+     */
+    pipelineId?: string;
+    /**
+     * System instructions for the agent.
+     * @deprecated Configure this on the LLM vendor with `systemMessages` instead.
+     */
     instructions?: string;
     /** Turn detection configuration */
     turnDetection?: TurnDetectionConfig;
@@ -53,11 +111,20 @@ export interface AgentOptions {
     advancedFeatures?: AdvancedFeatures;
     /** Session parameters */
     parameters?: SessionParamsInput;
-    /** Greeting message */
+    /**
+     * Greeting message.
+     * @deprecated Configure this on the LLM or MLLM vendor with `greetingMessage` instead.
+     */
     greeting?: string;
-    /** Failure message */
+    /**
+     * Failure message.
+     * @deprecated Configure this on the LLM or MLLM vendor with `failureMessage` instead.
+     */
     failureMessage?: string;
-    /** Max conversation history for the standard LLM pipeline. Does not apply to MLLM. */
+    /**
+     * Max conversation history for the standard LLM pipeline. Does not apply to MLLM.
+     * @deprecated Configure this on the LLM vendor with `maxHistory` instead.
+     */
     maxHistory?: number;
     /** Regional access restriction configuration */
     geofence?: GeofenceConfig;
@@ -67,7 +134,10 @@ export interface AgentOptions {
     rtc?: RtcConfig;
     /** Filler word configuration (plays filler words while waiting for LLM responses) */
     fillerWords?: FillerWordsConfig;
-    /** Greeting playback configuration for multi-user channels */
+    /**
+     * Greeting playback configuration for multi-user channels.
+     * @deprecated Configure this on the LLM vendor with `greetingConfigs` instead.
+     */
     greetingConfigs?: LlmGreetingConfigs;
 }
 
@@ -82,13 +152,14 @@ export interface AgentOptions {
  *
  * // Use the fluent builder pattern to configure vendors
  * const agent = new Agent({ instructions: 'You are helpful.' })
- *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4' }))
- *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', sampleRate: 24000 }))
+ *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4', url: 'https://api.openai.com/v1/chat/completions' }))
+ *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
  *   .withStt(new DeepgramSTT({ apiKey: '...', model: 'nova-2' }));
  * ```
  */
 export class Agent<TTSSampleRate extends number = number> {
     private _name?: string;
+    private _pipelineId?: string;
     private _llm?: LlmConfig;
     private _tts?: TtsConfig;
     private _stt?: SttConfig;
@@ -111,6 +182,7 @@ export class Agent<TTSSampleRate extends number = number> {
 
     constructor(options: AgentOptions = {}) {
         this._name = options.name;
+        this._pipelineId = options.pipelineId;
         this._instructions = options.instructions;
         this._greeting = options.greeting;
         this._failureMessage = options.failureMessage;
@@ -154,7 +226,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified LLM vendor.
      *
-     * @param vendor - LLM vendor instance (e.g., new OpenAI({ apiKey: '...', model: 'gpt-4' }))
+     * @param vendor - LLM vendor instance (e.g., new OpenAI({ apiKey: '...', model: 'gpt-4', url: 'https://api.openai.com/v1/chat/completions' }))
      */
     withLlm(vendor: BaseLLM): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -168,7 +240,7 @@ export class Agent<TTSSampleRate extends number = number> {
      * The sample rate type is tracked for compile-time avatar compatibility checking.
      *
      * @template SR - Sample rate literal type
-     * @param vendor - TTS vendor instance (e.g., new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', sampleRate: 24000 }))
+     * @param vendor - TTS vendor instance (e.g., new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
      * @returns Agent with tracked sample rate type
      */
     withTts<SR extends number>(vendor: BaseTTS<SR>): Agent<SR> {
@@ -254,6 +326,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *     key: '...',
      *     modelId: '...',
      *     voiceId: '...',
+     *     baseUrl: 'wss://api.elevenlabs.io/v1',
      *     sampleRate: 24000, // Required for HeyGen
      *   }))
      *   .withAvatar(new HeyGenAvatar({
@@ -291,6 +364,8 @@ export class Agent<TTSSampleRate extends number = number> {
 
     /**
      * Returns a new Agent with the specified instructions.
+     *
+     * @deprecated Configure system messages on the LLM vendor instead.
      */
     withInstructions(instructions: string): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -300,6 +375,8 @@ export class Agent<TTSSampleRate extends number = number> {
 
     /**
      * Returns a new Agent with the specified greeting message.
+     *
+     * @deprecated Configure the greeting on the LLM or MLLM vendor instead.
      */
     withGreeting(greeting: string): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -312,6 +389,8 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * Serializes to `llm.greeting_configs`. Agent-level values override any
      * vendor-level `greeting_configs` configured on the LLM vendor.
+     *
+     * @deprecated Configure greeting playback on the LLM vendor instead.
      */
     withGreetingConfigs(configs: LlmGreetingConfigs): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -381,6 +460,8 @@ export class Agent<TTSSampleRate extends number = number> {
      * Returns a new Agent with the specified failure message.
      *
      * The failure message is played via TTS when the LLM call fails.
+     *
+     * @deprecated Configure the failure message on the LLM or MLLM vendor instead.
      */
     withFailureMessage(message: string): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -391,6 +472,8 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified maximum conversation history length.
      * Applies to the standard LLM pipeline only; the v2.7 MLLM core schema has no max_history field.
+     *
+     * @deprecated Configure max history on the LLM vendor instead.
      */
     withMaxHistory(maxHistory: number): Agent<TTSSampleRate> {
         const newAgent = this._clone();
@@ -445,6 +528,13 @@ export class Agent<TTSSampleRate extends number = number> {
      */
     get name(): string | undefined {
         return this._name;
+    }
+
+    /**
+     * Get the AI Studio pipeline ID used as this agent's base configuration.
+     */
+    get pipelineId(): string | undefined {
+        return this._pipelineId;
     }
 
     /**
@@ -593,6 +683,7 @@ export class Agent<TTSSampleRate extends number = number> {
     } {
         return {
             name: this._name,
+            pipelineId: this._pipelineId,
             instructions: this._instructions,
             turnDetection: this._turnDetection,
             interruption: this._interruption,
@@ -730,7 +821,6 @@ export class Agent<TTSSampleRate extends number = number> {
             idle_timeout: opts.idleTimeout,
             enable_string_uid: opts.enableStringUid,
             mllm: this._mllm,
-            turn_detection: this._turnDetection,
             interruption: this._interruption,
             sal: this._sal,
             avatar: this._avatar,
@@ -755,7 +845,7 @@ export class Agent<TTSSampleRate extends number = number> {
                     c.failure_message = this._failureMessage;
                 }
             }
-            return { ...base, mllm: mllmConfig };
+            return { ...base, mllm: mllmConfig, turn_detection: this._turnDetection };
         }
 
         if (!opts.skipVendorValidation) {
@@ -767,7 +857,7 @@ export class Agent<TTSSampleRate extends number = number> {
             }
         }
 
-        const llmConfig: Agora.StartAgentsRequest.Properties.Llm | undefined = this._llm
+        const llmConfig: Agora.Llm | undefined = this._llm
             ? {
                   ...this._llm,
                   system_messages: this._instructions
@@ -780,7 +870,10 @@ export class Agent<TTSSampleRate extends number = number> {
               }
             : undefined;
 
-        return { ...base, llm: llmConfig, tts: this._tts, asr: this._stt };
+        const asrConfig = this._resolveAsrConfig() as Agora.Asr | undefined;
+        const turnDetectionConfig = this._resolveTurnDetectionConfig();
+
+        return { ...base, turn_detection: turnDetectionConfig, llm: llmConfig, tts: this._tts, asr: asrConfig };
     }
 
     /**
@@ -795,6 +888,7 @@ export class Agent<TTSSampleRate extends number = number> {
     private _clone(): Agent<TTSSampleRate> {
         const newAgent = new Agent() as Agent<TTSSampleRate>;
         newAgent._name = this._name;
+        newAgent._pipelineId = this._pipelineId;
         newAgent._llm = this._llm;
         newAgent._tts = this._tts;
         newAgent._stt = this._stt;
@@ -815,6 +909,32 @@ export class Agent<TTSSampleRate extends number = number> {
         newAgent._fillerWords = this._fillerWords;
         newAgent._greetingConfigs = this._greetingConfigs;
         return newAgent;
+    }
+
+    private _resolveAsrConfig(): SttConfig | undefined {
+        const asrConfig = { ...(this._stt ?? {}) } as SttConfig & { language?: string };
+        if (this._stt === undefined) {
+            asrConfig.vendor = "ares";
+        }
+        delete asrConfig.language;
+
+        return Object.keys(asrConfig).length > 0 ? asrConfig : undefined;
+    }
+
+    private _resolveTurnDetectionConfig(): TurnDetectionConfig {
+        const turnDetection = { ...(this._turnDetection ?? {}) } as TurnDetectionConfig & { language?: string };
+        const existingTurnDetectionLanguage = turnDetection.language;
+        const existingAsrLanguage = this._stt?.language;
+        const language =
+            existingTurnDetectionLanguage ??
+            (existingAsrLanguage !== undefined && isTurnDetectionLanguage(existingAsrLanguage)
+                ? existingAsrLanguage
+                : DEFAULT_TURN_DETECTION_LANGUAGE);
+
+        assertTurnDetectionLanguage(language);
+        turnDetection.language = language;
+
+        return turnDetection;
     }
 }
 

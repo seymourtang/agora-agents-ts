@@ -7,6 +7,7 @@
 import { AgentThinkAgentManagementRequest as AgentThinkRequestNS } from "../api/resources/agentManagement/client/requests/AgentThinkAgentManagementRequest.js";
 import { SpeakAgentsRequest as SpeakAgentsRequestNS } from "../api/resources/agents/client/requests/SpeakAgentsRequest.js";
 import { StartAgentsRequest as StartAgentsRequestNS } from "../api/resources/agents/client/requests/StartAgentsRequest.js";
+import { MllmTurnDetection as MllmTurnDetectionNS } from "../api/types/MllmTurnDetection.js";
 
 /** Data channel: `"rtm"` | `"datastream"` */
 export const DataChannel: typeof StartAgentsRequestNS.Properties.Parameters.DataChannel =
@@ -77,20 +78,16 @@ export const SpeakPriorityAppend: SpeakAgentsRequestNS.Priority = SpeakAgentsReq
 export const SpeakPriorityIgnore: SpeakAgentsRequestNS.Priority = SpeakAgentsRequestNS.Priority.Ignore;
 
 /** MLLM turn-detection mode: `"agora_vad"` | `"server_vad"` | `"semantic_vad"` */
-export const MllmTurnDetectionModeValues: typeof StartAgentsRequestNS.Properties.Mllm.TurnDetection.Mode =
-    StartAgentsRequestNS.Properties.Mllm.TurnDetection.Mode;
+export const MllmTurnDetectionModeValues: typeof MllmTurnDetectionNS.Mode = MllmTurnDetectionNS.Mode;
 
 /** MLLM turn-detection mode: Agora VAD. */
-export const MllmTurnDetectionModeAgoraVad: StartAgentsRequestNS.Properties.Mllm.TurnDetection.Mode =
-    StartAgentsRequestNS.Properties.Mllm.TurnDetection.Mode.AgoraVad;
+export const MllmTurnDetectionModeAgoraVad: MllmTurnDetectionNS.Mode = MllmTurnDetectionNS.Mode.AgoraVad;
 
 /** MLLM turn-detection mode: server/vendor VAD. */
-export const MllmTurnDetectionModeServerVad: StartAgentsRequestNS.Properties.Mllm.TurnDetection.Mode =
-    StartAgentsRequestNS.Properties.Mllm.TurnDetection.Mode.ServerVad;
+export const MllmTurnDetectionModeServerVad: MllmTurnDetectionNS.Mode = MllmTurnDetectionNS.Mode.ServerVad;
 
 /** MLLM turn-detection mode: semantic VAD. */
-export const MllmTurnDetectionModeSemanticVad: StartAgentsRequestNS.Properties.Mllm.TurnDetection.Mode =
-    StartAgentsRequestNS.Properties.Mllm.TurnDetection.Mode.SemanticVad;
+export const MllmTurnDetectionModeSemanticVad: MllmTurnDetectionNS.Mode = MllmTurnDetectionNS.Mode.SemanticVad;
 
 /** Think action when the agent is listening: inject custom text without interrupting. */
 export const ThinkOnListeningActionInject: AgentThinkRequestNS.OnListeningAction =

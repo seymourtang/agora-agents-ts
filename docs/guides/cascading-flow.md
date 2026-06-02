@@ -34,20 +34,20 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({
-  name: 'cascading-assistant',
-  instructions: 'You are a friendly voice assistant. Keep answers short and natural.',
-  greeting: 'Hi there! What can I do for you?',
-  maxHistory: 20,
-})
+const agent = new Agent({ name: 'cascading-assistant' })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
     model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are a friendly voice assistant. Keep answers short and natural.' }],
+    greetingMessage: 'Hi there! What can I do for you?',
+    maxHistory: 20,
   }))
   .withTts(new ElevenLabsTTS({
     key: 'your-elevenlabs-key',
     modelId: 'eleven_flash_v2_5',
     voiceId: 'your-voice-id',
+    baseUrl: 'wss://api.elevenlabs.io/v1',
     sampleRate: 24000,
   }))
   .withStt(new DeepgramSTT({
@@ -115,6 +115,7 @@ const response = await client.agents.start({
         key: 'your-elevenlabs-key',
         model_id: 'eleven_flash_v2_5',
         voice_id: 'your-voice-id',
+        base_url: 'wss://api.elevenlabs.io/v1',
         sample_rate: 24000,
       },
     },
@@ -155,17 +156,15 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({
-  name: 'azure-assistant',
-  instructions: 'You are a professional support agent.',
-  greeting: 'Welcome! How can I assist you?',
-  maxHistory: 15,
-})
+const agent = new Agent({ name: 'azure-assistant' })
   .withLlm(new AzureOpenAI({
     apiKey: 'your-azure-openai-key',
     model: 'gpt-4',
     resourceName: 'my-azure-resource',
     deploymentName: 'gpt-4-deployment',
+    systemMessages: [{ role: 'system', content: 'You are a professional support agent.' }],
+    greetingMessage: 'Welcome! How can I assist you?',
+    maxHistory: 15,
   }))
   .withTts(new MicrosoftTTS({
     key: 'your-azure-speech-key',
@@ -190,8 +189,8 @@ await session.start();
 
 ## Configuration tips
 
-- **`maxHistory`** controls how many conversation turns are sent to the LLM. Higher values give better context but increase token usage and latency.
-- **`instructions`** on the `Agent` is injected as a system message. You can also pass `systemMessages` directly on the LLM vendor for more complex prompt setups.
+- **`maxHistory`** on the LLM vendor controls how many conversation turns are sent to the LLM. Higher values give better context but increase token usage and latency.
+- **`systemMessages`** on the LLM vendor provides the model prompt and keeps prompt ownership with the LLM configuration.
 - **`idleTimeout`** (in `SessionOptions`) auto-stops the agent if no audio activity is detected for the given number of seconds. Set to `0` to disable.
 
 ## Next steps

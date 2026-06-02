@@ -12,4 +12,10 @@ export interface MicrosoftTtsParams {
     voice_name: string;
     /** Audio sampling rate in Hz */
     sample_rate?: number;
+    /** Speaking rate multiplier. Values between 0.5 and 2.0. */
+    speed?: number;
+    /** Audio volume. Values between 0.0 and 100.0. */
+    volume?: number;
+    /** Accepts any additional properties */
+    [key: string]: any;
 }

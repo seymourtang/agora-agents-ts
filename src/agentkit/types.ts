@@ -7,6 +7,8 @@ import type {
     AgentThinkAgentManagementResponse,
     AmazonTtsParams as AmazonTtsParamsType,
     AmazonTts as AmazonTtsType,
+    Asr,
+    AsrLanguage,
     CartesiaTtsParams as CartesiaTtsParamsType,
     CartesiaTts as CartesiaTtsType,
     ElevenLabsTtsParams as ElevenLabsTtsParamsType,
@@ -21,10 +23,14 @@ import type {
     HumeAiTtsParams as HumeAiTtsParamsType,
     HumeAiTts as HumeAiTtsType,
     ListAgentsResponse,
+    Llm,
     MicrosoftTtsParams as MicrosoftTtsParamsType,
     MicrosoftTts as MicrosoftTtsType,
     MinimaxTtsParams as MinimaxTtsParamsType,
     MinimaxTts as MinimaxTtsType,
+    Mllm,
+    MllmTurnDetection,
+    MllmTurnDetection as MllmTurnDetectionNS,
     MurfTtsParams as MurfTtsParamsType,
     MurfTts as MurfTtsType,
     OpenAiTtsParams as OpenAiTtsParamsType,
@@ -46,7 +52,7 @@ import type { PresetInput } from "./presets.js";
 // =============================================================================
 
 /** LLM request style (openai, gemini, anthropic, dify) */
-export type LlmStyle = StartAgentsRequest.Properties.Llm.Style;
+export type LlmStyle = Llm.Style;
 
 /**
  * STT/ASR (Speech-to-Text) configuration with vendor-specific typed parameters.
@@ -54,37 +60,40 @@ export type LlmStyle = StartAgentsRequest.Properties.Llm.Style;
  * When using shorthand strings or minimal configs, the untyped variant is available.
  */
 export type SttConfig =
-    | { vendor: "speechmatics"; language?: string; params: SpeechmaticsParams }
-    | { vendor: "deepgram"; language?: string; params?: DeepgramParams }
-    | { vendor: "microsoft"; language?: string; params: MicrosoftAsrParams }
-    | { vendor: "openai"; language?: string; params: OpenAiAsrParams }
-    | { vendor: "google"; language?: string; params: GoogleAsrParams }
-    | { vendor: "amazon"; language?: string; params: AmazonAsrParams }
-    | { vendor: "assemblyai"; language?: string; params?: AssemblyAiParams }
-    | { vendor: "ares"; language?: string; params?: AresParams }
-    | { vendor: "sarvam"; language?: string; params?: SarvamAsrParams }
-    | StartAgentsRequest.Properties.Asr; // Fallback for shorthand/untyped configs
+    | { vendor: "speechmatics"; language?: TurnDetectionLanguage; params: SpeechmaticsParams }
+    | { vendor: "deepgram"; language?: TurnDetectionLanguage; params: DeepgramParams }
+    | { vendor: "microsoft"; language?: TurnDetectionLanguage; params: MicrosoftAsrParams }
+    | { vendor: "openai"; language?: TurnDetectionLanguage; params: OpenAiAsrParams }
+    | { vendor: "google"; language?: TurnDetectionLanguage; params: GoogleAsrParams }
+    | { vendor: "amazon"; language?: TurnDetectionLanguage; params: AmazonAsrParams }
+    | { vendor: "assemblyai"; language?: TurnDetectionLanguage; params: AssemblyAiParams }
+    | { vendor: "ares"; language?: TurnDetectionLanguage; params?: AresParams }
+    | { vendor: "sarvam"; language?: TurnDetectionLanguage; params: SarvamAsrParams }
+    | Asr; // Fallback for shorthand/untyped configs
 
 /** ASR configuration — alias for {@link SttConfig} (wire field: `asr`). */
 export type AsrConfig = SttConfig;
 
 /** STT vendor (ares, microsoft, deepgram, openai, etc.) */
-export type SttVendor = StartAgentsRequest.Properties.Asr.Vendor;
+export type SttVendor = string;
 
 /** TTS (Text-to-Speech) configuration - discriminated union */
 export type TtsConfig = Tts;
 
 /** MLLM (Multimodal LLM) configuration */
-export type MllmConfig = StartAgentsRequest.Properties.Mllm;
+export type MllmConfig = Mllm;
 
 /** MLLM vendor (openai, gemini, vertexai, xai) */
-export type MllmVendor = StartAgentsRequest.Properties.Mllm.Vendor;
+export type MllmVendor = Mllm.Vendor;
 
 /** Avatar configuration */
 export type AvatarConfig = StartAgentsRequest.Properties.Avatar;
 
 /** Avatar vendor (akool, liveavatar, anam, generic, deprecated heygen) */
 export type AvatarVendor = StartAgentsRequest.Properties.Avatar.Vendor;
+
+/** BCP-47 language tag used by `turn_detection.language`. */
+export type TurnDetectionLanguage = AsrLanguage;
 
 /** Turn detection configuration */
 export type TurnDetectionConfig = StartAgentsRequest.Properties.TurnDetection;
@@ -189,10 +198,10 @@ export type InterruptionConfig = StartAgentsRequest.Properties.Interruption;
 export type InterruptionMode = StartAgentsRequest.Properties.Interruption.Mode;
 
 /** MLLM turn-detection configuration (`mllm.turn_detection`) */
-export type MllmTurnDetectionConfig = StartAgentsRequest.Properties.Mllm.TurnDetection;
+export type MllmTurnDetectionConfig = MllmTurnDetection;
 
 /** MLLM turn-detection mode (`agora_vad` | `server_vad` | `semantic_vad`) */
-export type MllmTurnDetectionMode = StartAgentsRequest.Properties.Mllm.TurnDetection.Mode;
+export type MllmTurnDetectionMode = MllmTurnDetectionNS.Mode;
 
 /** Options for `AgentSession.think()` */
 export type ThinkOnListeningAction = AgentThinkAgentManagementRequest.OnListeningAction;
@@ -257,13 +266,13 @@ export type Labels = Record<string, string>;
 // =============================================================================
 
 /** LLM greeting broadcast configuration (`llm.greeting_configs`) */
-export type LlmGreetingConfigs = StartAgentsRequest.Properties.Llm.GreetingConfigs;
+export type LlmGreetingConfigs = Record<string, unknown>;
 
 /** Greeting broadcast mode: `"single_every"` | `"single_first"` */
-export type LlmGreetingConfigsMode = StartAgentsRequest.Properties.Llm.GreetingConfigs.Mode;
+export type LlmGreetingConfigsMode = string;
 
 /** MCP server config item (`llm.mcp_servers[]`) */
-export type McpServersItem = StartAgentsRequest.Properties.Llm.McpServers.Item;
+export type McpServersItem = Record<string, unknown>;
 
 // =============================================================================
 // Agent Configuration (combines all the above)
@@ -297,7 +306,7 @@ export interface SessionOptions {
     enableStringUid?: boolean;
     /** Preset IDs to use as the base ASR/LLM/TTS configuration for this session */
     preset?: PresetInput;
-    /** Published AI Studio pipeline ID to use as the base configuration for this session */
+    /** Published AI Studio pipeline ID to use as this session's base configuration. Overrides agent.pipelineId. */
     pipelineId?: string;
     /**
      * Token lifetime in seconds (default: 86400 = 24 hours, Agora maximum).
@@ -483,7 +492,7 @@ export type LlmConfig =
     | (BaseLlmConfig & { style: "anthropic"; params: AnthropicLlmParams })
     | (BaseLlmConfig & { style: "dify"; params: DifyLlmParams })
     | (BaseLlmConfig & { style?: undefined; params?: Record<string, unknown> })
-    | StartAgentsRequest.Properties.Llm; // Fallback for shorthand configs
+    | Llm; // Fallback for shorthand configs
 
 // =============================================================================
 // STT/ASR Vendor-Specific Parameter Types
@@ -498,6 +507,8 @@ export interface SpeechmaticsParams {
     api_key: string;
     /** Language code for transcription (e.g., 'en', 'es', 'fr') (required) */
     language: string;
+    /** Speechmatics streaming WebSocket URL */
+    uri?: string;
     /** Additional Speechmatics-specific parameters passed directly to Speechmatics API */
     [key: string]: unknown;
 }
@@ -508,7 +519,7 @@ export interface SpeechmaticsParams {
  */
 export interface DeepgramParams {
     /** Deepgram API key */
-    api_key?: string;
+    key?: string;
     /** Model to use (e.g., 'nova-2', 'enhanced', 'base') */
     model?: string;
     /** Language code (e.g., 'en-US', 'es', 'fr') */
@@ -543,8 +554,13 @@ export interface MicrosoftAsrParams {
 export interface OpenAiAsrParams {
     /** OpenAI API key (required) */
     api_key: string;
-    /** Model to use (default: 'whisper-1') */
-    model?: string;
+    /** OpenAI transcription settings */
+    input_audio_transcription?: {
+        model?: string;
+        prompt?: string;
+        language?: string;
+        [key: string]: unknown;
+    };
     /** Additional OpenAI-specific parameters */
     [key: string]: unknown;
 }
@@ -554,10 +570,16 @@ export interface OpenAiAsrParams {
  * @see https://docs.agora.io/en/conversational-ai/models/asr/google
  */
 export interface GoogleAsrParams {
-    /** Google Cloud API key (required) */
-    api_key: string;
+    /** Google Cloud project ID where Speech-to-Text is enabled (required) */
+    project_id: string;
+    /** Google Cloud region for the recognizer (required) */
+    location: string;
+    /** Google service account credentials JSON string (required) */
+    adc_credentials_string: string;
     /** Language code (e.g., 'en-US', 'es-ES') */
     language?: string;
+    /** Recognition model to use */
+    model?: string;
     /** Additional Google Speech-to-Text parameters */
     [key: string]: unknown;
 }
@@ -568,13 +590,13 @@ export interface GoogleAsrParams {
  */
 export interface AmazonAsrParams {
     /** AWS Access Key ID (required) */
-    access_key: string;
+    access_key_id: string;
     /** AWS Secret Access Key (required) */
-    secret_key: string;
+    secret_access_key: string;
     /** AWS region (e.g., 'us-east-1') (required) */
     region: string;
     /** Language code */
-    language?: string;
+    language_code?: string;
     /** Additional Amazon Transcribe parameters */
     [key: string]: unknown;
 }
@@ -588,6 +610,8 @@ export interface AssemblyAiParams {
     api_key: string;
     /** Language code */
     language?: string;
+    /** AssemblyAI streaming WebSocket URL */
+    uri?: string;
     /** Additional AssemblyAI-specific parameters */
     [key: string]: unknown;
 }
@@ -597,8 +621,6 @@ export interface AssemblyAiParams {
  * @see https://docs.agora.io/en/conversational-ai/models/asr/ares
  */
 export interface AresParams {
-    /** Language code for ARES ASR */
-    language?: string;
     /** Additional ARES-specific parameters */
     [key: string]: unknown;
 }

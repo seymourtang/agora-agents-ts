@@ -12,24 +12,28 @@ description: The Agent builder — configure an AI agent with LLM, TTS, STT, and
 
 <!-- snippet: executable -->
 ```typescript
-import { Agent } from 'agora-agents';
+import { Agent, OpenAI } from 'agora-agents';
 
-const agent = new Agent({
-  name: 'my-assistant',
-  instructions: 'You are a helpful voice assistant.',
-  greeting: 'Hello! How can I help?',
-  maxHistory: 20,
-});
+const agent = new Agent({ name: 'my-assistant' }).withLlm(
+  new OpenAI({
+    apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are a helpful voice assistant.' }],
+    greetingMessage: 'Hello! How can I help?',
+    maxHistory: 20,
+  }),
+);
 ```
 
 | Option | Type | Description |
 |---|---|---|
 | `name` | `string` | Agent name (used as default session name) |
-| `instructions` | `string` | System prompt — sent as a system message to the LLM |
-| `greeting` | `string` | First message spoken when the session starts |
-| `failureMessage` | `string` | Message spoken when an LLM call fails |
-| `maxHistory` | `number` | Max conversation turns kept in LLM context |
-| `turnDetection` | `TurnDetectionConfig` | Voice activity detection settings |
+| `instructions` | `string` | Deprecated. Use LLM vendor `systemMessages` instead. |
+| `greeting` | `string` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
+| `failureMessage` | `string` | Deprecated. Use LLM/MLLM vendor `failureMessage` instead. |
+| `maxHistory` | `number` | Deprecated. Use LLM vendor `maxHistory` instead. |
+| `turnDetection` | `TurnDetectionConfig` | Interaction language and voice activity detection settings |
 | `sal` | `SalConfig` | Selective Attention Locking configuration |
 | `avatar` | `AvatarConfig` | Avatar configuration (prefer `withAvatar()` for type safety) |
 | `advancedFeatures` | `AdvancedFeatures` | Enable MLLM mode, AI-VAD, etc. |
@@ -50,15 +54,15 @@ Each method returns a new `Agent` instance with the updated configuration.
 | `withStt` | `withStt(vendor: BaseSTT): Agent` | Set the STT vendor |
 | `withMllm` | `withMllm(vendor: BaseMLLM): Agent` | Set the MLLM vendor (for multimodal flow). Not compatible with `withAvatar()`. |
 | `withAvatar` | `withAvatar<SR>(vendor: BaseAvatar<SR>): Agent` | Set the avatar vendor (enforces TTS sample rate match). Requires the cascading pipeline; not supported with `withMllm()`. |
-| `withTurnDetection` | `withTurnDetection(config: TurnDetectionConfig): Agent` | Configure cascading-flow SOS/EOS detection; use `withInterruption()` for interruption behavior |
-| `withInstructions` | `withInstructions(text: string): Agent` | Override the system prompt |
-| `withGreeting` | `withGreeting(text: string): Agent` | Override the greeting message |
+| `withTurnDetection` | `withTurnDetection(config: TurnDetectionConfig): Agent` | Configure `turn_detection.language` and cascading-flow SOS/EOS detection; use `withInterruption()` for interruption behavior |
+| `withInstructions` | `withInstructions(text: string): Agent` | Deprecated. Use LLM vendor `systemMessages` instead. |
+| `withGreeting` | `withGreeting(text: string): Agent` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
 | `withName` | `withName(name: string): Agent` | Override the agent name |
 | `withSal` | `withSal(config: SalConfig): Agent` | Set SAL configuration |
 | `withAdvancedFeatures` | `withAdvancedFeatures(features: AdvancedFeatures): Agent` | Set advanced features |
 | `withParameters` | `withParameters(parameters: SessionParams): Agent` | Set session parameters |
-| `withFailureMessage` | `withFailureMessage(message: string): Agent` | Set failure message |
-| `withMaxHistory` | `withMaxHistory(maxHistory: number): Agent` | Set max history length |
+| `withFailureMessage` | `withFailureMessage(message: string): Agent` | Deprecated. Use LLM/MLLM vendor `failureMessage` instead. |
+| `withMaxHistory` | `withMaxHistory(maxHistory: number): Agent` | Deprecated. Use LLM vendor `maxHistory` instead. |
 | `withGeofence` | `withGeofence(geofence: GeofenceConfig): Agent` | Set geofence configuration |
 | `withLabels` | `withLabels(labels: Labels): Agent` | Set custom labels |
 | `withRtc` | `withRtc(rtc: RtcConfig): Agent` | Set RTC configuration |
@@ -99,9 +103,14 @@ Because every method returns a new instance, you can create a base agent and der
 ```typescript
 import { Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agents';
 
-const base = new Agent({ instructions: 'You are helpful.' })
-  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
-  .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 24000 }))
+const base = new Agent()
+  .withLlm(new OpenAI({
+    apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are helpful.' }],
+  }))
+  .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }));
 
 // Two sessions from the same agent config — safe, no shared mutable state

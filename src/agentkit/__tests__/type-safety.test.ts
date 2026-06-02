@@ -30,6 +30,7 @@ function _validExample1(): Agent<24000> {
                 key: "test",
                 modelId: "eleven_flash_v2_5",
                 voiceId: "test",
+                baseUrl: "wss://api.elevenlabs.io/v1",
                 sampleRate: 24000,
             }),
         )
@@ -50,6 +51,7 @@ function _validExample2(): Agent<16000> {
                 key: "test",
                 modelId: "eleven_flash_v2_5",
                 voiceId: "test",
+                baseUrl: "wss://api.elevenlabs.io/v1",
                 sampleRate: 16000,
             }),
         )
@@ -87,6 +89,8 @@ function _validExample4(): Agent<24000> {
             new OpenAITTS({
                 apiKey: "test",
                 voice: "alloy",
+                model: "gpt-4o-mini-tts",
+                baseUrl: "https://api.openai.com/v1",
             }),
         )
         .withAvatar(
@@ -105,6 +109,7 @@ function _validExample5(): Agent<16000> {
             new CartesiaTTS({
                 apiKey: "test",
                 voiceId: "test",
+                modelId: "sonic-2",
                 sampleRate: 16000,
             }),
         )
@@ -119,7 +124,12 @@ function _validExample5(): Agent<16000> {
 new DeepgramSTT({ model: "nova-3" });
 new OpenAI({ model: "gpt-5-mini" });
 new OpenAITTS({ voice: "alloy" });
-new OpenAI({ apiKey: "test", model: "gpt-5-mini", vendor: "custom" });
+new OpenAI({
+    apiKey: "test",
+    model: "gpt-5-mini",
+    url: "https://api.openai.com/v1/chat/completions",
+    vendor: "custom",
+});
 new MiniMaxTTS({
     model: "speech-2.6-turbo",
 });
@@ -156,6 +166,7 @@ function invalidMismatch1(): Agent<24000> {
                 key: "test",
                 modelId: "eleven_flash_v2_5",
                 voiceId: "test",
+                baseUrl: "wss://api.elevenlabs.io/v1",
                 sampleRate: 16000, // ❌ Wrong rate for HeyGen
             })
         )
@@ -178,6 +189,7 @@ function invalidMismatch2(): Agent<16000> {
                 key: "test",
                 modelId: "eleven_flash_v2_5",
                 voiceId: "test",
+                baseUrl: "wss://api.elevenlabs.io/v1",
                 sampleRate: 24000, // ❌ Wrong rate for Akool
             })
         )
@@ -224,7 +236,8 @@ function invalidEnum1() {
             key: "test",
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
-            sampleRate: 25000, // ❌ Not in enum: 16000, 22050, 24000, 44100
+            baseUrl: "wss://api.elevenlabs.io/v1",
+                sampleRate: 25000, // ❌ Not in enum: 16000, 22050, 24000, 44100
         })
     );
 }
@@ -251,7 +264,8 @@ function invalidEnum3() {
         new CartesiaTTS({
             key: "test",
             voiceId: "test",
-            sampleRate: 32000, // ❌ Not in enum: 8000-48000 (specific values)
+            baseUrl: "wss://api.elevenlabs.io/v1",
+                sampleRate: 32000, // ❌ Not in enum: 8000-48000 (specific values)
         })
     );
 }
@@ -279,6 +293,7 @@ function _edgeCase2() {
             key: "test",
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
+            baseUrl: "wss://api.elevenlabs.io/v1",
             sampleRate: 16000,
         }),
     );
@@ -292,6 +307,7 @@ function _edgeCase3(): Agent<24000> {
                 key: "test",
                 modelId: "eleven_flash_v2_5",
                 voiceId: "test",
+                baseUrl: "wss://api.elevenlabs.io/v1",
                 sampleRate: 24000,
             }),
         )
@@ -316,6 +332,7 @@ function _typeInference1() {
             key: "test",
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
+            baseUrl: "wss://api.elevenlabs.io/v1",
             sampleRate: 24000,
         }),
     );
@@ -331,6 +348,7 @@ function _typeInference2() {
             key: "test",
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
+            baseUrl: "wss://api.elevenlabs.io/v1",
             sampleRate: 16000,
         }),
     );
@@ -345,6 +363,8 @@ function _typeInference3() {
         new OpenAITTS({
             apiKey: "test",
             voice: "alloy",
+            model: "gpt-4o-mini-tts",
+            baseUrl: "https://api.openai.com/v1",
         }),
     );
 

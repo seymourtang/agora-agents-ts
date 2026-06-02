@@ -158,6 +158,7 @@ export type {
     ThinkResponse,
     TtsConfig,
     TurnDetectionConfig,
+    TurnDetectionLanguage,
     TurnDetectionNestedConfig,
     TurnDetectionType,
     VertexAILLMOptions,

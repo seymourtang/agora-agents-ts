@@ -14,7 +14,8 @@ import type * as Agora from "../../../../index.js";
  *             remote_rtc_uids: ["1002"],
  *             idle_timeout: 120,
  *             asr: {
- *                 language: "en-US"
+ *                 vendor: "ares",
+ *                 vendor: "ares"
  *             },
  *             tts: {
  *                 vendor: "microsoft",
@@ -32,7 +33,7 @@ import type * as Agora from "../../../../index.js";
  *                         "content": "You are a helpful chatbot."
  *                     }],
  *                 params: {
- *                     "model": "gpt-4o-mini"
+ *                     model: "gpt-4o-mini"
  *                 },
  *                 max_history: 32,
  *                 greeting_message: "Hello, how can I assist you today?",
@@ -95,13 +96,13 @@ export namespace StartAgentsRequest {
         /** Advanced features configuration. */
         advanced_features?: Properties.AdvancedFeatures;
         /** Automatic Speech Recognition (ASR) configuration. */
-        asr?: Properties.Asr;
+        asr?: Agora.Asr;
         /** Text-to-speech (TTS) module configuration. */
         tts?: Agora.Tts;
         /** Large language model (LLM) configuration. */
-        llm?: Properties.Llm;
+        llm?: Agora.Llm;
         /** Multimodal Large Language Model (MLLM) configuration for real-time audio and text processing. `mllm` is an exclusive alternative to the standard `asr` + `llm` + `tts` pipeline. */
-        mllm?: Properties.Mllm;
+        mllm?: Agora.Mllm;
         /** Avatar configuration. */
         avatar?: Properties.Avatar;
         /** Conversation turn detection settings. Controls the logic for voice activity detection and conversation turn determination. This object has no effect when `mllm.enable` is true; use `mllm.turn_detection` instead. */
@@ -168,351 +169,6 @@ export namespace StartAgentsRequest {
         }
 
         /**
-         * Automatic Speech Recognition (ASR) configuration.
-         */
-        export interface Asr {
-            /** The BCP-47 language tag identifying the primary language used for agent interaction. If `params` contains a vendor-specific language code, it takes precedence over this setting. */
-            language?: string;
-            /**
-             * ASR provider:
-             * - `ares`: Adaptive Recognition Engine for Speech
-             * - `microsoft`: Microsoft Azure
-             * - `deepgram`: Deepgram
-             * - `openai`: OpenAI (Beta)
-             * - `speechmatics`: Speechmatics
-             * - `assemblyai`: AssemblyAI (Beta)
-             * - `amazon`: Amazon Transcribe (Beta)
-             * - `google`: Google (Beta)
-             * - `sarvam`: Sarvam (Beta)
-             */
-            vendor?: Asr.Vendor;
-            /** The configuration parameters for the ASR vendor. See [ASR Overview](https://docs.agora.io/en/conversational-ai/models/asr/overview) for details. */
-            params?: Record<string, unknown>;
-        }
-
-        export namespace Asr {
-            /**
-             * ASR provider:
-             * - `ares`: Adaptive Recognition Engine for Speech
-             * - `microsoft`: Microsoft Azure
-             * - `deepgram`: Deepgram
-             * - `openai`: OpenAI (Beta)
-             * - `speechmatics`: Speechmatics
-             * - `assemblyai`: AssemblyAI (Beta)
-             * - `amazon`: Amazon Transcribe (Beta)
-             * - `google`: Google (Beta)
-             * - `sarvam`: Sarvam (Beta)
-             */
-            export const Vendor = {
-                Ares: "ares",
-                Microsoft: "microsoft",
-                Deepgram: "deepgram",
-                Openai: "openai",
-                Google: "google",
-                Amazon: "amazon",
-                Assemblyai: "assemblyai",
-                Speechmatics: "speechmatics",
-                Sarvam: "sarvam",
-            } as const;
-            export type Vendor = (typeof Vendor)[keyof typeof Vendor];
-        }
-
-        /**
-         * Large language model (LLM) configuration.
-         */
-        export interface Llm {
-            /** The LLM callback address. */
-            url: string;
-            /** The LLM verification API key. The default value is an empty string. Ensure that you enable the API key in a production environment. */
-            api_key?: string;
-            /** A set of predefined information used as input to the LLM, including prompt words and examples. */
-            system_messages?: Record<string, unknown>[];
-            /** Additional LLM configuration parameters, such as the `model` used, and the maximum token limit. For details about each supported LLM, refer to [Supported LLMs](https://docs.agora.io/en/conversational-ai/models/llm/overview#supported-llms). */
-            params?: Record<string, unknown>;
-            /** The number of conversation history messages cached in the custom LLM. History includes user and agent dialog messages, tool call information, and timestamps. Agent and user messages are recorded separately. */
-            max_history?: number;
-            /**
-             * LLM input modalities:
-             * - `["text"]`: Text only
-             * - `["text", "image"]`: Text plus image. Recommended configuration, requires the selected LLM to support visual input
-             */
-            input_modalities?: string[];
-            /**
-             * LLM output modalities:
-             * - `["text"]`: The output text is converted to speech by the TTS module and then published to the RTC channel.
-             * - `["audio"]`: Voice only. Voice is published directly to the RTC channel.
-             * - `["text", "audio"]`: Text plus voice. Write your own logic to process the output of LLM as needed.
-             */
-            output_modalities?: string[];
-            /** Agent greeting. If provided, the first user in the channel is automatically greeted with the message upon joining. */
-            greeting_message?: string;
-            /** Prompt for agent activation failure. If provided, it is returned through TTS when the custom LLM call fails. */
-            failure_message?: string;
-            /**
-             * LLM provider, supports the following settings:
-             * - `custom`: Custom LLM. When you set this option, the agent includes the following fields, in addition to `role` and `content` when making requests to the custom LLM:
-             *   - `turn_id`: A unique identifier for each conversation turn. It starts from `0` and increments with each turn. One user-agent interaction corresponds to one `turn_id`.
-             *   - `timestamp`: The request timestamp, in milliseconds.
-             * - `azure`: Use this value for Azure OpenAI
-             */
-            vendor?: string;
-            /**
-             * The request style for chat completion:
-             * - `openai`: For OpenAI and OpenAI-compatible APIs
-             * - `gemini`: For Google Gemini and Google Vertex API format
-             * - `anthropic`: For Anthropic Claude API format
-             * - `dify`: For Dify API format
-             */
-            style?: Llm.Style;
-            /** Agent greeting broadcast configuration. */
-            greeting_configs?: Llm.GreetingConfigs;
-            /** Template parameter configuration used to insert variables into the agent's `system_messages`, `greeting_message`, `failure_message`, and `parameters.silence_config.content` text. Uses key-value pairs, where the key is the variable name and the value is the variable's value. To insert defined variables in the prompt text, use the syntax `{{variable_name}}`. The system automatically replaces each variable with the corresponding value defined in `template_variables`. Variable values cannot reference other variables. */
-            template_variables?: Record<string, string>;
-            /** MCP (Model Context Protocol) server configuration. By configuring MCP servers, agents can call tools provided by external services to implement advanced functionality. */
-            mcp_servers?: Llm.McpServers.Item[];
-            /** Custom headers to include in requests to the LLM. Use this field to pass business-specific information such as custom fields or tenant identifiers. These headers are merged with the headers generated by the Conversational AI Engine. If a key conflict occurs, the engine-generated header takes precedence. */
-            headers?: Record<string, string>;
-        }
-
-        export namespace Llm {
-            /**
-             * The request style for chat completion:
-             * - `openai`: For OpenAI and OpenAI-compatible APIs
-             * - `gemini`: For Google Gemini and Google Vertex API format
-             * - `anthropic`: For Anthropic Claude API format
-             * - `dify`: For Dify API format
-             */
-            export const Style = {
-                Openai: "openai",
-                Gemini: "gemini",
-                Anthropic: "anthropic",
-                Dify: "dify",
-            } as const;
-            export type Style = (typeof Style)[keyof typeof Style];
-
-            /**
-             * Agent greeting broadcast configuration.
-             */
-            export interface GreetingConfigs {
-                /**
-                 * Determines when the agent sends greeting messages to users joining the channel.
-                 * - `single_every`: Broadcasts a greeting every time a user joins the channel.
-                 * - `single_first`: Broadcasts a greeting only once to the first user who joins the channel.
-                 */
-                mode?: GreetingConfigs.Mode;
-                /** The delay in milliseconds before the agent plays the greeting message after a user joins the channel. */
-                delay_ms?: number;
-                /**
-                 * - `true`: Follows the global `interruption` configuration.
-                 * - `false`: Uninterruptible. The greeting plays in its entirety. If the user speaks multiple times while the greeting plays, the system merges the speech segments after the greeting ends and sends them to the LLM for a single response.
-                 */
-                interruptable?: boolean;
-            }
-
-            export namespace GreetingConfigs {
-                /**
-                 * Determines when the agent sends greeting messages to users joining the channel.
-                 * - `single_every`: Broadcasts a greeting every time a user joins the channel.
-                 * - `single_first`: Broadcasts a greeting only once to the first user who joins the channel.
-                 */
-                export const Mode = {
-                    SingleEvery: "single_every",
-                    SingleFirst: "single_first",
-                } as const;
-                export type Mode = (typeof Mode)[keyof typeof Mode];
-            }
-
-            export type McpServers = McpServers.Item[];
-
-            export namespace McpServers {
-                export interface Item {
-                    /** A unique identifier for the MCP server. Maximum 48 characters. Accepts only English letters and numbers. */
-                    name: string;
-                    /** The endpoint address of the MCP server. The agent uses this to communicate with the MCP server. */
-                    endpoint: string;
-                    /**
-                     * Transport protocol type.
-                     * - `streamable_http`: Streaming HTTP protocol
-                     */
-                    transport?: "streamable_http";
-                    /** HTTP header information to include when requesting the MCP server, such as authentication information. */
-                    headers?: Record<string, string>;
-                    /**
-                     * A list of tools that the agent is allowed to invoke. The agent can only use tools on this list.
-                     * - Empty or omitted: All tools are enabled.
-                     * - Empty array `[]`: No tools are enabled.
-                     * - `["*"]`: All tools are enabled.
-                     * - Specific tools `["aa", "bb"]`: Only listed tools are enabled.
-                     * - Mix with wildcard `["aa", "*"]`: All tools are enabled (wildcard takes precedence).
-                     */
-                    allowed_tools?: string[];
-                    /** The MCP server request timeout in milliseconds. After timeout, the agent stops waiting for the MCP server's response and continues executing subsequent logic. */
-                    timeout_ms?: number;
-                }
-            }
-        }
-
-        /**
-         * Multimodal Large Language Model (MLLM) configuration for real-time audio and text processing. `mllm` is an exclusive alternative to the standard `asr` + `llm` + `tts` pipeline.
-         */
-        export interface Mllm {
-            /** Enable Multimodal Large Language Model for voice-to-voice processing. Enabling MLLM automatically disables ASR, LLM, and TTS since the MLLM handles end-to-end voice processing directly. Replaces the deprecated `advanced_features.enable_mllm`. */
-            enable?: boolean;
-            /** The MLLM WebSocket URL for real-time communication. */
-            url?: string;
-            /** The API key used for MLLM authentication. */
-            api_key?: string;
-            /** Array of conversation items used for short-term memory management. Uses the same structure as `item.content` from the OpenAI Realtime API. */
-            messages?: Record<string, unknown>[];
-            /** Additional MLLM configuration parameters. The `modalities` setting is overridden by `input_modalities` and `output_modalities`. The `turn_detection` setting is overridden by `mllm.turn_detection`. */
-            params?: Record<string, unknown>;
-            /**
-             * MLLM input modalities:
-             * - `["audio"]`: Audio only
-             * - `["audio", "text"]`: Audio plus text
-             */
-            input_modalities?: string[];
-            /**
-             * MLLM output modalities:
-             * - `["text", "audio"]`: Text plus audio
-             */
-            output_modalities?: string[];
-            /** Agent greeting message. If provided, the first user in the channel is automatically greeted with this message upon joining. */
-            greeting_message?: string;
-            /** Agent failure message. If provided, the agent speaks this message when an MLLM request fails. */
-            failure_message?: string;
-            /**
-             * MLLM provider. Currently supports:
-             * - `openai`: OpenAI Realtime API
-             * - `gemini`: Google Gemini Live
-             * - `vertexai`: Google Gemini Live (Vertex AI)
-             * - `xai`: xAI Grok Realtime API
-             */
-            vendor?: Mllm.Vendor;
-            /** Turn detection configuration for the MLLM module. When defined, the top-level `turn_detection` object has no effect. */
-            turn_detection?: Mllm.TurnDetection;
-        }
-
-        export namespace Mllm {
-            /**
-             * MLLM provider. Currently supports:
-             * - `openai`: OpenAI Realtime API
-             * - `gemini`: Google Gemini Live
-             * - `vertexai`: Google Gemini Live (Vertex AI)
-             * - `xai`: xAI Grok Realtime API
-             */
-            export const Vendor = {
-                Openai: "openai",
-                Gemini: "gemini",
-                Vertexai: "vertexai",
-                Xai: "xai",
-            } as const;
-            export type Vendor = (typeof Vendor)[keyof typeof Vendor];
-
-            /**
-             * Turn detection configuration for the MLLM module. When defined, the top-level `turn_detection` object has no effect.
-             */
-            export interface TurnDetection {
-                /**
-                 * Turn detection mode for MLLM:
-                 * - `agora_vad`: Agora VAD-based detection.
-                 * - `server_vad`: Vendor-side VAD-based detection. Supported by OpenAI Realtime API, Gemini Live, and xAI Grok.
-                 * - `semantic_vad`: Semantic-based detection. Supported by OpenAI Realtime API only.
-                 */
-                mode?: TurnDetection.Mode;
-                /** Configuration for Agora VAD-based turn detection. Applicable when `mode` is `agora_vad`. */
-                agora_vad_config?: TurnDetection.AgoraVadConfig;
-                /** Configuration for vendor-side VAD-based turn detection. Applicable when `mode` is `server_vad`. Parameters are passed through to the vendor. */
-                server_vad_config?: TurnDetection.ServerVadConfig;
-                /** Configuration for semantic-based turn detection. Applicable when `mode` is `semantic_vad`. Supported by OpenAI Realtime API only. */
-                semantic_vad_config?: TurnDetection.SemanticVadConfig;
-            }
-
-            export namespace TurnDetection {
-                /**
-                 * Turn detection mode for MLLM:
-                 * - `agora_vad`: Agora VAD-based detection.
-                 * - `server_vad`: Vendor-side VAD-based detection. Supported by OpenAI Realtime API, Gemini Live, and xAI Grok.
-                 * - `semantic_vad`: Semantic-based detection. Supported by OpenAI Realtime API only.
-                 */
-                export const Mode = {
-                    AgoraVad: "agora_vad",
-                    ServerVad: "server_vad",
-                    SemanticVad: "semantic_vad",
-                } as const;
-                export type Mode = (typeof Mode)[keyof typeof Mode];
-
-                /**
-                 * Configuration for Agora VAD-based turn detection. Applicable when `mode` is `agora_vad`.
-                 */
-                export interface AgoraVadConfig {
-                    /** Minimum duration of speech in milliseconds required to trigger an interruption. */
-                    interrupt_duration_ms?: number;
-                    /** Duration of audio in milliseconds to include before the detected speech start. */
-                    prefix_padding_ms?: number;
-                    /** Duration of silence in milliseconds required to determine end of speech. */
-                    silence_duration_ms?: number;
-                    /** VAD sensitivity threshold. A higher value reduces false positives. */
-                    threshold?: number;
-                }
-
-                /**
-                 * Configuration for vendor-side VAD-based turn detection. Applicable when `mode` is `server_vad`. Parameters are passed through to the vendor.
-                 */
-                export interface ServerVadConfig {
-                    /** Duration of audio in milliseconds to include before the detected speech start. */
-                    prefix_padding_ms?: number;
-                    /** Duration of silence in milliseconds required to determine end of speech. */
-                    silence_duration_ms?: number;
-                    /** VAD sensitivity threshold. Applicable to OpenAI Realtime API and xAI Grok. */
-                    threshold?: number;
-                    /** Idle timeout in milliseconds. Applicable to OpenAI Realtime API only. */
-                    idle_timeout_ms?: number;
-                    /** Sensitivity for start of speech detection. Applicable to Gemini Live only. */
-                    start_of_speech_sensitivity?: ServerVadConfig.StartOfSpeechSensitivity;
-                    /** Sensitivity for end of speech detection. Applicable to Gemini Live only. */
-                    end_of_speech_sensitivity?: ServerVadConfig.EndOfSpeechSensitivity;
-                }
-
-                export namespace ServerVadConfig {
-                    /** Sensitivity for start of speech detection. Applicable to Gemini Live only. */
-                    export const StartOfSpeechSensitivity = {
-                        StartSensitivityHigh: "START_SENSITIVITY_HIGH",
-                        StartSensitivityLow: "START_SENSITIVITY_LOW",
-                    } as const;
-                    export type StartOfSpeechSensitivity =
-                        (typeof StartOfSpeechSensitivity)[keyof typeof StartOfSpeechSensitivity];
-                    /** Sensitivity for end of speech detection. Applicable to Gemini Live only. */
-                    export const EndOfSpeechSensitivity = {
-                        EndSensitivityHigh: "END_SENSITIVITY_HIGH",
-                        EndSensitivityLow: "END_SENSITIVITY_LOW",
-                    } as const;
-                    export type EndOfSpeechSensitivity =
-                        (typeof EndOfSpeechSensitivity)[keyof typeof EndOfSpeechSensitivity];
-                }
-
-                /**
-                 * Configuration for semantic-based turn detection. Applicable when `mode` is `semantic_vad`. Supported by OpenAI Realtime API only.
-                 */
-                export interface SemanticVadConfig {
-                    /** Controls how eagerly the model ends its turn. */
-                    eagerness?: SemanticVadConfig.Eagerness;
-                }
-
-                export namespace SemanticVadConfig {
-                    /** Controls how eagerly the model ends its turn. */
-                    export const Eagerness = {
-                        Auto: "auto",
-                        Low: "low",
-                        Medium: "medium",
-                        High: "high",
-                    } as const;
-                    export type Eagerness = (typeof Eagerness)[keyof typeof Eagerness];
-                }
-            }
-        }
-
-        /**
          * Avatar configuration.
          */
         export interface Avatar {
@@ -558,6 +214,8 @@ export namespace StartAgentsRequest {
          * Conversation turn detection settings. Controls the logic for voice activity detection and conversation turn determination. This object has no effect when `mllm.enable` is true; use `mllm.turn_detection` instead.
          */
         export interface TurnDetection {
+            /** BCP-47 language tag identifying the primary language used for agent interaction. */
+            language?: Agora.AsrLanguage;
             /**
              * Conversation turn detection mode:
              * - `default`: Uses standard conversation turn detection configuration.

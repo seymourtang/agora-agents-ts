@@ -60,12 +60,12 @@ import { Agent, ElevenLabsTTS, HeyGenAvatar } from 'agora-agents';
 
 // This works — ElevenLabs at 24kHz matches HeyGen's requirement
 const good = new Agent({ name: 'avatar-agent' })
-  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 24000 }))
+  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withAvatar(new HeyGenAvatar({ apiKey: 'your-heygen-key', quality: 'high', agoraUid: '12345' }));
 
 // This fails at compile time — 16kHz does not match HeyGen's required 24kHz
 const bad = new Agent({ name: 'avatar-agent' })
-  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', sampleRate: 16000 }))
+  .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 16000 }))
   .withAvatar(new HeyGenAvatar({ apiKey: 'your-heygen-key', quality: 'high', agoraUid: '12345' }));
   //         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   // TypeScript error: 'this' context of type 'Agent<16000>' is not assignable to
@@ -109,12 +109,18 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'liveavatar-agent', instructions: 'You are a friendly avatar assistant.' })
-  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
+const agent = new Agent({ name: 'liveavatar-agent' })
+  .withLlm(new OpenAI({
+    apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are a friendly avatar assistant.' }],
+  }))
   .withTts(new ElevenLabsTTS({
     key: 'your-elevenlabs-key',
     modelId: 'eleven_flash_v2_5',
     voiceId: 'your-voice-id',
+    baseUrl: 'wss://api.elevenlabs.io/v1',
     sampleRate: 24000,  // Required for LiveAvatar
   }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }))
@@ -141,8 +147,8 @@ await session.start();
 import { Agent, GenericAvatar, OpenAI, OpenAITTS, AresSTT } from 'agora-agents';
 
 const agent = new Agent({ name: 'generic-avatar-agent' })
-  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
-  .withTts(new OpenAITTS({ apiKey: 'your-openai-tts-key', model: 'tts-1', voice: 'alloy' }))
+  .withLlm(new OpenAI({ apiKey: 'your-openai-key', url: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o-mini' }))
+  .withTts(new OpenAITTS({ apiKey: 'your-openai-tts-key', model: 'tts-1', baseUrl: 'https://api.openai.com/v1', voice: 'alloy' }))
   .withStt(new AresSTT())
   .withAvatar(new GenericAvatar({
     apiKey: 'your-avatar-provider-key',
@@ -172,12 +178,18 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'akool-agent', instructions: 'You are a friendly avatar assistant.' })
-  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
+const agent = new Agent({ name: 'akool-agent' })
+  .withLlm(new OpenAI({
+    apiKey: 'your-openai-key',
+    url: 'https://api.openai.com/v1/chat/completions',
+    model: 'gpt-4o-mini',
+    systemMessages: [{ role: 'system', content: 'You are a friendly avatar assistant.' }],
+  }))
   .withTts(new ElevenLabsTTS({
     key: 'your-elevenlabs-key',
     modelId: 'eleven_flash_v2_5',
     voiceId: 'your-voice-id',
+    baseUrl: 'wss://api.elevenlabs.io/v1',
     sampleRate: 16000,  // Required for Akool
   }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }))

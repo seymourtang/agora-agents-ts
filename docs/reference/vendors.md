@@ -19,9 +19,9 @@ new OpenAI(options: OpenAIOptions)
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `apiKey` | `string` | Usually | OpenAI API key |
+| `apiKey` | `string` | BYOK only | OpenAI API key. Optional for supported Agora-managed OpenAI models. |
 | `model` | `string` | Yes | Model name (e.g., `'gpt-4o-mini'`, `'gpt-4'`) |
-| `url` | `string` | No | API endpoint URL (default: `https://api.openai.com/v1/chat/completions`) |
+| `url` | `string` | BYOK only | API endpoint URL. Required when `apiKey` is set. |
 | `maxHistory` | `number` | No | Max conversation history to cache |
 | `systemMessages` | `Record<string, unknown>[]` | No | System messages for context |
 | `greetingMessage` | `string` | No | Agent greeting message |
@@ -78,15 +78,16 @@ new Anthropic(options: AnthropicOptions)
 |---|---|---|---|
 | `apiKey` | `string` | Yes | Anthropic API key |
 | `model` | `string` | Yes | Model name (e.g., `'claude-3-5-sonnet-20241022'`) |
-| `url` | `string` | No | API endpoint URL (default: `https://api.anthropic.com/v1/messages`) |
+| `url` | `string` | Yes | API endpoint URL (for example, `https://api.anthropic.com/v1/messages`) |
 | `maxHistory` | `number` | No | Max conversation history to cache |
+| `maxTokens` | `number` | Yes | Maximum tokens to generate |
+| `headers` | `Record<string, string>` | Yes | Custom HTTP headers forwarded to the LLM provider, including Anthropic API version |
 | `systemMessages` | `Record<string, unknown>[]` | No | System messages |
 | `greetingMessage` | `string` | No | Agent greeting message |
 | `failureMessage` | `string` | No | Message when LLM call fails |
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
 | `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
-| `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
 | `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
 | `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
@@ -119,10 +120,10 @@ The SDK also includes named helpers for the remaining Agora-supported LLM provid
 
 | Class | Provider | Key options |
 |---|---|---|
-| `Groq` | Groq | `apiKey`, `model`, `url?` |
+| `Groq` | Groq | `apiKey`, `model`, `url` |
 | `VertexAILLM` | Google Vertex AI | `apiKey`, `model`, `projectId`, `location`, `url?` |
-| `AmazonBedrock` | Amazon Bedrock | `apiKey`, `url`, `model` |
-| `Dify` | Dify | `apiKey`, `url`, `user?`, `conversationId?` |
+| `AmazonBedrock` | Amazon Bedrock | `accessKey`, `secretKey`, `region`, `model` |
+| `Dify` | Dify | `apiKey`, `url`, `model`, `user?`, `conversationId?` |
 | `CustomLLM` | OpenAI-compatible LLM | `apiKey`, `model`, `url` |
 
 ---
@@ -141,8 +142,13 @@ new ElevenLabsTTS<SR extends ElevenLabsSampleRate>(options: ElevenLabsTTSOptions
 | `key` | `string` | Yes | ElevenLabs API key |
 | `modelId` | `string` | Yes | Model ID (e.g., `'eleven_flash_v2_5'`) |
 | `voiceId` | `string` | Yes | Voice ID |
-| `baseUrl` | `string` | No | WebSocket base URL |
+| `baseUrl` | `string` | Yes | WebSocket base URL |
 | `sampleRate` | `16000 \| 22050 \| 24000 \| 44100` | No | Audio sample rate in Hz |
+| `optimizeStreamingLatency` | `number` | No | Latency optimization level, 0-4 |
+| `stability` | `number` | No | Voice stability, 0.0-1.0 |
+| `similarityBoost` | `number` | No | Voice similarity boost, 0.0-1.0 |
+| `style` | `number` | No | Voice style exaggeration, 0.0-1.0 |
+| `useSpeakerBoost` | `boolean` | No | Enable speaker boost |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
 ### MicrosoftTTS
@@ -158,6 +164,8 @@ new MicrosoftTTS<SR extends MicrosoftSampleRate>(options: MicrosoftTTSOptions<SR
 | `region` | `string` | Yes | Azure region (e.g., `'eastus'`) |
 | `voiceName` | `string` | Yes | Voice name (e.g., `'en-US-JennyNeural'`) |
 | `sampleRate` | `16000 \| 24000 \| 48000` | No | Audio sample rate in Hz |
+| `speed` | `number` | No | Speaking rate multiplier |
+| `volume` | `number` | No | Audio volume |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
 ### OpenAITTS
@@ -171,14 +179,15 @@ Fixed at 24kHz — no configurable sample rate.
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `apiKey` | `string` | Usually | OpenAI API key |
+| `apiKey` | `string` | BYOK only | OpenAI API key |
 | `voice` | `string` | Yes | Voice name (`'alloy'`, `'echo'`, `'fable'`, `'onyx'`, `'nova'`, `'shimmer'`) |
-| `model` | `string` | No | Model name (e.g., `'tts-1'`, `'tts-1-hd'`) |
-| `responseFormat` | `string` | No | Audio format (e.g., `'pcm'`) |
+| `model` | `string` | BYOK only | Model name (e.g., `'tts-1'`, `'tts-1-hd'`) |
+| `baseUrl` | `string` | BYOK only | OpenAI TTS endpoint URL |
+| `instructions` | `string` | No | Custom instructions for voice style, accent, pace, and tone |
 | `speed` | `number` | No | Speech speed multiplier |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
-`apiKey` is optional only for the Agora-managed `tts-1` path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit sends the matching Agora-managed configuration. If provided, the request stays in BYOK mode.
+`apiKey`, `model`, and `baseUrl` are required together for BYOK. `apiKey` is optional only for the Agora-managed `tts-1` path. If omitted with `model: 'tts-1'` or no explicit model, AgentKit sends the matching Agora-managed configuration.
 
 ### CartesiaTTS
 
@@ -191,7 +200,9 @@ new CartesiaTTS<SR extends CartesiaSampleRate>(options: CartesiaTTSOptions<SR>)
 |---|---|---|---|
 | `apiKey` | `string` | Yes | Cartesia API key |
 | `voiceId` | `string` | Yes | Voice ID (serialized as `{"mode": "id", "id": "..."}`) |
-| `modelId` | `string` | No | Model ID |
+| `modelId` | `string` | Yes | Model ID |
+| `baseUrl` | `string` | No | WebSocket URL for the Cartesia streaming API |
+| `language` | `string` | No | Target language for speech synthesis |
 | `sampleRate` | `8000 \| 16000 \| 22050 \| 24000 \| 44100 \| 48000` | No | Audio sample rate in Hz |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
@@ -201,15 +212,15 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 
 | Class | Key params |
 |---|---|
-| `GoogleTTS` | `key`, `voiceName`, `languageCode?` |
-| `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId` |
-| `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `params?` |
-| `HumeAITTS` | `key`, `configId?` |
-| `RimeTTS` | `key`, `speaker`, `modelId?`, `lang?`, `samplingRate?`, `speedAlpha?` |
-| `FishAudioTTS` | `key`, `referenceId` |
+| `GoogleTTS` | `key`, `voiceName`, `languageCode?`, `sampleRate?` |
+| `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId`, `engine` |
+| `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `additionalParams?` |
+| `HumeAITTS` | `key`, `voiceId`, `provider`, `configId?`, `baseUrl?`, `speed?`, `trailingSilence?` |
+| `RimeTTS` | `key`, `speaker`, `modelId`, `baseUrl?` |
+| `FishAudioTTS` | `key`, `referenceId`, `backend` |
 | `MiniMaxTTS` | `key?`, `groupId?`, `model`, `voiceId?`, `url?` |
-| `MurfTTS` | `key`, `voiceId`, `style?` |
-| `SarvamTTS` | `key`, `speaker`, `targetLanguageCode` |
+| `MurfTTS` | `key`, `voiceId?`, `baseUrl?`, `locale?`, `rate?`, `pitch?`, `model?`, `sampleRate?` |
+| `SarvamTTS` | `key`, `speaker`, `targetLanguageCode`, `pitch?`, `pace?`, `loudness?`, `sampleRate?` |
 
 For `MiniMaxTTS`, `key` is optional only for Agora-managed models:
 
@@ -238,18 +249,20 @@ new DeepgramSTT(options: DeepgramSTTOptions)
 | `punctuation` | `boolean` | No | Enable punctuation |
 | `additionalParams` | `Record<string, unknown>` | No | Additional vendor params |
 
-For `nova-2` and `nova-3`, omit `apiKey` to use Agora-managed credentials. For all other Deepgram models, TypeScript requires `apiKey`.
+For `nova-2` and `nova-3`, omit `apiKey` to use Agora-managed credentials. For all other Deepgram models, AgentKit requires `apiKey`.
 
 ### Other STT vendors
 
+Use `turnDetection.language` for Agora interaction language; it defaults to `en-US`. Provider-specific language values stay under `asr.params` and may use a different format.
+
 | Class | Key params |
 |---|---|
-| `SpeechmaticsSTT` | `apiKey`, `language` |
-| `MicrosoftSTT` | `key`, `region`, `language?` |
-| `OpenAISTT` | `apiKey`, `model?`, `language?` |
-| `GoogleSTT` | `apiKey`, `language?` |
-| `AmazonSTT` | `accessKey`, `secretKey`, `region`, `language?` |
-| `AssemblyAISTT` | `apiKey`, `language?` |
+| `SpeechmaticsSTT` | `apiKey`, `language`, `uri?` |
+| `MicrosoftSTT` | `key`, `region`, `language` |
+| `OpenAISTT` | `apiKey`, `model?`, `language?`, `prompt?`, `inputAudioTranscription?` |
+| `GoogleSTT` | `projectId`, `location`, `adcCredentialsString`, `language`, `model?` |
+| `AmazonSTT` | `accessKey`, `secretKey`, `region`, `language` |
+| `AssemblyAISTT` | `apiKey`, `language`, `uri?` |
 | `AresSTT` | `language?` |
 | `SarvamSTT` | `apiKey`, `language` |
 
