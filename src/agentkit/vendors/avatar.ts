@@ -5,9 +5,9 @@
  * Different vendors have specific audio sample rate requirements.
  */
 
-import type { AvatarConfig } from "../types.js";
-import type { AkoolSampleRate, HeyGenSampleRate, LiveAvatarSampleRate } from "./base.js";
-import { BaseAvatar } from "./base.js";
+import type { AvatarConfig } from '../types.js';
+import type { AkoolSampleRate, HeyGenSampleRate, LiveAvatarSampleRate } from './base.js';
+import { BaseAvatar } from './base.js';
 
 /**
  * Constructor options for LiveAvatar.
@@ -37,14 +37,14 @@ export interface LiveAvatarAvatarOptions {
  * Constructor options for Akool Avatar.
  */
 export interface AkoolAvatarOptions {
-    /** Akool API key */
-    apiKey: string;
-    /** Akool avatar ID */
-    avatarId?: string;
-    /** Enable avatar (default: true) */
-    enable?: boolean;
-    /** Additional vendor-specific parameters */
-    additionalParams?: Record<string, unknown>;
+  /** Akool API key */
+  apiKey: string;
+  /** Akool avatar ID */
+  avatarId?: string;
+  /** Enable avatar (default: true) */
+  enable?: boolean;
+  /** Additional vendor-specific parameters */
+  additionalParams?: Record<string, unknown>;
 }
 
 /**
@@ -78,38 +78,38 @@ export interface AkoolAvatarOptions {
  * @see https://docs.agora.io/en/conversational-ai/models/avatar/akool
  */
 export class AkoolAvatar extends BaseAvatar<AkoolSampleRate> {
-    private readonly options: AkoolAvatarOptions;
+  private readonly options: AkoolAvatarOptions;
 
-    /**
-     * Akool avatars require TTS sample rate of 16,000 Hz.
-     */
-    readonly requiredSampleRate = 16000 as const;
+  /**
+   * Akool avatars require TTS sample rate of 16,000 Hz.
+   */
+  readonly requiredSampleRate = 16000 as const;
 
-    constructor(options: AkoolAvatarOptions) {
-        super();
-        this.options = options;
+  constructor(options: AkoolAvatarOptions) {
+    super();
+    this.options = options;
 
-        // Defense-in-depth check for JavaScript callers that bypass TypeScript types.
-        // See HeyGenAvatar constructor for the two-layer validation rationale.
-        if (!options.apiKey) {
-            throw new Error("Akool avatar requires apiKey");
-        }
+    // Defense-in-depth check for JavaScript callers that bypass TypeScript types.
+    // See HeyGenAvatar constructor for the two-layer validation rationale.
+    if (!options.apiKey) {
+      throw new Error('Akool avatar requires apiKey');
     }
+  }
 
-    toConfig(): AvatarConfig {
-        const { apiKey, avatarId, enable = true, additionalParams } = this.options;
+  toConfig(): AvatarConfig {
+    const { apiKey, avatarId, enable = true, additionalParams } = this.options;
 
-        return {
-            enable,
-            vendor: "akool",
-            params: {
-                // additionalParams spread first so that explicit fields always win.
-                ...additionalParams,
-                api_key: apiKey,
-                ...(avatarId && { avatar_id: avatarId }),
-            },
-        };
-    }
+    return {
+      enable,
+      vendor: 'akool',
+      params: {
+        // additionalParams spread first so that explicit fields always win.
+        ...additionalParams,
+        api_key: apiKey,
+        ...(avatarId && { avatar_id: avatarId }),
+      },
+    };
+  }
 }
 
 // =============================================================================
@@ -148,37 +148,37 @@ export class AkoolAvatar extends BaseAvatar<AkoolSampleRate> {
  * @see https://docs.agora.io/en/conversational-ai/models/avatar/overview
  */
 export class LiveAvatarAvatar extends BaseAvatar<LiveAvatarSampleRate> {
-    private readonly options: LiveAvatarAvatarOptions;
+  private readonly options: LiveAvatarAvatarOptions;
 
-    /**
-     * LiveAvatar requires TTS sample rate of 24,000 Hz.
-     */
-    readonly requiredSampleRate = 24000 as const;
+  /**
+   * LiveAvatar requires TTS sample rate of 24,000 Hz.
+   */
+  readonly requiredSampleRate = 24000 as const;
 
-    constructor(options: LiveAvatarAvatarOptions) {
-        super();
-        this.options = options;
+  constructor(options: LiveAvatarAvatarOptions) {
+    super();
+    this.options = options;
 
-        if (!options.apiKey) {
-            throw new Error("LiveAvatar requires apiKey");
-        }
-        if (!options.agoraUid) {
-            throw new Error("LiveAvatar requires agoraUid");
-        }
+    if (!options.apiKey) {
+      throw new Error('LiveAvatar requires apiKey');
     }
+    if (!options.agoraUid) {
+      throw new Error('LiveAvatar requires agoraUid');
+    }
+  }
 
-    toConfig(): AvatarConfig {
-        const {
-            apiKey,
-            quality,
-            agoraUid,
-            agoraToken,
-            avatarId,
-            disableIdleTimeout,
-            activityIdleTimeout,
-            enable = true,
-            additionalParams,
-        } = this.options;
+  toConfig(): AvatarConfig {
+    const {
+      apiKey,
+      quality,
+      agoraUid,
+      agoraToken,
+      avatarId,
+      disableIdleTimeout,
+      activityIdleTimeout,
+      enable = true,
+      additionalParams,
+    } = this.options;
 
         return {
             enable,
@@ -199,6 +199,43 @@ export class LiveAvatarAvatar extends BaseAvatar<LiveAvatarSampleRate> {
             },
         };
     }
+    if (!options.agoraUid) {
+      throw new Error('HeyGen avatar requires agoraUid');
+    }
+  }
+
+  toConfig(): AvatarConfig {
+    const {
+      apiKey,
+      quality,
+      agoraUid,
+      agoraToken,
+      avatarId,
+      disableIdleTimeout,
+      activityIdleTimeout,
+      enable = true,
+      additionalParams,
+    } = this.options;
+
+    return {
+      enable,
+      vendor: 'heygen',
+      params: {
+        ...additionalParams,
+        api_key: apiKey,
+        quality,
+        agora_uid: agoraUid,
+        ...(agoraToken && { agora_token: agoraToken }),
+        ...(avatarId && { avatar_id: avatarId }),
+        ...(disableIdleTimeout !== undefined && {
+          disable_idle_timeout: disableIdleTimeout,
+        }),
+        ...(activityIdleTimeout !== undefined && {
+          activity_idle_timeout: activityIdleTimeout,
+        }),
+      },
+    };
+  }
 }
 
 /**
@@ -271,14 +308,14 @@ export class HeyGenAvatar extends BaseAvatar<HeyGenSampleRate> {
  * Constructor options for Anam Avatar.
  */
 export interface AnamAvatarOptions {
-    /** Anam API key */
-    apiKey: string;
-    /** Anam persona ID */
-    personaId?: string;
-    /** Enable avatar (default: true) */
-    enable?: boolean;
-    /** Additional vendor-specific parameters */
-    additionalParams?: Record<string, unknown>;
+  /** Anam API key */
+  apiKey: string;
+  /** Anam persona ID */
+  personaId?: string;
+  /** Enable avatar (default: true) */
+  enable?: boolean;
+  /** Additional vendor-specific parameters */
+  additionalParams?: Record<string, unknown>;
 }
 
 /**
@@ -300,36 +337,129 @@ export interface AnamAvatarOptions {
  * @see https://docs.agora.io/en/conversational-ai/models/avatar/overview
  */
 export class AnamAvatar extends BaseAvatar<number> {
-    private readonly options: AnamAvatarOptions;
+  private readonly options: AnamAvatarOptions;
 
-    /**
-     * Anam does not enforce a specific TTS sample rate. Consult Anam documentation
-     * for the sample rate supported by your chosen persona.
-     */
-    readonly requiredSampleRate = 0 as number;
+  /**
+   * Anam does not enforce a specific TTS sample rate. Consult Anam documentation
+   * for the sample rate supported by your chosen persona.
+   */
+  readonly requiredSampleRate = 0 as number;
 
-    constructor(options: AnamAvatarOptions) {
-        super();
-        this.options = options;
+  constructor(options: AnamAvatarOptions) {
+    super();
+    this.options = options;
 
-        if (!options.apiKey) {
-            throw new Error("Anam avatar requires apiKey");
-        }
+    if (!options.apiKey) {
+      throw new Error('Anam avatar requires apiKey');
     }
+  }
 
-    toConfig(): AvatarConfig {
-        const { apiKey, personaId, enable = true, additionalParams } = this.options;
+  toConfig(): AvatarConfig {
+    const { apiKey, personaId, enable = true, additionalParams } = this.options;
 
-        return {
-            enable,
-            vendor: "anam",
-            params: {
-                ...additionalParams,
-                api_key: apiKey,
-                ...(personaId && { persona_id: personaId }),
-            },
-        };
+    return {
+      enable,
+      vendor: 'anam',
+      params: {
+        ...additionalParams,
+        api_key: apiKey,
+        ...(personaId && { persona_id: personaId }),
+      },
+    };
+  }
+}
+
+// =============================================================================
+// Generic
+// =============================================================================
+
+/**
+ * Constructor options for Generic Avatar.
+ */
+export interface GenericAvatarOptions {
+  /** Avatar provider API key */
+  apiKey: string;
+  /** Avatar provider API base URL */
+  apiBaseUrl: string;
+  /** Avatar ID */
+  avatarId: string;
+  /** RTC UID for the avatar video publisher (must be unique in the channel) */
+  agoraUid: string;
+  /** Agora App ID. Omit to use the session app ID at start. */
+  agoraAppId?: string;
+  /** Agora channel. Omit to use the session channel at start. */
+  agoraChannel?: string;
+  /** Avatar ConvoAI token. Omit to auto-generate at session start. */
+  agoraToken?: string;
+  /** Enable avatar (default: true) */
+  enable?: boolean;
+  /** Additional vendor-specific parameters */
+  additionalParams?: Record<string, unknown>;
+}
+
+/**
+ * Generic Avatar vendor (Beta).
+ *
+ * Generic avatars use a custom avatar provider while still publishing video
+ * into the Agora channel. AgentKit fills `agora_appid`, `agora_channel`, and
+ * `agora_token` at session start when they are omitted.
+ *
+ * @see https://docs.agora.io/en/conversational-ai/models/avatar/generic
+ */
+export class GenericAvatar extends BaseAvatar<number> {
+  private readonly options: GenericAvatarOptions;
+
+  /**
+   * Generic avatars do not enforce a specific TTS sample rate.
+   */
+  readonly requiredSampleRate = 0 as number;
+
+  constructor(options: GenericAvatarOptions) {
+    super();
+    this.options = options;
+
+    if (!options.apiKey) {
+      throw new Error('Generic avatar requires apiKey');
     }
+    if (!options.apiBaseUrl) {
+      throw new Error('Generic avatar requires apiBaseUrl');
+    }
+    if (!options.avatarId) {
+      throw new Error('Generic avatar requires avatarId');
+    }
+    if (!options.agoraUid) {
+      throw new Error('Generic avatar requires agoraUid');
+    }
+  }
+
+  toConfig(): AvatarConfig {
+    const {
+      apiKey,
+      apiBaseUrl,
+      avatarId,
+      agoraUid,
+      agoraAppId,
+      agoraChannel,
+      agoraToken,
+      enable = true,
+      additionalParams,
+    } = this.options;
+
+    return {
+      enable,
+      vendor: 'generic',
+      params: {
+        ...additionalParams,
+        api_key: apiKey,
+        api_base_url: apiBaseUrl,
+        avatar_id: avatarId,
+        agora_uid: agoraUid,
+        ...(agoraAppId && { agora_appid: agoraAppId }),
+        ...(agoraChannel && { agora_channel: agoraChannel }),
+        ...(agoraToken && { agora_token: agoraToken }),
+      },
+    };
+  }
 }
 
 // =============================================================================

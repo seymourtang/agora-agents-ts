@@ -51,6 +51,13 @@ jobs:
           TAG="${RELEASE_TAG}"
           git rev-parse "$TAG" >/dev/null
 
+      - name: Verify npm auth
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm config set //registry.npmjs.org/:_authToken "$NODE_AUTH_TOKEN"
+          npm whoami
+
       - name: Verify package versions match release tag
         run: |
           TAG_VERSION="${RELEASE_TAG#v}"
@@ -77,6 +84,9 @@ jobs:
         run: |
           PACKAGE_NAME="$(node -p "require('./package.json').name")"
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          NPM_USER="$(npm whoami --registry=https://registry.npmjs.org)"
+
+          echo "Publishing ${PACKAGE_NAME}@${PACKAGE_VERSION} to npm as ${NPM_USER}."
 
           if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version >/dev/null 2>&1; then
             echo "${PACKAGE_NAME}@${PACKAGE_VERSION} is already published; skipping npm publish."
