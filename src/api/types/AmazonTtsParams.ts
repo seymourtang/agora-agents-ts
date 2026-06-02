@@ -13,7 +13,7 @@ export interface AmazonTtsParams {
     /** Amazon Polly voice ID */
     voice: string;
     /** Amazon Polly engine type */
-    engine?: AmazonTtsParams.Engine;
+    engine: AmazonTtsParams.Engine;
     /** Accepts any additional properties */
     [key: string]: any;
 }

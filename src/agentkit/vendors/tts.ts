@@ -555,7 +555,7 @@ export class RimeTTS extends BaseTTS {
             params: {
                 api_key: key,
                 speaker,
-                ...(modelId && { modelId }),
+                modelId,
                 ...(baseUrl && { base_url: baseUrl }),
             },
             ...(skipPatterns && { skip_patterns: skipPatterns }),
@@ -604,7 +604,7 @@ export class FishAudioTTS extends BaseTTS {
             params: {
                 api_key: key,
                 reference_id: referenceId,
-                ...(backend && { backend }),
+                backend,
             },
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         };

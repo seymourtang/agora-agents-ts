@@ -7,9 +7,9 @@ export interface MurfTtsParams {
     /** Murf API key */
     api_key: string;
     /** WebSocket endpoint for streaming TTS output */
-    base_url: string;
+    base_url?: string;
     /** Voice ID (e.g., Matthew) */
-    voiceId: string;
+    voiceId?: string;
     /** Locale for the selected voice */
     locale?: string;
     /** Speech rate adjustment */

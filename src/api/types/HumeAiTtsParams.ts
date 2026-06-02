@@ -7,11 +7,11 @@ export interface HumeAiTtsParams {
     /** Hume AI API key */
     key: string;
     /** Hume AI voice ID */
-    voice_id?: string;
+    voice_id: string;
     /** Base URL for the Hume AI API */
     base_url?: string;
     /** Voice provider type */
-    provider?: HumeAiTtsParams.Provider;
+    provider: HumeAiTtsParams.Provider;
     /** Playback speed of the generated speech */
     speed?: number;
     /** Duration of silence in seconds to add at the end of each utterance */

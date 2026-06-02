@@ -5,7 +5,7 @@
  */
 export interface ElevenLabsTtsParams {
     /** WebSocket URL (e.g., "wss://api.elevenlabs.io/v1") */
-    base_url?: string;
+    base_url: string;
     /** ElevenLabs API key */
     key: string;
     /** Model ID (e.g., "eleven_flash_v2_5") */

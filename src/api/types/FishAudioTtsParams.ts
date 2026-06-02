@@ -9,7 +9,7 @@ export interface FishAudioTtsParams {
     /** Fish Audio reference ID */
     reference_id: string;
     /** Backend model version to use */
-    backend?: string;
+    backend: string;
     /** Accepts any additional properties */
     [key: string]: any;
 }
