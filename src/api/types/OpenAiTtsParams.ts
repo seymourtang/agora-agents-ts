@@ -4,7 +4,7 @@
  * OpenAI TTS configuration parameters.
  */
 export interface OpenAiTtsParams {
-    /** OpenAI API key. Optional for Agora-managed OpenAI TTS usage. */
+    /** OpenAI API key. Optional for preset-backed OpenAI TTS usage. */
     api_key?: string;
     /** Endpoint URL for the OpenAI TTS service. */
     base_url?: string;

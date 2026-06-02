@@ -12,8 +12,6 @@ export interface DeepgramTtsParams {
     base_url?: string;
     /** Audio sampling rate in Hz */
     sample_rate?: number;
-    /** Additional Deepgram TTS parameters */
-    params?: Record<string, unknown>;
     /** Controls whether the TTS module skips bracketed content when reading LLM response text. */
     skip_patterns?: number[];
     /** Accepts any additional properties */
