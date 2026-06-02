@@ -6,8 +6,8 @@ import { ElevenLabsTTS } from "../../../src/agentkit/vendors/tts.js";
 
 function baseAgent() {
     return new Agent()
-        .withLlm(new OpenAI({ apiKey: "llm-key", model: "gpt-4o-mini" }))
-        .withTts(new ElevenLabsTTS({ key: "tts-key", voiceId: "voice", modelId: "eleven_flash_v2_5" }));
+        .withLlm(new OpenAI({ apiKey: "llm-key", model: "gpt-4o-mini", url: "https://api.openai.com/v1/chat/completions" }))
+        .withTts(new ElevenLabsTTS({ key: "tts-key", voiceId: "voice", modelId: "eleven_flash_v2_5", baseUrl: "wss://api.elevenlabs.io/v1" }));
 }
 
 describe("STT language serialization", () => {
@@ -55,8 +55,8 @@ describe("STT language serialization", () => {
 
     test("uses explicit interaction language when it differs from provider language", () => {
         const properties = new Agent({ interactionLanguage: "en-US" })
-            .withLlm(new OpenAI({ apiKey: "llm-key", model: "gpt-4o-mini" }))
-            .withTts(new ElevenLabsTTS({ key: "tts-key", voiceId: "voice", modelId: "eleven_flash_v2_5" }))
+            .withLlm(new OpenAI({ apiKey: "llm-key", model: "gpt-4o-mini", url: "https://api.openai.com/v1/chat/completions" }))
+            .withTts(new ElevenLabsTTS({ key: "tts-key", voiceId: "voice", modelId: "eleven_flash_v2_5", baseUrl: "wss://api.elevenlabs.io/v1" }))
             .withStt(new SpeechmaticsSTT({ apiKey: "stt-key", language: "en" }))
             .toProperties({
                 channel: "channel",

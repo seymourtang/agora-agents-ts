@@ -17,8 +17,8 @@ export interface ElevenLabsTTSOptions<SR extends ElevenLabsSampleRate = ElevenLa
     modelId: string;
     /** Voice ID */
     voiceId: string;
-    /** WebSocket base URL (defaults to ElevenLabs endpoint) */
-    baseUrl?: string;
+    /** WebSocket base URL */
+    baseUrl: string;
     /**
      * Audio sample rate in Hz.
      * - 16000 Hz: Required for Akool avatars
@@ -80,9 +80,9 @@ export class ElevenLabsTTS<SR extends ElevenLabsSampleRate = ElevenLabsSampleRat
             vendor: "elevenlabs",
             params: {
                 key,
+                base_url: baseUrl,
                 model_id: modelId,
                 voice_id: voiceId,
-                ...(baseUrl && { base_url: baseUrl }),
                 ...(sampleRate && { sample_rate: sampleRate }),
                 ...(optimizeStreamingLatency !== undefined && { optimize_streaming_latency: optimizeStreamingLatency }),
                 ...(stability !== undefined && { stability }),
@@ -182,10 +182,13 @@ type OpenAITTSCommonOptions = {
 export type OpenAITTSOptions =
     | (OpenAITTSCommonOptions & {
           apiKey: string;
+          model: string;
+          baseUrl: string;
       })
-    | (Omit<OpenAITTSCommonOptions, "model"> & {
+    | (Omit<OpenAITTSCommonOptions, "model" | "baseUrl"> & {
           apiKey?: undefined;
           model?: OpenAITtsPresetModel;
+          baseUrl?: undefined;
       });
 
 /**
@@ -216,7 +219,7 @@ export class OpenAITTS extends BaseTTS<24000> {
             vendor: "openai",
             params: {
                 ...(apiKey && { api_key: apiKey }),
-                ...(baseUrl && { base_url: baseUrl }),
+                ...(apiKey && { base_url: baseUrl }),
                 voice,
                 ...(model && { model }),
                 ...(responseFormat && { response_format: responseFormat }),
@@ -457,11 +460,11 @@ export interface HumeAITTSOptions {
     /** Configuration ID */
     configId?: string;
     /** Hume AI voice ID */
-    voiceId?: string;
+    voiceId: string;
     /** Base URL for the Hume AI API */
     baseUrl?: string;
     /** Voice provider type */
-    provider?: "HUME_AI" | "CUSTOM_VOICE";
+    provider: "HUME_AI" | "CUSTOM_VOICE";
     /** Playback speed of the generated speech */
     speed?: number;
     /** Duration of silence in seconds to add at the end of each utterance */
@@ -477,6 +480,8 @@ export interface HumeAITTSOptions {
  * ```typescript
  * const tts = new HumeAITTS({
  *   key: process.env.HUME_API_KEY,
+ *   voiceId: 'voice-id',
+ *   provider: 'CUSTOM_VOICE',
  * });
  * ```
  */
@@ -495,9 +500,9 @@ export class HumeAITTS extends BaseTTS {
             vendor: "humeai",
             params: {
                 key,
-                ...(voiceId && { voice_id: voiceId }),
+                voice_id: voiceId,
                 ...(baseUrl && { base_url: baseUrl }),
-                ...(provider && { provider }),
+                provider,
                 ...(speed !== undefined && { speed }),
                 ...(trailingSilence !== undefined && { trailing_silence: trailingSilence }),
                 ...(configId && { config_id: configId }),

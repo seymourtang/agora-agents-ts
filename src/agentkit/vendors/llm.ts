@@ -14,7 +14,7 @@ type OpenAICommonOptions = BaseLlmOptions & {
     apiKey?: string;
     /** Model name (e.g., 'gpt-4o-mini', 'gpt-4', 'gpt-3.5-turbo') */
     model: string;
-    /** API endpoint URL (defaults to OpenAI's standard endpoint) */
+    /** API endpoint URL */
     url?: string;
     /** Maximum number of conversation history messages to cache */
     maxHistory?: number;
@@ -41,6 +41,7 @@ type OpenAICommonOptions = BaseLlmOptions & {
 export type OpenAIOptions =
     | (OpenAICommonOptions & {
           apiKey: string;
+          url: string;
       })
     | (Omit<OpenAICommonOptions, "model" | "url" | "vendor"> & {
           apiKey?: undefined;
@@ -224,12 +225,12 @@ export interface AnthropicOptions extends BaseLlmOptions {
     apiKey: string;
     /** Model name (e.g., 'claude-3-5-sonnet-20241022', 'claude-3-opus-20240229') */
     model: string;
-    /** API endpoint URL (defaults to Anthropic's standard endpoint) */
-    url?: string;
+    /** API endpoint URL */
+    url: string;
     /** Maximum number of conversation history messages to cache */
     maxHistory?: number;
     /** Maximum tokens to generate */
-    maxTokens?: number;
+    maxTokens: number;
     /** Sampling temperature (0.0–1.0) */
     temperature?: number;
     /** Nucleus sampling (0.0–1.0) */
@@ -256,6 +257,7 @@ export interface AnthropicOptions extends BaseLlmOptions {
  * const llm = new Anthropic({
  *   apiKey: process.env.ANTHROPIC_API_KEY,
  *   model: 'claude-3-5-sonnet-20241022',
+ *   maxTokens: 1024,
  * });
  * ```
  */
@@ -285,7 +287,7 @@ export class Anthropic extends BaseLLM {
         } = this.options;
 
         return {
-            url: url ?? "https://api.anthropic.com/v1/messages",
+            url,
             api_key: apiKey,
             // model is the default; params entries extend it; named fields win.
             params: {
@@ -413,7 +415,7 @@ export class Gemini extends BaseLLM {
 type OpenAIStyleOptions = BaseLlmOptions & {
     apiKey: string;
     model: string;
-    url?: string;
+    url: string;
     maxHistory?: number;
     temperature?: number;
     topP?: number;
@@ -426,9 +428,9 @@ type OpenAIStyleOptions = BaseLlmOptions & {
     headers?: Record<string, string>;
 };
 
-function openAIStyleConfig(options: OpenAIStyleOptions, defaultUrl: string, vendor?: string): LlmConfig {
+function openAIStyleConfig(options: OpenAIStyleOptions, vendor?: string): LlmConfig {
     return {
-        url: options.url ?? defaultUrl,
+        url: options.url,
         api_key: options.apiKey,
         params: {
             model: options.model,
@@ -460,7 +462,7 @@ export class Groq extends BaseLLM {
     }
 
     toConfig(): LlmConfig {
-        return openAIStyleConfig(this.options, "https://api.groq.com/openai/v1/chat/completions");
+        return openAIStyleConfig(this.options);
     }
 }
 
@@ -472,7 +474,7 @@ export class CustomLLM extends BaseLLM {
     }
 
     toConfig(): LlmConfig {
-        return openAIStyleConfig(this.options, this.options.url ?? "", "custom");
+        return openAIStyleConfig(this.options, "custom");
     }
 }
 
@@ -560,6 +562,7 @@ export class AmazonBedrock extends BaseLLM {
     toConfig(): LlmConfig {
         const o = this.options;
         return {
+            url: `https://bedrock-runtime.${o.region}.amazonaws.com/model/${o.model}/converse-stream`,
             access_key: o.accessKey,
             secret_key: o.secretKey,
             region: o.region,
@@ -590,6 +593,7 @@ export class AmazonBedrock extends BaseLLM {
 export interface DifyOptions extends BaseLlmOptions {
     apiKey: string;
     url: string;
+    model: string;
     user?: string;
     conversationId?: string;
     maxHistory?: number;
@@ -612,6 +616,7 @@ export class Dify extends BaseLLM {
             url: o.url,
             api_key: o.apiKey,
             params: {
+                model: o.model,
                 ...o.params,
                 ...(o.user !== undefined && { user: o.user }),
                 ...(o.conversationId !== undefined && { conversation_id: o.conversationId }),

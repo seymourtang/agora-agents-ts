@@ -1,5 +1,17 @@
 import { describe, expect, test } from "vitest";
-import { AmazonTTS, CartesiaTTS, FishAudioTTS, GoogleTTS, MurfTTS, RimeTTS, SarvamTTS } from "../../../src/agentkit/vendors/tts.js";
+import {
+    AmazonTTS,
+    CartesiaTTS,
+    ElevenLabsTTS,
+    FishAudioTTS,
+    GoogleTTS,
+    HumeAITTS,
+    MiniMaxTTS,
+    MurfTTS,
+    OpenAITTS,
+    RimeTTS,
+    SarvamTTS,
+} from "../../../src/agentkit/vendors/tts.js";
 
 describe("TTS vendor helpers", () => {
     test("serializes provider params using the generated core shapes", () => {
@@ -36,6 +48,38 @@ describe("TTS vendor helpers", () => {
             backend: "speech-1.5",
         });
 
+        expect(new ElevenLabsTTS({ key: "eleven-key", modelId: "eleven_flash_v2_5", voiceId: "voice", baseUrl: "wss://api.elevenlabs.io/v1" }).toConfig().params).toMatchObject({
+            key: "eleven-key",
+            base_url: "wss://api.elevenlabs.io/v1",
+            model_id: "eleven_flash_v2_5",
+            voice_id: "voice",
+        });
+
+        expect(new OpenAITTS({ apiKey: "openai-key", voice: "coral", model: "gpt-4o-mini-tts", baseUrl: "https://api.openai.com/v1" }).toConfig().params).toMatchObject({
+            api_key: "openai-key",
+            base_url: "https://api.openai.com/v1",
+            model: "gpt-4o-mini-tts",
+            voice: "coral",
+        });
+
+        expect(new OpenAITTS({ voice: "coral" }).toConfig().params).toEqual({
+            voice: "coral",
+        });
+
+        expect(new HumeAITTS({ key: "hume-key", voiceId: "voice", provider: "CUSTOM_VOICE" }).toConfig().params).toMatchObject({
+            key: "hume-key",
+            voice_id: "voice",
+            provider: "CUSTOM_VOICE",
+        });
+
+        expect(new MiniMaxTTS({ key: "minimax-key", groupId: "group", model: "speech-02-turbo", voiceId: "voice", url: "wss://api-uw.minimax.io/ws/v1/t2a_v2" }).toConfig().params).toMatchObject({
+            key: "minimax-key",
+            group_id: "group",
+            model: "speech-02-turbo",
+            voice_setting: { voice_id: "voice" },
+            url: "wss://api-uw.minimax.io/ws/v1/t2a_v2",
+        });
+
         expect(new SarvamTTS({ key: "sarvam-key", speaker: "anushka", targetLanguageCode: "en-IN", sampleRate: 24000 }).toConfig().params).toMatchObject({
             api_subscription_key: "sarvam-key",
             speaker: "anushka",
@@ -43,10 +87,26 @@ describe("TTS vendor helpers", () => {
             sample_rate: 24000,
         });
 
-        expect(new MurfTTS({ key: "murf-key", voiceId: "Ariana", baseUrl: "wss://murf.example/ws" }).toConfig().params).toMatchObject({
+        expect(
+            new MurfTTS({
+                key: "murf-key",
+                voiceId: "Ariana",
+                baseUrl: "wss://murf.example/ws",
+                locale: "en-US",
+                rate: 0,
+                pitch: 0,
+                model: "FALCON",
+                sampleRate: 24000,
+            }).toConfig().params
+        ).toMatchObject({
             api_key: "murf-key",
             base_url: "wss://murf.example/ws",
             voiceId: "Ariana",
+            locale: "en-US",
+            rate: 0,
+            pitch: 0,
+            model: "FALCON",
+            sample_rate: 24000,
         });
 
         expect(new MurfTTS({ key: "murf-key" }).toConfig().params).toEqual({
