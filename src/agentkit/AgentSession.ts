@@ -73,7 +73,7 @@ export interface AgentSessionOptions {
     enableStringUid?: boolean;
     /** Preset IDs to use as the base ASR/LLM/TTS configuration for this session */
     preset?: PresetInput;
-    /** Published AI Studio pipeline ID to use as the base configuration for this session */
+    /** Published AI Studio pipeline ID to use as this session's base configuration. Overrides agent.pipelineId. */
     pipelineId?: string;
     /**
      * Token lifetime in seconds (default: 86400 = 24 hours, Agora maximum).
@@ -457,6 +457,7 @@ export class AgentSession {
         this._status = "starting";
 
         try {
+            const pipelineId = this._pipelineId ?? this._agent.pipelineId;
             // appCertificate presence is guaranteed by the guard above when no token is provided.
             let expiresIn = this._expiresIn;
             if (expiresIn !== undefined) {
@@ -478,7 +479,7 @@ export class AgentSession {
                 enableStringUid: this._enableStringUid,
                 // When a preset or pipeline_id is supplied, ASR/LLM/TTS vendor
                 // config is optional — the backend fills it from the preset/pipeline.
-                skipVendorValidation: !!(this._preset || this._pipelineId),
+                skipVendorValidation: !!(this._preset || pipelineId),
                 ...tokenOpts,
             });
             const resolved = resolveSessionPresets({
@@ -492,7 +493,7 @@ export class AgentSession {
                 appid: this._appId,
                 name: this._name,
                 preset: resolved.preset,
-                pipeline_id: this._pipelineId,
+                pipeline_id: pipelineId,
                 properties: enrichedProperties,
             };
 

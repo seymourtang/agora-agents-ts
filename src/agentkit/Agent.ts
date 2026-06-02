@@ -88,6 +88,13 @@ export interface AgentOptions {
     /** Optional name for the agent (used as default session name) */
     name?: string;
     /**
+     * Published AI Studio pipeline ID to use as this agent's base configuration.
+     * Explicit Agent config such as .withLlm(), .withTts(), .withStt(),
+     * advancedFeatures, and other builder options may send fields in
+     * `properties` that override the saved pipeline settings.
+     */
+    pipelineId?: string;
+    /**
      * System instructions for the agent.
      * @deprecated Configure this on the LLM vendor with `systemMessages` instead.
      */
@@ -152,6 +159,7 @@ export interface AgentOptions {
  */
 export class Agent<TTSSampleRate extends number = number> {
     private _name?: string;
+    private _pipelineId?: string;
     private _llm?: LlmConfig;
     private _tts?: TtsConfig;
     private _stt?: SttConfig;
@@ -174,6 +182,7 @@ export class Agent<TTSSampleRate extends number = number> {
 
     constructor(options: AgentOptions = {}) {
         this._name = options.name;
+        this._pipelineId = options.pipelineId;
         this._instructions = options.instructions;
         this._greeting = options.greeting;
         this._failureMessage = options.failureMessage;
@@ -522,6 +531,13 @@ export class Agent<TTSSampleRate extends number = number> {
     }
 
     /**
+     * Get the AI Studio pipeline ID used as this agent's base configuration.
+     */
+    get pipelineId(): string | undefined {
+        return this._pipelineId;
+    }
+
+    /**
      * Get the LLM configuration.
      */
     get llm(): LlmConfig | undefined {
@@ -667,6 +683,7 @@ export class Agent<TTSSampleRate extends number = number> {
     } {
         return {
             name: this._name,
+            pipelineId: this._pipelineId,
             instructions: this._instructions,
             turnDetection: this._turnDetection,
             interruption: this._interruption,
@@ -871,6 +888,7 @@ export class Agent<TTSSampleRate extends number = number> {
     private _clone(): Agent<TTSSampleRate> {
         const newAgent = new Agent() as Agent<TTSSampleRate>;
         newAgent._name = this._name;
+        newAgent._pipelineId = this._pipelineId;
         newAgent._llm = this._llm;
         newAgent._tts = this._tts;
         newAgent._stt = this._stt;

@@ -140,6 +140,7 @@ Set filler words configuration (played while waiting for LLM response).
 | Property | Type | Description |
 |---|---|---|
 | `name` | `string \| undefined` | The agent name |
+| `pipelineId` | `string \| undefined` | Published AI Studio pipeline ID used as the agent's base configuration |
 | `llm` | `LlmConfig \| undefined` | LLM config (set via `withLlm`) |
 | `tts` | `TtsConfig \| undefined` | TTS config (set via `withTts`) |
 | `stt` | `SttConfig \| undefined` | STT config (set via `withStt`) |
@@ -185,11 +186,13 @@ createSession(
 | `idleTimeout` | `number` | No | Seconds before auto-exit if no audio (0 = disabled) |
 | `enableStringUid` | `boolean` | No | Use string UIDs instead of numeric |
 | `preset` | `string \| AgentPreset[]` | No | Advanced project-specific presets. Use only when Agora provides a specific preset ID for your project. |
-| `pipelineId` | `string` | No | Published AI Studio pipeline ID to use as the base configuration |
+| `pipelineId` | `string` | No | Published AI Studio pipeline ID to use as this session's base configuration. Overrides `agent.pipelineId`. |
 | `debug` | `boolean` | No | Log API requests to console |
 | `warn` | `(message: string) => void` | No | Custom warning logger; pass a no-op to silence warnings |
 
 `preset` is session-scoped because the Agora start/join API applies project-specific settings per session, not per reusable `Agent` definition. Most applications should leave it unset.
+
+`pipelineId` can be set on `new Agent({ pipelineId })` as a reusable AI Studio base configuration, or on `agent.createSession(...)` for a session-specific override. AgentKit sends it as the top-level `/join` field `pipeline_id`; it is not included inside `properties`. Explicit Agent config such as `.withLlm()`, `.withTts()`, `.withStt()`, `.withMllm()`, `advancedFeatures`, and other builder options may send fields in `properties` that override the saved pipeline settings.
 
 When you omit credentials for supported Agora-managed models, AgentKit sends the matching Agora-managed configuration automatically:
 

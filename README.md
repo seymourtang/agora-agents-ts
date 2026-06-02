@@ -117,6 +117,36 @@ export async function startConversation(): Promise<string> {
 
 `AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically when you provide `appId` and `appCertificate`. For supported Agora-managed models, leave vendor API keys unset; provide keys when you want BYOK.
 
+## AI Studio pipeline IDs
+
+Use `pipelineId` when you want a published AI Studio pipeline to provide the base agent configuration:
+
+```typescript
+const agent = new Agent({
+  name: 'support',
+  pipelineId: 'studio-pipeline-id',
+});
+
+const session = agent.createSession(client, {
+  channel: 'support-room',
+  agentUid: '1',
+  remoteUids: ['100'],
+});
+```
+
+You can override it per session:
+
+```typescript
+const session = agent.createSession(client, {
+  channel: 'support-room',
+  agentUid: '1',
+  remoteUids: ['100'],
+  pipelineId: 'session-pipeline-id',
+});
+```
+
+AgentKit sends the resolved value as the top-level `/join` field `pipeline_id`, not inside `properties`. Explicit Agent config such as `.withLlm()`, `.withTts()`, `.withStt()`, `.withMllm()`, and `advancedFeatures` may send `properties` fields that override the saved pipeline settings.
+
 ### BYOK version
 
 Use the same `Agent` builder shape, but provide credentials explicitly when you want vendor-managed billing and routing instead of Agora-managed models.

@@ -306,7 +306,7 @@ export interface SessionOptions {
     enableStringUid?: boolean;
     /** Preset IDs to use as the base ASR/LLM/TTS configuration for this session */
     preset?: PresetInput;
-    /** Published AI Studio pipeline ID to use as the base configuration for this session */
+    /** Published AI Studio pipeline ID to use as this session's base configuration. Overrides agent.pipelineId. */
     pipelineId?: string;
     /**
      * Token lifetime in seconds (default: 86400 = 24 hours, Agora maximum).
