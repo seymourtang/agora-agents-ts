@@ -144,6 +144,11 @@ new ElevenLabsTTS<SR extends ElevenLabsSampleRate>(options: ElevenLabsTTSOptions
 | `voiceId` | `string` | Yes | Voice ID |
 | `baseUrl` | `string` | Yes | WebSocket base URL |
 | `sampleRate` | `16000 \| 22050 \| 24000 \| 44100` | No | Audio sample rate in Hz |
+| `optimizeStreamingLatency` | `number` | No | Latency optimization level, 0-4 |
+| `stability` | `number` | No | Voice stability, 0.0-1.0 |
+| `similarityBoost` | `number` | No | Voice similarity boost, 0.0-1.0 |
+| `style` | `number` | No | Voice style exaggeration, 0.0-1.0 |
+| `useSpeakerBoost` | `boolean` | No | Enable speaker boost |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
 ### MicrosoftTTS
@@ -159,6 +164,8 @@ new MicrosoftTTS<SR extends MicrosoftSampleRate>(options: MicrosoftTTSOptions<SR
 | `region` | `string` | Yes | Azure region (e.g., `'eastus'`) |
 | `voiceName` | `string` | Yes | Voice name (e.g., `'en-US-JennyNeural'`) |
 | `sampleRate` | `16000 \| 24000 \| 48000` | No | Audio sample rate in Hz |
+| `speed` | `number` | No | Speaking rate multiplier |
+| `volume` | `number` | No | Audio volume |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
 ### OpenAITTS
@@ -194,6 +201,8 @@ new CartesiaTTS<SR extends CartesiaSampleRate>(options: CartesiaTTSOptions<SR>)
 | `apiKey` | `string` | Yes | Cartesia API key |
 | `voiceId` | `string` | Yes | Voice ID (serialized as `{"mode": "id", "id": "..."}`) |
 | `modelId` | `string` | Yes | Model ID |
+| `baseUrl` | `string` | No | WebSocket URL for the Cartesia streaming API |
+| `language` | `string` | No | Target language for speech synthesis |
 | `sampleRate` | `8000 \| 16000 \| 22050 \| 24000 \| 44100 \| 48000` | No | Audio sample rate in Hz |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
@@ -203,7 +212,7 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 
 | Class | Key params |
 |---|---|
-| `GoogleTTS` | `key`, `voiceName`, `languageCode?` |
+| `GoogleTTS` | `key`, `voiceName`, `languageCode?`, `sampleRate?` |
 | `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId`, `engine` |
 | `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `additionalParams?` |
 | `HumeAITTS` | `key`, `voiceId`, `provider`, `configId?`, `baseUrl?`, `speed?`, `trailingSilence?` |
@@ -211,7 +220,7 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `FishAudioTTS` | `key`, `referenceId`, `backend` |
 | `MiniMaxTTS` | `key?`, `groupId?`, `model`, `voiceId?`, `url?` |
 | `MurfTTS` | `key`, `voiceId?`, `baseUrl?`, `locale?`, `rate?`, `pitch?`, `model?`, `sampleRate?` |
-| `SarvamTTS` | `key`, `speaker`, `targetLanguageCode` |
+| `SarvamTTS` | `key`, `speaker`, `targetLanguageCode`, `pitch?`, `pace?`, `loudness?`, `sampleRate?` |
 
 For `MiniMaxTTS`, `key` is optional only for Agora-managed models:
 
