@@ -31,7 +31,7 @@ import type {
 } from "./types.js";
 import type { BaseAvatar, BaseLLM, BaseMLLM, BaseSTT, BaseTTS } from "./vendors/base.js";
 
-const DEFAULT_TURN_DETECTION_LANGUAGE: TurnDetectionLanguage = "en-US";
+const DEFAULT_TURN_DETECTION_LANGUAGE: TurnDetectionLanguage = "en";
 
 const INTERACTION_LANGUAGES = new Set<string>([
     "ar-EG",
@@ -43,6 +43,7 @@ const INTERACTION_LANGUAGES = new Set<string>([
     "zh-HK",
     "zh-TW",
     "nl-NL",
+    "en",
     "en-IN",
     "en-US",
     "fil-PH",
@@ -850,7 +851,11 @@ export class Agent<TTSSampleRate extends number = number> {
                     c.failure_message = this._failureMessage;
                 }
             }
-            return { ...base, mllm: mllmConfig, turn_detection: this._turnDetection };
+            return {
+                ...base,
+                mllm: mllmConfig,
+                turn_detection: this._turnDetection as Agora.StartAgentsRequest.Properties.TurnDetection | undefined,
+            };
         }
 
         const skipCategories = new Set(opts.skipVendorValidationCategories ?? []);
@@ -897,7 +902,7 @@ export class Agent<TTSSampleRate extends number = number> {
 
         return {
             ...base,
-            turn_detection: turnDetectionConfig,
+            turn_detection: turnDetectionConfig as Agora.StartAgentsRequest.Properties.TurnDetection,
             ...(llmConfig && { llm: llmConfig }),
             ...(ttsConfig && { tts: ttsConfig }),
             ...(asrConfig && { asr: asrConfig }),
@@ -952,12 +957,9 @@ export class Agent<TTSSampleRate extends number = number> {
     private _resolveTurnDetectionConfig(): TurnDetectionConfig {
         const turnDetection = { ...(this._turnDetection ?? {}) } as TurnDetectionConfig & { language?: string };
         const existingTurnDetectionLanguage = turnDetection.language;
-        const existingAsrLanguage = this._stt?.language;
         const language =
             existingTurnDetectionLanguage ??
-            (existingAsrLanguage !== undefined && isTurnDetectionLanguage(existingAsrLanguage)
-                ? existingAsrLanguage
-                : DEFAULT_TURN_DETECTION_LANGUAGE);
+            DEFAULT_TURN_DETECTION_LANGUAGE;
 
         assertTurnDetectionLanguage(language);
         turnDetection.language = language;

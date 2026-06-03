@@ -93,10 +93,12 @@ export type AvatarConfig = StartAgentsRequest.Properties.Avatar;
 export type AvatarVendor = StartAgentsRequest.Properties.Avatar.Vendor;
 
 /** BCP-47 language tag used by `turn_detection.language`. */
-export type TurnDetectionLanguage = AsrLanguage;
+export type TurnDetectionLanguage = AsrLanguage | "en";
 
 /** Turn detection configuration */
-export type TurnDetectionConfig = StartAgentsRequest.Properties.TurnDetection;
+export type TurnDetectionConfig = Omit<StartAgentsRequest.Properties.TurnDetection, "language"> & {
+    language?: TurnDetectionLanguage;
+};
 
 // --- New SOS/EOS turn detection types (preferred) ---
 

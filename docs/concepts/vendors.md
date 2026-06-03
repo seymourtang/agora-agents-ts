@@ -70,7 +70,7 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 
 ## STT vendors
 
-`turnDetection.language` sets the Agora interaction language and defaults to `en-US` when omitted. STT vendor `language` options are serialized under `asr.params` using each provider's own format.
+`turnDetection.language` sets the Agora interaction language and defaults to `en` when omitted. STT vendor `language` options are serialized under `asr.params` using each provider's own format.
 
 | Class             | Provider          | Key constructor params                           |
 | ----------------- | ----------------- | ------------------------------------------------ |
