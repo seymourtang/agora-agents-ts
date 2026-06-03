@@ -12,7 +12,7 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -119,3 +119,28 @@ jobs:
             sleep 15
           done
           exit 1
+
+      - name: Extract release notes
+        run: |
+          TAG="${RELEASE_TAG}"
+          git rev-parse "$TAG" >/dev/null
+          awk -v tag="$TAG" '
+            index($0, "## [" tag "]") == 1 { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' changelog.md > release_notes.md
+
+          if [ ! -s release_notes.md ]; then
+            echo "Release $TAG" > release_notes.md
+          fi
+
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${RELEASE_TAG}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --title "$TAG" --notes-file release_notes.md
+          else
+            gh release create "$TAG" --title "$TAG" --notes-file release_notes.md
+          fi
