@@ -195,7 +195,7 @@ describe("TTS vendor helpers", () => {
         expect(() => new OpenAITTS({ apiKey: "openai-key", voice: "alloy", model: "tts-1-hd" } as never)).toThrow(
             "OpenAITTS requires baseUrl",
         );
-        expect(() => new MiniMaxTTS({ model: "speech-02-turbo" } as never)).toThrow(
+        expect(() => new MiniMaxTTS({ model: "unsupported-model" } as never)).toThrow(
             "MiniMaxTTS requires key unless using a supported Agora-managed model",
         );
         expect(() => new MiniMaxTTS({ key: "minimax-key", model: "speech-02-turbo" } as never)).toThrow(

@@ -22,7 +22,16 @@ import {
     validateAvatarConfig,
     validateTtsSampleRate,
 } from "./avatar-types.js";
-import { type PresetInput, resolveSessionPresets } from "./presets.js";
+import {
+    getPresetCategory,
+    inferAsrPreset,
+    inferLlmPreset,
+    inferTtsPreset,
+    normalizePresetInput,
+    type PresetCategory,
+    type PresetInput,
+    resolveSessionPresets,
+} from "./presets.js";
 import { ExpiresIn as ExpiresInHelper, generateConvoAIToken } from "./token.js";
 import type {
     AgentConfigUpdate,
@@ -430,6 +439,43 @@ export class AgentSession {
         }
     }
 
+    private _vendorValidationCategories(pipelineId?: string): {
+        skipVendorValidationCategories: ReadonlySet<PresetCategory>;
+        allowMissingVendorCategories: ReadonlySet<PresetCategory>;
+    } {
+        const skipVendorValidationCategories = new Set<PresetCategory>();
+        const allowMissingVendorCategories = new Set<PresetCategory>();
+
+        if (pipelineId) {
+            allowMissingVendorCategories.add("asr");
+            allowMissingVendorCategories.add("llm");
+            allowMissingVendorCategories.add("tts");
+        }
+
+        const normalizedPreset = normalizePresetInput(this._preset);
+        if (normalizedPreset) {
+            for (const item of normalizedPreset.split(",")) {
+                const category = getPresetCategory(item);
+                if (category) {
+                    skipVendorValidationCategories.add(category);
+                    allowMissingVendorCategories.add(category);
+                }
+            }
+        }
+
+        if (inferAsrPreset(this._agent.stt as Agora.Asr | undefined)) {
+            skipVendorValidationCategories.add("asr");
+        }
+        if (inferLlmPreset(this._agent.llm as Agora.Llm | undefined)) {
+            skipVendorValidationCategories.add("llm");
+        }
+        if (inferTtsPreset(this._agent.tts as Agora.Tts | undefined)) {
+            skipVendorValidationCategories.add("tts");
+        }
+
+        return { skipVendorValidationCategories, allowMissingVendorCategories };
+    }
+
     /**
      * Start the agent session.
      *
@@ -470,6 +516,8 @@ export class AgentSession {
                       appCertificate: this._appCertificate as string,
                       expiresIn,
                   };
+            const { skipVendorValidationCategories, allowMissingVendorCategories } =
+                this._vendorValidationCategories(pipelineId);
 
             const properties = this._agent.toProperties({
                 channel: this._channel,
@@ -477,9 +525,8 @@ export class AgentSession {
                 remoteUids: this._remoteUids,
                 idleTimeout: this._idleTimeout,
                 enableStringUid: this._enableStringUid,
-                // When a preset or pipeline_id is supplied, ASR/LLM/TTS vendor
-                // config is optional — the backend fills it from the preset/pipeline.
-                skipVendorValidation: !!(this._preset || pipelineId),
+                skipVendorValidationCategories,
+                allowMissingVendorCategories,
                 ...tokenOpts,
             });
             const resolved = resolveSessionPresets({

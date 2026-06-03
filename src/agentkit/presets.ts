@@ -38,7 +38,7 @@ export type OpenAIPresetModel = (typeof OpenAIPresetModels)[number];
 export type OpenAITtsPresetModel = (typeof OpenAITtsPresetModels)[number];
 export type MiniMaxPresetModel = (typeof MiniMaxPresetModels)[number];
 
-type PresetCategory = "asr" | "llm" | "tts";
+export type PresetCategory = "asr" | "llm" | "tts";
 type AsrInference = {
     category: "asr";
     preset: AsrPreset;
@@ -88,10 +88,12 @@ const minimaxModelToPreset: Record<string, TtsPreset> = {
 };
 
 function normalizeModelName(value: unknown): string | undefined {
-    return typeof value === "string" ? value.trim().toLowerCase() : undefined;
+    if (typeof value !== "string") return undefined;
+    const normalized = value.trim().toLowerCase();
+    return normalized.length > 0 ? normalized : undefined;
 }
 
-function getPresetCategory(preset: string): PresetCategory | undefined {
+export function getPresetCategory(preset: string): PresetCategory | undefined {
     if (Object.values(AgentPresets.asr).includes(preset as AsrPreset)) return "asr";
     if (Object.values(AgentPresets.llm).includes(preset as LlmPreset)) return "llm";
     if (Object.values(AgentPresets.tts).includes(preset as TtsPreset)) return "tts";
@@ -113,7 +115,7 @@ function omitUndefinedKeys<T extends Record<string, unknown>>(value: T): T | und
     return Object.keys(next).length > 0 ? next : undefined;
 }
 
-function inferAsrPreset(asr?: Agora.Asr): AsrInference | undefined {
+export function inferAsrPreset(asr?: Agora.Asr): AsrInference | undefined {
     if (!asr || asr.vendor !== "deepgram" || asr.params?.api_key) return undefined;
     const preset = deepgramModelToPreset[normalizeModelName(asr.params?.model) ?? ""];
     if (!preset) return undefined;
@@ -124,7 +126,7 @@ function inferAsrPreset(asr?: Agora.Asr): AsrInference | undefined {
     };
 }
 
-function inferLlmPreset(llm?: Agora.Llm): LlmInference | undefined {
+export function inferLlmPreset(llm?: Agora.Llm): LlmInference | undefined {
     if (!llm || llm.api_key) return undefined;
     if (llm.vendor && llm.vendor !== "openai") return undefined;
     if (llm.url && llm.url !== OPENAI_CHAT_COMPLETIONS_URL) return undefined;
@@ -138,7 +140,7 @@ function inferLlmPreset(llm?: Agora.Llm): LlmInference | undefined {
     };
 }
 
-function inferTtsPreset(tts?: Agora.Tts): TtsInference | undefined {
+export function inferTtsPreset(tts?: Agora.Tts): TtsInference | undefined {
     if (!tts) return undefined;
     if (tts.vendor === "openai") {
         if ((tts.params as unknown as Record<string, unknown> | undefined)?.api_key) return undefined;
@@ -223,7 +225,12 @@ function stripInferredPresetFields(
         }
     }
 
-    return { ...properties, asr, llm, tts };
+    return {
+        ...properties,
+        ...(asr && { asr }),
+        ...(llm && { llm }),
+        ...(tts && { tts }),
+    };
 }
 
 export function normalizePresetInput(preset?: PresetInput | readonly string[]): string | undefined {

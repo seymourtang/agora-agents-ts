@@ -30,6 +30,9 @@ jobs:
       - name: Docs check
         run: pnpm docs:check
 
+      - name: Release metadata check
+        run: pnpm release:check
+
   test:
     runs-on: ubuntu-latest
 
