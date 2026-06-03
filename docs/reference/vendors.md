@@ -253,7 +253,7 @@ For `nova-2` and `nova-3`, omit `apiKey` to use Agora-managed credentials. For a
 
 ### Other STT vendors
 
-Use `turnDetection.language` for Agora interaction language; it defaults to `en`. Provider-specific language values stay under `asr.params` and may use a different format.
+Use `turnDetection.language` for Agora interaction language; it defaults to `en-US`. Provider-specific language values stay under `asr.params` and may use a different format. AgentKit populates REST `asr.language` from `turnDetection.language`.
 
 | Class | Key params |
 |---|---|
@@ -263,7 +263,7 @@ Use `turnDetection.language` for Agora interaction language; it defaults to `en`
 | `GoogleSTT` | `projectId`, `location`, `adcCredentialsString`, `language`, `model?` |
 | `AmazonSTT` | `accessKey`, `secretKey`, `region`, `language` |
 | `AssemblyAISTT` | `apiKey`, `language`, `uri?` |
-| `AresSTT` | `language?` |
+| `AresSTT` | — |
 | `SarvamSTT` | `apiKey`, `language` |
 
 ---

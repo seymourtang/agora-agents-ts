@@ -31,7 +31,7 @@ import type {
 } from "./types.js";
 import type { BaseAvatar, BaseLLM, BaseMLLM, BaseSTT, BaseTTS } from "./vendors/base.js";
 
-const DEFAULT_TURN_DETECTION_LANGUAGE: TurnDetectionLanguage = "en";
+const DEFAULT_TURN_DETECTION_LANGUAGE: TurnDetectionLanguage = "en-US";
 
 const INTERACTION_LANGUAGES = new Set<string>([
     "ar-EG",
@@ -43,7 +43,6 @@ const INTERACTION_LANGUAGES = new Set<string>([
     "zh-HK",
     "zh-TW",
     "nl-NL",
-    "en",
     "en-IN",
     "en-US",
     "fil-PH",
@@ -893,11 +892,11 @@ export class Agent<TTSSampleRate extends number = number> {
               }
             : undefined;
 
+        const turnDetectionConfig = this._resolveTurnDetectionConfig();
         const asrConfig =
             this._stt !== undefined || !allowMissingAsr
-                ? (this._resolveAsrConfig() as Agora.Asr | undefined)
+                ? (this._resolveAsrConfig(turnDetectionConfig) as Agora.Asr | undefined)
                 : undefined;
-        const turnDetectionConfig = this._resolveTurnDetectionConfig();
         const ttsConfig = this._tts;
 
         return {
@@ -944,12 +943,12 @@ export class Agent<TTSSampleRate extends number = number> {
         return newAgent;
     }
 
-    private _resolveAsrConfig(): SttConfig | undefined {
+    private _resolveAsrConfig(turnDetectionConfig: TurnDetectionConfig): SttConfig | undefined {
         const asrConfig = { ...(this._stt ?? {}) } as SttConfig & { language?: string };
         if (this._stt === undefined) {
             asrConfig.vendor = "ares";
         }
-        delete asrConfig.language;
+        asrConfig.language = turnDetectionConfig.language;
 
         return Object.keys(asrConfig).length > 0 ? asrConfig : undefined;
     }

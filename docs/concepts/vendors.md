@@ -70,7 +70,7 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 
 ## STT vendors
 
-`turnDetection.language` sets the Agora interaction language and defaults to `en` when omitted. STT vendor `language` options are serialized under `asr.params` using each provider's own format.
+`turnDetection.language` sets the Agora interaction language and defaults to `en-US` when omitted. STT vendor `language` options are serialized under `asr.params` using each provider's own format. Ares does not take a provider language option; AgentKit uses `turnDetection.language` for REST `asr.language`.
 
 | Class             | Provider          | Key constructor params                           |
 | ----------------- | ----------------- | ------------------------------------------------ |
@@ -81,7 +81,7 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 | `GoogleSTT`       | Google Speech     | `projectId`, `location`, `adcCredentialsString`, `language` |
 | `AmazonSTT`       | Amazon Transcribe | `accessKey`, `secretKey`, `region`, `language`   |
 | `AssemblyAISTT`   | AssemblyAI        | `apiKey`, `language`, `uri?`                     |
-| `AresSTT`         | Agora ARES        | `language?`                                      |
+| `AresSTT`         | Agora ARES        | —                                                |
 | `SarvamSTT`       | Sarvam AI         | `apiKey`, `language`                             |
 
 <!-- snippet: executable -->

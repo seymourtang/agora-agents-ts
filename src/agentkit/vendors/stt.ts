@@ -3,49 +3,8 @@
  */
 
 import { type DeepgramPresetModel, DeepgramPresetModels } from "../presets.js";
-import type { SttConfig, TurnDetectionLanguage } from "../types.js";
+import type { SttConfig } from "../types.js";
 import { BaseSTT } from "./base.js";
-
-const INTERACTION_LANGUAGES = new Set<string>([
-    "ar-EG",
-    "ar-JO",
-    "ar-SA",
-    "ar-AE",
-    "bn-IN",
-    "zh-CN",
-    "zh-HK",
-    "zh-TW",
-    "nl-NL",
-    "en-IN",
-    "en-US",
-    "fil-PH",
-    "fr-FR",
-    "de-DE",
-    "gu-IN",
-    "he-IL",
-    "hi-IN",
-    "id-ID",
-    "it-IT",
-    "ja-JP",
-    "kn-IN",
-    "ko-KR",
-    "ms-MY",
-    "fa-IR",
-    "pt-PT",
-    "ru-RU",
-    "es-ES",
-    "ta-IN",
-    "te-IN",
-    "th-TH",
-    "tr-TR",
-    "vi-VN",
-]);
-
-function toTurnDetectionLanguage(language?: string): TurnDetectionLanguage | undefined {
-    return language !== undefined && INTERACTION_LANGUAGES.has(language)
-        ? (language as TurnDetectionLanguage)
-        : undefined;
-}
 
 function isDeepgramManagedModel(model: string | undefined): model is DeepgramPresetModel {
     return model !== undefined && DeepgramPresetModels.includes(model.trim().toLowerCase() as DeepgramPresetModel);
@@ -88,11 +47,9 @@ export class SpeechmaticsSTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { apiKey, language, model, uri, additionalParams } = this.options;
-        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "speechmatics",
-            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -157,11 +114,9 @@ export class DeepgramSTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { apiKey, model, language, smartFormat, punctuation, additionalParams } = this.options;
-        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "deepgram",
-            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -211,11 +166,9 @@ export class MicrosoftSTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { key, region, language, additionalParams } = this.options;
-        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "microsoft",
-            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -265,7 +218,6 @@ export class OpenAISTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { apiKey, model, language, prompt, inputAudioTranscription, additionalParams } = this.options;
-        const turnDetectionLanguage = toTurnDetectionLanguage(language);
         const transcription = {
             model: "whisper-1",
             ...inputAudioTranscription,
@@ -276,7 +228,6 @@ export class OpenAISTT extends BaseSTT {
 
         return {
             vendor: "openai",
-            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -328,11 +279,9 @@ export class GoogleSTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { projectId, location, adcCredentialsString, language, model, additionalParams } = this.options;
-        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "google",
-            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -385,11 +334,9 @@ export class AmazonSTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { accessKey, secretKey, region, language, additionalParams } = this.options;
-        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "amazon",
-            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -437,11 +384,9 @@ export class AssemblyAISTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { apiKey, language, uri, additionalParams } = this.options;
-        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "assemblyai",
-            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -457,8 +402,6 @@ export class AssemblyAISTT extends BaseSTT {
  * Constructor options for Agora ARES STT.
  */
 export interface AresSTTOptions {
-    /** Language code for ARES ASR */
-    language?: TurnDetectionLanguage;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 }
@@ -468,9 +411,7 @@ export interface AresSTTOptions {
  *
  * @example
  * ```typescript
- * const stt = new AresSTT({
- *   language: 'en-US',
- * });
+ * const stt = new AresSTT();
  * ```
  */
 export class AresSTT extends BaseSTT {
@@ -482,11 +423,10 @@ export class AresSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { language, additionalParams } = this.options;
+        const { additionalParams } = this.options;
 
         return {
             vendor: "ares",
-            ...(language && { language }),
             ...(additionalParams && Object.keys(additionalParams).length > 0 && { params: additionalParams }),
         };
     }
@@ -527,11 +467,9 @@ export class SarvamSTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { apiKey, language, model, additionalParams } = this.options;
-        const turnDetectionLanguage = toTurnDetectionLanguage(language);
 
         return {
             vendor: "sarvam",
-            ...(turnDetectionLanguage && { language: turnDetectionLanguage }),
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,

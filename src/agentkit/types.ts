@@ -93,7 +93,7 @@ export type AvatarConfig = StartAgentsRequest.Properties.Avatar;
 export type AvatarVendor = StartAgentsRequest.Properties.Avatar.Vendor;
 
 /** BCP-47 language tag used by `turn_detection.language`. */
-export type TurnDetectionLanguage = AsrLanguage | "en";
+export type TurnDetectionLanguage = AsrLanguage;
 
 /** Turn detection configuration */
 export type TurnDetectionConfig = Omit<StartAgentsRequest.Properties.TurnDetection, "language"> & {

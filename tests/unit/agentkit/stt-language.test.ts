@@ -39,12 +39,13 @@ describe("STT language serialization", () => {
 
         expect(properties.asr).toMatchObject({
             vendor: "speechmatics",
+            language: "en-US",
             params: {
                 api_key: "stt-key",
                 language: "en",
             },
         });
-        expect(properties.turn_detection).toMatchObject({ language: "en" });
+        expect(properties.turn_detection).toMatchObject({ language: "en-US" });
     });
 
     test("keeps bare Speechmatics language as a vendor param only", () => {
@@ -57,9 +58,10 @@ describe("STT language serialization", () => {
                 remoteUids: ["1002"],
             });
 
-        expect(properties.turn_detection).toMatchObject({ language: "en" });
+        expect(properties.turn_detection).toMatchObject({ language: "en-US" });
         expect(properties.asr).toMatchObject({
             vendor: "speechmatics",
+            language: "en-US",
             params: {
                 api_key: "stt-key",
                 language: "en",
@@ -94,6 +96,7 @@ describe("STT language serialization", () => {
 
         expect(properties.asr).toMatchObject({
             vendor: "speechmatics",
+            language: "fr-FR",
             params: {
                 language: "en",
             },
@@ -136,12 +139,14 @@ describe("STT language serialization", () => {
             remoteUids: ["1002"],
         });
 
-        expect(properties.asr).toEqual({ vendor: "ares" });
-        expect(properties.turn_detection).toEqual({ language: "en" });
+        expect(properties.asr).toEqual({ vendor: "ares", language: "en-US" });
+        expect(properties.turn_detection).toEqual({ language: "en-US" });
     });
 
     test("serializes documented provider params without promoting provider language", () => {
-        expect(new DeepgramSTT({ model: "nova-3", language: "en-US" }).toConfig().params).toMatchObject({
+        const deepgramManaged = new DeepgramSTT({ model: "nova-3", language: "en-US" }).toConfig();
+        expect(deepgramManaged).not.toHaveProperty("language");
+        expect(deepgramManaged.params).toMatchObject({
             model: "nova-3",
             language: "en-US",
         });
@@ -202,13 +207,53 @@ describe("STT language serialization", () => {
             language_code: "en-US",
         });
 
-        expect(
-            new AssemblyAISTT({ apiKey: "assembly-key", language: "en-US", uri: "wss://example.test/ws" }).toConfig()
-                .params,
-        ).toMatchObject({
+        const assemblyAiConfig = new AssemblyAISTT({
+            apiKey: "assembly-key",
+            language: "en-US",
+            uri: "wss://example.test/ws",
+        }).toConfig();
+        expect(assemblyAiConfig).not.toHaveProperty("language");
+        expect(assemblyAiConfig.params).toMatchObject({
             api_key: "assembly-key",
             language: "en-US",
             uri: "wss://example.test/ws",
         });
+    });
+
+    test("keeps AssemblyAI params nested and sources asr language from turn detection", () => {
+        const properties = new Agent({ turnDetection: { language: "fr-FR" } })
+            .withLlm(
+                new OpenAI({
+                    apiKey: "llm-key",
+                    model: "gpt-4o-mini",
+                    url: "https://api.openai.com/v1/chat/completions",
+                }),
+            )
+            .withTts(
+                new ElevenLabsTTS({
+                    key: "tts-key",
+                    voiceId: "voice",
+                    modelId: "eleven_flash_v2_5",
+                    baseUrl: "wss://api.elevenlabs.io/v1",
+                }),
+            )
+            .withStt(new AssemblyAISTT({ apiKey: "assembly-key", language: "en-US", uri: "wss://example.test/ws" }))
+            .toProperties({
+                channel: "channel",
+                token: "token",
+                agentUid: "1001",
+                remoteUids: ["1002"],
+            });
+
+        expect(properties.asr).toEqual({
+            vendor: "assemblyai",
+            language: "fr-FR",
+            params: {
+                api_key: "assembly-key",
+                language: "en-US",
+                uri: "wss://example.test/ws",
+            },
+        });
+        expect(properties.turn_detection).toEqual({ language: "fr-FR" });
     });
 });
