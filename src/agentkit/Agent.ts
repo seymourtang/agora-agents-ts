@@ -759,10 +759,15 @@ export class Agent<TTSSampleRate extends number = number> {
             idleTimeout?: number;
             enableStringUid?: boolean;
             /**
-             * Skip the LLM and TTS required-field guards. Set this when `preset` or
-             * `pipeline_id` is in use — those fields supply the vendor config server-side.
+             * @deprecated Use `skipVendorValidationCategories` and
+             * `allowMissingVendorCategories` instead. This broad escape hatch will be
+             * removed in a future release.
              */
             skipVendorValidation?: boolean;
+            /** Skip generated request-shape validation for the listed provider categories. */
+            skipVendorValidationCategories?: ReadonlySet<"asr" | "llm" | "tts">;
+            /** Allow the listed provider categories to be omitted from properties. */
+            allowMissingVendorCategories?: ReadonlySet<"asr" | "llm" | "tts">;
         } & (
             | { token: string; appId?: undefined; appCertificate?: undefined }
             | { token?: undefined; appId: string; appCertificate: string; expiresIn?: number }
@@ -848,13 +853,26 @@ export class Agent<TTSSampleRate extends number = number> {
             return { ...base, mllm: mllmConfig, turn_detection: this._turnDetection };
         }
 
-        if (!opts.skipVendorValidation) {
-            if (!this._tts) {
-                throw new Error("TTS configuration is required. Use withTts() to set it.");
+        const skipCategories = new Set(opts.skipVendorValidationCategories ?? []);
+        const allowMissingCategories = new Set(opts.allowMissingVendorCategories ?? []);
+        if (opts.skipVendorValidation) {
+            for (const category of ["asr", "llm", "tts"] as const) {
+                skipCategories.add(category);
+                allowMissingCategories.add(category);
             }
-            if (!this._llm) {
-                throw new Error("LLM configuration is required. Use withLlm() to set it.");
-            }
+        }
+
+        const skipLlmValidation = skipCategories.has("llm");
+        const skipTtsValidation = skipCategories.has("tts");
+        const allowMissingAsr = allowMissingCategories.has("asr");
+        const allowMissingLlm = allowMissingCategories.has("llm");
+        const allowMissingTts = allowMissingCategories.has("tts");
+
+        if (!this._tts && !(skipTtsValidation || allowMissingTts)) {
+            throw new Error("TTS configuration is required. Use withTts() to set it.");
+        }
+        if (!this._llm && !(skipLlmValidation || allowMissingLlm)) {
+            throw new Error("LLM configuration is required. Use withLlm() to set it.");
         }
 
         const llmConfig: Agora.Llm | undefined = this._llm
@@ -870,10 +888,18 @@ export class Agent<TTSSampleRate extends number = number> {
               }
             : undefined;
 
-        const asrConfig = this._resolveAsrConfig() as Agora.Asr | undefined;
+        const asrConfig =
+            this._stt !== undefined || !allowMissingAsr ? (this._resolveAsrConfig() as Agora.Asr | undefined) : undefined;
         const turnDetectionConfig = this._resolveTurnDetectionConfig();
+        const ttsConfig = this._tts;
 
-        return { ...base, turn_detection: turnDetectionConfig, llm: llmConfig, tts: this._tts, asr: asrConfig };
+        return {
+            ...base,
+            turn_detection: turnDetectionConfig,
+            ...(llmConfig && { llm: llmConfig }),
+            ...(ttsConfig && { tts: ttsConfig }),
+            ...(asrConfig && { asr: asrConfig }),
+        };
     }
 
     /**
