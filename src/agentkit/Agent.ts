@@ -889,7 +889,9 @@ export class Agent<TTSSampleRate extends number = number> {
             : undefined;
 
         const asrConfig =
-            this._stt !== undefined || !allowMissingAsr ? (this._resolveAsrConfig() as Agora.Asr | undefined) : undefined;
+            this._stt !== undefined || !allowMissingAsr
+                ? (this._resolveAsrConfig() as Agora.Asr | undefined)
+                : undefined;
         const turnDetectionConfig = this._resolveTurnDetectionConfig();
         const ttsConfig = this._tts;
 

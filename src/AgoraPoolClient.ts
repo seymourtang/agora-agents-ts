@@ -109,6 +109,7 @@ export class AgoraClient extends BaseAgoraClient {
         let authMode: AgoraAuthMode;
         let username: string;
         let password: string;
+        let authToken = "";
 
         const opts = options as AgoraClient.Options & {
             customerId?: string;
@@ -116,12 +117,15 @@ export class AgoraClient extends BaseAgoraClient {
             authToken?: string;
         };
 
-        if (opts.customerId != null) {
+        if (opts.customerId != null && opts.customerSecret != null) {
             authMode = "basic";
             username = opts.customerId;
-            password = opts.customerSecret!;
+            password = opts.customerSecret;
+        } else if (opts.customerId != null) {
+            throw new Error("customerSecret is required when customerId is provided");
         } else if (opts.authToken != null) {
             authMode = "token";
+            authToken = opts.authToken;
             username = "";
             password = "";
         } else {
@@ -138,7 +142,7 @@ export class AgoraClient extends BaseAgoraClient {
             authMode === "basic"
                 ? `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`
                 : authMode === "token"
-                  ? `agora token=${opts.authToken!}`
+                  ? `agora token=${authToken}`
                   : "";
 
         super({

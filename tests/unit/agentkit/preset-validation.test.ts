@@ -1,8 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 import { Agent } from "../../../src/agentkit/Agent.js";
+import { OpenAI } from "../../../src/agentkit/vendors/llm.js";
 import { DeepgramSTT } from "../../../src/agentkit/vendors/stt.js";
 import { MiniMaxTTS, OpenAITTS } from "../../../src/agentkit/vendors/tts.js";
-import { OpenAI } from "../../../src/agentkit/vendors/llm.js";
 import type * as Agora from "../../../src/api/index.js";
 import type { AgoraClient } from "../../../src/Client.js";
 
