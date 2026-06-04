@@ -76,6 +76,8 @@ type DeepgramSTTCommonOptions = {
     smartFormat?: boolean;
     /** Enable punctuation */
     punctuation?: boolean;
+    /** Boost specialized terms and brands for Deepgram */
+    keyterm?: string;
     /** Additional vendor-specific parameters */
     additionalParams?: Record<string, unknown>;
 };
@@ -113,7 +115,7 @@ export class DeepgramSTT extends BaseSTT {
     }
 
     toConfig(): SttConfig {
-        const { apiKey, model, language, smartFormat, punctuation, additionalParams } = this.options;
+        const { apiKey, model, language, smartFormat, punctuation, keyterm, additionalParams } = this.options;
 
         return {
             vendor: "deepgram",
@@ -125,6 +127,7 @@ export class DeepgramSTT extends BaseSTT {
                 ...(language && { language }),
                 ...(smartFormat !== undefined && { smart_format: smartFormat }),
                 ...(punctuation !== undefined && { punctuation }),
+                ...(keyterm && { keyterm }),
             },
         };
     }
@@ -218,13 +221,16 @@ export class OpenAISTT extends BaseSTT {
 
     toConfig(): SttConfig {
         const { apiKey, model, language, prompt, inputAudioTranscription, additionalParams } = this.options;
-        const transcription = {
-            model: "whisper-1",
+        const transcription: Record<string, unknown> = {
+            model: "gpt-4o-mini-transcribe",
             ...inputAudioTranscription,
             ...(model && { model }),
             ...(prompt && { prompt }),
             ...(language && { language }),
         };
+        if (!transcription.model) throw new Error("OpenAISTT: inputAudioTranscription.model is required");
+        if (!transcription.prompt) throw new Error("OpenAISTT: inputAudioTranscription.prompt is required");
+        if (!transcription.language) throw new Error("OpenAISTT: inputAudioTranscription.language is required");
 
         return {
             vendor: "openai",

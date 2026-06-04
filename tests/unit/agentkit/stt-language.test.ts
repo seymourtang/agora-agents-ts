@@ -161,21 +161,28 @@ describe("STT language serialization", () => {
         });
 
         expect(
-            new OpenAISTT({ apiKey: "openai-key", model: "gpt-4o-mini-transcribe", language: "en" }).toConfig().params,
+            new OpenAISTT({
+                apiKey: "openai-key",
+                model: "gpt-4o-mini-transcribe",
+                language: "en",
+                prompt: "Transcribe English speech",
+            }).toConfig().params,
         ).toEqual({
             api_key: "openai-key",
             input_audio_transcription: {
                 model: "gpt-4o-mini-transcribe",
                 language: "en",
+                prompt: "Transcribe English speech",
             },
         });
 
-        expect(new OpenAISTT({ apiKey: "openai-key" }).toConfig().params).toEqual({
-            api_key: "openai-key",
-            input_audio_transcription: {
-                model: "whisper-1",
-            },
-        });
+        expect(() => new OpenAISTT({ apiKey: "openai-key", language: "en" }).toConfig()).toThrow(
+            "OpenAISTT: inputAudioTranscription.prompt is required",
+        );
+
+        expect(() => new OpenAISTT({ apiKey: "openai-key", prompt: "Transcribe speech" }).toConfig()).toThrow(
+            "OpenAISTT: inputAudioTranscription.language is required",
+        );
 
         expect(
             new GoogleSTT({

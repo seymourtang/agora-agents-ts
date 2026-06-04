@@ -882,13 +882,13 @@ export class Agent<TTSSampleRate extends number = number> {
         const llmConfig: Agora.Llm | undefined = this._llm
             ? {
                   ...this._llm,
-                  system_messages: this._instructions
-                      ? [{ role: "system", content: this._instructions }]
-                      : this._llm.system_messages,
-                  greeting_message: this._greeting ?? this._llm.greeting_message,
-                  greeting_configs: this._greetingConfigs ?? this._llm.greeting_configs,
-                  failure_message: this._failureMessage ?? this._llm.failure_message,
-                  max_history: this._maxHistory ?? this._llm.max_history,
+                  system_messages: this._llm.system_messages !== undefined
+                      ? this._llm.system_messages
+                      : (this._instructions ? [{ role: "system", content: this._instructions }] : undefined),
+                  greeting_message: this._llm.greeting_message ?? this._greeting,
+                  greeting_configs: this._llm.greeting_configs ?? this._greetingConfigs,
+                  failure_message: this._llm.failure_message ?? this._failureMessage,
+                  max_history: this._llm.max_history ?? this._maxHistory,
               }
             : undefined;
 
