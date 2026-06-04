@@ -175,6 +175,13 @@ describe("STT language serialization", () => {
         expect(
             new GoogleSTT({
                 projectId: "project",
+
+            },
+        });
+
+        expect(
+            new GoogleSTT({
+                projectId: "project",
                 location: "global",
                 adcCredentialsString: "{}",
                 language: "en-US",

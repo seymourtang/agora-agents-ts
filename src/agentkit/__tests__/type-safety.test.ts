@@ -140,6 +140,8 @@ new DeepgramSTT({ model: "enhanced" });
 new OpenAI({ model: "gpt-4o" });
 // @ts-expect-error Missing apiKey cannot be combined with a custom vendor hint.
 new OpenAI({ model: "gpt-5-mini", vendor: "custom" });
+
+new OpenAI({ model: "gpt-5-mini", vendor: "custom" });
 // @ts-expect-error Missing apiKey cannot be combined with a custom URL.
 new OpenAI({ model: "gpt-5-mini", url: "https://proxy.example.com/chat" });
 // @ts-expect-error Missing apiKey is only allowed for the openai_tts_1 preset model.
@@ -294,6 +296,7 @@ function _edgeCase2() {
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
             baseUrl: "wss://api.elevenlabs.io/v1",
+                sampleRate: 16000,
             sampleRate: 16000,
         }),
     );
@@ -333,6 +336,7 @@ function _typeInference1() {
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
             baseUrl: "wss://api.elevenlabs.io/v1",
+                sampleRate: 24000,
             sampleRate: 24000,
         }),
     );
@@ -349,6 +353,7 @@ function _typeInference2() {
             modelId: "eleven_flash_v2_5",
             voiceId: "test",
             baseUrl: "wss://api.elevenlabs.io/v1",
+                sampleRate: 16000,
             sampleRate: 16000,
         }),
     );

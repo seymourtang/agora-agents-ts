@@ -153,7 +153,7 @@ export type {
     Labels,
     // Core configuration types
     LlmConfig,
-    LlmGreetingConfigs,
+
     LlmGreetingConfigsMode,
     LlmStyle,
     McpServersItem,

@@ -113,6 +113,7 @@ type DeepgramSTTCommonOptions = {
     apiKey?: string;
     /** Model to use (e.g., 'nova-2', 'enhanced', 'base') */
     model?: string;
+
     /** Language code (e.g., 'en-US', 'es', 'fr') */
     language?: string;
     /** Enable smart formatting */

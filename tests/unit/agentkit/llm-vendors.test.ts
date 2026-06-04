@@ -33,6 +33,9 @@ describe("LLM vendor helpers", () => {
             url: "https://llm.example.com/chat",
             api_key: "key",
             vendor: "custom",
+
+
+            vendor: "custom",
             style: "openai",
         });
     });

@@ -214,6 +214,8 @@ export namespace StartAgentsRequest {
          * Conversation turn detection settings. Controls the logic for voice activity detection and conversation turn determination. This object has no effect when `mllm.enable` is true; use `mllm.turn_detection` instead.
          */
         export interface TurnDetection {
+            /** BCP-47 language tag identifying the primary language used for agent interaction. */
+            language?: Agora.AsrLanguage;
             /**
              * Conversation turn detection mode:
              * - `default`: Uses standard conversation turn detection configuration.
