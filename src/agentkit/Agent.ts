@@ -901,9 +901,12 @@ export class Agent<TTSSampleRate extends number = number> {
         const llmConfig: Agora.Llm | undefined = this._llm
             ? {
                   ...this._llm,
-                  system_messages: this._llm.system_messages !== undefined
-                      ? this._llm.system_messages
-                      : (this._instructions ? [{ role: "system", content: this._instructions }] : undefined),
+                  system_messages:
+                      this._llm.system_messages !== undefined
+                          ? this._llm.system_messages
+                          : this._instructions
+                            ? [{ role: "system", content: this._instructions }]
+                            : undefined,
                   greeting_message: this._llm.greeting_message ?? this._greeting,
                   greeting_configs: this._llm.greeting_configs ?? this._greetingConfigs,
                   failure_message: this._llm.failure_message ?? this._failureMessage,
@@ -976,9 +979,7 @@ export class Agent<TTSSampleRate extends number = number> {
     private _resolveTurnDetectionConfig(): TurnDetectionConfig {
         const turnDetection = { ...(this._turnDetection ?? {}) } as TurnDetectionConfig & { language?: string };
         const existingTurnDetectionLanguage = turnDetection.language;
-        const language =
-            existingTurnDetectionLanguage ??
-            DEFAULT_TURN_DETECTION_LANGUAGE;
+        const language = existingTurnDetectionLanguage ?? DEFAULT_TURN_DETECTION_LANGUAGE;
 
         assertTurnDetectionLanguage(language);
         turnDetection.language = language;

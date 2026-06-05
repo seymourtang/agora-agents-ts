@@ -156,9 +156,10 @@ export function inferTtsPreset(tts?: Agora.Tts): TtsInference | undefined {
     if (tts.vendor === "minimax") {
         if (tts.params?.key) return undefined;
         // Model is no longer in params for the preset path; fall back to the top-level hint.
-        const model = normalizeModelName(tts.params?.model)
-            ?? normalizeModelName((tts as unknown as Record<string, unknown>)._minimaxPresetModel as string)
-            ?? "";
+        const model =
+            normalizeModelName(tts.params?.model) ??
+            normalizeModelName((tts as unknown as Record<string, unknown>)._minimaxPresetModel as string) ??
+            "";
         const preset = minimaxModelToPreset[model];
         if (!preset) return undefined;
         return {

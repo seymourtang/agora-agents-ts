@@ -428,4 +428,3 @@ export class GenericAvatar extends BaseAvatar<number> {
         };
     }
 }
-

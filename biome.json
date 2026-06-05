@@ -43,6 +43,18 @@
             }
         }
     },
+    "overrides": [
+        {
+            "includes": ["src/api/**"],
+            "linter": {
+                "rules": {
+                    "suspicious": {
+                        "noExplicitAny": "off"
+                    }
+                }
+            }
+        }
+    ],
     "linter": {
         "rules": {
             "style": {
