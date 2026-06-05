@@ -230,6 +230,10 @@ function stripInferredPresetFields(
             };
         }
     }
+    if (tts && "_minimaxPresetModel" in (tts as unknown as Record<string, unknown>)) {
+        const { _minimaxPresetModel: _discarded, ...rest } = tts as unknown as Record<string, unknown>;
+        tts = rest as typeof tts;
+    }
 
     return {
         ...properties,

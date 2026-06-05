@@ -1152,6 +1152,26 @@ describe("Preset coverage matrix", () => {
         expect(request.preset).toContain("minimax_speech_2_8_turbo");
     });
 
+    test("explicit MiniMax preset strips _minimaxPresetModel hint from wire", async () => {
+        // When the caller supplies the MiniMax TTS preset explicitly (not inferred),
+        // the internal _minimaxPresetModel hint set by MiniMaxTTS must still be removed.
+        const { client, start } = createClient();
+        const agent = new Agent({ name: "t" })
+            .withStt(STUB_STT)
+            .withLlm(STUB_LLM)
+            .withTts(new MiniMaxTTS({ model: "speech-2.8-turbo", voiceId: "English_captivating_female1" }));
+
+        const session = agent.createSession(client, {
+            ...SESSION_OPTS,
+            preset: "minimax_speech_2_8_turbo",
+        });
+        await session.start();
+
+        const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
+        expect(request.preset).toContain("minimax_speech_2_8_turbo");
+        expect(request.properties?.tts).not.toHaveProperty("_minimaxPresetModel");
+    });
+
     test("deepgram_nova_2 managed STT infers deepgram_nova_2 preset", async () => {
         const { client, start } = createClient();
         const agent = new Agent({ name: "t" })
