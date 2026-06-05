@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Added
 
 - **Expanded provider surface** — Added generated API support for the latest Conversational AI vendors and configuration types, including Dify LLM and Generic Avatar.
-- **Interaction language handling** — Added Agent-level `interactionLanguage` / `withInteractionLanguage()` support for REST `asr.language` while keeping provider-specific STT language values under `asr.params`.
+- **Interaction language handling** — AgentKit now consistently derives REST `asr.language` from `turnDetection.language` while keeping provider-specific STT language values under `asr.params`.
 - **Deepgram keyterm** — Added `keyterm` support on `DeepgramSTT`, serialized as `asr.params.keyterm`.
 
 ### Changed
