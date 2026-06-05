@@ -74,7 +74,7 @@ function isTurnDetectionLanguage(value: string): value is TurnDetectionLanguage 
 
 function assertTurnDetectionLanguage(value: string): asserts value is TurnDetectionLanguage {
     if (!isTurnDetectionLanguage(value)) {
-        throw new Error(`Invalid interaction language: ${value}`);
+        throw new Error(`Invalid turnDetection.language: ${value}`);
     }
 }
 

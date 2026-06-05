@@ -128,7 +128,7 @@ describe("STT language serialization", () => {
                     agentUid: "1001",
                     remoteUids: ["1002"],
                 }),
-        ).toThrow("Invalid interaction language: xx");
+        ).toThrow("Invalid turnDetection.language: xx");
     });
 
     test("sends default interaction language when STT is omitted", () => {
