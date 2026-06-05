@@ -577,8 +577,6 @@ export class VertexAILLM extends BaseLLM {
             api_key: o.apiKey,
             params: {
                 model: o.model,
-                project_id: o.projectId,
-                location: o.location,
                 ...o.params,
                 ...(o.temperature !== undefined && { temperature: o.temperature }),
                 ...(o.topP !== undefined && { top_p: o.topP }),

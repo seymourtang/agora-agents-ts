@@ -11,6 +11,7 @@ import {
     OpenAI,
     VertexAILLM,
 } from "../../../src/agentkit/vendors/llm.js";
+import { GeminiLive, OpenAIRealtime, VertexAI, XaiGrok } from "../../../src/agentkit/vendors/mllm.js";
 import {
     AmazonSTT,
     AresSTT,
@@ -37,7 +38,6 @@ import {
     RimeTTS,
     SarvamTTS,
 } from "../../../src/agentkit/vendors/tts.js";
-import { GeminiLive, OpenAIRealtime, VertexAI, XaiGrok } from "../../../src/agentkit/vendors/mllm.js";
 import type * as Agora from "../../../src/api/index.js";
 import type { AgoraClient } from "../../../src/Client.js";
 
@@ -255,8 +255,8 @@ describe("Scenario 4 — VertexAILLM URL construction", () => {
         expect(properties.llm?.url).toBe(expectedUrl);
         expect(properties.llm?.style).toBe("gemini");
         expect(properties.llm?.params?.model).toBe("gemini-pro");
-        expect((properties.llm?.params as Record<string, unknown>)?.project_id).toBe("my-project");
-        expect((properties.llm?.params as Record<string, unknown>)?.location).toBe("us-central1");
+        expect((properties.llm?.params as Record<string, unknown>)?.project_id).toBeUndefined();
+        expect((properties.llm?.params as Record<string, unknown>)?.location).toBeUndefined();
     });
 });
 
@@ -486,9 +486,7 @@ describe("Scenario 8 — MLLM mode", () => {
         expect(properties.mllm?.enable).toBe(true);
         expect((properties.mllm as Record<string, unknown>)?.project_id).toBe("my-project");
         expect((properties.mllm as Record<string, unknown>)?.location).toBe("us-central1");
-        expect((properties.mllm as Record<string, unknown>)?.adc_credentials_string).toBe(
-            '{"type":"service_account"}',
-        );
+        expect((properties.mllm as Record<string, unknown>)?.adc_credentials_string).toBe('{"type":"service_account"}');
         expect((properties.mllm as Record<string, unknown>)?.params).toMatchObject({
             model: "gemini-live-2.5-flash-preview-native-audio-09-2025",
             voice: "Aoede",
@@ -510,6 +508,20 @@ describe("ASR vendor coverage", () => {
         expect(p.asr?.params?.key).toBe("dg-key");
         expect(p.asr?.params?.model).toBe("nova-2");
         expect(p.asr?.params?.language).toBe("en-US");
+    });
+
+    test("DeepgramSTT apiKey → wire key; keyterm passes through unchanged", () => {
+        // apiKey is renamed to "key" in the wire; keyterm stays as "keyterm"
+        const config = new DeepgramSTT({
+            apiKey: "dg-key",
+            model: "nova-3",
+            language: "en",
+            keyterm: "term",
+        }).toConfig();
+        expect((config.params as Record<string, unknown>)?.key).toBe("dg-key");
+        expect((config.params as Record<string, unknown>)?.model).toBe("nova-3");
+        expect((config.params as Record<string, unknown>)?.language).toBe("en");
+        expect((config.params as Record<string, unknown>)?.keyterm).toBe("term");
     });
 
     test("MicrosoftSTT serializes key, region, language in params", () => {
@@ -573,9 +585,7 @@ describe("ASR vendor coverage", () => {
     });
 
     test("AresSTT produces no params key", () => {
-        const p = new Agent({ name: "t" })
-            .withStt(new AresSTT())
-            .toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
+        const p = new Agent({ name: "t" }).withStt(new AresSTT()).toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
 
         expect(p.asr?.vendor).toBe("ares");
         expect(p.asr?.params).toBeUndefined();
@@ -1202,10 +1212,7 @@ describe("Preset coverage matrix", () => {
 
     test("BYOK vendors produce no preset", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "t" })
-            .withStt(STUB_STT)
-            .withLlm(STUB_LLM)
-            .withTts(STUB_TTS);
+        const agent = new Agent({ name: "t" }).withStt(STUB_STT).withLlm(STUB_LLM).withTts(STUB_TTS);
 
         const session = agent.createSession(client, { ...SESSION_OPTS });
         await session.start();
