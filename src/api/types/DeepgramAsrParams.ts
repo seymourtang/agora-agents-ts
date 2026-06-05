@@ -12,7 +12,7 @@ export interface DeepgramAsrParams {
     model?: string | null;
     /** Language code for speech recognition */
     language?: string | null;
-    /** Boost specialized terms and brands */
+    /** Boost specialized terms and brands for Deepgram. */
     keyterm?: string | null;
     /** Accepts any additional properties */
     [key: string]: any;

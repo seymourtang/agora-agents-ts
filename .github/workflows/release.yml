@@ -51,8 +51,17 @@ jobs:
           TAG="${RELEASE_TAG}"
           git rev-parse "$TAG" >/dev/null
 
+      - name: Verify npm auth
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm config set //registry.npmjs.org/:_authToken "$NODE_AUTH_TOKEN"
+          npm whoami
+
       - name: Verify package versions match release tag
         run: |
+          npm config set //registry.npmjs.org/:_authToken "$NODE_AUTH_TOKEN"
+
           TAG_VERSION="${RELEASE_TAG#v}"
           ROOT_VERSION="$(node -p "require('./package.json').version")"
           COMPAT_VERSION="$(node -p "require('./compat/agora-agent-server-sdk/package.json').version")"
@@ -84,6 +93,48 @@ jobs:
           fi
 
           npm publish --access public
+
+      - name: Wait for primary package on npm
+        run: |
+          TAG_VERSION="${RELEASE_TAG#v}"
+          PACKAGE="agora-agents"
+          for attempt in $(seq 1 12); do
+            if npm view "${PACKAGE}@${TAG_VERSION}" version >/dev/null 2>&1; then
+              echo "${PACKAGE}@${TAG_VERSION} is available on npm."
+              exit 0
+            fi
+            echo "Waiting for ${PACKAGE}@${TAG_VERSION} on npm (attempt $attempt/12)..."
+            sleep 10
+          done
+          echo "Timed out waiting for ${PACKAGE}@${TAG_VERSION} on npm."
+          exit 1
+
+      - name: Publish compatibility shim to npm
+        run: |
+          PACKAGE_NAME="$(node -p "require('./compat/agora-agent-server-sdk/package.json').name")"
+          PACKAGE_VERSION="$(node -p "require('./compat/agora-agent-server-sdk/package.json').version")"
+
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version >/dev/null 2>&1; then
+            echo "${PACKAGE_NAME}@${PACKAGE_VERSION} is already published; skipping npm publish."
+            exit 0
+          fi
+
+          cd compat/agora-agent-server-sdk
+          for attempt in $(seq 1 3); do
+            if npm publish --access public; then
+              exit 0
+            fi
+            echo "Compat publish failed (attempt $attempt/3). Retrying in 15s..."
+            sleep 15
+          done
+          exit 1
+
+      - name: Deprecate legacy package name
+        run: |
+          npm deprecate "agora-agent-server-sdk@<${RELEASE_TAG#v}" "This package has been renamed to agora-agents. Please install agora-agents instead." || true
+          npm deprecate "agora-agent-server-sdk@${RELEASE_TAG#v}" "This package has been renamed to agora-agents. Please install agora-agents instead."
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Wait for primary package on npm
         run: |
