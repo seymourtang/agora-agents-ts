@@ -70,6 +70,8 @@ Set the avatar vendor. The `this` constraint enforces that the Agent's TTS sampl
 
 Configure cascading-flow turn detection. Use `language` for the Agora interaction language, `config.start_of_speech` and `config.end_of_speech` for SOS/EOS detection, `withInterruption()` for interruption behavior, and MLLM vendor `turnDetection` for MLLM turn detection.
 
+If only the interaction language needs to change, pass `interactionLanguage` to the `Agent` constructor or call `withInteractionLanguage(language)`. `turnDetection.language` takes precedence when both are set.
+
 ### `withInterruption(config: InterruptionConfig): Agent<TTSSampleRate>`
 
 Configure unified interruption behavior using the top-level `interruption` object. Use this for `start_of_speech` and `keywords` interruption modes.

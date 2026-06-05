@@ -979,7 +979,7 @@ export class Agent<TTSSampleRate extends number = number> {
     private _resolveTurnDetectionConfig(): TurnDetectionConfig {
         const turnDetection = { ...(this._turnDetection ?? {}) } as TurnDetectionConfig & { language?: string };
         const existingTurnDetectionLanguage = turnDetection.language;
-        const language = existingTurnDetectionLanguage ?? DEFAULT_TURN_DETECTION_LANGUAGE;
+        const language = existingTurnDetectionLanguage ?? this._interactionLanguage ?? DEFAULT_TURN_DETECTION_LANGUAGE;
 
         assertTurnDetectionLanguage(language);
         turnDetection.language = language;

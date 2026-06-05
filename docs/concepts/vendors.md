@@ -42,15 +42,15 @@ const llm = new OpenAI({
 | `MicrosoftTTS`  | Azure Speech     | 16000, 24000, 48000                     |
 | `OpenAITTS`     | OpenAI TTS       | Fixed at 24000                          |
 | `CartesiaTTS`   | Cartesia         | 8000, 16000, 22050, 24000, 44100, 48000 |
-| `GoogleTTS`     | Google Cloud TTS | Not configurable via constructor        |
-| `AmazonTTS`     | Amazon Polly     | Not configurable via constructor        |
-| `HumeAITTS`     | Hume AI          | Not configurable via constructor        |
-| `RimeTTS`       | Rime             | Not configurable via constructor        |
-| `FishAudioTTS`  | Fish Audio       | Not configurable via constructor        |
-| `MiniMaxTTS`    | MiniMax          | Not configurable via constructor        |
-| `MurfTTS`       | Murf             | Not configurable via constructor        |
+| `GoogleTTS`     | Google Cloud TTS | Configurable                            |
+| `AmazonTTS`     | Amazon Polly     | Configurable                            |
+| `HumeAITTS`     | Hume AI          | Configurable                            |
+| `RimeTTS`       | Rime             | Configurable                            |
+| `FishAudioTTS`  | Fish Audio       | Configurable                            |
+| `MiniMaxTTS`    | MiniMax          | `model` for supported Agora-managed models; BYOK accepts `key`, `groupId`, `model`, `voiceId`, and `url` |
+| `MurfTTS`       | Murf             | Configurable                            |
 | `DeepgramTTS`   | Deepgram         | Configurable                            |
-| `SarvamTTS`     | Sarvam AI        | Not configurable via constructor        |
+| `SarvamTTS`     | Sarvam AI        | Configurable                            |
 
 <!-- snippet: executable -->
 
@@ -75,7 +75,7 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 | Class             | Provider          | Key constructor params                           |
 | ----------------- | ----------------- | ------------------------------------------------ |
 | `SpeechmaticsSTT` | Speechmatics      | `apiKey`, `language`, `uri?`                     |
-| `DeepgramSTT`     | Deepgram          | `model` for Agora-managed `nova-2`/`nova-3`; `apiKey` for BYOK; `language?`, `smartFormat?` |
+| `DeepgramSTT`     | Deepgram          | `model` for Agora-managed `nova-2`/`nova-3`; `apiKey` for BYOK; `language?`, `smartFormat?`, `keyterm?` |
 | `MicrosoftSTT`    | Azure Speech      | `key`, `region`, `language`                      |
 | `OpenAISTT`       | OpenAI Whisper    | `apiKey`, `model?`, `language?`, `prompt?`       |
 | `GoogleSTT`       | Google Speech     | `projectId`, `location`, `adcCredentialsString`, `language` |

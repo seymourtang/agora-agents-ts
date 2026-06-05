@@ -246,6 +246,7 @@ new DeepgramSTT(options: DeepgramSTTOptions)
 | `apiKey` | `string` | No | Deepgram API key. Optional only for `nova-2` and `nova-3` Agora-managed usage. |
 | `model` | `string` | No | Model (e.g., `'nova-2'`, `'enhanced'`) |
 | `language` | `string` | No | Language code (e.g., `'en-US'`) |
+| `keyterm` | `string` | No | Boost specialized terms and brands; serialized as `asr.params.keyterm` |
 | `smartFormat` | `boolean` | No | Enable smart formatting |
 | `punctuation` | `boolean` | No | Enable punctuation |
 | `additionalParams` | `Record<string, unknown>` | No | Additional vendor params |
