@@ -368,7 +368,6 @@ export class Anthropic extends BaseLLM {
         };
     }
 }
-
 /**
  * Constructor options for Google Gemini LLM.
  */

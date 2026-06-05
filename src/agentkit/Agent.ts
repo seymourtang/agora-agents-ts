@@ -14,6 +14,7 @@ import type {
     AvatarConfig,
     FillerWordsConfig,
     GeofenceConfig,
+    InteractionLanguage,
     InterruptionConfig,
     Labels,
     LlmConfig,
@@ -139,6 +140,8 @@ export interface AgentOptions {
      * @deprecated Configure this on the LLM vendor with `greetingConfigs` instead.
      */
     greetingConfigs?: LlmGreetingConfigs;
+    /** Agora interaction language for `asr.language`. Distinct from vendor-specific `asr.params.language`. */
+    interactionLanguage?: InteractionLanguage;
 }
 
 /**
@@ -179,6 +182,7 @@ export class Agent<TTSSampleRate extends number = number> {
     private _rtc?: RtcConfig;
     private _fillerWords?: FillerWordsConfig;
     private _greetingConfigs?: LlmGreetingConfigs;
+    private _interactionLanguage?: InteractionLanguage;
 
     constructor(options: AgentOptions = {}) {
         this._name = options.name;
@@ -205,6 +209,9 @@ export class Agent<TTSSampleRate extends number = number> {
         }
         if (options.parameters) {
             this._parameters = options.parameters;
+        }
+        if (options.interactionLanguage) {
+            this._interactionLanguage = options.interactionLanguage;
         }
         if (options.geofence) {
             this._geofence = options.geofence;
@@ -270,6 +277,18 @@ export class Agent<TTSSampleRate extends number = number> {
     withStt(vendor: BaseSTT): Agent<TTSSampleRate> {
         const newAgent = this._clone();
         newAgent._stt = vendor.toConfig();
+        return newAgent;
+    }
+
+    /**
+     * Returns a new Agent with the Agora interaction language.
+     *
+     * This serializes to `asr.language`. Vendor-specific language values remain
+     * under `asr.params`, for example `asr.params.language`.
+     */
+    withInteractionLanguage(language: InteractionLanguage): Agent<TTSSampleRate> {
+        const newAgent = this._clone();
+        newAgent._interactionLanguage = language;
         return newAgent;
     }
 
@@ -940,6 +959,7 @@ export class Agent<TTSSampleRate extends number = number> {
         newAgent._rtc = this._rtc;
         newAgent._fillerWords = this._fillerWords;
         newAgent._greetingConfigs = this._greetingConfigs;
+        newAgent._interactionLanguage = this._interactionLanguage;
         return newAgent;
     }
 

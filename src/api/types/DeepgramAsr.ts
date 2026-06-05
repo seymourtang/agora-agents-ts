@@ -8,8 +8,6 @@ import type * as Agora from "../index.js";
 export interface DeepgramAsr {
     language?: Agora.AsrLanguage;
     params: Agora.DeepgramAsrParams;
-    /** Boost specialized terms and brands for preset-backed Deepgram usage. */
-    keyterm?: string;
     /** Accepts any additional properties */
     [key: string]: any;
 }

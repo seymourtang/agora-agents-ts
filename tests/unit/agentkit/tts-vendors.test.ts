@@ -73,6 +73,47 @@ describe("TTS vendor helpers", () => {
             backend: "speech-1.5",
         });
 
+        expect(new ElevenLabsTTS({ key: "eleven-key", modelId: "eleven_flash_v2_5", voiceId: "voice", baseUrl: "wss://api.elevenlabs.io/v1" }).toConfig().params).toMatchObject({
+            key: "eleven-key",
+            base_url: "wss://api.elevenlabs.io/v1",
+            model_id: "eleven_flash_v2_5",
+            voice_id: "voice",
+        });
+
+        expect(new DeepgramTTS({ apiKey: "deepgram-key", model: "aura-2-thalia-en", baseUrl: "wss://api.deepgram.com/v1/speak", sampleRate: 24000, additionalParams: { encoding: "linear16" } }).toConfig().params).toMatchObject({
+            api_key: "deepgram-key",
+            model: "aura-2-thalia-en",
+            base_url: "wss://api.deepgram.com/v1/speak",
+            sample_rate: 24000,
+            encoding: "linear16",
+        });
+
+        expect(new OpenAITTS({ apiKey: "openai-key", voice: "coral", model: "gpt-4o-mini-tts", baseUrl: "https://api.openai.com/v1", instructions: "speak clearly" }).toConfig().params).toMatchObject({
+            api_key: "openai-key",
+            base_url: "https://api.openai.com/v1",
+            model: "gpt-4o-mini-tts",
+            voice: "coral",
+            instructions: "speak clearly",
+        });
+
+        expect(new OpenAITTS({ voice: "coral" }).toConfig().params).toMatchObject({
+            voice: "coral",
+        });
+
+        expect(new HumeAITTS({ key: "hume-key", voiceId: "voice", provider: "CUSTOM_VOICE" }).toConfig().params).toMatchObject({
+            key: "hume-key",
+            voice_id: "voice",
+            provider: "CUSTOM_VOICE",
+        });
+
+        expect(new MiniMaxTTS({ key: "minimax-key", groupId: "group", model: "speech-02-turbo", voiceId: "voice", url: "wss://api-uw.minimax.io/ws/v1/t2a_v2" }).toConfig().params).toMatchObject({
+            key: "minimax-key",
+            group_id: "group",
+            model: "speech-02-turbo",
+            voice_setting: { voice_id: "voice" },
+            url: "wss://api-uw.minimax.io/ws/v1/t2a_v2",
+        });
+
         expect(
             new ElevenLabsTTS({
                 key: "eleven-key",
