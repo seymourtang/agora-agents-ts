@@ -60,6 +60,11 @@ export type LlmStyle = Llm.Style;
  * When using shorthand strings or minimal configs, the untyped variant is available.
  */
 export type SttConfig =
+    | { vendor: "fengming"; language?: TurnDetectionLanguage; params?: Record<string, unknown> }
+    | { vendor: "tencent"; language?: TurnDetectionLanguage; params?: Record<string, unknown> }
+    | { vendor: "xfyun"; language?: TurnDetectionLanguage; params?: Record<string, unknown> }
+    | { vendor: "xfyun_bigmodel"; language?: TurnDetectionLanguage; params?: Record<string, unknown> }
+    | { vendor: "xfyun_dialect"; language?: TurnDetectionLanguage; params?: Record<string, unknown> }
     | { vendor: "speechmatics"; language?: TurnDetectionLanguage; params: SpeechmaticsParams }
     | { vendor: "deepgram"; language?: TurnDetectionLanguage; params: DeepgramParams }
     | { vendor: "microsoft"; language?: TurnDetectionLanguage; params: MicrosoftAsrParams }

@@ -24,9 +24,9 @@ function createClient() {
 describe("Agent preset validation", () => {
     test("explicit ASR preset still requires LLM and TTS", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support" });
+        const agent = new Agent({ client, name: "support" });
 
-        const session = agent.createSession(client, {
+        const session = agent.createSession({
             channel: "channel",
             token: "token",
             agentUid: "1",
@@ -40,9 +40,9 @@ describe("Agent preset validation", () => {
 
     test("explicit LLM preset still requires TTS", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support" });
+        const agent = new Agent({ client, name: "support" });
 
-        const session = agent.createSession(client, {
+        const session = agent.createSession({
             channel: "channel",
             token: "token",
             agentUid: "1",
@@ -56,9 +56,9 @@ describe("Agent preset validation", () => {
 
     test("explicit TTS preset still requires LLM", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support" });
+        const agent = new Agent({ client, name: "support" });
 
-        const session = agent.createSession(client, {
+        const session = agent.createSession({
             channel: "channel",
             token: "token",
             agentUid: "1",
@@ -72,12 +72,12 @@ describe("Agent preset validation", () => {
 
     test("infers ASR, LLM, and TTS presets without skipping unrelated validation", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support" })
+        const agent = new Agent({ client, name: "support" })
             .withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }))
             .withLlm(new OpenAI({ model: "gpt-4o-mini" }))
             .withTts(new OpenAITTS({ voice: "alloy" }));
 
-        const session = agent.createSession(client, {
+        const session = agent.createSession({
             channel: "channel",
             token: "token",
             agentUid: "1",
@@ -94,11 +94,11 @@ describe("Agent preset validation", () => {
 
     test("infers hyphenated MiniMax managed preset model", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support" })
+        const agent = new Agent({ client, name: "support" })
             .withLlm(new OpenAI({ model: "gpt-4o-mini" }))
             .withTts(new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }));
 
-        const session = agent.createSession(client, {
+        const session = agent.createSession({
             channel: "channel",
             token: "token",
             agentUid: "1",

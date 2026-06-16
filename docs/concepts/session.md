@@ -12,7 +12,7 @@ Create a session via [`agent.createSession()`](./agent.md):
 
 <!-- snippet: fragment -->
 ```typescript
-const session = agent.createSession(client, {
+const session = agent.createSession({
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],
@@ -61,7 +61,7 @@ All interaction methods require the session to be in the `running` state.
 
 ## Agora-managed models and BYOK
 
-When you omit credentials for supported Agora-managed models on the builder, AgentKit sends the matching Agora-managed configuration at session start. Pass your own vendor API keys when you need BYOK.
+When you omit credentials for supported Agora-managed global models on the builder, AgentKit sends the matching Agora-managed configuration at session start. Pass your own vendor API keys when you need BYOK. CN MiniMax TTS is not Agora-managed and always requires `key`.
 
 <!-- snippet: fragment -->
 ```typescript
@@ -104,7 +104,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'event-demo' })
+const agent = new Agent({ client, name: 'event-demo' })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -114,7 +114,7 @@ const agent = new Agent({ name: 'event-demo' })
   .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }));
 
-const session = agent.createSession(client, {
+const session = agent.createSession({
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],

@@ -33,6 +33,77 @@ const client = new AgoraClient({
 });
 ```
 
+## Area-aware vendor hints
+
+Use `client.vendors.*` when you want IDE auto-complete to narrow vendor choices after selecting `area`, and pass `client` into `new Agent({ client, ... })`.
+
+| Client area | ASR helpers | LLM helpers | TTS helpers | Avatar helpers |
+|---|---|---|---|---|
+| `Area.US`, `Area.EU`, `Area.AP` | `DeepgramSTT`, `SpeechmaticsSTT`, `MicrosoftSTT`, `OpenAISTT`, `GoogleSTT`, `AmazonSTT`, `AssemblyAISTT`, `AresSTT`, `SarvamSTT` | `OpenAI`, `AzureOpenAI`, `Anthropic`, `Gemini`, `Groq`, `VertexAILLM`, `AmazonBedrock`, `Dify`, `CustomLLM` | `ElevenLabsTTS`, `MicrosoftTTS`, `OpenAITTS`, `CartesiaTTS`, `GoogleTTS`, `AmazonTTS`, `DeepgramTTS`, `HumeAITTS`, `RimeTTS`, `FishAudioTTS`, `MiniMaxTTS`, `MurfTTS`, `SarvamTTS` | `LiveAvatarAvatar`, `HeyGenAvatar`, `AkoolAvatar`, `AnamAvatar`, `GenericAvatar` |
+| `Area.CN` | `FengmingSTT`, `TencentSTT`, `MicrosoftCNSTT`, `XfyunSTT`, `XfyunBigModelSTT`, `XfyunDialectSTT` | `AliyunLLM`, `BytedanceLLM`, `DeepSeekLLM`, `TencentLLM`, `CustomLLM` | `MiniMaxCNTTS`, `TencentTTS`, `BytedanceTTS`, `MicrosoftCNTTS`, `CosyVoiceTTS`, `BytedanceDuplexTTS`, `StepFunTTS` | `SensetimeAvatar` |
+
+Global client example:
+
+```typescript
+import { AgoraClient, Agent, Area } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({
+  client,
+  name: 'global-agent',
+  turnDetection: { language: 'en-US' },
+})
+  .withStt(client.vendors.stt.deepgram({ model: 'nova-3', language: 'en-US' }))
+  .withLlm(client.vendors.llm.openai({ model: 'gpt-4o-mini' }))
+  .withTts(client.vendors.tts.minimax({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
+
+const session = agent.createSession({
+  channel: 'global-room',
+  agentUid: '1001',
+  remoteUids: ['*'],
+});
+```
+
+CN client example:
+
+```typescript
+import { AgoraClient, Agent, Area } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.CN,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({
+  client,
+  name: 'cn-agent',
+  turnDetection: { language: 'zh-CN' },
+})
+  .withStt(client.vendors.stt.fengming())
+  .withLlm(client.vendors.llm.aliyun({
+    url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    model: 'qwen-plus',
+  }))
+  .withTts(client.vendors.tts.minimax({
+    key: process.env.MINIMAX_API_KEY!,
+    model: 'speech-01-turbo',
+    voiceSetting: { voice_id: 'female-shaonv' },
+    audioSetting: { sample_rate: 16000 },
+  }));
+
+const session = agent.createSession({
+  channel: 'cn-room',
+  agentUid: '1001',
+  remoteUids: ['*'],
+});
+```
+
 ## How the domain pool works
 
 Each area has two regional domain prefixes and two domain suffixes. The `Pool` class:
@@ -66,7 +137,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'failover-demo' })
+const agent = new Agent({ client, name: 'failover-demo' })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -76,7 +147,7 @@ const agent = new Agent({ name: 'failover-demo' })
   .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key' }));
 
-const session = agent.createSession(client, {
+const session = agent.createSession({
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],

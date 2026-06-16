@@ -36,7 +36,7 @@ async function main(): Promise<void> {
   });
 
   // In BYOK mode, each vendor carries its own credentials.
-  const agent = new Agent({ name: 'support-assistant' })
+  const agent = new Agent({ client, name: 'support-assistant' })
     .withStt(
       new DeepgramSTT({
         apiKey: process.env.DEEPGRAM_API_KEY!,
@@ -64,7 +64,7 @@ async function main(): Promise<void> {
       }),
     );
 
-  const session = agent.createSession(client, {
+  const session = agent.createSession({
     channel: 'support-room-123',
     agentUid: '1',
     remoteUids: ['100'],
@@ -82,5 +82,5 @@ void main();
 
 ## Builder-managed vs BYOK
 
-- Builder without vendor keys: supported Agora-managed models
+- Builder without vendor keys: supported Agora-managed global models
 - BYOK: your keys and full vendor control

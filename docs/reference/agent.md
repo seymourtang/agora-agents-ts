@@ -11,6 +11,16 @@ description: Full API reference for the Agent builder class.
 import { Agent } from 'agora-agents';
 ```
 
+If you want vendor availability to come from the client, prefer `AgoraClient` + `Agent` with `client.vendors.*`:
+
+<!-- snippet: fragment -->
+```typescript
+const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+const agent = new Agent({ client, name: 'global-agent' });
+```
+
+`new Agent()` remains the direct TS builder style. Pass `client` into the constructor when you want `createSession(options)` without re-passing the client.
+
 ## Constructor
 
 <!-- snippet: fragment -->
@@ -22,7 +32,9 @@ new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 
 | Option | Type | Default | Description |
 |---|---|---|---|
+| `client` | `AgoraClient` | `undefined` | Optional client binding; enables `createSession(options)` |
 | `name` | `string` | `undefined` | Agent name (used as default session name) |
+| `pipelineId` | `string` | `undefined` | Published AI Studio pipeline ID used as the base configuration |
 | `instructions` | `string` | `undefined` | Deprecated. Use LLM vendor `systemMessages` instead. |
 | `greeting` | `string` | `undefined` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
 | `failureMessage` | `string` | `undefined` | Deprecated. Use LLM/MLLM vendor `failureMessage` instead. |
@@ -37,6 +49,7 @@ new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 | `labels` | `Labels` | `undefined` | Custom key-value labels (returned in callbacks) |
 | `rtc` | `RtcConfig` | `undefined` | RTC media encryption |
 | `fillerWords` | `FillerWordsConfig` | `undefined` | Filler words while waiting for LLM |
+| `greetingConfigs` | `LlmGreetingConfigs` | `undefined` | Deprecated. Configure this on the LLM vendor instead. |
 
 The Agent-level `instructions`, `greeting`, `failureMessage`, `maxHistory`, and `greetingConfigs` fields are compatibility shims. New code should configure those values on the LLM or MLLM vendor because that matches the core request schema.
 
@@ -44,15 +57,15 @@ The Agent-level `instructions`, `greeting`, `failureMessage`, `maxHistory`, and 
 
 All methods return a **new** `Agent` instance. The original is never modified.
 
-### `withLlm(vendor: BaseLLM): Agent<TTSSampleRate>`
+### `withLlm(vendor: BaseLLM | BaseCNLLM): Agent<TTSSampleRate>`
 
 Set the LLM vendor. Pass an instance of `OpenAI`, `AzureOpenAI`, `Anthropic`, or `Gemini`.
 
-### `withTts<SR extends number>(vendor: BaseTTS<SR>): Agent<SR>`
+### `withTts<SR extends number>(vendor: BaseTTS<SR> | BaseCNTTS<SR>): Agent<SR>`
 
 Set the TTS vendor. The sample rate type `SR` is captured and tracked for avatar compatibility.
 
-### `withStt(vendor: BaseSTT): Agent<TTSSampleRate>`
+### `withStt(vendor: BaseSTT | BaseCNSTT): Agent<TTSSampleRate>`
 
 Set the STT vendor. Pass an instance of any STT class (`DeepgramSTT`, `SpeechmaticsSTT`, etc.).
 
@@ -62,7 +75,7 @@ Set the MLLM vendor for multimodal mode. Pass `OpenAIRealtime`, `GeminiLive`, `V
 
 > Avatars are only supported with the cascading ASR + LLM + TTS pipeline. Combining `withMllm()` with `withAvatar()` throws at `toProperties()` and `session.start()`.
 
-### `withAvatar<RequiredSR extends number>(this: Agent<RequiredSR>, vendor: BaseAvatar<RequiredSR>): Agent<RequiredSR>`
+### `withAvatar<RequiredSR extends number>(this: Agent<RequiredSR>, vendor: BaseAvatar<RequiredSR> | BaseCNAvatar<RequiredSR>): Agent<RequiredSR>`
 
 Set the avatar vendor. The `this` constraint enforces that the Agent's TTS sample rate matches the avatar's required rate at compile time. Requires the cascading ASR + LLM + TTS pipeline; avatars are not supported with MLLM.
 
@@ -159,16 +172,18 @@ Set filler words configuration (played while waiting for LLM response).
 | `labels` | `Labels \| undefined` | Custom labels |
 | `rtc` | `RtcConfig \| undefined` | RTC configuration |
 | `fillerWords` | `FillerWordsConfig \| undefined` | Filler words configuration |
+| `greetingConfigs` | `LlmGreetingConfigs \| undefined` | Greeting playback configuration compatibility shim |
 | `config` | `AgentOptions` | Full read-only configuration snapshot |
 
-## `createSession(client, options): AgentSession`
+## `createSession(options): AgentSession`
 
-Creates a new `AgentSession` bound to the given client and channel.
+Creates a new `AgentSession` bound to the client configured on the `Agent`.
+
+Pass `client` into `new Agent({ client, ... })` when constructing the agent.
 
 <!-- snippet: fragment -->
 ```typescript
 createSession(
-  client: AgoraClient & { readonly appId: string; readonly appCertificate?: string },
   options: SessionOptions,
 ): AgentSession
 ```
@@ -194,7 +209,7 @@ createSession(
 
 `pipelineId` can be set on `new Agent({ pipelineId })` as a reusable AI Studio base configuration, or on `agent.createSession(...)` for a session-specific override. AgentKit sends it as the top-level `/join` field `pipeline_id`; it is not included inside `properties`. Explicit Agent config such as `.withLlm()`, `.withTts()`, `.withStt()`, `.withMllm()`, `advancedFeatures`, and other builder options may send fields in `properties` that override the saved pipeline settings.
 
-When you omit credentials for supported Agora-managed models, AgentKit sends the matching Agora-managed configuration automatically:
+When you omit credentials for supported Agora-managed global models, AgentKit sends the matching Agora-managed configuration automatically:
 
 - Deepgram STT: `nova-2`, `nova-3`
 - OpenAI LLM: `gpt-4o-mini`, `gpt-4.1-mini`, `gpt-5-nano`, `gpt-5-mini`

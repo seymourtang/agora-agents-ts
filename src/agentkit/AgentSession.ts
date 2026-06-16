@@ -6,11 +6,12 @@
  */
 
 import type { AgoraAuthMode } from "../AgoraPoolClient.js";
+import type { AgoraClient } from "../AgoraPoolClient.js";
 import type * as Agora from "../api/index.js";
 import type { AgentManagementClient } from "../api/resources/agentManagement/client/Client.js";
 import type { AgentsClient } from "../api/resources/agents/client/Client.js";
-import type { AgoraClient } from "../Client.js";
 import { AgoraError } from "../errors/index.js";
+import type { AgoraArea } from "./area.js";
 import type { Agent } from "./Agent.js";
 import {
     isAkoolAvatar,
@@ -59,9 +60,9 @@ export type AgentSessionEventHandler<T = unknown> = (data: T) => void;
  */
 export interface AgentSessionOptions {
     /** The Agora client instance */
-    client: AgoraClient;
+    client: AgoraClient<AgoraArea>;
     /** The agent configuration */
-    agent: Agent;
+    agent: Agent<number, AgoraArea>;
     /** The App ID */
     appId: string;
     /** The App Certificate — enables automatic RTC token generation when starting sessions */
@@ -115,12 +116,12 @@ export interface AgentSessionOptions {
  *   appCertificate: '...',
  * });
  *
- * const agent = new Agent({ name: 'support-assistant', instructions: 'You are a helpful voice assistant.' })
+ * const agent = new Agent({ client, name: 'support-assistant', instructions: 'You are a helpful voice assistant.' })
  *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4o-mini', url: 'https://api.openai.com/v1/chat/completions' }))
  *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
  *   .withStt(new DeepgramSTT({ apiKey: '...', language: 'en-US' }));
  *
- * const session = agent.createSession(client, {
+ * const session = agent.createSession({
  *   channel: 'support-room-123',
  *   agentUid: '1',
  *   remoteUids: ['100'],
@@ -133,8 +134,8 @@ export interface AgentSessionOptions {
  * ```
  */
 export class AgentSession {
-    private readonly _client: AgoraClient;
-    private readonly _agent: Agent;
+    private readonly _client: AgoraClient<AgoraArea>;
+    private readonly _agent: Agent<number, AgoraArea>;
     private readonly _appId: string;
     private readonly _appCertificate?: string;
     private readonly _name: string;
@@ -219,7 +220,7 @@ export class AgentSession {
     /**
      * The agent configuration.
      */
-    get agent(): Agent {
+    get agent(): Agent<number, AgoraArea> {
         return this._agent;
     }
 

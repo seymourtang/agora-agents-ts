@@ -29,11 +29,14 @@ const agent = new Agent({ name: 'my-assistant' }).withLlm(
 | Option | Type | Description |
 |---|---|---|
 | `name` | `string` | Agent name (used as default session name) |
+| `client` | `AgoraClient` | Optional client binding that enables `createSession(options)` |
+| `pipelineId` | `string` | Published AI Studio pipeline ID used as the base configuration |
 | `instructions` | `string` | Deprecated. Use LLM vendor `systemMessages` instead. |
 | `greeting` | `string` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
 | `failureMessage` | `string` | Deprecated. Use LLM/MLLM vendor `failureMessage` instead. |
 | `maxHistory` | `number` | Deprecated. Use LLM vendor `maxHistory` instead. |
 | `turnDetection` | `TurnDetectionConfig` | Interaction language and voice activity detection settings |
+| `interruption` | `InterruptionConfig` | Unified interruption control settings |
 | `sal` | `SalConfig` | Selective Attention Locking configuration |
 | `avatar` | `AvatarConfig` | Avatar configuration (prefer `withAvatar()` for type safety) |
 | `advancedFeatures` | `AdvancedFeatures` | Enable MLLM mode, AI-VAD, etc. |
@@ -42,6 +45,7 @@ const agent = new Agent({ name: 'my-assistant' }).withLlm(
 | `labels` | `Labels` | Custom key-value labels (returned in callbacks) |
 | `rtc` | `RtcConfig` | RTC media encryption |
 | `fillerWords` | `FillerWordsConfig` | Filler words while waiting for LLM |
+| `greetingConfigs` | `LlmGreetingConfigs` | Deprecated. Configure this on the LLM vendor instead. |
 
 ## Builder methods
 
@@ -70,11 +74,14 @@ Each method returns a new `Agent` instance with the updated configuration.
 
 ## Creating a session
 
-Call `createSession()` to bind the agent to a client and channel:
+Call `createSession()` to bind the agent to a channel using the client configured on the agent:
 
 <!-- snippet: fragment -->
 ```typescript
-const session = agent.createSession(client, {
+const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+const agent = new Agent({ client, name: 'my-agent' });
+
+const session = agent.createSession({
   channel: 'room-123',
   agentUid: '1',
   remoteUids: ['100'],
@@ -101,9 +108,15 @@ Because every method returns a new instance, you can create a base agent and der
 
 <!-- snippet: executable -->
 ```typescript
-import { Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agents';
+import { AgoraClient, Area, Agent, OpenAI, ElevenLabsTTS, DeepgramSTT } from 'agora-agents';
 
-const base = new Agent()
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const base = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -115,8 +128,8 @@ const base = new Agent()
 
 // Two sessions from the same agent config — safe, no shared mutable state
 
-const sessionA = base.createSession(client, { channel: 'room-a', agentUid: '1', remoteUids: ['100'] });
-const sessionB = base.createSession(client, { channel: 'room-b', agentUid: '1', remoteUids: ['200'] });
+const sessionA = base.createSession({ channel: 'room-a', agentUid: '1', remoteUids: ['100'] });
+const sessionB = base.createSession({ channel: 'room-b', agentUid: '1', remoteUids: ['200'] });
 ```
 
 See [Agent Reference](../reference/agent.md) for full TypeScript signatures.

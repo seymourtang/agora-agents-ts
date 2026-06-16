@@ -15,7 +15,12 @@ export type Tts =
     | Agora.Tts.Google
     | Agora.Tts.Amazon
     | Agora.Tts.Sarvam
-    | Agora.Tts.Deepgram;
+    | Agora.Tts.Deepgram
+    | Tts.Tencent
+    | Tts.Bytedance
+    | Tts.Cosyvoice
+    | Tts.BytedanceDuplex
+    | Tts.Stepfun;
 
 export namespace Tts {
     export interface Microsoft extends Agora.MicrosoftTts {
@@ -68,5 +73,35 @@ export namespace Tts {
 
     export interface Deepgram extends Agora.DeepgramTts {
         vendor: "deepgram";
+    }
+
+    export interface Tencent {
+        vendor: "tencent";
+        params: Record<string, unknown>;
+        skip_patterns?: number[];
+    }
+
+    export interface Bytedance {
+        vendor: "bytedance";
+        params: Record<string, unknown>;
+        skip_patterns?: number[];
+    }
+
+    export interface Cosyvoice {
+        vendor: "cosyvoice";
+        params: Record<string, unknown>;
+        skip_patterns?: number[];
+    }
+
+    export interface BytedanceDuplex {
+        vendor: "bytedance_duplex";
+        params: Record<string, unknown>;
+        skip_patterns?: number[];
+    }
+
+    export interface Stepfun {
+        vendor: "stepfun";
+        params: Record<string, unknown>;
+        skip_patterns?: number[];
     }
 }

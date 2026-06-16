@@ -30,6 +30,8 @@ export type {
     AgentSessionOptions,
 } from "./AgentSession.js";
 export { AgentSession } from "./AgentSession.js";
+export type { VendorsForArea, GlobalVendorFactories, CNVendorFactories } from "./vendors.js";
+export { createVendorsForArea } from "./vendors.js";
 // Vendor-specific avatar types with strict constraints
 export type {
     AkoolAvatarConfig,
@@ -239,6 +241,10 @@ export type {
 // Base vendor classes
 export {
     BaseAvatar,
+    BaseCNAvatar,
+    BaseCNLLM,
+    BaseCNSTT,
+    BaseCNTTS,
     BaseLLM,
     type BaseLlmOptions,
     BaseMLLM,
@@ -269,6 +275,46 @@ export {
     OpenAI,
     VertexAILLM,
 } from "./vendors/llm.js";
+export type {
+    AliyunLLMOptions,
+    BytedanceDuplexTTSOptions,
+    BytedanceLLMOptions,
+    BytedanceTTSOptions,
+    CosyVoiceTTSOptions,
+    DeepSeekLLMOptions,
+    MicrosoftCNSampleRate,
+    MicrosoftCNSTTOptions,
+    MicrosoftCNTTSOptions,
+    MiniMaxCNTTSOptions,
+    SensetimeAvatarOptions,
+    StepFunTTSOptions,
+    TencentLLMOptions,
+    TencentSTTOptions,
+    TencentTTSOptions,
+    XfyunBigModelSTTOptions,
+    XfyunDialectSTTOptions,
+    XfyunSTTOptions,
+} from "./vendors/cn.js";
+export {
+    AliyunLLM,
+    BytedanceDuplexTTS,
+    BytedanceLLM,
+    BytedanceTTS,
+    CosyVoiceTTS,
+    DeepSeekLLM,
+    FengmingSTT,
+    MicrosoftCNSTT,
+    MicrosoftCNTTS,
+    MiniMaxCNTTS,
+    SensetimeAvatar,
+    StepFunTTS,
+    TencentLLM,
+    TencentSTT,
+    TencentTTS,
+    XfyunBigModelSTT,
+    XfyunDialectSTT,
+    XfyunSTT,
+} from "./vendors/cn.js";
 export type {
     GeminiLiveOptions,
     OpenAIRealtimeOptions,

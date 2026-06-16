@@ -6,8 +6,15 @@
  */
 
 import type * as Agora from "../api/index.js";
-import type { AgoraClient } from "../Client.js";
+import type { AgoraClient } from "../AgoraPoolClient.js";
 import { AgentSession } from "./AgentSession.js";
+import type { AgoraArea } from "./area.js";
+import type {
+    RegionalAvatarVendor,
+    RegionalLlmVendor,
+    RegionalSttVendor,
+    RegionalTtsVendor,
+} from "./region-vendors.js";
 import { generateConvoAIToken } from "./token.js";
 import type {
     AdvancedFeatures,
@@ -29,7 +36,7 @@ import type {
     TurnDetectionConfig,
     TurnDetectionLanguage,
 } from "./types.js";
-import type { BaseAvatar, BaseLLM, BaseMLLM, BaseSTT, BaseTTS } from "./vendors/base.js";
+import type { BaseAvatar, BaseMLLM, BaseTTS } from "./vendors/base.js";
 
 const DEFAULT_TURN_DETECTION_LANGUAGE: TurnDetectionLanguage = "en-US";
 
@@ -85,6 +92,8 @@ function assertTurnDetectionLanguage(value: string): asserts value is TurnDetect
  * to configure vendor settings after construction.
  */
 export interface AgentOptions {
+    /** Optional client bound to this agent. Enables `createSession(options)` without re-passing the client. */
+    client?: AgoraClient<AgoraArea>;
     /** Optional name for the agent (used as default session name) */
     name?: string;
     /**
@@ -157,7 +166,8 @@ export interface AgentOptions {
  *   .withStt(new DeepgramSTT({ apiKey: '...', model: 'nova-2' }));
  * ```
  */
-export class Agent<TTSSampleRate extends number = number> {
+export class Agent<TTSSampleRate extends number = number, TArea extends AgoraArea = AgoraArea> {
+    private _client?: AgoraClient<TArea>;
     private _name?: string;
     private _pipelineId?: string;
     private _llm?: LlmConfig;
@@ -181,6 +191,7 @@ export class Agent<TTSSampleRate extends number = number> {
     private _greetingConfigs?: LlmGreetingConfigs;
 
     constructor(options: AgentOptions = {}) {
+        this._client = options.client as AgoraClient<TArea> | undefined;
         this._name = options.name;
         this._pipelineId = options.pipelineId;
         this._instructions = options.instructions;
@@ -228,7 +239,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * @param vendor - LLM vendor instance (e.g., new OpenAI({ apiKey: '...', model: 'gpt-4', url: 'https://api.openai.com/v1/chat/completions' }))
      */
-    withLlm(vendor: BaseLLM): Agent<TTSSampleRate> {
+    withLlm(vendor: RegionalLlmVendor<TArea>): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._llm = vendor.toConfig();
         return newAgent;
@@ -243,11 +254,11 @@ export class Agent<TTSSampleRate extends number = number> {
      * @param vendor - TTS vendor instance (e.g., new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
      * @returns Agent with tracked sample rate type
      */
-    withTts<SR extends number>(vendor: BaseTTS<SR>): Agent<SR> {
+    withTts<SR extends number>(vendor: RegionalTtsVendor<TArea, SR>): Agent<SR, TArea> {
         // Cast is intentional: _clone() preserves TTSSampleRate but withTts
         // changes the type parameter to SR (the new vendor's sample rate).
         // The cast is safe because _clone copies all fields before the reassignment.
-        const newAgent = this._clone() as Agent<SR>;
+        const newAgent = this._clone() as Agent<SR, TArea>;
         newAgent._tts = vendor.toConfig();
         return newAgent;
     }
@@ -267,7 +278,7 @@ export class Agent<TTSSampleRate extends number = number> {
      * }));
      * ```
      */
-    withStt(vendor: BaseSTT): Agent<TTSSampleRate> {
+    withStt(vendor: RegionalSttVendor<TArea>): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._stt = vendor.toConfig();
         return newAgent;
@@ -287,7 +298,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * @param vendor - MLLM vendor instance (e.g., new VertexAI({ model: '...', projectId: '...', ... }))
      */
-    withMllm(vendor: BaseMLLM): Agent<TTSSampleRate> {
+    withMllm(vendor: BaseMLLM): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._mllm = { ...vendor.toConfig(), enable: true };
         if (newAgent._advancedFeatures?.enable_mllm !== undefined) {
@@ -336,7 +347,10 @@ export class Agent<TTSSampleRate extends number = number> {
      *   }));
      * ```
      */
-    withAvatar<RequiredSR extends number>(this: Agent<RequiredSR>, vendor: BaseAvatar<RequiredSR>): Agent<RequiredSR> {
+    withAvatar<RequiredSR extends number>(
+        this: Agent<RequiredSR, TArea>,
+        vendor: RegionalAvatarVendor<TArea, RequiredSR>,
+    ): Agent<RequiredSR, TArea> {
         // No cast needed: _clone() returns Agent<TTSSampleRate>, and since
         // `this: Agent<RequiredSR>`, TTSSampleRate = RequiredSR here.
         const newAgent = this._clone();
@@ -347,7 +361,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified turn detection configuration.
      */
-    withTurnDetection(config: TurnDetectionConfig): Agent<TTSSampleRate> {
+    withTurnDetection(config: TurnDetectionConfig): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._turnDetection = config;
         return newAgent;
@@ -356,7 +370,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with unified interruption control configured.
      */
-    withInterruption(config: InterruptionConfig): Agent<TTSSampleRate> {
+    withInterruption(config: InterruptionConfig): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._interruption = config;
         return newAgent;
@@ -367,7 +381,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * @deprecated Configure system messages on the LLM vendor instead.
      */
-    withInstructions(instructions: string): Agent<TTSSampleRate> {
+    withInstructions(instructions: string): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._instructions = instructions;
         return newAgent;
@@ -378,7 +392,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * @deprecated Configure the greeting on the LLM or MLLM vendor instead.
      */
-    withGreeting(greeting: string): Agent<TTSSampleRate> {
+    withGreeting(greeting: string): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._greeting = greeting;
         return newAgent;
@@ -392,7 +406,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * @deprecated Configure greeting playback on the LLM vendor instead.
      */
-    withGreetingConfigs(configs: LlmGreetingConfigs): Agent<TTSSampleRate> {
+    withGreetingConfigs(configs: LlmGreetingConfigs): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._greetingConfigs = configs;
         return newAgent;
@@ -401,7 +415,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified name.
      */
-    withName(name: string): Agent<TTSSampleRate> {
+    withName(name: string): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._name = name;
         return newAgent;
@@ -410,7 +424,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified SAL (Selective Attention Locking) configuration.
      */
-    withSal(config: SalConfig): Agent<TTSSampleRate> {
+    withSal(config: SalConfig): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._sal = config;
         return newAgent;
@@ -421,7 +435,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * Use this to enable features like RTM and others.
      */
-    withAdvancedFeatures(features: AdvancedFeatures): Agent<TTSSampleRate> {
+    withAdvancedFeatures(features: AdvancedFeatures): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._advancedFeatures = features;
         return newAgent;
@@ -430,7 +444,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with MCP tool invocation enabled or disabled.
      */
-    withTools(enabled = true): Agent<TTSSampleRate> {
+    withTools(enabled = true): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._advancedFeatures = { ...newAgent._advancedFeatures, enable_tools: enabled };
         return newAgent;
@@ -441,7 +455,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * Use this to configure silence behaviour, graceful hang-up, data channel, and more.
      */
-    withParameters(parameters: SessionParamsInput): Agent<TTSSampleRate> {
+    withParameters(parameters: SessionParamsInput): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._parameters = parameters;
         return newAgent;
@@ -450,7 +464,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified RTC audio scenario.
      */
-    withAudioScenario(audioScenario: ParametersAudioScenario): Agent<TTSSampleRate> {
+    withAudioScenario(audioScenario: ParametersAudioScenario): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._parameters = { ...newAgent._parameters, audio_scenario: audioScenario };
         return newAgent;
@@ -463,7 +477,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * @deprecated Configure the failure message on the LLM or MLLM vendor instead.
      */
-    withFailureMessage(message: string): Agent<TTSSampleRate> {
+    withFailureMessage(message: string): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._failureMessage = message;
         return newAgent;
@@ -475,7 +489,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * @deprecated Configure max history on the LLM vendor instead.
      */
-    withMaxHistory(maxHistory: number): Agent<TTSSampleRate> {
+    withMaxHistory(maxHistory: number): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._maxHistory = maxHistory;
         return newAgent;
@@ -486,7 +500,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * Restricts which geographic regions the agent's backend servers may run in.
      */
-    withGeofence(geofence: GeofenceConfig): Agent<TTSSampleRate> {
+    withGeofence(geofence: GeofenceConfig): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._geofence = geofence;
         return newAgent;
@@ -497,7 +511,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * Labels are key-value pairs attached to the agent and returned in notification callbacks.
      */
-    withLabels(labels: Labels): Agent<TTSSampleRate> {
+    withLabels(labels: Labels): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._labels = labels;
         return newAgent;
@@ -506,7 +520,7 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Returns a new Agent with the specified RTC configuration.
      */
-    withRtc(rtc: RtcConfig): Agent<TTSSampleRate> {
+    withRtc(rtc: RtcConfig): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._rtc = rtc;
         return newAgent;
@@ -517,7 +531,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * Filler words are played while the agent waits for the LLM to respond.
      */
-    withFillerWords(fillerWords: FillerWordsConfig): Agent<TTSSampleRate> {
+    withFillerWords(fillerWords: FillerWordsConfig): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._fillerWords = fillerWords;
         return newAgent;
@@ -709,7 +723,6 @@ export class Agent<TTSSampleRate extends number = number> {
     /**
      * Creates a new session from this agent configuration.
      *
-     * @param client - The Agora client instance (must have appId and appCertificate properties)
      * @param options - Session connection options
      * @returns A new AgentSession instance ready to start
      *
@@ -719,7 +732,7 @@ export class Agent<TTSSampleRate extends number = number> {
      *   .withLlm({ ... })
      *   .withTts({ ... });
      *
-     * const session = agent.createSession(client, {
+     * const session = agent.createSession({
      *   channel: 'room-123',
      *   agentUid: '1',
      *   remoteUids: ['100'],
@@ -729,16 +742,18 @@ export class Agent<TTSSampleRate extends number = number> {
      * const agentId = await session.start();
      * ```
      */
-    createSession(
-        client: AgoraClient & { readonly appId: string; readonly appCertificate?: string },
-        options: SessionOptions,
-    ): AgentSession {
+    createSession(options: SessionOptions): AgentSession {
+        if (!this._client) {
+            throw new Error(
+                "Agent client is not configured. Pass `client` to `new Agent({ client, ... })` before calling createSession(options).",
+            );
+        }
         const name = options.name ?? this._name ?? `agent-${Date.now()}`;
         return new AgentSession({
-            client,
+            client: this._client,
             agent: this,
-            appId: client.appId,
-            appCertificate: client.appCertificate,
+            appId: this._client.appId,
+            appCertificate: this._client.appCertificate,
             ...options,
             name,
         });
@@ -920,8 +935,9 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * If a new private field is added to Agent, it MUST also be added here.
      */
-    private _clone(): Agent<TTSSampleRate> {
-        const newAgent = new Agent() as Agent<TTSSampleRate>;
+    private _clone(): Agent<TTSSampleRate, TArea> {
+        const newAgent = new Agent() as Agent<TTSSampleRate, TArea>;
+        newAgent._client = this._client;
         newAgent._name = this._name;
         newAgent._pipelineId = this._pipelineId;
         newAgent._llm = this._llm;
@@ -966,6 +982,7 @@ export class Agent<TTSSampleRate extends number = number> {
 
         return turnDetection;
     }
+
 }
 
 function _parseNumericUid(uid: string, label: string): number {

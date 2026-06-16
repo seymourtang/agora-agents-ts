@@ -6,6 +6,12 @@ import { type DeepgramPresetModel, DeepgramPresetModels } from "../presets.js";
 import type { SttConfig } from "../types.js";
 import { BaseSTT } from "./base.js";
 
+function requireString(value: unknown, field: string, vendor: string): asserts value is string {
+    if (typeof value !== "string" || value.length === 0) {
+        throw new Error(`${vendor} requires ${field}`);
+    }
+}
+
 function isDeepgramManagedModel(model: string | undefined): model is DeepgramPresetModel {
     return model !== undefined && DeepgramPresetModels.includes(model.trim().toLowerCase() as DeepgramPresetModel);
 }

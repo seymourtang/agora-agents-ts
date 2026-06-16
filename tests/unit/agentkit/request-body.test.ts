@@ -147,12 +147,12 @@ describe("Scenario 1 — BYOK pipeline properties shape", () => {
 describe("Scenario 2 — Preset-backed pipeline (managed models)", () => {
     test("Deepgram nova-3 + gpt-4o-mini + OpenAI TTS-1 infers preset and strips keys", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support" })
+        const agent = new Agent({ client, name: "support" })
             .withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }))
             .withLlm(new OpenAI({ model: "gpt-4o-mini" }))
             .withTts(new OpenAITTS({ voice: "alloy" }));
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -175,12 +175,12 @@ describe("Scenario 2 — Preset-backed pipeline (managed models)", () => {
 
     test("Deepgram nova-2 managed model infers correct preset", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support" })
+        const agent = new Agent({ client, name: "support" })
             .withStt(new DeepgramSTT({ model: "nova-2", language: "en-US" }))
             .withLlm(new OpenAI({ model: "gpt-4o-mini" }))
             .withTts(new OpenAITTS({ voice: "alloy" }));
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -339,12 +339,12 @@ describe("Scenario 6 — Mixed preset + BYOK", () => {
     test("6a: Deepgram BYOK with nova-2 model + managed LLM + managed TTS — deepgram preset is NOT inferred (BYOK key field present)", async () => {
         // inferAsrPreset checks `asr.params?.key`; when set, BYOK is detected and no preset is inferred.
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support" })
+        const agent = new Agent({ client, name: "support" })
             .withStt(new DeepgramSTT({ apiKey: "byok-dg-key", model: "nova-2", language: "en-US" }))
             .withLlm(new OpenAI({ model: "gpt-4o-mini" }))
             .withTts(new OpenAITTS({ voice: "alloy" }));
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -360,7 +360,7 @@ describe("Scenario 6 — Mixed preset + BYOK", () => {
 
     test("6b: managed STT + BYOK LLM + managed TTS — preset covers STT and TTS only", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support" })
+        const agent = new Agent({ client, name: "support" })
             .withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }))
             .withLlm(
                 new OpenAI({
@@ -371,7 +371,7 @@ describe("Scenario 6 — Mixed preset + BYOK", () => {
             )
             .withTts(new OpenAITTS({ voice: "nova" }));
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -391,9 +391,9 @@ describe("Scenario 6 — Mixed preset + BYOK", () => {
 describe("Scenario 7 — Pipeline ID supplementary", () => {
     test("7b: session-level pipelineId takes precedence over agent-level", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support", pipelineId: "agent-pipeline-id" });
+        const agent = new Agent({ client, name: "support", pipelineId: "agent-pipeline-id" });
 
-        const session = agent.createSession(client, {
+        const session = agent.createSession({
             ...SESSION_OPTS,
             pipelineId: "session-pipeline-id",
         });
@@ -405,9 +405,9 @@ describe("Scenario 7 — Pipeline ID supplementary", () => {
 
     test("7c: pipeline_id is not sent inside properties when set at session level", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "support" });
+        const agent = new Agent({ client, name: "support" });
 
-        const session = agent.createSession(client, {
+        const session = agent.createSession({
             ...SESSION_OPTS,
             pipelineId: "studio-id",
         });
@@ -426,7 +426,7 @@ describe("Scenario 7 — Pipeline ID supplementary", () => {
 describe("Scenario 8 — MLLM mode", () => {
     test("8a: OpenAIRealtime produces mllm.enable=true and correct shape", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "realtime" }).withMllm(
+        const agent = new Agent({ client, name: "realtime" }).withMllm(
             new OpenAIRealtime({
                 apiKey: "openai-rt-key",
                 model: "gpt-4o-realtime-preview",
@@ -435,7 +435,7 @@ describe("Scenario 8 — MLLM mode", () => {
             }),
         );
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -1098,12 +1098,12 @@ describe("MLLM vendor coverage", () => {
 describe("Preset coverage matrix", () => {
     test("gpt-4o-mini managed LLM infers openai_gpt_4o_mini preset", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "t" })
+        const agent = new Agent({ client, name: "t" })
             .withStt(STUB_STT)
             .withLlm(new OpenAI({ model: "gpt-4o-mini" }))
             .withTts(STUB_TTS);
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -1112,12 +1112,12 @@ describe("Preset coverage matrix", () => {
 
     test("openai_tts_1 managed TTS infers openai_tts_1 preset", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "t" })
+        const agent = new Agent({ client, name: "t" })
             .withStt(STUB_STT)
             .withLlm(STUB_LLM)
             .withTts(new OpenAITTS({ voice: "alloy" }));
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -1126,7 +1126,7 @@ describe("Preset coverage matrix", () => {
 
     test("MiniMax speech-2.6-turbo infers minimax_speech_2_6_turbo preset", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "t" })
+        const agent = new Agent({ client, name: "t" })
             .withStt(STUB_STT)
             .withLlm(STUB_LLM)
             .withTts(
@@ -1136,7 +1136,7 @@ describe("Preset coverage matrix", () => {
                 }),
             );
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -1145,7 +1145,7 @@ describe("Preset coverage matrix", () => {
 
     test("MiniMax speech-2.8-turbo infers minimax_speech_2_8_turbo preset", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "t" })
+        const agent = new Agent({ client, name: "t" })
             .withStt(STUB_STT)
             .withLlm(STUB_LLM)
             .withTts(
@@ -1155,7 +1155,7 @@ describe("Preset coverage matrix", () => {
                 }),
             );
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -1166,12 +1166,12 @@ describe("Preset coverage matrix", () => {
         // When the caller supplies the MiniMax TTS preset explicitly (not inferred),
         // the internal _minimaxPresetModel hint set by MiniMaxTTS must still be removed.
         const { client, start } = createClient();
-        const agent = new Agent({ name: "t" })
+        const agent = new Agent({ client, name: "t" })
             .withStt(STUB_STT)
             .withLlm(STUB_LLM)
             .withTts(new MiniMaxTTS({ model: "speech-2.8-turbo", voiceId: "English_captivating_female1" }));
 
-        const session = agent.createSession(client, {
+        const session = agent.createSession({
             ...SESSION_OPTS,
             preset: "minimax_speech_2_8_turbo",
         });
@@ -1184,12 +1184,12 @@ describe("Preset coverage matrix", () => {
 
     test("deepgram_nova_2 managed STT infers deepgram_nova_2 preset", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "t" })
+        const agent = new Agent({ client, name: "t" })
             .withStt(new DeepgramSTT({ model: "nova-2", language: "en-US" }))
             .withLlm(STUB_LLM)
             .withTts(STUB_TTS);
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -1198,12 +1198,12 @@ describe("Preset coverage matrix", () => {
 
     test("deepgram_nova_3 managed STT infers deepgram_nova_3 preset", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "t" })
+        const agent = new Agent({ client, name: "t" })
             .withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }))
             .withLlm(STUB_LLM)
             .withTts(STUB_TTS);
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
@@ -1212,9 +1212,9 @@ describe("Preset coverage matrix", () => {
 
     test("BYOK vendors produce no preset", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ name: "t" }).withStt(STUB_STT).withLlm(STUB_LLM).withTts(STUB_TTS);
+        const agent = new Agent({ client, name: "t" }).withStt(STUB_STT).withLlm(STUB_LLM).withTts(STUB_TTS);
 
-        const session = agent.createSession(client, { ...SESSION_OPTS });
+        const session = agent.createSession({ ...SESSION_OPTS });
         await session.start();
 
         const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;

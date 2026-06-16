@@ -176,6 +176,7 @@ export namespace StartAgentsRequest {
             enable?: boolean;
             /**
              * Avatar vendor. Supports the following values:
+             * - `sensetime`: Sensetime
              * - `akool`: Akool (Beta)
              * - `liveavatar`: LiveAvatar (Beta)
              * - `anam`: Anam (Beta)
@@ -196,6 +197,7 @@ export namespace StartAgentsRequest {
              */
             export const Vendor = {
                 Akool: "akool",
+                Sensetime: "sensetime",
                 /**
                  * LiveAvatar (Beta) — formerly HeyGen */
                 Liveavatar: "liveavatar",

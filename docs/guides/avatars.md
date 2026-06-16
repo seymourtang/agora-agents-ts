@@ -109,7 +109,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'liveavatar-agent' })
+const agent = new Agent({ client, name: 'liveavatar-agent' })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -132,7 +132,7 @@ const agent = new Agent({ name: 'liveavatar-agent' })
     // agoraToken omitted: AgentKit generates it at session.start()
   }));
 
-const session = agent.createSession(client, {
+const session = agent.createSession({
   channel: 'avatar-room',
   agentUid: '1', // distinct from avatar agoraUid
   remoteUids: ['100'],
@@ -179,7 +179,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'akool-agent' })
+const agent = new Agent({ client, name: 'akool-agent' })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -199,7 +199,7 @@ const agent = new Agent({ name: 'akool-agent' })
     avatarId: 'your-avatar-id',
   }));
 
-const session = agent.createSession(client, {
+const session = agent.createSession({
   channel: 'avatar-room',
   agentUid: '1',
   remoteUids: ['100'],

@@ -2,6 +2,7 @@ export type { AgoraAuthMode } from "./AgoraPoolClient.js";
 export { AgoraClient } from "./AgoraPoolClient.js";
 export type {
     AdvancedFeatures,
+    AliyunLLMOptions,
     AgentConfig,
     AgentConfigUpdate,
     AgentOptions,
@@ -26,6 +27,13 @@ export type {
     AvatarConfig,
     AvatarVendor,
     AzureOpenAIOptions,
+    BytedanceDuplexTTSOptions,
+    BytedanceLLMOptions,
+    BytedanceTTSOptions,
+    MicrosoftCNSampleRate,
+    MicrosoftCNSTTOptions,
+    MicrosoftCNTTSOptions,
+    MiniMaxCNTTSOptions,
     CartesiaSampleRate,
     CartesiaTTSOptions,
     CartesiaTts,
@@ -36,6 +44,7 @@ export type {
     ConversationTurn,
     ConversationTurns,
     CustomLLMOptions,
+    DeepSeekLLMOptions,
     DeepgramSTTOptions,
     DeepgramTTSOptions,
     DifyOptions,
@@ -123,6 +132,7 @@ export type {
     RtcConfig,
     SalConfig,
     SalMode,
+    SensetimeAvatarOptions,
     // Sample rate types
     SampleRate,
     SarvamSTTOptions,
@@ -147,10 +157,14 @@ export type {
     StartOfSpeechKeywordsConfig,
     StartOfSpeechMode,
     StartOfSpeechVadConfig,
+    StepFunTTSOptions,
     // Strict avatar config types
     StrictAvatarConfig,
     SttConfig,
     SttVendor,
+    TencentLLMOptions,
+    TencentSTTOptions,
+    TencentTTSOptions,
     ThinkOnListeningAction,
     ThinkOnSpeakingAction,
     ThinkOnThinkingAction,
@@ -163,10 +177,14 @@ export type {
     TurnDetectionType,
     VertexAILLMOptions,
     VertexAIOptions,
+    XfyunBigModelSTTOptions,
+    XfyunDialectSTTOptions,
+    XfyunSTTOptions,
     XaiGrokOptions,
 } from "./agentkit/index.js";
 // Agentkit layer exports - clean, ergonomic API
 export {
+    AliyunLLM,
     Agent,
     AgentPresets,
     AgentSession,
@@ -181,14 +199,26 @@ export {
     AudioScenario,
     AzureOpenAI,
     BaseAvatar,
+    BaseCNAvatar,
+    BaseCNLLM,
+    BaseCNSTT,
+    BaseCNTTS,
     // Base vendor classes
     BaseLLM,
     BaseMLLM,
     BaseSTT,
     BaseTTS,
+    BytedanceDuplexTTS,
+    BytedanceLLM,
+    BytedanceTTS,
+    MicrosoftCNSTT,
+    MicrosoftCNTTS,
+    MiniMaxCNTTS,
     CartesiaTTS,
+    CosyVoiceTTS,
     CustomLLM,
     DataChannel,
+    DeepSeekLLM,
     DeepgramSTT,
     DeepgramTTS,
     Dify,
@@ -197,6 +227,7 @@ export {
     ExpiresIn,
     FillerWordsSelectionRule,
     FishAudioTTS,
+    FengmingSTT,
     Gemini,
     GeminiLive,
     GenericAvatar,
@@ -240,6 +271,7 @@ export {
     OpenAITTS,
     RimeTTS,
     SalModeValues,
+    SensetimeAvatar,
     SarvamSTT,
     SarvamTTS,
     SilenceActionValues,
@@ -249,6 +281,10 @@ export {
     SpeakPriorityValues,
     // STT vendors
     SpeechmaticsSTT,
+    StepFunTTS,
+    TencentLLM,
+    TencentSTT,
+    TencentTTS,
     ThinkOnListeningActionIgnore,
     ThinkOnListeningActionInject,
     ThinkOnListeningActionInterrupt,
@@ -262,9 +298,15 @@ export {
     VertexAILLM,
     validateAvatarConfig,
     validateTtsSampleRate,
+    XfyunBigModelSTT,
+    XfyunDialectSTT,
+    XfyunSTT,
     XaiGrok,
 } from "./agentkit/index.js";
 export * as Agora from "./api/index.js";
+export type { AgoraArea, AreaScope, GlobalArea } from "./agentkit/area.js";
+export type { CNVendorFactories, GlobalVendorFactories, VendorsForArea } from "./agentkit/vendors.js";
+export { createVendorsForArea } from "./agentkit/vendors.js";
 export type { BaseClientOptions, BaseRequestOptions } from "./BaseClient.js";
 export { Area } from "./core/domain/index.js";
 export { AgoraEnvironment } from "./environments.js";

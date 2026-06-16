@@ -32,8 +32,9 @@ const client = new AgoraClient(options: AgoraClient.Options);
 | `customerId` | `string` | No | Customer ID for Basic Auth |
 | `customerSecret` | `string` | No | Customer Secret for Basic Auth |
 | `authToken` | `string` | No | Pre-built `agora token=<value>` string |
-| `timeout` | `number` | No | Request timeout in ms (default from Fern config) |
+| `timeoutInSeconds` | `number` | No | Request timeout in seconds |
 | `maxRetries` | `number` | No | Max retry attempts (default from Fern config) |
+| `logging` | `LogConfig \| Logger` | No | SDK logger configuration |
 | `fetch` | `typeof fetch` | No | Custom fetch implementation |
 
 Authentication mode is determined by which options you provide:
@@ -56,6 +57,17 @@ See [Authentication](../getting-started/authentication.md) for details on each m
 | `pool` | `Pool` (readonly) | The domain pool instance |
 
 ## Public methods
+
+### `vendors`
+
+Area-aware vendor factories exposed under:
+
+- `client.vendors.stt`
+- `client.vendors.llm`
+- `client.vendors.tts`
+- `client.vendors.avatar`
+
+These factories narrow available vendors based on `client.area`.
 
 ### `nextRegion(): void`
 

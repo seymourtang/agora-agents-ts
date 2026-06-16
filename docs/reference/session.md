@@ -160,11 +160,11 @@ You must pass `appid` and `agentId` manually when using raw methods.
 
 ## Presets and BYOK
 
-Prefer configuring vendors on the `Agent` builder. When you omit credentials for supported Agora-managed models, AgentKit sends the matching Agora-managed configuration at session start.
+Prefer configuring vendors on the `Agent` builder. When you omit credentials for supported Agora-managed global models, AgentKit sends the matching Agora-managed configuration at session start. CN MiniMax TTS is not Agora-managed and always requires `key`.
 
 `preset` is an advanced session option for project-specific settings, not for selecting Agora-managed models. Most applications should use the builder instead.
 
-- Omit vendor credentials on the builder for supported Agora-managed models.
+- Omit vendor credentials on the builder for supported Agora-managed global models.
 - Provide vendor API keys when you want BYOK.
 - Pass `preset` on `agent.createSession(...)` only when you need to access specific project-specific settings.
 

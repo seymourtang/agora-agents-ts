@@ -11,7 +11,12 @@ export type Asr =
     | Agora.Asr.Amazon
     | Agora.Asr.Assemblyai
     | Agora.Asr.Speechmatics
-    | Agora.Asr.Sarvam;
+    | Agora.Asr.Sarvam
+    | Asr.Fengming
+    | Asr.Tencent
+    | Asr.Xfyun
+    | Asr.XfyunBigmodel
+    | Asr.XfyunDialect;
 
 export namespace Asr {
     export interface Ares extends Agora.AresAsr {
@@ -48,5 +53,35 @@ export namespace Asr {
 
     export interface Sarvam extends Agora.SarvamAsr {
         vendor: "sarvam";
+    }
+
+    export interface Fengming {
+        vendor: "fengming";
+        language?: string;
+        params?: Record<string, unknown>;
+    }
+
+    export interface Tencent {
+        vendor: "tencent";
+        language?: string;
+        params?: Record<string, unknown>;
+    }
+
+    export interface Xfyun {
+        vendor: "xfyun";
+        language?: string;
+        params?: Record<string, unknown>;
+    }
+
+    export interface XfyunBigmodel {
+        vendor: "xfyun_bigmodel";
+        language?: string;
+        params?: Record<string, unknown>;
+    }
+
+    export interface XfyunDialect {
+        vendor: "xfyun_dialect";
+        language?: string;
+        params?: Record<string, unknown>;
     }
 }

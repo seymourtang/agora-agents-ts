@@ -236,7 +236,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'full-featured-assistant' })
+const agent = new Agent({ client, name: 'full-featured-assistant' })
   .withLlm(new OpenAI({
     apiKey: 'your-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -267,7 +267,7 @@ const agent = new Agent({ name: 'full-featured-assistant' })
     },
   });
 
-const session = agent.createSession(client, {
+const session = agent.createSession({
   channel: 'demo-room',
   agentUid: '1',
   remoteUids: ['100'],

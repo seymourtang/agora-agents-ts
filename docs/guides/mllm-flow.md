@@ -40,7 +40,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'realtime-assistant' })
+const agent = new Agent({ client, name: 'realtime-assistant' })
   .withMllm(new OpenAIRealtime({
     apiKey: 'your-openai-key',
     model: 'gpt-4o-realtime-preview',
@@ -49,7 +49,7 @@ const agent = new Agent({ name: 'realtime-assistant' })
     outputModalities: ['text', 'audio'],
   }));
 
-const session = agent.createSession(client, {
+const session = agent.createSession({
   channel: 'realtime-room',
   agentUid: '1',
   remoteUids: ['100'],
@@ -73,7 +73,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'gemini-assistant' })
+const agent = new Agent({ client, name: 'gemini-assistant' })
   .withMllm(new GeminiLive({
     apiKey: 'your-google-ai-api-key',
     model: 'gemini-live-2.5-flash',
@@ -82,7 +82,7 @@ const agent = new Agent({ name: 'gemini-assistant' })
     greetingMessage: 'Hello! Gemini is listening.',
   }));
 
-const session = agent.createSession(client, {
+const session = agent.createSession({
   channel: 'gemini-room',
   agentUid: '1',
   remoteUids: ['100'],
@@ -104,7 +104,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'grok-assistant' })
+const agent = new Agent({ client, name: 'grok-assistant' })
   .withMllm(new XaiGrok({
     apiKey: 'your-xai-key',
     voice: 'eve',
@@ -113,7 +113,7 @@ const agent = new Agent({ name: 'grok-assistant' })
     greetingMessage: 'Hello! Grok is listening.',
   }));
 
-const session = agent.createSession(client, {
+const session = agent.createSession({
   channel: 'grok-room',
   agentUid: '1',
   remoteUids: ['100'],

@@ -8,6 +8,53 @@ description: Constructor options for all LLM, TTS, STT, MLLM, and Avatar vendor 
 
 All vendor classes are imported from `agora-agents`.
 
+## Area-aware vendor factories
+
+If you want IDE completion to narrow vendor availability after selecting `area`, construct vendors from `client.vendors.*` instead of importing vendor classes directly.
+
+| Area | `client.vendors.stt` | `client.vendors.llm` | `client.vendors.tts` | `client.vendors.avatar` |
+|---|---|---|---|---|
+| `Area.US`, `Area.EU`, `Area.AP` | `deepgram`, `speechmatics`, `microsoft`, `openai`, `google`, `amazon`, `assemblyai`, `ares`, `sarvam` | `openai`, `azureOpenai`, `anthropic`, `gemini`, `groq`, `vertexAi`, `amazonBedrock`, `dify`, `custom` | `elevenlabs`, `microsoft`, `openai`, `cartesia`, `google`, `amazon`, `deepgram`, `humeai`, `rime`, `fishaudio`, `minimax`, `murf`, `sarvam` | `liveavatar`, `heygen`, `akool`, `anam`, `generic` |
+| `Area.CN` | `fengming`, `tencent`, `microsoft`, `xfyun`, `xfyunBigmodel`, `xfyunDialect` | `aliyun`, `bytedance`, `deepseek`, `tencent`, `custom` | `minimax`, `tencent`, `bytedance`, `microsoft`, `cosyvoice`, `bytedanceDuplex`, `stepfun` | `sensetime` |
+
+Global example:
+
+```typescript
+const client = new AgoraClient({
+  area: Area.US,
+  appId: process.env.AGORA_APP_ID!,
+  appCertificate: process.env.AGORA_APP_CERTIFICATE!,
+});
+
+const stt = client.vendors.stt.deepgram({ model: 'nova-3', language: 'en-US' });
+const llm = client.vendors.llm.openai({ model: 'gpt-4o-mini' });
+const tts = client.vendors.tts.minimax({
+  model: 'speech_2_6_turbo',
+  voiceId: 'English_captivating_female1',
+});
+```
+
+CN example:
+
+```typescript
+const client = new AgoraClient({
+  area: Area.CN,
+  appId: process.env.AGORA_APP_ID!,
+  appCertificate: process.env.AGORA_APP_CERTIFICATE!,
+});
+
+const stt = client.vendors.stt.fengming();
+const llm = client.vendors.llm.aliyun({
+  url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+  model: 'qwen-plus',
+});
+const tts = client.vendors.tts.minimax({
+  key: process.env.MINIMAX_API_KEY!,
+  model: 'speech-01-turbo',
+  voiceSetting: { voice_id: 'female-shaonv' },
+});
+```
+
 ## LLM vendors
 
 
@@ -441,8 +488,6 @@ Generic avatars can omit `agoraAppId`, `agoraChannel`, and `agoraToken`. AgentKi
 | `agoraToken` | `string` | No | Avatar token override |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
 
-
-
 <!-- snippet: fragment -->
 ```typescript
 new AnamAvatar(options: AnamAvatarOptions)
@@ -473,3 +518,48 @@ Generic avatars can omit `agoraAppId`, `agoraChannel`, and `agoraToken`. AgentKi
 | `agoraChannel` | `string` | No | Agora channel override |
 | `agoraToken` | `string` | No | Avatar token override |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+## CN vendors
+
+### CN LLM vendors
+
+All CN LLM helpers share the OpenAI-compatible shape and require `url` + `model`:
+
+| Class | Key options |
+|---|---|
+| `AliyunLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
+| `BytedanceLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
+| `DeepSeekLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
+| `TencentLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
+| `CustomLLM` | `apiKey`, `model`, `url`; in CN usage the same class is reused under `client.vendors.llm.custom(...)` |
+
+### CN TTS vendors
+
+CN TTS helpers reuse shared vendor names where possible. `MiniMaxCNTTS` and `MicrosoftCNTTS` are the CN-specific classes; `client.vendors.tts.minimax(...)` and `client.vendors.tts.microsoft(...)` construct them for `Area.CN`. `MiniMaxTTS` remains the global helper.
+
+| Class | Key options |
+|---|---|
+| `MiniMaxCNTTS` | `key`, `model`, plus either `voiceSetting.voice_id` or non-empty `timberWeights`, with optional `audioSetting`, `pronunciationDict`, `languageBoost`, `skipPatterns` |
+| `TencentTTS` | `appId`, `secretId`, `secretKey`, `voiceType`; optional `volume`, `speed`, `emotionCategory`, `emotionIntensity`, `skipPatterns` |
+| `BytedanceTTS` | `token`, `appId`, `cluster`, `voiceType`; optional `speedRatio`, `volumeRatio`, `pitchRatio`, `emotion`, `skipPatterns` |
+| `MicrosoftCNTTS` | `key`, `region`, `voiceName`; optional `sampleRate`, `speed`, `volume`, `skipPatterns`, `additionalParams` |
+| `CosyVoiceTTS` | `apiKey`, `model`, `sampleRate`, `voice`; optional `skipPatterns` |
+| `BytedanceDuplexTTS` | `appId`, `token`, `speaker`; optional `skipPatterns` |
+| `StepFunTTS` | `apiKey`, `model`, `voiceId`; optional `skipPatterns` |
+
+### CN STT vendors
+
+| Class | Key options |
+|---|---|
+| `FengmingSTT` | no vendor params |
+| `TencentSTT` | `key`, `appId`, `secret`, `engineModelType`, `voiceId`; optional `language`, `additionalParams` |
+| `MicrosoftCNSTT` | `key`, `region`, `language` |
+| `XfyunSTT` | `apiKey`, `appId`, `apiSecret`, `language`; optional `additionalParams` |
+| `XfyunBigModelSTT` | `apiKey`, `appId`, `apiSecret`, `languageName`, `language`; optional `additionalParams` |
+| `XfyunDialectSTT` | `appId`, `accessKeyId`, `accessKeySecret`, `language`; optional `additionalParams` |
+
+### CN Avatar vendors
+
+| Class | Key options |
+|---|---|
+| `SensetimeAvatar` | `agoraUid`, `appId`, `appKey`, `sceneList`; optional `agoraToken`, `enable`, `additionalParams` |
