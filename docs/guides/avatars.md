@@ -40,6 +40,7 @@ AgentKit auto-fills `agora_token` for avatar vendors that publish a separate RTC
 
 - `LiveAvatarAvatar` (and the deprecated `HeyGenAvatar` alias)
 - `GenericAvatar`
+- `SensetimeAvatar` (CN)
 
 For `AkoolAvatar` and `AnamAvatar`, the avatar provider handles publishing on its own and AgentKit never injects an `agora_token`. Use `isAvatarTokenManaged(avatar)` to check whether a config falls into the managed group.
 

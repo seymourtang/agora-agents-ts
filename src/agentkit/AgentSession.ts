@@ -20,6 +20,7 @@ import {
     isGenericAvatar,
     isHeyGenAvatar,
     isLiveAvatarAvatar,
+    isSensetimeAvatar,
     validateAvatarConfig,
     validateTtsSampleRate,
 } from "./avatar-types.js";
@@ -311,7 +312,8 @@ export class AgentSession {
             isLiveAvatarAvatar(strictAvatar) ||
             isAkoolAvatar(strictAvatar) ||
             isAnamAvatar(strictAvatar) ||
-            isGenericAvatar(strictAvatar)
+            isGenericAvatar(strictAvatar) ||
+            isSensetimeAvatar(strictAvatar)
         ) {
             validateAvatarConfig(strictAvatar);
         }
@@ -352,7 +354,7 @@ export class AgentSession {
      * Fills session-derived avatar fields and generates avatar ConvoAI tokens.
      *
      * Token management is gated to vendors that publish a separate RTC video
-     * identity (HeyGen, LiveAvatar, Generic). Other vendors (Akool, Anam) do
+     * identity (HeyGen, LiveAvatar, Generic, SenseTime). Other vendors (Akool, Anam) do
      * not run a separate publisher and never receive an auto-generated token.
      */
     private _enrichAvatarParams(
@@ -421,9 +423,12 @@ export class AgentSession {
             isLiveAvatarAvatar(strictAvatar) ||
             isAkoolAvatar(strictAvatar) ||
             isAnamAvatar(strictAvatar) ||
-            isGenericAvatar(strictAvatar)
+            isGenericAvatar(strictAvatar) ||
+            isSensetimeAvatar(strictAvatar)
         ) {
-            validateAvatarConfig(strictAvatar, { requireSessionFields: isGenericAvatar(strictAvatar) });
+            validateAvatarConfig(strictAvatar, {
+                requireSessionFields: isGenericAvatar(strictAvatar) || isSensetimeAvatar(strictAvatar),
+            });
         }
 
         if (!isAvatarTokenManaged(strictAvatar)) {

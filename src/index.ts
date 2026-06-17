@@ -132,6 +132,7 @@ export type {
     RtcConfig,
     SalConfig,
     SalMode,
+    SensetimeAvatarConfig,
     SensetimeAvatarOptions,
     // Sample rate types
     SampleRate,
@@ -252,6 +253,7 @@ export {
     isGenericAvatar,
     isHeyGenAvatar,
     isLiveAvatarAvatar,
+    isSensetimeAvatar,
     LiveAvatarAvatar,
     MAX_EXPIRY_SECONDS,
     MicrosoftSTT,

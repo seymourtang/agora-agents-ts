@@ -37,6 +37,7 @@ export type {
     GenericAvatarConfig,
     HeyGenAvatarConfig,
     LiveAvatarAvatarConfig,
+    SensetimeAvatarConfig,
     StrictAvatarConfig,
 } from "./avatar-types.js";
 export {
@@ -46,6 +47,7 @@ export {
     isGenericAvatar,
     isHeyGenAvatar,
     isLiveAvatarAvatar,
+    isSensetimeAvatar,
     toBaseAvatarConfig,
     validateAvatarConfig,
     validateTtsSampleRate,

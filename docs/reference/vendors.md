@@ -430,7 +430,7 @@ new XaiGrok(options: XaiGrokOptions)
 
 ## Avatar vendors
 
-AgentKit auto-fills `agora_token` only for vendors that publish a separate RTC video identity: `HeyGenAvatar`, `LiveAvatarAvatar`, and `GenericAvatar`. When `agoraToken` is omitted on those vendors, AgentKit generates it at `session.start()` from the session App ID, channel, app certificate, and avatar `agoraUid`. Avatar tokens use the same ConvoAI token format as agent tokens, scoped to the avatar UID. Explicit `agoraToken` values are preserved. `AkoolAvatar` and `AnamAvatar` never receive an auto-generated token (the avatar provider handles publishing). Use `isAvatarTokenManaged(avatar)` to check whether a config is in the managed group.
+AgentKit auto-fills `agora_token` only for vendors that publish a separate RTC video identity: `HeyGenAvatar`, `LiveAvatarAvatar`, `GenericAvatar`, and `SensetimeAvatar`. When `agoraToken` is omitted on those vendors, AgentKit generates it at `session.start()` from the session App ID, channel, app certificate, and avatar `agoraUid`. Avatar tokens use the same ConvoAI token format as agent tokens, scoped to the avatar UID. Explicit `agoraToken` values are preserved. `AkoolAvatar` and `AnamAvatar` never receive an auto-generated token (the avatar provider handles publishing). Use `isAvatarTokenManaged(avatar)` to check whether a config is in the managed group.
 
 ### HeyGenAvatar
 
