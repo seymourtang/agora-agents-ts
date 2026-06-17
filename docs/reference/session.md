@@ -107,13 +107,6 @@ Fetch all turn analytics pages and merge the `turns` array.
 - Requires a valid `agentId`
 - For very long sessions, prefer processing pages with `getTurns()` to avoid holding all turns in memory
 
-### `getAllTurns(options?: Omit<GetTurnsOptions, "page_index">): Promise<ConversationTurns>`
-
-Fetch all turn analytics pages and merge the `turns` array.
-
-- Requires a valid `agentId`
-- For very long sessions, prefer processing pages with `getTurns()` to avoid holding all turns in memory
-
 ### `getInfo(): Promise<SessionInfo>`
 
 Fetch current agent metadata from the API.

@@ -323,7 +323,6 @@ export class Agent<TTSSampleRate extends number = number> {
      *
      * const agent = new Agent({ name: 'avatar-assistant' })
      *   .withTts(new ElevenLabsTTS({
-
      *     key: '...',
      *     modelId: '...',
      *     voiceId: '...',
@@ -865,19 +864,6 @@ export class Agent<TTSSampleRate extends number = number> {
                 skipCategories.add(category);
                 allowMissingCategories.add(category);
             }
-        }
-
-        const skipLlmValidation = skipCategories.has("llm");
-        const skipTtsValidation = skipCategories.has("tts");
-        const allowMissingAsr = allowMissingCategories.has("asr");
-        const allowMissingLlm = allowMissingCategories.has("llm");
-        const allowMissingTts = allowMissingCategories.has("tts");
-
-        if (!this._tts && !(skipTtsValidation || allowMissingTts)) {
-            throw new Error("TTS configuration is required. Use withTts() to set it.");
-        }
-        if (!this._llm && !(skipLlmValidation || allowMissingLlm)) {
-            throw new Error("LLM configuration is required. Use withLlm() to set it.");
         }
 
         const skipLlmValidation = skipCategories.has("llm");

@@ -48,14 +48,6 @@ import { Agent, AgoraClient, Area, DeepgramSTT, OpenAI } from 'agora-agents';
 
 The package installs as `agora-agents`.
 
-## Imports
-
-```typescript
-import { Agent, AgoraClient, Area, DeepgramSTT, OpenAI } from 'agora-agents';
-```
-
-The package installs as `agora-agents`.
-
 ## Next steps
 
 - [Authentication](./authentication.md) — configure your credentials

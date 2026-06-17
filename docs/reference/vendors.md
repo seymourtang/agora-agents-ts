@@ -445,26 +445,6 @@ Generic avatars can omit `agoraAppId`, `agoraChannel`, and `agoraToken`. AgentKi
 
 <!-- snippet: fragment -->
 ```typescript
-new GenericAvatar(options: GenericAvatarOptions)
-```
-
-Generic avatars can omit `agoraAppId`, `agoraChannel`, and `agoraToken`. AgentKit fills them from the session at `start()`.
-
-| Option | Type | Required | Description |
-|---|---|---|---|
-| `apiKey` | `string` | Yes | Custom avatar provider API key |
-| `apiBaseUrl` | `string` | Yes | Avatar provider API base URL |
-| `avatarId` | `string` | Yes | Avatar ID |
-| `agoraUid` | `string` | Yes | RTC UID for the avatar stream |
-| `agoraAppId` | `string` | No | Agora App ID override |
-| `agoraChannel` | `string` | No | Agora channel override |
-| `agoraToken` | `string` | No | Avatar token override |
-| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
-
-
-
-<!-- snippet: fragment -->
-```typescript
 new AnamAvatar(options: AnamAvatarOptions)
 ```
 

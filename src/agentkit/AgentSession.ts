@@ -865,10 +865,3 @@ function _parseNumericUid(uid: string, label: string): number {
     }
     return Number(uid);
 }
-
-function _parseNumericUid(uid: string, label: string): number {
-    if (!/^\d+$/.test(uid)) {
-        throw new Error(`${label} must be a numeric RTC UID when auto-generating a ConvoAI token`);
-    }
-    return Number(uid);
-}
