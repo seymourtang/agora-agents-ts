@@ -215,8 +215,6 @@ describe("TTS vendor helpers", () => {
                     model: "speech-02-turbo",
                     voiceId: "voice",
                 } as never),
-        ).toThrow(
-            "MiniMaxTTS requires url",
-        );
+        ).toThrow("MiniMaxTTS requires url");
     });
 });

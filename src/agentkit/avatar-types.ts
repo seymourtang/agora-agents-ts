@@ -5,8 +5,8 @@
  * ensuring that invalid combinations are caught at compile time.
  */
 
-import type { AvatarConfig as BaseAvatarConfig } from "./types.js";
 import type { SensetimeAvatarParams } from "../api/types/SensetimeAvatarParams.js";
+import type { AvatarConfig as BaseAvatarConfig } from "./types.js";
 
 /**
  * HeyGen-specific avatar configuration (legacy wire vendor `heygen`).
@@ -213,12 +213,7 @@ export function isSensetimeAvatar(config: StrictAvatarConfig): config is Senseti
  * Mirrors the Go and Python SDK gate so all language SDKs behave identically.
  */
 export function isAvatarTokenManaged(config: StrictAvatarConfig): boolean {
-    return (
-        isHeyGenAvatar(config) ||
-        isLiveAvatarAvatar(config) ||
-        isGenericAvatar(config) ||
-        isSensetimeAvatar(config)
-    );
+    return isHeyGenAvatar(config) || isLiveAvatarAvatar(config) || isGenericAvatar(config) || isSensetimeAvatar(config);
 }
 
 /**

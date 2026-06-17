@@ -361,12 +361,43 @@ describe("CN vendor helpers", () => {
 
     test("serializes CN LLM and avatar vendors", () => {
         const llmAssertions = [
-            [new AliyunLLM({ url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", model: "qwen-plus" }), "aliyun"],
-            [new BytedanceLLM({ url: "https://ark.cn-beijing.volces.com/api/v3/chat/completions", model: "doubao-seed-1-6" }), "bytedance"],
+            [
+                new AliyunLLM({
+                    url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+                    model: "qwen-plus",
+                }),
+                "aliyun",
+            ],
+            [
+                new BytedanceLLM({
+                    url: "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+                    model: "doubao-seed-1-6",
+                }),
+                "bytedance",
+            ],
             [new DeepSeekLLM({ url: "https://api.deepseek.com/chat/completions", model: "deepseek-chat" }), "deepseek"],
-            [new TencentLLM({ url: "https://api.hunyuan.cloud.tencent.com/v1/chat/completions", model: "hunyuan-turbos-latest" }), "tencent"],
-            [new TencentLLM({ url: "https://api.hunyuan.cloud.tencent.com/v1/chat/completions", model: "hunyuan-turbos-latest" }), "tencent"],
-            [new CustomLLM({ apiKey: "cn-custom-key", url: "https://llm.example.cn/chat/completions", model: "custom-model" }), "custom"],
+            [
+                new TencentLLM({
+                    url: "https://api.hunyuan.cloud.tencent.com/v1/chat/completions",
+                    model: "hunyuan-turbos-latest",
+                }),
+                "tencent",
+            ],
+            [
+                new TencentLLM({
+                    url: "https://api.hunyuan.cloud.tencent.com/v1/chat/completions",
+                    model: "hunyuan-turbos-latest",
+                }),
+                "tencent",
+            ],
+            [
+                new CustomLLM({
+                    apiKey: "cn-custom-key",
+                    url: "https://llm.example.cn/chat/completions",
+                    model: "custom-model",
+                }),
+                "custom",
+            ],
         ] as const;
 
         for (const [vendor, vendorName] of llmAssertions) {

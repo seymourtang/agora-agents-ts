@@ -1,6 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
 import { AgoraClient } from "../../../src/AgoraPoolClient.js";
-import { Area } from "../../../src/core/domain/index.js";
 import { Agent } from "../../../src/agentkit/Agent.js";
 import { AudioScenario } from "../../../src/agentkit/constants.js";
 import {
@@ -42,7 +41,7 @@ import {
     SarvamTTS,
 } from "../../../src/agentkit/vendors/tts.js";
 import type * as Agora from "../../../src/api/index.js";
-import type { AgoraClient } from "../../../src/Client.js";
+import { Area } from "../../../src/core/domain/index.js";
 
 // ---------------------------------------------------------------------------
 // Shared helpers
@@ -617,7 +616,9 @@ describe("ASR vendor coverage", () => {
     });
 
     test("AresSTT produces no params key", () => {
-        const p = new Agent({ client: TEST_AGENT_CLIENT }).withStt(new AresSTT()).toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
+            .withStt(new AresSTT())
+            .toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
 
         expect(p.asr?.vendor).toBe("ares");
         expect(p.asr?.params).toBeUndefined();

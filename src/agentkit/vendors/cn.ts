@@ -8,10 +8,6 @@ function requireString(value: unknown, field: string, vendor: string): asserts v
 }
 
 export class FengmingSTT extends BaseCNSTT {
-    constructor() {
-        super();
-    }
-
     toConfig(): SttConfig {
         return {
             vendor: "fengming",

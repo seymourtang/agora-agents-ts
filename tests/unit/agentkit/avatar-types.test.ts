@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-    isSensetimeAvatar,
     isAvatarTokenManaged,
-    validateAvatarConfig,
+    isSensetimeAvatar,
     type SensetimeAvatarConfig,
+    validateAvatarConfig,
 } from "../../../src/agentkit/avatar-types.js";
 
 const validSensetimeConfig = (): SensetimeAvatarConfig => ({

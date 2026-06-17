@@ -1,12 +1,13 @@
-import { Area } from "../../core/domain/index.js";
 import { AgoraClient } from "../../AgoraPoolClient.js";
+import { Area } from "../../core/domain/index.js";
 import { Agent } from "../Agent.js";
 import { AliyunLLM, FengmingSTT, MiniMaxCNTTS } from "../vendors/cn.js";
 import { OpenAI } from "../vendors/llm.js";
 import { DeepgramSTT } from "../vendors/stt.js";
 import { MiniMaxTTS } from "../vendors/tts.js";
 
-const AGENT_PROMPT = "You are a concise, technically credible voice assistant. Keep replies short unless the user asks for detail.";
+const AGENT_PROMPT =
+    "You are a concise, technically credible voice assistant. Keep replies short unless the user asks for detail.";
 const GREETING = "Hi there! I am your Agora voice assistant. How can I help?";
 const SUPPORT_PROMPT = "You are a concise support assistant.";
 
