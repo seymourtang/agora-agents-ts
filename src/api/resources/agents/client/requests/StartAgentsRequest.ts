@@ -176,11 +176,11 @@ export namespace StartAgentsRequest {
             enable?: boolean;
             /**
              * Avatar vendor. Supports the following values:
-             * - `sensetime`: Sensetime
              * - `akool`: Akool (Beta)
              * - `liveavatar`: LiveAvatar (Beta)
              * - `anam`: Anam (Beta)
              * - `generic`: Generic (Beta)
+             * - `sensetime`: SenseTime Avatar
              */
             vendor?: Avatar.Vendor;
             /** The configuration parameters for the avatar vendor. See [AI Avatar Overview](https://docs.agora.io/en/conversational-ai/models/avatar/overview) for details. */
@@ -194,10 +194,10 @@ export namespace StartAgentsRequest {
              * - `liveavatar`: LiveAvatar (Beta)
              * - `anam`: Anam (Beta)
              * - `generic`: Generic (Beta)
+             * - `sensetime`: SenseTime Avatar
              */
             export const Vendor = {
                 Akool: "akool",
-                Sensetime: "sensetime",
                 /**
                  * LiveAvatar (Beta) — formerly HeyGen */
                 Liveavatar: "liveavatar",
@@ -205,6 +205,9 @@ export namespace StartAgentsRequest {
                 /**
                  * Generic avatar (Beta) */
                 Generic: "generic",
+                /**
+                 * SenseTime Avatar */
+                Sensetime: "sensetime",
                 /**
                  * Deprecated: HeyGen has renamed to LiveAvatar. Use `liveavatar` instead. */
                 Heygen: "heygen",
@@ -216,8 +219,6 @@ export namespace StartAgentsRequest {
          * Conversation turn detection settings. Controls the logic for voice activity detection and conversation turn determination. This object has no effect when `mllm.enable` is true; use `mllm.turn_detection` instead.
          */
         export interface TurnDetection {
-            /** BCP-47 language tag identifying the primary language used for agent interaction. */
-            language?: Agora.AsrLanguage;
             /**
              * Conversation turn detection mode:
              * - `default`: Uses standard conversation turn detection configuration.

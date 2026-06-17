@@ -4,6 +4,8 @@ import type * as Agora from "../index.js";
 
 export type Asr =
     | Agora.Asr.Ares
+    | Agora.Asr.Fengming
+    | Agora.Asr.Tencent
     | Agora.Asr.Microsoft
     | Agora.Asr.Deepgram
     | Agora.Asr.Openai
@@ -12,15 +14,21 @@ export type Asr =
     | Agora.Asr.Assemblyai
     | Agora.Asr.Speechmatics
     | Agora.Asr.Sarvam
-    | Asr.Fengming
-    | Asr.Tencent
-    | Asr.Xfyun
-    | Asr.XfyunBigmodel
-    | Asr.XfyunDialect;
+    | Agora.Asr.Xfyun
+    | Agora.Asr.XfyunBigmodel
+    | Agora.Asr.XfyunDialect;
 
 export namespace Asr {
     export interface Ares extends Agora.AresAsr {
         vendor: "ares";
+    }
+
+    export interface Fengming extends Agora.FengmingAsr {
+        vendor: "fengming";
+    }
+
+    export interface Tencent extends Agora.TencentAsr {
+        vendor: "tencent";
     }
 
     export interface Microsoft extends Agora.MicrosoftAsr {
@@ -55,33 +63,15 @@ export namespace Asr {
         vendor: "sarvam";
     }
 
-    export interface Fengming {
-        vendor: "fengming";
-        language?: string;
-        params?: Record<string, unknown>;
-    }
-
-    export interface Tencent {
-        vendor: "tencent";
-        language?: string;
-        params?: Record<string, unknown>;
-    }
-
-    export interface Xfyun {
+    export interface Xfyun extends Agora.XfyunAsr {
         vendor: "xfyun";
-        language?: string;
-        params?: Record<string, unknown>;
     }
 
-    export interface XfyunBigmodel {
+    export interface XfyunBigmodel extends Agora.XfyunBigmodelAsr {
         vendor: "xfyun_bigmodel";
-        language?: string;
-        params?: Record<string, unknown>;
     }
 
-    export interface XfyunDialect {
+    export interface XfyunDialect extends Agora.XfyunDialectAsr {
         vendor: "xfyun_dialect";
-        language?: string;
-        params?: Record<string, unknown>;
     }
 }

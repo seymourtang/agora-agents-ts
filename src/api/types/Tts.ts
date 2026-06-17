@@ -3,6 +3,8 @@
 import type * as Agora from "../index.js";
 
 export type Tts =
+    | Agora.Tts.Tencent
+    | Agora.Tts.Bytedance
     | Agora.Tts.Microsoft
     | Agora.Tts.Elevenlabs
     | Agora.Tts.Minimax
@@ -16,13 +18,19 @@ export type Tts =
     | Agora.Tts.Amazon
     | Agora.Tts.Sarvam
     | Agora.Tts.Deepgram
-    | Tts.Tencent
-    | Tts.Bytedance
-    | Tts.Cosyvoice
-    | Tts.BytedanceDuplex
-    | Tts.Stepfun;
+    | Agora.Tts.Cosyvoice
+    | Agora.Tts.BytedanceDuplex
+    | Agora.Tts.Stepfun;
 
 export namespace Tts {
+    export interface Tencent extends Agora.TencentTts {
+        vendor: "tencent";
+    }
+
+    export interface Bytedance extends Agora.BytedanceTts {
+        vendor: "bytedance";
+    }
+
     export interface Microsoft extends Agora.MicrosoftTts {
         vendor: "microsoft";
     }
@@ -75,33 +83,15 @@ export namespace Tts {
         vendor: "deepgram";
     }
 
-    export interface Tencent {
-        vendor: "tencent";
-        params: Record<string, unknown>;
-        skip_patterns?: number[];
-    }
-
-    export interface Bytedance {
-        vendor: "bytedance";
-        params: Record<string, unknown>;
-        skip_patterns?: number[];
-    }
-
-    export interface Cosyvoice {
+    export interface Cosyvoice extends Agora.CosyvoiceTts {
         vendor: "cosyvoice";
-        params: Record<string, unknown>;
-        skip_patterns?: number[];
     }
 
-    export interface BytedanceDuplex {
+    export interface BytedanceDuplex extends Agora.BytedanceDuplexTts {
         vendor: "bytedance_duplex";
-        params: Record<string, unknown>;
-        skip_patterns?: number[];
     }
 
-    export interface Stepfun {
+    export interface Stepfun extends Agora.StepfunTts {
         vendor: "stepfun";
-        params: Record<string, unknown>;
-        skip_patterns?: number[];
     }
 }
