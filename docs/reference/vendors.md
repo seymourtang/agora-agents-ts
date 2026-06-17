@@ -8,6 +8,72 @@ description: Constructor options for all LLM, TTS, STT, MLLM, and Avatar vendor 
 
 All vendor classes are imported from `agora-agents`.
 
+## Vendor classes
+
+Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and `.withTts()`. `client.area` controls API routing only and does not restrict provider choice.
+
+| Global-oriented classes | CN-oriented classes |
+|---|---|
+| `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, … |
+
+Global example:
+
+```typescript
+import { AgoraClient, Area, DeepgramSTT, MiniMaxTTS, OpenAI } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: process.env.AGORA_APP_ID!,
+  appCertificate: process.env.AGORA_APP_CERTIFICATE!,
+});
+
+const agent = new Agent({ client })
+  .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
+  .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
+  .withTts(new MiniMaxTTS({
+    model: 'speech_2_6_turbo',
+    voiceId: 'English_captivating_female1',
+  }));
+
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
+  agentUid: '1',
+  remoteUids: ['100'],
+});
+```
+
+CN example:
+
+```typescript
+import { AgoraClient, Area, AliyunLLM, FengmingSTT, MiniMaxCNTTS } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.CN,
+  appId: process.env.AGORA_APP_ID!,
+  appCertificate: process.env.AGORA_APP_CERTIFICATE!,
+});
+
+const agent = new Agent({ client })
+  .withStt(new FengmingSTT())
+  .withLlm(new AliyunLLM({
+    url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    model: 'qwen-plus',
+  }))
+  .withTts(new MiniMaxCNTTS({
+    key: process.env.MINIMAX_API_KEY!,
+    model: 'speech-01-turbo',
+    voiceSetting: { voice_id: 'female-shaonv' },
+  }));
+
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
+  agentUid: '1',
+  remoteUids: ['100'],
+});
+```
+
 ## LLM vendors
 
 
@@ -364,7 +430,7 @@ new XaiGrok(options: XaiGrokOptions)
 
 ## Avatar vendors
 
-AgentKit auto-fills `agora_token` only for vendors that publish a separate RTC video identity: `HeyGenAvatar`, `LiveAvatarAvatar`, and `GenericAvatar`. When `agoraToken` is omitted on those vendors, AgentKit generates it at `session.start()` from the session App ID, channel, app certificate, and avatar `agoraUid`. Avatar tokens use the same ConvoAI token format as agent tokens, scoped to the avatar UID. Explicit `agoraToken` values are preserved. `AkoolAvatar` and `AnamAvatar` never receive an auto-generated token (the avatar provider handles publishing). Use `isAvatarTokenManaged(avatar)` to check whether a config is in the managed group.
+AgentKit auto-fills `agora_token` only for vendors that publish a separate RTC video identity: `HeyGenAvatar`, `LiveAvatarAvatar`, `GenericAvatar`, and `SensetimeAvatar`. When `agoraToken` is omitted on those vendors, AgentKit generates it at `session.start()` from the session App ID, channel, app certificate, and avatar `agoraUid`. Avatar tokens use the same ConvoAI token format as agent tokens, scoped to the avatar UID. Explicit `agoraToken` values are preserved. `AkoolAvatar` and `AnamAvatar` never receive an auto-generated token (the avatar provider handles publishing). Use `isAvatarTokenManaged(avatar)` to check whether a config is in the managed group.
 
 ### HeyGenAvatar
 
@@ -441,8 +507,6 @@ Generic avatars can omit `agoraAppId`, `agoraChannel`, and `agoraToken`. AgentKi
 | `agoraToken` | `string` | No | Avatar token override |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
 
-
-
 <!-- snippet: fragment -->
 ```typescript
 new AnamAvatar(options: AnamAvatarOptions)
@@ -473,3 +537,48 @@ Generic avatars can omit `agoraAppId`, `agoraChannel`, and `agoraToken`. AgentKi
 | `agoraChannel` | `string` | No | Agora channel override |
 | `agoraToken` | `string` | No | Avatar token override |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+## CN vendors
+
+### CN LLM vendors
+
+All CN LLM helpers share the OpenAI-compatible shape and require `url` + `model`:
+
+| Class | Key options |
+|---|---|
+| `AliyunLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
+| `BytedanceLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
+| `DeepSeekLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
+| `TencentLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
+| `CustomLLM` | `apiKey`, `model`, `url` |
+
+### CN TTS vendors
+
+CN TTS helpers reuse shared vendor names where possible. `MiniMaxCNTTS` and `MicrosoftCNTTS` are the CN-specific classes; `MiniMaxTTS` and `MicrosoftTTS` remain the global helpers.
+
+| Class | Key options |
+|---|---|
+| `MiniMaxCNTTS` | `key`, `model`, plus either `voiceSetting.voice_id` or non-empty `timberWeights`, with optional `audioSetting`, `pronunciationDict`, `languageBoost`, `skipPatterns` |
+| `TencentTTS` | `appId`, `secretId`, `secretKey`, `voiceType`; optional `volume`, `speed`, `emotionCategory`, `emotionIntensity`, `skipPatterns` |
+| `BytedanceTTS` | `token`, `appId`, `cluster`, `voiceType`; optional `speedRatio`, `volumeRatio`, `pitchRatio`, `emotion`, `skipPatterns` |
+| `MicrosoftCNTTS` | `key`, `region`, `voiceName`; optional `sampleRate`, `speed`, `volume`, `skipPatterns`, `additionalParams` |
+| `CosyVoiceTTS` | `apiKey`, `model`, `sampleRate`, `voice`; optional `skipPatterns` |
+| `BytedanceDuplexTTS` | `appId`, `token`, `speaker`; optional `skipPatterns` |
+| `StepFunTTS` | `apiKey`, `model`, `voiceId`; optional `skipPatterns` |
+
+### CN STT vendors
+
+| Class | Key options |
+|---|---|
+| `FengmingSTT` | no vendor params |
+| `TencentSTT` | `key`, `appId`, `secret`, `engineModelType`, `voiceId`; optional `language`, `additionalParams` |
+| `MicrosoftCNSTT` | `key`, `region`, `language` |
+| `XfyunSTT` | `apiKey`, `appId`, `apiSecret`, `language`; optional `additionalParams` |
+| `XfyunBigModelSTT` | `apiKey`, `appId`, `apiSecret`, `languageName`, `language`; optional `additionalParams` |
+| `XfyunDialectSTT` | `appId`, `accessKeyId`, `accessKeySecret`, `language`; optional `additionalParams` |
+
+### CN Avatar vendors
+
+| Class | Key options |
+|---|---|
+| `SensetimeAvatar` | `agoraUid`, `appId`, `appKey`, `sceneList`; optional `agoraToken`, `enable`, `additionalParams` |

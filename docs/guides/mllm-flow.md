@@ -40,7 +40,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'realtime-assistant' })
+const agent = new Agent({ client })
   .withMllm(new OpenAIRealtime({
     apiKey: 'your-openai-key',
     model: 'gpt-4o-realtime-preview',
@@ -49,8 +49,9 @@ const agent = new Agent({ name: 'realtime-assistant' })
     outputModalities: ['text', 'audio'],
   }));
 
-const session = agent.createSession(client, {
-  channel: 'realtime-room',
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
@@ -73,7 +74,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'gemini-assistant' })
+const agent = new Agent({ client })
   .withMllm(new GeminiLive({
     apiKey: 'your-google-ai-api-key',
     model: 'gemini-live-2.5-flash',
@@ -82,8 +83,9 @@ const agent = new Agent({ name: 'gemini-assistant' })
     greetingMessage: 'Hello! Gemini is listening.',
   }));
 
-const session = agent.createSession(client, {
-  channel: 'gemini-room',
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
@@ -104,7 +106,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'grok-assistant' })
+const agent = new Agent({ client })
   .withMllm(new XaiGrok({
     apiKey: 'your-xai-key',
     voice: 'eve',
@@ -113,8 +115,9 @@ const agent = new Agent({ name: 'grok-assistant' })
     greetingMessage: 'Hello! Grok is listening.',
   }));
 
-const session = agent.createSession(client, {
-  channel: 'grok-room',
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
@@ -130,7 +133,15 @@ Configure MLLM turn detection on the MLLM vendor with `turnDetection`. When set,
 Example:
 
 ```typescript
-const agent = new Agent({ name: 'realtime-with-vad' })
+import { AgoraClient, Area, Agent, OpenAIRealtime } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ client })
   .withMllm(new OpenAIRealtime({
     apiKey: 'your-openai-key',
     model: 'gpt-4o-realtime-preview',
@@ -141,7 +152,7 @@ const agent = new Agent({ name: 'realtime-with-vad' })
         idle_timeout_ms: 5000,
       },
     },
-  });
+  }));
 ```
 
 ## How MLLM mode works internally

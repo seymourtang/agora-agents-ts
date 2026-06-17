@@ -6,11 +6,12 @@
  */
 
 import type { AgoraAuthMode } from "../AgoraPoolClient.js";
+import type { AgoraClient } from "../AgoraPoolClient.js";
 import type * as Agora from "../api/index.js";
 import type { AgentManagementClient } from "../api/resources/agentManagement/client/Client.js";
 import type { AgentsClient } from "../api/resources/agents/client/Client.js";
-import type { AgoraClient } from "../Client.js";
 import { AgoraError } from "../errors/index.js";
+import type { AgoraArea } from "./area.js";
 import type { Agent } from "./Agent.js";
 import {
     isAkoolAvatar,
@@ -19,6 +20,7 @@ import {
     isGenericAvatar,
     isHeyGenAvatar,
     isLiveAvatarAvatar,
+    isSensetimeAvatar,
     validateAvatarConfig,
     validateTtsSampleRate,
 } from "./avatar-types.js";
@@ -59,14 +61,14 @@ export type AgentSessionEventHandler<T = unknown> = (data: T) => void;
  */
 export interface AgentSessionOptions {
     /** The Agora client instance */
-    client: AgoraClient;
+    client: AgoraClient<AgoraArea>;
     /** The agent configuration */
-    agent: Agent;
+    agent: Agent<number, AgoraArea>;
     /** The App ID */
     appId: string;
     /** The App Certificate — enables automatic RTC token generation when starting sessions */
     appCertificate?: string;
-    /** Unique name for this agent instance */
+    /** Unique agent instance name (set via {@link Agent.createSession}) */
     name: string;
     /** The channel to join */
     channel: string;
@@ -110,18 +112,18 @@ export interface AgentSessionOptions {
  *
  * const client = new AgoraClient({
  *   area: Area.US,
-
  *   appId: '...',
  *   appCertificate: '...',
  * });
  *
- * const agent = new Agent({ name: 'support-assistant', instructions: 'You are a helpful voice assistant.' })
+ * const agent = new Agent({ client, instructions: 'You are a helpful voice assistant.' })
  *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4o-mini', url: 'https://api.openai.com/v1/chat/completions' }))
  *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
  *   .withStt(new DeepgramSTT({ apiKey: '...', language: 'en-US' }));
  *
- * const session = agent.createSession(client, {
- *   channel: 'support-room-123',
+ * const session = agent.createSession({
+ *   name: `conversation-${Date.now()}`,
+ *   channel: `demo-channel-${Date.now()}`,
  *   agentUid: '1',
  *   remoteUids: ['100'],
  * });
@@ -133,8 +135,8 @@ export interface AgentSessionOptions {
  * ```
  */
 export class AgentSession {
-    private readonly _client: AgoraClient;
-    private readonly _agent: Agent;
+    private readonly _client: AgoraClient<AgoraArea>;
+    private readonly _agent: Agent<number, AgoraArea>;
     private readonly _appId: string;
     private readonly _appCertificate?: string;
     private readonly _name: string;
@@ -219,7 +221,7 @@ export class AgentSession {
     /**
      * The agent configuration.
      */
-    get agent(): Agent {
+    get agent(): Agent<number, AgoraArea> {
         return this._agent;
     }
 
@@ -308,6 +310,7 @@ export class AgentSession {
         if (
             isHeyGenAvatar(strictAvatar) ||
             isLiveAvatarAvatar(strictAvatar) ||
+            isSensetimeAvatar(strictAvatar) ||
             isAkoolAvatar(strictAvatar) ||
             isAnamAvatar(strictAvatar) ||
             isGenericAvatar(strictAvatar)
@@ -351,7 +354,7 @@ export class AgentSession {
      * Fills session-derived avatar fields and generates avatar ConvoAI tokens.
      *
      * Token management is gated to vendors that publish a separate RTC video
-     * identity (HeyGen, LiveAvatar, Generic). Other vendors (Akool, Anam) do
+     * identity (HeyGen, LiveAvatar, Generic, SenseTime). Other vendors (Akool, Anam) do
      * not run a separate publisher and never receive an auto-generated token.
      */
     private _enrichAvatarParams(
@@ -418,11 +421,14 @@ export class AgentSession {
         if (
             isHeyGenAvatar(strictAvatar) ||
             isLiveAvatarAvatar(strictAvatar) ||
+            isSensetimeAvatar(strictAvatar) ||
             isAkoolAvatar(strictAvatar) ||
             isAnamAvatar(strictAvatar) ||
             isGenericAvatar(strictAvatar)
         ) {
-            validateAvatarConfig(strictAvatar, { requireSessionFields: isGenericAvatar(strictAvatar) });
+            validateAvatarConfig(strictAvatar, {
+                requireSessionFields: isGenericAvatar(strictAvatar),
+            });
         }
 
         if (!isAvatarTokenManaged(strictAvatar)) {

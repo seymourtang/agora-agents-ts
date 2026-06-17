@@ -6,6 +6,7 @@
  */
 
 import type { AvatarConfig as BaseAvatarConfig } from "./types.js";
+import type { SensetimeAvatarParams } from "../api/types/SensetimeAvatarParams.js";
 
 /**
  * HeyGen-specific avatar configuration (legacy wire vendor `heygen`).
@@ -131,6 +132,27 @@ export interface GenericAvatarConfig {
 }
 
 /**
+ * SenseTime-specific avatar configuration (CN).
+ */
+export interface SensetimeAvatarConfig {
+    enable?: boolean;
+    vendor: "sensetime";
+    params: {
+        /** RTC UID for the avatar video publisher (required) */
+        agora_uid: string;
+        /** Avatar ConvoAI token (filled by AgentKit at session start when omitted) */
+        agora_token?: string;
+        /** SenseTime application ID (required) */
+        appId: string;
+        /** SenseTime application key (required) */
+        app_key: string;
+        /** SenseTime scene configuration list (required) */
+        sceneList: SensetimeAvatarParams.SceneList.Item[];
+        [key: string]: unknown;
+    };
+}
+
+/**
  * Discriminated union of all avatar configurations.
  * TypeScript will enforce vendor-specific constraints based on the vendor field.
  */
@@ -139,7 +161,8 @@ export type StrictAvatarConfig =
     | LiveAvatarAvatarConfig
     | AkoolAvatarConfig
     | AnamAvatarConfig
-    | GenericAvatarConfig;
+    | GenericAvatarConfig
+    | SensetimeAvatarConfig;
 
 /**
  * Helper type guard to check if an avatar config uses the legacy HeyGen wire vendor.
@@ -177,13 +200,25 @@ export function isGenericAvatar(config: StrictAvatarConfig): config is GenericAv
 }
 
 /**
+ * Helper type guard to check if an avatar config is for SenseTime (CN).
+ */
+export function isSensetimeAvatar(config: StrictAvatarConfig): config is SensetimeAvatarConfig {
+    return config.vendor === "sensetime";
+}
+
+/**
  * Returns true when AgentKit manages the avatar's RTC publisher identity
  * (i.e. fills `agora_token`, validates uniqueness against the agent UID).
  *
  * Mirrors the Go and Python SDK gate so all language SDKs behave identically.
  */
 export function isAvatarTokenManaged(config: StrictAvatarConfig): boolean {
-    return isHeyGenAvatar(config) || isLiveAvatarAvatar(config) || isGenericAvatar(config);
+    return (
+        isHeyGenAvatar(config) ||
+        isLiveAvatarAvatar(config) ||
+        isGenericAvatar(config) ||
+        isSensetimeAvatar(config)
+    );
 }
 
 /**
@@ -192,7 +227,8 @@ export function isAvatarTokenManaged(config: StrictAvatarConfig): boolean {
  * for cases where types are bypassed or data comes from external sources.
  *
  * @param options.requireSessionFields - When true, require fields AgentKit
- * fills during `AgentSession.start()` for Generic avatars.
+ * fills during `AgentSession.start()` for Generic avatars (`agora_appid`,
+ * `agora_channel`, `agora_token`).
  * @throws {Error} If the configuration is invalid
  */
 export function validateAvatarConfig(
@@ -249,6 +285,19 @@ export function validateAvatarConfig(
             if (!config.params.agora_token) {
                 throw new Error("Generic avatar requires agora_token after session enrichment");
             }
+        }
+    } else if (isSensetimeAvatar(config)) {
+        if (!config.params.agora_uid) {
+            throw new Error("SenseTime avatar requires agora_uid");
+        }
+        if (!config.params.appId) {
+            throw new Error("SenseTime avatar requires appId");
+        }
+        if (!config.params.app_key) {
+            throw new Error("SenseTime avatar requires app_key");
+        }
+        if (!Array.isArray(config.params.sceneList) || config.params.sceneList.length === 0) {
+            throw new Error("SenseTime avatar requires a non-empty sceneList");
         }
     }
 }

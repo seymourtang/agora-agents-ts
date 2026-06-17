@@ -15,19 +15,11 @@ npm install agora-agents
 
 ## Quick Start
 
-Start with the `Agent` builder: create a client with app credentials, choose your ASR, LLM, and TTS providers, then start a session. Omit vendor API keys for supported Agora-managed models, or provide keys when you want BYOK.
+Start with the `Agent` builder: create a client with app credentials, configure ASR, LLM, and TTS with vendor classes, then start a session. Omit vendor API keys for supported Agora-managed models, or provide keys when you want BYOK.
 Set Agora interaction language with `turnDetection.language`; provider-specific STT language values remain under `asr.params`. Ares uses only the REST `asr.language` value sourced from `turnDetection.language`.
 
 ```typescript
-import {
-  AgoraClient,
-  Agent,
-  Area,
-  DeepgramSTT,
-  ExpiresIn,
-  MiniMaxTTS,
-  OpenAI,
-} from 'agora-agents';
+import { AgoraClient, Agent, Area, DeepgramSTT, ExpiresIn, MiniMaxTTS, OpenAI } from 'agora-agents';
 
 const AGENT_PROMPT = `You are a concise, technically credible voice assistant. Keep replies short unless the user asks for detail.`;
 
@@ -44,7 +36,7 @@ export async function startConversation(): Promise<string> {
   });
 
   const agent = new Agent({
-    name: `conversation-${Date.now()}`,
+    client,
     turnDetection: {
       language: 'en-US',
       config: {
@@ -100,9 +92,10 @@ export async function startConversation(): Promise<string> {
       }),
     );
 
-  const session = agent.createSession(client, {
-    channel: "demo-channel-" + Date.now(),  // Unique channel name
-    agentUid: 123456,                       // Unique agent UID. Can be a random number or a specific user ID.
+  const session = agent.createSession({
+    name: `conversation-${Date.now()}`,
+    channel: `demo-channel-${Date.now()}`,  // Unique channel name
+    agentUid: '123456',                     // Unique agent UID. Can be a random number or a specific user ID.
     remoteUids: ['*'],                     // '*' is a wildcard, or use a specific user ID.
     idleTimeout: 30,
     expiresIn: ExpiresIn.hours(1),
@@ -115,20 +108,33 @@ export async function startConversation(): Promise<string> {
 
 ### Why no token or vendor key in the example?
 
-`AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically when you provide `appId` and `appCertificate`. For supported Agora-managed models, leave vendor API keys unset; provide keys when you want BYOK.
+`AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically when you provide `appId` and `appCertificate`. For supported Agora-managed global models, leave vendor API keys unset; provide keys when you want BYOK. CN MiniMax TTS is not Agora-managed and always requires `key`. CN custom LLM routing reuses `CustomLLM`, so `apiKey` is also required.
+
+### Regional agent builders
+
+`client.area` controls API routing only. You may combine any supported vendor class with any area. See [`docs/guides/regional-routing.md`](./docs/guides/regional-routing.md) for examples.
 
 ## AI Studio pipeline IDs
 
 Use `pipelineId` when you want a published AI Studio pipeline to provide the base agent configuration:
 
 ```typescript
+import { AgoraClient, Agent, Area } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: process.env.AGORA_APP_ID!,
+  appCertificate: process.env.AGORA_APP_CERTIFICATE!,
+});
+
 const agent = new Agent({
-  name: 'support',
+  client,
   pipelineId: 'studio-pipeline-id',
 });
 
-const session = agent.createSession(client, {
-  channel: 'support-room',
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
@@ -137,8 +143,9 @@ const session = agent.createSession(client, {
 You can override it per session:
 
 ```typescript
-const session = agent.createSession(client, {
-  channel: 'support-room',
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
   pipelineId: 'session-pipeline-id',
@@ -152,7 +159,18 @@ AgentKit sends the resolved value as the top-level `/join` field `pipeline_id`, 
 Use the same `Agent` builder shape, but provide credentials explicitly when you want vendor-managed billing and routing instead of Agora-managed models.
 
 ```typescript
-const agent = new Agent({ turnDetection: { language: 'en-US' } })
+import { AgoraClient, Agent, Area, DeepgramSTT, MiniMaxTTS, OpenAI } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: process.env.AGORA_APP_ID!,
+  appCertificate: process.env.AGORA_APP_CERTIFICATE!,
+});
+
+const SUPPORT_PROMPT = 'You are a concise support assistant.';
+const GREETING = 'Hi there! I am your Agora voice assistant. How can I help?';
+
+const agent = new Agent({ client, turnDetection: { language: 'en-US' } })
   .withStt(
     new DeepgramSTT({
       apiKey: process.env.DEEPGRAM_API_KEY!,
@@ -174,8 +192,6 @@ const agent = new Agent({ turnDetection: { language: 'en-US' } })
   )
   .withTts(
     new MiniMaxTTS({
-      key: process.env.MINIMAX_API_KEY!,
-      groupId: process.env.MINIMAX_GROUP_ID!,
       model: 'speech_2_6_turbo',
       voiceId: 'English_captivating_female1',
     }),
@@ -195,9 +211,15 @@ If you want to bring your own vendor credentials instead of using Agora-managed 
 Use `withMllm()` for OpenAI Realtime, Gemini Live, Vertex AI, or xAI Grok — no STT, LLM, or TTS vendor needed. MLLM mode is enabled automatically.
 
 ```typescript
-import { Agent, OpenAIRealtime } from 'agora-agents';
+import { AgoraClient, Agent, Area, OpenAIRealtime } from 'agora-agents';
 
-const agent = new Agent({ name: 'realtime-assistant' }).withMllm(
+const client = new AgoraClient({
+  area: Area.US,
+  appId: process.env.AGORA_APP_ID!,
+  appCertificate: process.env.AGORA_APP_CERTIFICATE!,
+});
+
+const agent = new Agent({ client }).withMllm(
   new OpenAIRealtime({
     apiKey: process.env.OPENAI_API_KEY!,
     model: 'gpt-4o-realtime-preview',
@@ -212,7 +234,7 @@ See the [MLLM Flow guide](./docs/guides/mllm-flow.md) for full examples with Gem
 
 ## Avatars
 
-AgentKit supports LiveAvatar, Generic Avatar, Anam, Akool, and deprecated HeyGen. Avatar `agoraToken` is optional: when omitted, `session.start()` generates a token using the same ConvoAI token format as the agent token, scoped to the avatar `agoraUid`. Avatars require the cascading ASR + LLM + TTS pipeline (not MLLM).
+AgentKit supports LiveAvatar, Generic Avatar, Anam, Akool, SenseTime (CN), and deprecated HeyGen. Avatar `agoraToken` is optional: when omitted, `session.start()` generates a token using the same ConvoAI token format as the agent token, scoped to the avatar `agoraUid`. Avatars require the cascading ASR + LLM + TTS pipeline (not MLLM).
 
 See the [Avatar Integration guide](./docs/guides/avatars.md) for sample-rate requirements and Generic Avatar setup.
 

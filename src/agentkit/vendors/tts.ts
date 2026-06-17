@@ -652,14 +652,14 @@ type MiniMaxTTSCommonOptions = {
     /** MiniMax API key. Optional only for AgentKit-supported Agora-managed models. */
     key?: string;
     /** MiniMax group identifier */
-    groupId: string;
+    groupId?: string;
 
     /** TTS model (e.g., 'speech-02-turbo') */
     model: string;
     /** Voice style identifier (e.g., 'English_captivating_female1') */
-    voiceId: string;
+    voiceId?: string;
     /** WebSocket endpoint (e.g., 'wss://api-uw.minimax.io/ws/v1/t2a_v2') */
-    url: string;
+    url?: string;
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
 };
@@ -707,7 +707,14 @@ export class MiniMaxTTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const { key, groupId, model, voiceId, url, skipPatterns } = this.options;
+        const {
+            key,
+            groupId,
+            model,
+            voiceId,
+            url,
+            skipPatterns,
+        } = this.options;
 
         return {
             vendor: "minimax",

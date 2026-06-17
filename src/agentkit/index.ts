@@ -37,6 +37,7 @@ export type {
     GenericAvatarConfig,
     HeyGenAvatarConfig,
     LiveAvatarAvatarConfig,
+    SensetimeAvatarConfig,
     StrictAvatarConfig,
 } from "./avatar-types.js";
 export {
@@ -46,6 +47,7 @@ export {
     isGenericAvatar,
     isHeyGenAvatar,
     isLiveAvatarAvatar,
+    isSensetimeAvatar,
     toBaseAvatarConfig,
     validateAvatarConfig,
     validateTtsSampleRate,
@@ -90,6 +92,7 @@ export type {
     OpenAIPresetModel,
     OpenAITtsPresetModel,
     PresetInput,
+    PresetCategory,
     TtsPreset,
 } from "./presets.js";
 export { AgentPresets, normalizePresetInput } from "./presets.js";
@@ -113,8 +116,9 @@ export type {
     AmazonTts,
     AmazonTtsParams,
     AsrConfig,
+    AsrVendorName,
     AvatarConfig,
-    AvatarVendor,
+    AvatarWireVendor,
     CartesiaTts,
     CartesiaTtsParams,
     // Conversation types
@@ -199,7 +203,6 @@ export type {
     StartOfSpeechMode,
     StartOfSpeechVadConfig,
     SttConfig,
-    SttVendor,
     ThinkOnListeningAction,
     ThinkOnSpeakingAction,
     ThinkOnThinkingAction,
@@ -211,6 +214,20 @@ export type {
     TurnDetectionNestedConfig,
     TurnDetectionType,
 } from "./types.js";
+export type {
+    AvatarVendor,
+    CNAvatarVendor,
+    CNLlmVendor,
+    CNSttVendor,
+    CNTtsVendor,
+    GlobalAvatarVendor,
+    GlobalLlmVendor,
+    GlobalSttVendor,
+    GlobalTtsVendor,
+    LlmVendor,
+    SttVendor,
+    TtsVendor,
+} from "./region-vendors.js";
 export type {
     AkoolAvatarOptions,
     AnamAvatarOptions,
@@ -239,6 +256,10 @@ export type {
 // Base vendor classes
 export {
     BaseAvatar,
+    BaseCNAvatar,
+    BaseCNLLM,
+    BaseCNSTT,
+    BaseCNTTS,
     BaseLLM,
     type BaseLlmOptions,
     BaseMLLM,
@@ -269,6 +290,46 @@ export {
     OpenAI,
     VertexAILLM,
 } from "./vendors/llm.js";
+export type {
+    AliyunLLMOptions,
+    BytedanceDuplexTTSOptions,
+    BytedanceLLMOptions,
+    BytedanceTTSOptions,
+    CosyVoiceTTSOptions,
+    DeepSeekLLMOptions,
+    MicrosoftCNSampleRate,
+    MicrosoftCNSTTOptions,
+    MicrosoftCNTTSOptions,
+    MiniMaxCNTTSOptions,
+    SensetimeAvatarOptions,
+    StepFunTTSOptions,
+    TencentLLMOptions,
+    TencentSTTOptions,
+    TencentTTSOptions,
+    XfyunBigModelSTTOptions,
+    XfyunDialectSTTOptions,
+    XfyunSTTOptions,
+} from "./vendors/cn.js";
+export {
+    AliyunLLM,
+    BytedanceDuplexTTS,
+    BytedanceLLM,
+    BytedanceTTS,
+    CosyVoiceTTS,
+    DeepSeekLLM,
+    FengmingSTT,
+    MicrosoftCNSTT,
+    MicrosoftCNTTS,
+    MiniMaxCNTTS,
+    SensetimeAvatar,
+    StepFunTTS,
+    TencentLLM,
+    TencentSTT,
+    TencentTTS,
+    XfyunBigModelSTT,
+    XfyunDialectSTT,
+    XfyunSTT,
+} from "./vendors/cn.js";
 export type {
     GeminiLiveOptions,
     OpenAIRealtimeOptions,

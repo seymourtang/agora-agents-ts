@@ -60,6 +60,11 @@ export type LlmStyle = Llm.Style;
  * When using shorthand strings or minimal configs, the untyped variant is available.
  */
 export type SttConfig =
+    | { vendor: "fengming"; language?: TurnDetectionLanguage; params?: Record<string, unknown> }
+    | { vendor: "tencent"; language?: TurnDetectionLanguage; params?: Record<string, unknown> }
+    | { vendor: "xfyun"; language?: TurnDetectionLanguage; params?: Record<string, unknown> }
+    | { vendor: "xfyun_bigmodel"; language?: TurnDetectionLanguage; params?: Record<string, unknown> }
+    | { vendor: "xfyun_dialect"; language?: TurnDetectionLanguage; params?: Record<string, unknown> }
     | { vendor: "speechmatics"; language?: TurnDetectionLanguage; params: SpeechmaticsParams }
     | { vendor: "deepgram"; language?: TurnDetectionLanguage; params: DeepgramParams }
     | { vendor: "microsoft"; language?: TurnDetectionLanguage; params: MicrosoftAsrParams }
@@ -74,8 +79,8 @@ export type SttConfig =
 /** ASR configuration — alias for {@link SttConfig} (wire field: `asr`). */
 export type AsrConfig = SttConfig;
 
-/** STT vendor (ares, microsoft, deepgram, openai, etc.) */
-export type SttVendor = string;
+/** Wire ASR vendor identifier (e.g. `"deepgram"`, `"fengming"`). */
+export type AsrVendorName = string;
 
 /** TTS (Text-to-Speech) configuration - discriminated union */
 export type TtsConfig = Tts;
@@ -90,7 +95,8 @@ export type MllmVendor = Mllm.Vendor;
 export type AvatarConfig = StartAgentsRequest.Properties.Avatar;
 
 /** Avatar vendor (akool, liveavatar, anam, generic, deprecated heygen) */
-export type AvatarVendor = StartAgentsRequest.Properties.Avatar.Vendor;
+/** Wire avatar vendor identifier (e.g. `"liveavatar"`, `"sensetime"`). */
+export type AvatarWireVendor = StartAgentsRequest.Properties.Avatar.Vendor;
 
 /** BCP-47 language tag used by `turn_detection.language`. */
 export type TurnDetectionLanguage = AsrLanguage;
@@ -290,9 +296,9 @@ export type AgentConfigUpdate = UpdateAgentsRequest.Properties;
 // Session Types
 // =============================================================================
 
-/** Options for creating a session */
+/** Options for creating a session via {@link Agent.createSession} */
 export interface SessionOptions {
-    /** Unique name for this agent instance (optional - resolved from agent or auto-generated) */
+    /** Unique agent instance name sent to the Agora API. Omit to auto-generate `agent-{timestamp}`. */
     name?: string;
     /** The channel to join */
     channel: string;

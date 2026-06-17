@@ -126,7 +126,7 @@ The SDK works in:
 
 ## Customizing Fetch Client
 
-Provide a custom `fetcher` for unsupported environments:
+Provide a custom `fetch` implementation for unsupported environments:
 
 ```typescript
 import { AgoraClient, Area } from "agora-agents";
@@ -135,6 +135,6 @@ const client = new AgoraClient({
   area: Area.US,
   appId: "your-app-id",
   appCertificate: "your-app-certificate",
-  fetcher: (url, init) => fetch(url, init), // your implementation
+  fetch: (url, init) => fetch(url, init), // your implementation
 });
 ```

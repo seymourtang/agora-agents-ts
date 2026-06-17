@@ -15,6 +15,8 @@ import { AgentSession } from 'agora-agents';
 
 Create sessions via [`agent.createSession()`](./agent.md) — not by calling the constructor directly.
 
+Pass `name` in `SessionOptions` to set the unique agent instance identifier sent to the Agora API. Omit it to auto-generate `agent-{timestamp}`.
+
 ## State machine
 
 ```
@@ -49,7 +51,7 @@ Start the agent session. Validates avatar/TTS configuration, sends the start req
 - Applies explicit `preset` values when provided and sends Agora-managed configuration when supported vendor credentials are omitted
 - Resolves pipeline IDs as `session.pipelineId ?? agent.pipelineId`; sends the resolved value as the top-level `/join` field `pipeline_id`, not inside `properties`
 - Fills generic avatar `agora_appid` and `agora_channel` from the session when omitted
-- Generates avatar `agora_token` for `HeyGenAvatar`, `LiveAvatarAvatar`, and `GenericAvatar` when `agoraToken` is omitted and the client has an `appCertificate`. Other vendors (`AkoolAvatar`, `AnamAvatar`) never receive an auto-generated token.
+- Generates avatar `agora_token` for `HeyGenAvatar`, `LiveAvatarAvatar`, `GenericAvatar`, and `SensetimeAvatar` when `agoraToken` is omitted and the client has an `appCertificate`. Other vendors (`AkoolAvatar`, `AnamAvatar`) never receive an auto-generated token.
 
 ### `stop(): Promise<void>`
 
@@ -92,13 +94,6 @@ Fetch turn-by-turn analytics for this session, including start/end events and la
 - Requires a valid `agentId` (i.e., `start()` must have been called)
 - `options.page_index`: page number, starting from `1`
 - `options.page_size`: number of turns per page
-
-### `getAllTurns(options?: Omit<GetTurnsOptions, "page_index">): Promise<ConversationTurns>`
-
-Fetch all turn analytics pages and merge the `turns` array.
-
-- Requires a valid `agentId`
-- For very long sessions, prefer processing pages with `getTurns()` to avoid holding all turns in memory
 
 ### `getAllTurns(options?: Omit<GetTurnsOptions, "page_index">): Promise<ConversationTurns>`
 
@@ -160,11 +155,11 @@ You must pass `appid` and `agentId` manually when using raw methods.
 
 ## Presets and BYOK
 
-Prefer configuring vendors on the `Agent` builder. When you omit credentials for supported Agora-managed models, AgentKit sends the matching Agora-managed configuration at session start.
+Prefer configuring vendors on the `Agent` builder. When you omit credentials for supported Agora-managed global models, AgentKit sends the matching Agora-managed configuration at session start. CN MiniMax TTS is not Agora-managed and always requires `key`.
 
 `preset` is an advanced session option for project-specific settings, not for selecting Agora-managed models. Most applications should use the builder instead.
 
-- Omit vendor credentials on the builder for supported Agora-managed models.
+- Omit vendor credentials on the builder for supported Agora-managed global models.
 - Provide vendor API keys when you want BYOK.
 - Pass `preset` on `agent.createSession(...)` only when you need to access specific project-specific settings.
 

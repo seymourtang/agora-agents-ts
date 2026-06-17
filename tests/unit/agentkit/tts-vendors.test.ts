@@ -207,8 +207,16 @@ describe("TTS vendor helpers", () => {
         expect(() => new MiniMaxTTS({ model: "unsupported-model" } as never)).toThrow(
             "MiniMaxTTS requires key unless using a supported Agora-managed model",
         );
-        expect(() => new MiniMaxTTS({ key: "minimax-key", model: "speech-02-turbo" } as never)).toThrow(
-            "MiniMaxTTS requires groupId",
+        expect(
+            () =>
+                new MiniMaxTTS({
+                    key: "minimax-key",
+                    groupId: "group",
+                    model: "speech-02-turbo",
+                    voiceId: "voice",
+                } as never),
+        ).toThrow(
+            "MiniMaxTTS requires url",
         );
     });
 });

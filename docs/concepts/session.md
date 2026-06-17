@@ -12,12 +12,15 @@ Create a session via [`agent.createSession()`](./agent.md):
 
 <!-- snippet: fragment -->
 ```typescript
-const session = agent.createSession(client, {
-  channel: 'my-room',
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
 ```
+
+`name` is the unique agent instance identifier sent to the Agora API. Pass it in `createSession()`, not on `Agent`.
 
 Presets are configured at session creation time when you use them explicitly. Most applications should configure vendors on the `Agent` builder instead — see [Quick Start](../getting-started/quick-start.md).
 
@@ -61,11 +64,13 @@ All interaction methods require the session to be in the `running` state.
 
 ## Agora-managed models and BYOK
 
-When you omit credentials for supported Agora-managed models on the builder, AgentKit sends the matching Agora-managed configuration at session start. Pass your own vendor API keys when you need BYOK.
+When you omit credentials for supported Agora-managed global models on the builder, AgentKit sends the matching Agora-managed configuration at session start. Pass your own vendor API keys when you need BYOK. CN MiniMax TTS is not Agora-managed and always requires `key`.
 
 <!-- snippet: fragment -->
 ```typescript
-const agent = new Agent()
+const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+
+const agent = new Agent({ client })
   .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
   .withLlm(new OpenAI({
     model: 'gpt-4o-mini',
@@ -104,7 +109,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'event-demo' })
+const agent = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -114,8 +119,9 @@ const agent = new Agent({ name: 'event-demo' })
   .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }));
 
-const session = agent.createSession(client, {
-  channel: 'my-room',
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });

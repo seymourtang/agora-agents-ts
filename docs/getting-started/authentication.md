@@ -19,7 +19,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent()
+const agent = new Agent({ client })
   .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
   .withLlm(new OpenAI({
     model: 'gpt-4o-mini',
@@ -27,8 +27,9 @@ const agent = new Agent()
   }))
   .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
 
-const session = agent.createSession(client, {
-  channel: 'room-123',
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });

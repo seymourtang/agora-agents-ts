@@ -8,6 +8,8 @@ description: Configure SAL, advanced features, parameters, geofence, labels, RTC
 
 The Agent builder supports many configuration options beyond the core LLM, TTS, and STT vendors. This guide shows how to use each feature.
 
+Every example assumes an `AgoraClient` is created first and passed to `new Agent({ client })`.
+
 ## Overview
 
 | Feature | Method | Description |
@@ -29,15 +31,21 @@ SAL helps the agent focus on the primary speaker and suppress background noise. 
 
 ```typescript
 import {
+  AgoraClient,
+  Area,
   Agent,
   OpenAI,
   ElevenLabsTTS,
   DeepgramSTT,
 } from 'agora-agents';
 
-const agent = new Agent({
-  name: 'sal-assistant',
-})
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -60,18 +68,24 @@ const agent = new Agent({
 Enable MLLM, RTM, SAL, or tools:
 
 ```typescript
-import { Agent } from 'agora-agents';
+import { AgoraClient, Area, Agent } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
 
 // MLLM mode (see mllm-flow guide) — withMllm() enables it automatically
-const mllmAgent = new Agent()
+const mllmAgent = new Agent({ client })
   .withMllm(/* ... */);
 
 // RTM signaling for custom data delivery
-const rtmAgent = new Agent()
+const rtmAgent = new Agent({ client })
   .withAdvancedFeatures({ enable_rtm: true });
 
 // Enable tool invocation via MCP
-const toolsAgent = new Agent()
+const toolsAgent = new Agent({ client })
   .withTools();
 ```
 
@@ -80,9 +94,15 @@ const toolsAgent = new Agent()
 Configure silence handling, farewell behavior, and data channel:
 
 ```typescript
-import { Agent } from 'agora-agents';
+import { AgoraClient, Area, Agent } from 'agora-agents';
 
-const agent = new Agent({ name: 'params-agent' })
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ client })
   .withLlm(/* ... */)
   .withTts(/* ... */)
   .withStt(/* ... */)
@@ -103,7 +123,15 @@ const agent = new Agent({ name: 'params-agent' })
 ## Failure Message and Max History
 
 ```typescript
-const agent2 = new Agent()
+import { AgoraClient, Area, Agent, OpenAI } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent2 = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -120,7 +148,15 @@ const agent2 = new Agent()
 Restrict which geographic regions the backend can use:
 
 ```typescript
-const agent = new Agent()
+import { AgoraClient, Area, Agent } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ client })
   .withGeofence({
     area: 'NORTH_AMERICA',
   })
@@ -129,7 +165,7 @@ const agent = new Agent()
   .withStt(/* ... */);
 
 // Global with exclusion
-const agent2 = new Agent()
+const agent2 = new Agent({ client })
   .withGeofence({
     area: 'GLOBAL',
     exclude_area: 'EUROPE',
@@ -146,7 +182,15 @@ Valid `area` values: `'GLOBAL'`, `'NORTH_AMERICA'`, `'EUROPE'`, `'ASIA'`, `'INDI
 Attach custom labels returned in notification callbacks:
 
 ```typescript
-const agent = new Agent()
+import { AgoraClient, Area, Agent } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ client })
   .withLabels({
     environment: 'production',
     team: 'support',
@@ -162,7 +206,15 @@ const agent = new Agent()
 Configure RTC media encryption:
 
 ```typescript
-const agent = new Agent()
+import { AgoraClient, Area, Agent } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ client })
   .withRtc({
     encryption_key: 'your-32-byte-key',
     encryption_mode: 5, // AES_128_GCM
@@ -177,7 +229,15 @@ const agent = new Agent()
 Play filler words while waiting for the LLM response:
 
 ```typescript
-const agent = new Agent()
+import { AgoraClient, Area, Agent } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ client })
   .withFillerWords({
     enable: true,
     trigger: {
@@ -202,11 +262,18 @@ const agent = new Agent()
 Read back configuration via getter properties:
 
 ```typescript
-const agent = new Agent()
+import { AgoraClient, Area, Agent } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ client })
   .withGeofence({ area: 'EUROPE' })
   .withLabels({ env: 'staging' });
 
-agent.name;           // string | undefined
 agent.geofence;       // { area: 'NORTH_AMERICA' }
 agent.labels;         // { env: 'staging' }
 agent.sal;            // SalConfig | undefined
@@ -236,7 +303,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'full-featured-assistant' })
+const agent = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -267,8 +334,9 @@ const agent = new Agent({ name: 'full-featured-assistant' })
     },
   });
 
-const session = agent.createSession(client, {
-  channel: 'demo-room',
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
   idleTimeout: 120,

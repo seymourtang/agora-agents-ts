@@ -33,6 +33,78 @@ const client = new AgoraClient({
 });
 ```
 
+## Vendor classes
+
+Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and `.withTts()`. `client.area` controls API routing only and does not restrict provider choice.
+
+| Typical global providers | Typical CN providers |
+|---|---|
+| `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, … |
+
+See the tables below for the full catalog. You may combine any vendor with any `client.area`.
+
+Global client example:
+
+```typescript
+import { AgoraClient, Agent, Area, DeepgramSTT, MiniMaxTTS, OpenAI } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({
+  client,
+  turnDetection: { language: 'en-US' },
+})
+  .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
+  .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
+  .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
+
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
+  agentUid: '1001',
+  remoteUids: ['*'],
+});
+```
+
+CN client example:
+
+```typescript
+import { AgoraClient, Agent, Area, AliyunLLM, FengmingSTT, MiniMaxCNTTS } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.CN,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({
+  client,
+  turnDetection: { language: 'zh-CN' },
+})
+  .withStt(new FengmingSTT())
+  .withLlm(new AliyunLLM({
+    url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    model: 'qwen-plus',
+  }))
+  .withTts(new MiniMaxCNTTS({
+    key: process.env.MINIMAX_API_KEY!,
+    model: 'speech-01-turbo',
+    voiceSetting: { voice_id: 'female-shaonv' },
+    audioSetting: { sample_rate: 16000 },
+  }));
+
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
+  agentUid: '1001',
+  remoteUids: ['*'],
+});
+```
+
 ## How the domain pool works
 
 Each area has two regional domain prefixes and two domain suffixes. The `Pool` class:
@@ -66,7 +138,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ name: 'failover-demo' })
+const agent = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -76,8 +148,9 @@ const agent = new Agent({ name: 'failover-demo' })
   .withTts(new ElevenLabsTTS({ key: 'your-elevenlabs-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key' }));
 
-const session = agent.createSession(client, {
-  channel: 'my-room',
+const session = agent.createSession({
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });

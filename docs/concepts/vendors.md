@@ -123,6 +123,19 @@ const mllm = new OpenAIRealtime({
 
 See [MLLM Flow Guide](../guides/mllm-flow.md) for full examples.
 
+## CN vendors (Chinese mainland)
+
+CN vendor classes use the same builder methods (`.withLlm()`, `.withStt()`, `.withTts()`, `.withAvatar()`). `client.area` controls API routing only and does not restrict which vendor classes you can pass.
+
+| Category | Examples |
+|---|---|
+| LLM | `AliyunLLM`, `BytedanceLLM`, `DeepSeekLLM`, `TencentLLM`, `CustomLLM` |
+| STT | `FengmingSTT`, `TencentSTT`, `MicrosoftCNSTT`, `XfyunSTT`, `XfyunBigModelSTT`, `XfyunDialectSTT` |
+| TTS | `MiniMaxCNTTS`, `MicrosoftCNTTS`, `TencentTTS`, `CosyVoiceTTS`, `BytedanceDuplexTTS`, `StepFunTTS` |
+| Avatar | `SensetimeAvatar` |
+
+See [Regional Routing](../guides/regional-routing.md) and [Vendor Reference](../reference/vendors.md) for constructor options.
+
 ## Avatar vendors
 
 Avatars provide a visual representation for the agent. Several avatar vendors require a specific TTS sample rate — this is enforced at both compile time and runtime.
@@ -136,6 +149,9 @@ Avatars provide a visual representation for the agent. Several avatar vendors re
 | `AkoolAvatar`      | Akool                                       | 16000 Hz                 |
 | `AnamAvatar`       | Anam                                        | Provider-defined         |
 | `GenericAvatar`    | Custom avatar provider                      | Provider-defined         |
+| `SensetimeAvatar`  | SenseTime (CN)                              | Provider-defined         |
+
+CN LLM, STT, TTS, and avatar vendors (`AliyunLLM`, `FengmingSTT`, `MiniMaxCNTTS`, `SensetimeAvatar`, …) are listed in [Vendor Reference](../reference/vendors.md) and [Regional Routing](../guides/regional-routing.md).
 
 See [Avatar Integration](../guides/avatars.md) for full examples and the sample-rate constraint details.
 

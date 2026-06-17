@@ -12,11 +12,19 @@
  * 3. TypeScript should show errors for the uncommented invalid sections
  */
 
+import { AgoraClient } from "../../AgoraPoolClient.js";
+import { Area } from "../../core/domain/index.js";
 import { Agent } from "../Agent.js";
 import { AkoolAvatar, LiveAvatarAvatar } from "../vendors/avatar.js";
 import { OpenAI } from "../vendors/llm.js";
 import { DeepgramSTT } from "../vendors/stt.js";
 import { CartesiaTTS, ElevenLabsTTS, MicrosoftTTS, MiniMaxTTS, OpenAITTS } from "../vendors/tts.js";
+
+const TEST_AGENT_CLIENT = new AgoraClient({
+    area: Area.US,
+    appId: "test-app-id",
+    appCertificate: "test-app-certificate",
+});
 
 // ============================================
 // ✅ VALID CONFIGURATIONS
@@ -24,7 +32,7 @@ import { CartesiaTTS, ElevenLabsTTS, MicrosoftTTS, MiniMaxTTS, OpenAITTS } from 
 
 // Example 1: ElevenLabs 24kHz + HeyGen avatar
 function _validExample1(): Agent<24000> {
-    return new Agent({ instructions: "Test" })
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" })
         .withTts(
             new ElevenLabsTTS({
                 key: "test",
@@ -45,7 +53,7 @@ function _validExample1(): Agent<24000> {
 
 // Example 2: ElevenLabs 16kHz + Akool avatar
 function _validExample2(): Agent<16000> {
-    return new Agent({ instructions: "Test" })
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" })
         .withTts(
             new ElevenLabsTTS({
                 key: "test",
@@ -64,7 +72,7 @@ function _validExample2(): Agent<16000> {
 
 // Example 3: Microsoft 24kHz + HeyGen avatar
 function _validExample3(): Agent<24000> {
-    return new Agent({ instructions: "Test" })
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" })
         .withTts(
             new MicrosoftTTS({
                 key: "test",
@@ -84,7 +92,7 @@ function _validExample3(): Agent<24000> {
 
 // Example 4: OpenAI (fixed 24kHz) + HeyGen avatar
 function _validExample4(): Agent<24000> {
-    return new Agent({ instructions: "Test" })
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" })
         .withTts(
             new OpenAITTS({
                 apiKey: "test",
@@ -104,7 +112,7 @@ function _validExample4(): Agent<24000> {
 
 // Example 5: Cartesia 16kHz + Akool avatar
 function _validExample5(): Agent<16000> {
-    return new Agent({ instructions: "Test" })
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" })
         .withTts(
             new CartesiaTTS({
                 apiKey: "test",
@@ -160,7 +168,7 @@ new MiniMaxTTS({
 /*
 // @ts-expect-error - HeyGen requires 24kHz, but TTS is configured for 16kHz
 function invalidMismatch1(): Agent<24000> {
-    return new Agent({ instructions: "Test" })
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" })
         .withTts(
             new ElevenLabsTTS({
                 key: "test",
@@ -183,7 +191,7 @@ function invalidMismatch1(): Agent<24000> {
 /*
 // @ts-expect-error - Akool requires 16kHz, but TTS is configured for 24kHz
 function invalidMismatch2(): Agent<16000> {
-    return new Agent({ instructions: "Test" })
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" })
         .withTts(
             new ElevenLabsTTS({
                 key: "test",
@@ -204,7 +212,7 @@ function invalidMismatch2(): Agent<16000> {
 /*
 // @ts-expect-error - HeyGen requires 24kHz, not 48kHz
 function invalidMismatch3(): Agent<24000> {
-    return new Agent({ instructions: "Test" })
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" })
         .withTts(
             new MicrosoftTTS({
                 key: "test",
@@ -231,7 +239,7 @@ function invalidMismatch3(): Agent<24000> {
 /*
 // @ts-expect-error - 25000 is not a valid ElevenLabs sample rate
 function invalidEnum1() {
-    return new Agent({ instructions: "Test" }).withTts(
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" }).withTts(
         new ElevenLabsTTS({
             key: "test",
             modelId: "eleven_flash_v2_5",
@@ -246,7 +254,7 @@ function invalidEnum1() {
 /*
 // @ts-expect-error - 8000 is not a valid Microsoft sample rate
 function invalidEnum2() {
-    return new Agent({ instructions: "Test" }).withTts(
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" }).withTts(
         new MicrosoftTTS({
             key: "test",
             region: "eastus",
@@ -260,7 +268,7 @@ function invalidEnum2() {
 /*
 // @ts-expect-error - 32000 is not a valid Cartesia sample rate
 function invalidEnum3() {
-    return new Agent({ instructions: "Test" }).withTts(
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" }).withTts(
         new CartesiaTTS({
             key: "test",
             voiceId: "test",
@@ -277,7 +285,7 @@ function invalidEnum3() {
 
 // Avatar without TTS configured (allowed)
 function _edgeCase1() {
-    return new Agent({ instructions: "Test" }).withAvatar(
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" }).withAvatar(
         new LiveAvatarAvatar({
             apiKey: "test",
             quality: "high",
@@ -288,7 +296,7 @@ function _edgeCase1() {
 
 // TTS without avatar (allowed)
 function _edgeCase2() {
-    return new Agent({ instructions: "Test" }).withTts(
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" }).withTts(
         new ElevenLabsTTS({
             key: "test",
             modelId: "eleven_flash_v2_5",
@@ -301,7 +309,7 @@ function _edgeCase2() {
 
 // Method chaining preserves type tracking
 function _edgeCase3(): Agent<24000> {
-    return new Agent({ instructions: "Test" })
+    return new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" })
         .withTts(
             new ElevenLabsTTS({
                 key: "test",
@@ -327,7 +335,7 @@ function _edgeCase3(): Agent<24000> {
 // ============================================
 
 function _typeInference1() {
-    const agentWith24k = new Agent({ instructions: "Test" }).withTts(
+    const agentWith24k = new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" }).withTts(
         new ElevenLabsTTS({
             key: "test",
             modelId: "eleven_flash_v2_5",
@@ -343,7 +351,7 @@ function _typeInference1() {
 }
 
 function _typeInference2() {
-    const agentWith16k = new Agent({ instructions: "Test" }).withTts(
+    const agentWith16k = new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" }).withTts(
         new ElevenLabsTTS({
             key: "test",
             modelId: "eleven_flash_v2_5",
@@ -359,7 +367,7 @@ function _typeInference2() {
 }
 
 function _typeInference3() {
-    const openAIAgent = new Agent({ instructions: "Test" }).withTts(
+    const openAIAgent = new Agent({ client: TEST_AGENT_CLIENT, instructions: "Test" }).withTts(
         new OpenAITTS({
             apiKey: "test",
             voice: "alloy",

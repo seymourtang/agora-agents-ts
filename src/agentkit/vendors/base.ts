@@ -54,6 +54,8 @@ export interface BaseLlmOptions {
     mcpServers?: McpServersItem[];
 }
 
+type VendorScope = "global" | "cn";
+
 /**
  * Standard audio sample rates supported by Agora platform.
  * Different vendors support different subsets of these rates.
@@ -101,14 +103,16 @@ export type AkoolSampleRate = 16000;
 /**
  * Base class for LLM (Large Language Model) vendors.
  */
-export abstract class BaseLLM {
+abstract class ScopedBaseLLM<TScope extends VendorScope> {
+    readonly areaScope: TScope;
     private readonly _outputModalities?: string[];
     private readonly _greetingConfigs?: LlmGreetingConfigs;
     private readonly _templateVariables?: Record<string, string>;
     private readonly _vendor?: string;
     private readonly _mcpServers?: McpServersItem[];
 
-    constructor(options?: BaseLlmOptions) {
+    constructor(areaScope: TScope, options?: BaseLlmOptions) {
+        this.areaScope = areaScope;
         this._outputModalities = options?.outputModalities;
         this._greetingConfigs = options?.greetingConfigs;
         this._templateVariables = options?.templateVariables;
@@ -140,6 +144,18 @@ export abstract class BaseLLM {
     abstract toConfig(): LlmConfig;
 }
 
+export abstract class BaseLLM extends ScopedBaseLLM<"global"> {
+    constructor(options?: BaseLlmOptions) {
+        super("global", options);
+    }
+}
+
+export abstract class BaseCNLLM extends ScopedBaseLLM<"cn"> {
+    constructor(options?: BaseLlmOptions) {
+        super("cn", options);
+    }
+}
+
 /**
  * Base class for TTS (Text-to-Speech) vendors with sample rate tracking.
  *
@@ -157,21 +173,57 @@ export abstract class BaseLLM {
  *
  * @template SR - Sample rate literal type (e.g., 24000, 16000)
  */
-export abstract class BaseTTS<_SR extends number = number> {
+abstract class ScopedBaseTTS<TScope extends VendorScope, _SR extends number = number> {
+    readonly areaScope: TScope;
+
+    constructor(areaScope: TScope) {
+        this.areaScope = areaScope;
+    }
+
     /**
      * Converts the vendor configuration to the Agora API format.
      */
     abstract toConfig(): TtsConfig;
 }
 
+export abstract class BaseTTS<_SR extends number = number> extends ScopedBaseTTS<"global", _SR> {
+    constructor() {
+        super("global");
+    }
+}
+
+export abstract class BaseCNTTS<_SR extends number = number> extends ScopedBaseTTS<"cn", _SR> {
+    constructor() {
+        super("cn");
+    }
+}
+
 /**
  * Base class for STT (Speech-to-Text) vendors.
  */
-export abstract class BaseSTT {
+abstract class ScopedBaseSTT<TScope extends VendorScope> {
+    readonly areaScope: TScope;
+
+    constructor(areaScope: TScope) {
+        this.areaScope = areaScope;
+    }
+
     /**
      * Converts the vendor configuration to the Agora API format.
      */
     abstract toConfig(): SttConfig;
+}
+
+export abstract class BaseSTT extends ScopedBaseSTT<"global"> {
+    constructor() {
+        super("global");
+    }
+}
+
+export abstract class BaseCNSTT extends ScopedBaseSTT<"cn"> {
+    constructor() {
+        super("cn");
+    }
 }
 
 /**
@@ -188,7 +240,13 @@ export abstract class BaseMLLM {
  * Base class for Avatar vendors with required sample rate.
  * @template RequiredSR - Required sample rate literal type
  */
-export abstract class BaseAvatar<RequiredSR extends number = number> {
+abstract class ScopedBaseAvatar<TScope extends VendorScope, RequiredSR extends number = number> {
+    readonly areaScope: TScope;
+
+    constructor(areaScope: TScope) {
+        this.areaScope = areaScope;
+    }
+
     /**
      * Converts the vendor configuration to the Agora API format.
      */
@@ -198,4 +256,16 @@ export abstract class BaseAvatar<RequiredSR extends number = number> {
      * The TTS sample rate required by this avatar vendor.
      */
     abstract readonly requiredSampleRate: RequiredSR;
+}
+
+export abstract class BaseAvatar<RequiredSR extends number = number> extends ScopedBaseAvatar<"global", RequiredSR> {
+    constructor() {
+        super("global");
+    }
+}
+
+export abstract class BaseCNAvatar<RequiredSR extends number = number> extends ScopedBaseAvatar<"cn", RequiredSR> {
+    constructor() {
+        super("cn");
+    }
 }
