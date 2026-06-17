@@ -25,7 +25,7 @@ async function main(): Promise<void> {
     appCertificate: 'your-app-certificate',
   });
 
-  const agent = new Agent({ client, name: 'support-assistant' })
+  const agent = new Agent({ client })
     .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
     .withLlm(new OpenAI({
       model: 'gpt-4o-mini',
@@ -36,6 +36,7 @@ async function main(): Promise<void> {
     .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
 
   const session = agent.createSession({
+    name: 'support-assistant',
     channel: 'support-room-123',
     agentUid: '1',
     remoteUids: ['100'],
@@ -55,9 +56,10 @@ void main();
 ## What this does
 
 1. `AgoraClient` runs in app-credentials mode when you pass `appId` and `appCertificate` only.
-2. `Agent` holds reusable behavior such as instructions, greeting, and history settings.
-3. Vendor classes on the builder select the ASR, LLM, and TTS stack. Leave vendor credentials unset for supported Agora-managed global models, or provide keys when you want BYOK. CN MiniMax TTS always requires `key`.
-4. `session.start()` generates the required auth tokens and returns the unique agent session ID.
+2. `Agent` holds reusable pipeline configuration such as vendors, turn detection, and greeting settings.
+3. `createSession({ name, ... })` sets the unique session instance name sent to the Agora API.
+4. Vendor classes on the builder select the ASR, LLM, and TTS stack. Leave vendor credentials unset for supported Agora-managed global models, or provide keys when you want BYOK. CN MiniMax TTS always requires `key`.
+5. `session.start()` generates the required auth tokens and returns the unique agent session ID.
 
 ## When to use BYOK instead
 

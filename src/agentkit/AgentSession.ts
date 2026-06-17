@@ -67,7 +67,7 @@ export interface AgentSessionOptions {
     appId: string;
     /** The App Certificate — enables automatic RTC token generation when starting sessions */
     appCertificate?: string;
-    /** Unique name for this agent instance */
+    /** Unique agent instance name (set via {@link Agent.createSession}) */
     name: string;
     /** The channel to join */
     channel: string;
@@ -111,17 +111,17 @@ export interface AgentSessionOptions {
  *
  * const client = new AgoraClient({
  *   area: Area.US,
-
  *   appId: '...',
  *   appCertificate: '...',
  * });
  *
- * const agent = new Agent({ client, name: 'support-assistant', instructions: 'You are a helpful voice assistant.' })
+ * const agent = new Agent({ client, instructions: 'You are a helpful voice assistant.' })
  *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4o-mini', url: 'https://api.openai.com/v1/chat/completions' }))
  *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
  *   .withStt(new DeepgramSTT({ apiKey: '...', language: 'en-US' }));
  *
  * const session = agent.createSession({
+ *   name: 'support-assistant',
  *   channel: 'support-room-123',
  *   agentUid: '1',
  *   remoteUids: ['100'],

@@ -73,7 +73,7 @@ export interface AkoolAvatarOptions {
  *   sampleRate: 16000, // Required for Akool
  * });
  *
- * const agent = new Agent({ name: 'avatar-assistant' })
+ * const agent = new Agent()
  *   .withTts(tts)
  *   .withAvatar(avatar);
  * ```
@@ -144,7 +144,7 @@ export class AkoolAvatar extends BaseAvatar<AkoolSampleRate> {
  *   sampleRate: 24000, // Required for LiveAvatar
  * });
  *
- * const agent = new Agent({ name: 'avatar-assistant' })
+ * const agent = new Agent()
  *   .withTts(tts)
  *   .withAvatar(avatar);
  * ```
@@ -297,7 +297,7 @@ export interface AnamAvatarOptions {
  *   personaId: 'persona-id',
  * });
  *
- * const agent = new Agent({ name: 'avatar-assistant' })
+ * const agent = new Agent()
  *   .withAvatar(avatar);
  * ```
  *

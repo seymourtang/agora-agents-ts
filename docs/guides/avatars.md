@@ -59,12 +59,12 @@ The `Agent` class tracks the TTS sample rate as a type parameter. When you call 
 import { Agent, ElevenLabsTTS, HeyGenAvatar } from 'agora-agents';
 
 // This works — ElevenLabs at 24kHz matches HeyGen's requirement
-const good = new Agent({ name: 'avatar-agent' })
+const good = new Agent()
   .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withAvatar(new HeyGenAvatar({ apiKey: 'your-heygen-key', quality: 'high', agoraUid: '12345' }));
 
 // This fails at compile time — 16kHz does not match HeyGen's required 24kHz
-const bad = new Agent({ name: 'avatar-agent' })
+const bad = new Agent()
   .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 16000 }))
   .withAvatar(new HeyGenAvatar({ apiKey: 'your-heygen-key', quality: 'high', agoraUid: '12345' }));
   //         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -109,7 +109,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ client, name: 'liveavatar-agent' })
+const agent = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -133,6 +133,7 @@ const agent = new Agent({ client, name: 'liveavatar-agent' })
   }));
 
 const session = agent.createSession({
+  name: 'avatar-assistant',
   channel: 'avatar-room',
   agentUid: '1', // distinct from avatar agoraUid
   remoteUids: ['100'],
@@ -146,7 +147,7 @@ await session.start();
 ```typescript
 import { Agent, GenericAvatar, OpenAI, OpenAITTS, AresSTT } from 'agora-agents';
 
-const agent = new Agent({ name: 'generic-avatar-agent' })
+const agent = new Agent()
   .withLlm(new OpenAI({ apiKey: 'your-openai-key', url: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o-mini' }))
   .withTts(new OpenAITTS({ apiKey: 'your-openai-tts-key', model: 'tts-1', baseUrl: 'https://api.openai.com/v1', voice: 'alloy' }))
   .withStt(new AresSTT())
@@ -179,7 +180,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ client, name: 'akool-agent' })
+const agent = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -200,6 +201,7 @@ const agent = new Agent({ client, name: 'akool-agent' })
   }));
 
 const session = agent.createSession({
+  name: 'avatar-assistant',
   channel: 'avatar-room',
   agentUid: '1',
   remoteUids: ['100'],

@@ -2,7 +2,8 @@
  * Agent class - A reusable agent definition.
  *
  * This class represents an agent configuration that can be used to create
- * multiple sessions. It provides a fluent builder pattern for configuration.
+ * multiple sessions. Set the unique agent instance `name` in
+ * {@link Agent.createSession}, not on the Agent itself.
  */
 
 import type * as Agora from "../api/index.js";
@@ -89,8 +90,6 @@ function assertTurnDetectionLanguage(value: string): asserts value is TurnDetect
 export interface AgentOptions<TArea extends AgoraArea = AgoraArea> {
     /** Optional client bound to this agent. Enables `createSession(options)` without re-passing the client. */
     client?: AgoraClient<TArea>;
-    /** Optional name for the agent (used as default session name) */
-    name?: string;
     /**
      * Published AI Studio pipeline ID to use as this agent's base configuration.
      * Explicit Agent config such as .withLlm(), .withTts(), .withStt(),
@@ -155,15 +154,21 @@ export interface AgentOptions<TArea extends AgoraArea = AgoraArea> {
  * import { Agent, OpenAI, MicrosoftTTS, DeepgramSTT } from 'agora-agents';
  *
  * // Use the fluent builder pattern to configure vendors
- * const agent = new Agent({ instructions: 'You are helpful.' })
+ * const agent = new Agent({ client, instructions: 'You are helpful.' })
  *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4', url: 'https://api.openai.com/v1/chat/completions' }))
  *   .withTts(new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
  *   .withStt(new DeepgramSTT({ apiKey: '...', model: 'nova-2' }));
+ *
+ * const session = agent.createSession({
+ *   name: 'support-assistant',
+ *   channel: 'room-123',
+ *   agentUid: '1',
+ *   remoteUids: ['100'],
+ * });
  * ```
  */
 export class Agent<TTSSampleRate extends number = number, TArea extends AgoraArea = AgoraArea> {
     private _client?: AgoraClient<TArea>;
-    private _name?: string;
     private _pipelineId?: string;
     private _llm?: LlmConfig;
     private _tts?: TtsConfig;
@@ -187,7 +192,6 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
 
     constructor(options: AgentOptions<TArea> = {}) {
         this._client = options.client;
-        this._name = options.name;
         this._pipelineId = options.pipelineId;
         this._instructions = options.instructions;
         this._greeting = options.greeting;
@@ -327,7 +331,7 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
      * ```typescript
      * import { HeyGenAvatar, ElevenLabsTTS } from 'agora-agents';
      *
-     * const agent = new Agent({ name: 'avatar-assistant' })
+     * const agent = new Agent()
      *   .withTts(new ElevenLabsTTS({
      *     key: '...',
      *     modelId: '...',
@@ -404,15 +408,6 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
     withGreetingConfigs(configs: LlmGreetingConfigs): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._greetingConfigs = configs;
-        return newAgent;
-    }
-
-    /**
-     * Returns a new Agent with the specified name.
-     */
-    withName(name: string): Agent<TTSSampleRate, TArea> {
-        const newAgent = this._clone();
-        newAgent._name = name;
         return newAgent;
     }
 
@@ -530,13 +525,6 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
         const newAgent = this._clone();
         newAgent._fillerWords = fillerWords;
         return newAgent;
-    }
-
-    /**
-     * Get the agent name.
-     */
-    get name(): string | undefined {
-        return this._name;
     }
 
     /**
@@ -691,7 +679,6 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
         mllm?: MllmConfig;
     } {
         return {
-            name: this._name,
             pipelineId: this._pipelineId,
             instructions: this._instructions,
             turnDetection: this._turnDetection,
@@ -723,11 +710,13 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
      *
      * @example
      * ```typescript
-     * const agent = new Agent({ name: 'my-assistant', instructions: '...' })
-     *   .withLlm({ ... })
-     *   .withTts({ ... });
+     * const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+     * const agent = new Agent({ client })
+     *   .withLlm(new OpenAI({ apiKey: '...', model: 'gpt-4o-mini', url: 'https://api.openai.com/v1/chat/completions' }))
+     *   .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
      *
      * const session = agent.createSession({
+     *   name: 'support-assistant',
      *   channel: 'room-123',
      *   agentUid: '1',
      *   remoteUids: ['100'],
@@ -743,7 +732,7 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
                 "Agent client is not configured. Pass `client` to `new Agent({ client, ... })` before calling createSession(options).",
             );
         }
-        const name = options.name ?? this._name ?? `agent-${Date.now()}`;
+        const name = options.name ?? `agent-${Date.now()}`;
         return new AgentSession({
             client: this._client,
             agent: this,
@@ -933,7 +922,6 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
     private _clone(): Agent<TTSSampleRate, TArea> {
         const newAgent = new Agent() as Agent<TTSSampleRate, TArea>;
         newAgent._client = this._client;
-        newAgent._name = this._name;
         newAgent._pipelineId = this._pipelineId;
         newAgent._llm = this._llm;
         newAgent._tts = this._tts;

@@ -13,11 +13,14 @@ Create a session via [`agent.createSession()`](./agent.md):
 <!-- snippet: fragment -->
 ```typescript
 const session = agent.createSession({
+  name: 'my-room',
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],
 });
 ```
+
+`name` is the unique agent instance identifier sent to the Agora API. Pass it in `createSession()`, not on `Agent`.
 
 Presets are configured at session creation time when you use them explicitly. Most applications should configure vendors on the `Agent` builder instead — see [Quick Start](../getting-started/quick-start.md).
 
@@ -104,7 +107,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ client, name: 'event-demo' })
+const agent = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -115,6 +118,7 @@ const agent = new Agent({ client, name: 'event-demo' })
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }));
 
 const session = agent.createSession({
+  name: 'event-demo',
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],

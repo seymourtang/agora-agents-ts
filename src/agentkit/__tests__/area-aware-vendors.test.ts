@@ -14,13 +14,13 @@ const client = new AgoraClient({
 
 client
     .agent({
-        name: "assistant",
         turnDetection: { language: "en-US" },
     })
     .withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }))
     .withLlm(new OpenAI({ model: "gpt-5-mini" }))
     .withTts(new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }))
     .createSession({
+        name: "assistant",
         channel: "test-room",
         agentUid: "1",
         remoteUids: ["100"],
@@ -40,7 +40,6 @@ client.agent({}).withTts(new MiniMaxCNTTS({ key: "minimax-key", model: "speech-0
 
     client
         .agent({
-            name: "assistant",
             turnDetection: { language: "zh-CN" },
         })
         .withStt(new FengmingSTT())
@@ -59,6 +58,7 @@ client.agent({}).withTts(new MiniMaxCNTTS({ key: "minimax-key", model: "speech-0
             }),
         )
         .createSession({
+            name: "assistant",
             channel: "cn-room",
             agentUid: "1",
             remoteUids: ["100"],
@@ -71,5 +71,4 @@ client.agent({}).withTts(new MiniMaxCNTTS({ key: "minimax-key", model: "speech-0
 
 new Agent({
     client,
-    name: "assistant",
 }).withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }));

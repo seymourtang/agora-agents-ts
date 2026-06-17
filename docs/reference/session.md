@@ -15,6 +15,8 @@ import { AgentSession } from 'agora-agents';
 
 Create sessions via [`agent.createSession()`](./agent.md) — not by calling the constructor directly.
 
+Pass `name` in `SessionOptions` to set the unique agent instance identifier sent to the Agora API. Omit it to auto-generate `agent-{timestamp}`.
+
 ## State machine
 
 ```

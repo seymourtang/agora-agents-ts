@@ -36,7 +36,7 @@ async function main(): Promise<void> {
   });
 
   // In BYOK mode, each vendor carries its own credentials.
-  const agent = new Agent({ client, name: 'support-assistant' })
+  const agent = new Agent({ client })
     .withStt(
       new DeepgramSTT({
         apiKey: process.env.DEEPGRAM_API_KEY!,
@@ -65,6 +65,7 @@ async function main(): Promise<void> {
     );
 
   const session = agent.createSession({
+    name: 'support-assistant',
     channel: 'support-room-123',
     agentUid: '1',
     remoteUids: ['100'],

@@ -16,7 +16,7 @@ If you want to bind routing credentials once, use `AgoraClient` + `Agent`:
 <!-- snippet: fragment -->
 ```typescript
 const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
-const agent = new Agent({ client, name: 'global-agent' });
+const agent = new Agent({ client });
 ```
 
 Configure vendors with `new DeepgramSTT()`, `new OpenAI()`, and similar classes on `.withStt()`, `.withLlm()`, and `.withTts()`.
@@ -33,7 +33,6 @@ new Agent<TTSSampleRate extends number = number>(options?: AgentOptions)
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `client` | `AgoraClient` | `undefined` | Optional client binding; enables `createSession(options)` |
-| `name` | `string` | `undefined` | Agent name (used as default session name) |
 | `pipelineId` | `string` | `undefined` | Published AI Studio pipeline ID used as the base configuration |
 | `instructions` | `string` | `undefined` | Deprecated. Use LLM vendor `systemMessages` instead. |
 | `greeting` | `string` | `undefined` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
@@ -95,10 +94,6 @@ Deprecated. Configure `systemMessages` on the LLM vendor instead.
 
 Deprecated. Configure `greetingMessage` on the LLM or MLLM vendor instead.
 
-### `withName(name: string): Agent<TTSSampleRate>`
-
-Override the agent name.
-
 ### `withSal(config: SalConfig): Agent<TTSSampleRate>`
 
 Set SAL (Selective Attention Locking) configuration.
@@ -152,7 +147,6 @@ Set filler words configuration (played while waiting for LLM response).
 
 | Property | Type | Description |
 |---|---|---|
-| `name` | `string \| undefined` | The agent name |
 | `pipelineId` | `string \| undefined` | Published AI Studio pipeline ID used as the agent's base configuration |
 | `llm` | `LlmConfig \| undefined` | LLM config (set via `withLlm`) |
 | `tts` | `TtsConfig \| undefined` | TTS config (set via `withTts`) |
@@ -188,14 +182,25 @@ createSession(
 ): AgentSession
 ```
 
+```typescript
+const session = agent.createSession({
+  name: 'support-assistant',
+  channel: 'support-room',
+  agentUid: '1',
+  remoteUids: ['100'],
+});
+```
+
+`name` is optional; omit it to auto-generate `agent-{timestamp}`. Set it on `createSession()`, not on `Agent`.
+
 ### SessionOptions
 
 | Option | Type | Required | Description |
 |---|---|---|---|
+| `name` | `string` | No | Unique agent instance name sent to the Agora API (auto-generated as `agent-{timestamp}` if omitted) |
 | `channel` | `string` | Yes | Channel name to join |
 | `agentUid` | `string` | Yes | The agent's RTC UID |
 | `remoteUids` | `string[]` | Yes | Remote user UIDs to subscribe to |
-| `name` | `string` | No | Session name (defaults to agent name or `agent-{timestamp}`) |
 | `token` | `string` | No | Pre-built RTC+RTM token (omit to auto-generate) |
 | `expiresIn` | `number` | No | Token lifetime in seconds (default: `86400` = 24 h, Agora max). Only applies when the token is auto-generated. Use `ExpiresIn.hours()` or `ExpiresIn.minutes()` for clarity. Valid range: 1–86400. |
 | `idleTimeout` | `number` | No | Seconds before auto-exit if no audio (0 = disabled) |

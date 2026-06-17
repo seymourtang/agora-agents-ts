@@ -165,6 +165,8 @@ export class AgoraClient<TArea extends AgoraArea = AgoraArea> extends BaseAgoraC
 
     /**
      * Create an {@link Agent} bound to this client.
+     *
+     * Pass session-scoped options such as `name` to {@link Agent.createSession}.
      */
     public agent(options: Omit<AgentOptions<TArea>, "client"> = {}): Agent<number, TArea> {
         return new Agent({ ...options, client: this }) as Agent<number, TArea>;

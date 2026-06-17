@@ -27,13 +27,20 @@ const client = new AgoraClient({
   appCertificate: process.env.AGORA_APP_CERTIFICATE!,
 });
 
-const agent = client.agent({ name: 'assistant' })
+const agent = client.agent({})
   .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
   .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
   .withTts(new MiniMaxTTS({
     model: 'speech_2_6_turbo',
     voiceId: 'English_captivating_female1',
   }));
+
+const session = agent.createSession({
+  name: 'global-agent',
+  channel: 'global-room',
+  agentUid: '1',
+  remoteUids: ['100'],
+});
 ```
 
 CN example:
@@ -47,7 +54,7 @@ const client = new AgoraClient({
   appCertificate: process.env.AGORA_APP_CERTIFICATE!,
 });
 
-const agent = client.agent({ name: 'assistant' })
+const agent = client.agent({})
   .withStt(new FengmingSTT())
   .withLlm(new AliyunLLM({
     url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
@@ -58,6 +65,13 @@ const agent = client.agent({ name: 'assistant' })
     model: 'speech-01-turbo',
     voiceSetting: { voice_id: 'female-shaonv' },
   }));
+
+const session = agent.createSession({
+  name: 'cn-agent',
+  channel: 'cn-room',
+  agentUid: '1',
+  remoteUids: ['100'],
+});
 ```
 
 ## LLM vendors

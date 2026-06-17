@@ -11,7 +11,6 @@ describe("AgoraClient + Agent API", () => {
 
         const agent = new Agent({
             client,
-            name: "assistant",
             turnDetection: { language: "en-US" },
         })
             .withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }))
@@ -24,12 +23,12 @@ describe("AgoraClient + Agent API", () => {
             );
 
         const session = agent.createSession({
+            name: "assistant",
             channel: "test-room",
             agentUid: "1",
             remoteUids: ["100"],
         });
 
-        expect(session.agent.config.name).toBe("assistant");
         expect(session.appId).toBe("app-id");
     });
 
@@ -42,7 +41,6 @@ describe("AgoraClient + Agent API", () => {
 
         const agent = client
             .agent({
-                name: "assistant",
                 turnDetection: { language: "en-US" },
             })
             .withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }))
@@ -55,12 +53,12 @@ describe("AgoraClient + Agent API", () => {
             );
 
         const session = agent.createSession({
+            name: "assistant",
             channel: "test-room",
             agentUid: "1",
             remoteUids: ["100"],
         });
 
-        expect(session.agent.config.name).toBe("assistant");
         expect(session.appId).toBe("app-id");
     });
 });

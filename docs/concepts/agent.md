@@ -14,7 +14,7 @@ description: The Agent builder — configure an AI agent with LLM, TTS, STT, and
 ```typescript
 import { Agent, OpenAI } from 'agora-agents';
 
-const agent = new Agent({ name: 'my-assistant' }).withLlm(
+const agent = new Agent().withLlm(
   new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -28,7 +28,6 @@ const agent = new Agent({ name: 'my-assistant' }).withLlm(
 
 | Option | Type | Description |
 |---|---|---|
-| `name` | `string` | Agent name (used as default session name) |
 | `client` | `AgoraClient` | Optional client binding that enables `createSession(options)` |
 | `pipelineId` | `string` | Published AI Studio pipeline ID used as the base configuration |
 | `instructions` | `string` | Deprecated. Use LLM vendor `systemMessages` instead. |
@@ -61,7 +60,6 @@ Each method returns a new `Agent` instance with the updated configuration.
 | `withTurnDetection` | `withTurnDetection(config: TurnDetectionConfig): Agent` | Configure `turn_detection.language` and cascading-flow SOS/EOS detection; use `withInterruption()` for interruption behavior |
 | `withInstructions` | `withInstructions(text: string): Agent` | Deprecated. Use LLM vendor `systemMessages` instead. |
 | `withGreeting` | `withGreeting(text: string): Agent` | Deprecated. Use LLM/MLLM vendor `greetingMessage` instead. |
-| `withName` | `withName(name: string): Agent` | Override the agent name |
 | `withSal` | `withSal(config: SalConfig): Agent` | Set SAL configuration |
 | `withAdvancedFeatures` | `withAdvancedFeatures(features: AdvancedFeatures): Agent` | Set advanced features |
 | `withParameters` | `withParameters(parameters: SessionParams): Agent` | Set session parameters |
@@ -79,9 +77,10 @@ Call `createSession()` to bind the agent to a channel using the client configure
 <!-- snippet: fragment -->
 ```typescript
 const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
-const agent = new Agent({ client, name: 'my-agent' });
+const agent = new Agent({ client });
 
 const session = agent.createSession({
+  name: 'room-123',
   channel: 'room-123',
   agentUid: '1',
   remoteUids: ['100'],
@@ -89,14 +88,16 @@ const session = agent.createSession({
 });
 ```
 
+`name` identifies this agent instance in the Agora API. Set it on `createSession()`, not on `Agent`.
+
 ### SessionOptions
 
 | Option | Type | Required | Description |
 |---|---|---|---|
+| `name` | `string` | No | Unique agent instance name sent to the Agora API (auto-generated as `agent-{timestamp}` if omitted) |
 | `channel` | `string` | Yes | Channel name to join |
 | `agentUid` | `string` | Yes | The agent's RTC UID |
 | `remoteUids` | `string[]` | Yes | Remote user UIDs to subscribe to |
-| `name` | `string` | No | Session name (defaults to agent name or auto-generated) |
 | `token` | `string` | No | Pre-built RTC token (omit to auto-generate) |
 | `idleTimeout` | `number` | No | Seconds before auto-exit if no audio (0 = disabled) |
 | `enableStringUid` | `boolean` | No | Use string UIDs instead of numeric |
@@ -128,8 +129,8 @@ const base = new Agent({ client })
 
 // Two sessions from the same agent config — safe, no shared mutable state
 
-const sessionA = base.createSession({ channel: 'room-a', agentUid: '1', remoteUids: ['100'] });
-const sessionB = base.createSession({ channel: 'room-b', agentUid: '1', remoteUids: ['200'] });
+const sessionA = base.createSession({ name: 'room-a', channel: 'room-a', agentUid: '1', remoteUids: ['100'] });
+const sessionB = base.createSession({ name: 'room-b', channel: 'room-b', agentUid: '1', remoteUids: ['200'] });
 ```
 
 See [Agent Reference](../reference/agent.md) for full TypeScript signatures.

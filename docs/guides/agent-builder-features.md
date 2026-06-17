@@ -35,9 +35,7 @@ import {
   DeepgramSTT,
 } from 'agora-agents';
 
-const agent = new Agent({
-  name: 'sal-assistant',
-})
+const agent = new Agent()
   .withLlm(new OpenAI({
     apiKey: 'your-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -82,7 +80,7 @@ Configure silence handling, farewell behavior, and data channel:
 ```typescript
 import { Agent } from 'agora-agents';
 
-const agent = new Agent({ name: 'params-agent' })
+const agent = new Agent()
   .withLlm(/* ... */)
   .withTts(/* ... */)
   .withStt(/* ... */)
@@ -206,7 +204,6 @@ const agent = new Agent()
   .withGeofence({ area: 'EUROPE' })
   .withLabels({ env: 'staging' });
 
-agent.name;           // string | undefined
 agent.geofence;       // { area: 'NORTH_AMERICA' }
 agent.labels;         // { env: 'staging' }
 agent.sal;            // SalConfig | undefined
@@ -236,7 +233,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ client, name: 'full-featured-assistant' })
+const agent = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -268,6 +265,7 @@ const agent = new Agent({ client, name: 'full-featured-assistant' })
   });
 
 const session = agent.createSession({
+  name: 'full-featured-assistant',
   channel: 'demo-room',
   agentUid: '1',
   remoteUids: ['100'],

@@ -34,7 +34,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ client, name: 'cascading-assistant' })
+const agent = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -57,6 +57,7 @@ const agent = new Agent({ client, name: 'cascading-assistant' })
   }));
 
 const session = agent.createSession({
+  name: 'my-room',
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],
@@ -156,7 +157,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ client, name: 'azure-assistant' })
+const agent = new Agent({ client })
   .withLlm(new AzureOpenAI({
     apiKey: 'your-azure-openai-key',
     model: 'gpt-4',
@@ -179,6 +180,7 @@ const agent = new Agent({ client, name: 'azure-assistant' })
   }));
 
 const session = agent.createSession({
+  name: 'support-room',
   channel: 'support-room',
   agentUid: '1',
   remoteUids: ['100'],

@@ -18,7 +18,6 @@ const client = new AgoraClient({
 
 new Agent({
     client,
-    name: `conversation-${Date.now()}`,
     turnDetection: {
         language: "en-US",
         config: {
@@ -69,6 +68,7 @@ new Agent({
         }),
     )
     .createSession({
+        name: `conversation-${Date.now()}`,
         channel: `demo-channel-${Date.now()}`,
         agentUid: "123456",
         remoteUids: ["*"],
@@ -84,7 +84,6 @@ new Agent({
 
     new Agent({
         client,
-        name: "assistant",
         turnDetection: { language: "zh-CN" },
     })
         .withStt(new FengmingSTT())
@@ -103,6 +102,7 @@ new Agent({
             }),
         )
         .createSession({
+            name: "cn-assistant",
             channel: "cn-room",
             agentUid: "1001",
             remoteUids: ["100"],

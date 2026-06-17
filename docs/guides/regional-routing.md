@@ -56,7 +56,6 @@ const client = new AgoraClient({
 
 const agent = new Agent({
   client,
-  name: 'global-agent',
   turnDetection: { language: 'en-US' },
 })
   .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
@@ -64,6 +63,7 @@ const agent = new Agent({
   .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
 
 const session = agent.createSession({
+  name: 'global-agent',
   channel: 'global-room',
   agentUid: '1001',
   remoteUids: ['*'],
@@ -83,7 +83,6 @@ const client = new AgoraClient({
 
 const agent = new Agent({
   client,
-  name: 'cn-agent',
   turnDetection: { language: 'zh-CN' },
 })
   .withStt(new FengmingSTT())
@@ -99,6 +98,7 @@ const agent = new Agent({
   }));
 
 const session = agent.createSession({
+  name: 'cn-agent',
   channel: 'cn-room',
   agentUid: '1001',
   remoteUids: ['*'],
@@ -138,7 +138,7 @@ const client = new AgoraClient({
   appCertificate: 'your-app-certificate',
 });
 
-const agent = new Agent({ client, name: 'failover-demo' })
+const agent = new Agent({ client })
   .withLlm(new OpenAI({
     apiKey: 'your-openai-key',
     url: 'https://api.openai.com/v1/chat/completions',
@@ -149,6 +149,7 @@ const agent = new Agent({ client, name: 'failover-demo' })
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key' }));
 
 const session = agent.createSession({
+  name: 'failover-demo',
   channel: 'my-room',
   agentUid: '1',
   remoteUids: ['100'],

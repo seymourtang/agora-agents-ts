@@ -295,9 +295,9 @@ export type AgentConfigUpdate = UpdateAgentsRequest.Properties;
 // Session Types
 // =============================================================================
 
-/** Options for creating a session */
+/** Options for creating a session via {@link Agent.createSession} */
 export interface SessionOptions {
-    /** Unique name for this agent instance (optional - resolved from agent or auto-generated) */
+    /** Unique agent instance name sent to the Agora API. Omit to auto-generate `agent-{timestamp}`. */
     name?: string;
     /** The channel to join */
     channel: string;

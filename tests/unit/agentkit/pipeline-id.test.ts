@@ -30,9 +30,10 @@ function getStartRequest(start: ReturnType<typeof createClient>["start"]): Agora
 describe("Agent pipelineId", () => {
     test("agent-level pipelineId is sent as top-level pipeline_id", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ client, name: "support", pipelineId: "studio-pipeline-id" });
+        const agent = new Agent({ client, pipelineId: "studio-pipeline-id" });
 
         const session = agent.createSession({
+            name: "support",
             channel: "channel",
             token: "token",
             agentUid: "1",
@@ -57,7 +58,7 @@ describe("Agent pipelineId", () => {
 
     test("session-level pipelineId overrides agent-level pipelineId", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ client, name: "support", pipelineId: "agent-pipeline" });
+        const agent = new Agent({ client, pipelineId: "agent-pipeline" });
 
         const session = agent.createSession({
             channel: "channel",
@@ -74,7 +75,7 @@ describe("Agent pipelineId", () => {
 
     test("agent-level pipelineId skips missing ASR/LLM/TTS vendor validation", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ client, name: "support", pipelineId: "studio-pipeline-id" });
+        const agent = new Agent({ client, pipelineId: "studio-pipeline-id" });
 
         const session = agent.createSession({
             channel: "channel",
@@ -92,7 +93,7 @@ describe("Agent pipelineId", () => {
 
     test("pipelineId allows a single LLM override without TTS or ASR", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ client, name: "support", pipelineId: "studio-pipeline-id" }).withLlm(
+        const agent = new Agent({ client, pipelineId: "studio-pipeline-id" }).withLlm(
             new OpenAI({
                 apiKey: "openai-key",
                 url: "https://api.openai.com/v1/chat/completions",
@@ -118,7 +119,7 @@ describe("Agent pipelineId", () => {
 
     test("pipelineId allows multiple overrides without ASR", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ client, name: "support", pipelineId: "studio-pipeline-id" })
+        const agent = new Agent({ client, pipelineId: "studio-pipeline-id" })
             .withLlm(
                 new OpenAI({
                     apiKey: "openai-key",
@@ -153,7 +154,7 @@ describe("Agent pipelineId", () => {
 
     test("pipelineId allows a single LLM override without TTS or ASR", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ client, name: "support", pipelineId: "studio-pipeline-id" }).withLlm(
+        const agent = new Agent({ client, pipelineId: "studio-pipeline-id" }).withLlm(
             new OpenAI({
                 apiKey: "openai-key",
                 url: "https://api.openai.com/v1/chat/completions",
@@ -179,7 +180,7 @@ describe("Agent pipelineId", () => {
 
     test("pipelineId allows multiple overrides without ASR", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ client, name: "support", pipelineId: "studio-pipeline-id" })
+        const agent = new Agent({ client, pipelineId: "studio-pipeline-id" })
             .withLlm(
                 new OpenAI({
                     apiKey: "openai-key",
@@ -214,7 +215,7 @@ describe("Agent pipelineId", () => {
 
     test("pipeline_id is not sent inside properties", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ client, name: "support", pipelineId: "studio-pipeline-id" });
+        const agent = new Agent({ client, pipelineId: "studio-pipeline-id" });
 
         const session = agent.createSession({
             channel: "channel",
@@ -232,7 +233,7 @@ describe("Agent pipelineId", () => {
 
     test("fluent builder clones preserve pipelineId", async () => {
         const { client, start } = createClient();
-        const agent = new Agent({ client, name: "support", pipelineId: "studio-pipeline-id" }).withAdvancedFeatures({
+        const agent = new Agent({ client, pipelineId: "studio-pipeline-id" }).withAdvancedFeatures({
             enable_rtm: true,
         });
 

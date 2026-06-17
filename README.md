@@ -37,7 +37,6 @@ export async function startConversation(): Promise<string> {
 
   const agent = new Agent({
     client,
-    name: `conversation-${Date.now()}`,
     turnDetection: {
       language: 'en-US',
       config: {
@@ -94,6 +93,7 @@ export async function startConversation(): Promise<string> {
     );
 
   const session = agent.createSession({
+    name: `conversation-${Date.now()}`,
     channel: "demo-channel-" + Date.now(),  // Unique channel name
     agentUid: '123456',                     // Unique agent UID. Can be a random number or a specific user ID.
     remoteUids: ['*'],                     // '*' is a wildcard, or use a specific user ID.
@@ -129,11 +129,11 @@ const client = new AgoraClient({
 
 const agent = new Agent({
   client,
-  name: 'support',
   pipelineId: 'studio-pipeline-id',
 });
 
 const session = agent.createSession({
+  name: 'support',
   channel: 'support-room',
   agentUid: '1',
   remoteUids: ['100'],
@@ -144,6 +144,7 @@ You can override it per session:
 
 ```typescript
 const session = agent.createSession({
+  name: 'support',
   channel: 'support-room',
   agentUid: '1',
   remoteUids: ['100'],
@@ -221,7 +222,7 @@ const client = new AgoraClient({
   appCertificate: process.env.AGORA_APP_CERTIFICATE!,
 });
 
-const agent = new Agent({ client, name: 'realtime-assistant' }).withMllm(
+const agent = new Agent({ client }).withMllm(
   new OpenAIRealtime({
     apiKey: process.env.OPENAI_API_KEY!,
     model: 'gpt-4o-realtime-preview',
