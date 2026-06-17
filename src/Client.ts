@@ -25,18 +25,34 @@ export class AgoraClient {
     }
 
     public get agents(): AgentsClient {
-        return (this._agents ??= new AgentsClient(this._options));
+        if (this._agents == null) {
+            this._agents = new AgentsClient(this._options);
+        }
+
+        return this._agents;
     }
 
     public get agentManagement(): AgentManagementClient {
-        return (this._agentManagement ??= new AgentManagementClient(this._options));
+        if (this._agentManagement == null) {
+            this._agentManagement = new AgentManagementClient(this._options);
+        }
+
+        return this._agentManagement;
     }
 
     public get telephony(): TelephonyClient {
-        return (this._telephony ??= new TelephonyClient(this._options));
+        if (this._telephony == null) {
+            this._telephony = new TelephonyClient(this._options);
+        }
+
+        return this._telephony;
     }
 
     public get phoneNumbers(): PhoneNumbersClient {
-        return (this._phoneNumbers ??= new PhoneNumbersClient(this._options));
+        if (this._phoneNumbers == null) {
+            this._phoneNumbers = new PhoneNumbersClient(this._options);
+        }
+
+        return this._phoneNumbers;
     }
 }

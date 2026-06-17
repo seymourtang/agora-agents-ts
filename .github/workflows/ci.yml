@@ -63,6 +63,57 @@ jobs:
 
       - name: Set up node
         uses: actions/setup-node@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build and verify compatibility shim
+        run: |
+          pnpm build
+          ROOT_TARBALL="$(npm pack --pack-destination "$RUNNER_TEMP")"
+          cd compat/agora-agent-server-sdk
+          npm install --no-save "$RUNNER_TEMP/$ROOT_TARBALL"
+          npm pack --dry-run
+          node verify-compat.js
+
+  compat-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build and verify compatibility shim
+        run: |
+          pnpm build
+          cd compat/agora-agent-server-sdk
+          npm install --no-save file:../..
+          npm pack --dry-run
+          node verify-compat.js
+
+  compat-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
         with:
           node-version: 24
 

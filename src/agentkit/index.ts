@@ -20,36 +20,36 @@
  */
 
 // Re-export the underlying client type for advanced usage
-export type { AgentsClient } from "../api/resources/agents/client/Client.js";
-export type { AgentOptions } from "./Agent.js";
+export type { AgentsClient } from '../api/resources/agents/client/Client.js';
+export type { AgentOptions } from './Agent.js';
 // Core classes
-export { Agent } from "./Agent.js";
+export { Agent } from './Agent.js';
 export type {
-    AgentSessionEvent,
-    AgentSessionEventHandler,
-    AgentSessionOptions,
-} from "./AgentSession.js";
-export { AgentSession } from "./AgentSession.js";
+  AgentSessionEvent,
+  AgentSessionEventHandler,
+  AgentSessionOptions,
+} from './AgentSession.js';
+export { AgentSession } from './AgentSession.js';
 // Vendor-specific avatar types with strict constraints
 export type {
-    AkoolAvatarConfig,
-    AnamAvatarConfig,
-    GenericAvatarConfig,
-    HeyGenAvatarConfig,
-    LiveAvatarAvatarConfig,
-    StrictAvatarConfig,
-} from "./avatar-types.js";
+  AkoolAvatarConfig,
+  AnamAvatarConfig,
+  GenericAvatarConfig,
+  HeyGenAvatarConfig,
+  LiveAvatarAvatarConfig,
+  StrictAvatarConfig,
+} from './avatar-types.js';
 export {
-    isAkoolAvatar,
-    isAnamAvatar,
-    isAvatarTokenManaged,
-    isGenericAvatar,
-    isHeyGenAvatar,
-    isLiveAvatarAvatar,
-    toBaseAvatarConfig,
-    validateAvatarConfig,
-    validateTtsSampleRate,
-} from "./avatar-types.js";
+  isAkoolAvatar,
+  isAnamAvatar,
+  isAvatarTokenManaged,
+  isGenericAvatar,
+  isHeyGenAvatar,
+  isLiveAvatarAvatar,
+  toBaseAvatarConfig,
+  validateAvatarConfig,
+  validateTtsSampleRate,
+} from './avatar-types.js';
 // Type-safe constants
 export {
     AudioScenario,
@@ -212,12 +212,12 @@ export type {
     TurnDetectionType,
 } from "./types.js";
 export type {
-    AkoolAvatarOptions,
-    AnamAvatarOptions,
-    GenericAvatarOptions,
-    HeyGenAvatarOptions,
-    LiveAvatarAvatarOptions,
-} from "./vendors/avatar.js";
+  AkoolAvatarOptions,
+  AnamAvatarOptions,
+  GenericAvatarOptions,
+  HeyGenAvatarOptions,
+  LiveAvatarAvatarOptions,
+} from './vendors/avatar.js';
 // Avatar vendor classes
 export {
     AkoolAvatar,
@@ -228,24 +228,24 @@ export {
 } from "./vendors/avatar.js";
 // Sample rate types
 export type {
-    AkoolSampleRate,
-    CartesiaSampleRate,
-    ElevenLabsSampleRate,
-    HeyGenSampleRate,
-    LiveAvatarSampleRate,
-    MicrosoftSampleRate,
-    SampleRate,
-} from "./vendors/base.js";
+  AkoolSampleRate,
+  CartesiaSampleRate,
+  ElevenLabsSampleRate,
+  HeyGenSampleRate,
+  LiveAvatarSampleRate,
+  MicrosoftSampleRate,
+  SampleRate,
+} from './vendors/base.js';
 // Base vendor classes
 export {
-    BaseAvatar,
-    BaseLLM,
-    type BaseLlmOptions,
-    BaseMLLM,
-    BaseSTT,
-    BaseTTS,
-    type GoogleTTSSampleRate,
-} from "./vendors/base.js";
+  BaseAvatar,
+  BaseLLM,
+  type BaseLlmOptions,
+  BaseMLLM,
+  BaseSTT,
+  BaseTTS,
+  type GoogleTTSSampleRate,
+} from './vendors/base.js';
 export type {
     AmazonBedrockOptions,
     AnthropicOptions,
@@ -283,56 +283,56 @@ export {
     XaiGrok,
 } from "./vendors/mllm.js";
 export type {
-    AmazonSTTOptions,
-    AresSTTOptions,
-    AssemblyAISTTOptions,
-    DeepgramSTTOptions,
-    GoogleSTTOptions,
-    MicrosoftSTTOptions,
-    OpenAISTTOptions,
-    SarvamSTTOptions,
-    SpeechmaticsSTTOptions,
-} from "./vendors/stt.js";
+  AmazonSTTOptions,
+  AresSTTOptions,
+  AssemblyAISTTOptions,
+  DeepgramSTTOptions,
+  GoogleSTTOptions,
+  MicrosoftSTTOptions,
+  OpenAISTTOptions,
+  SarvamSTTOptions,
+  SpeechmaticsSTTOptions,
+} from './vendors/stt.js';
 // STT vendor classes
 export {
-    AmazonSTT,
-    AresSTT,
-    AssemblyAISTT,
-    DeepgramSTT,
-    GoogleSTT,
-    MicrosoftSTT,
-    OpenAISTT,
-    SarvamSTT,
-    SpeechmaticsSTT,
-} from "./vendors/stt.js";
+  AmazonSTT,
+  AresSTT,
+  AssemblyAISTT,
+  DeepgramSTT,
+  GoogleSTT,
+  MicrosoftSTT,
+  OpenAISTT,
+  SarvamSTT,
+  SpeechmaticsSTT,
+} from './vendors/stt.js';
 export type {
-    AmazonTTSOptions,
-    CartesiaTTSOptions,
-    DeepgramTTSOptions,
-    ElevenLabsTTSOptions,
-    FishAudioTTSOptions,
-    GoogleTTSOptions,
-    HumeAITTSOptions,
-    MicrosoftTTSOptions,
-    MiniMaxTTSOptions,
-    MurfTTSOptions,
-    OpenAITTSOptions,
-    RimeTTSOptions,
-    SarvamTTSOptions,
-} from "./vendors/tts.js";
+  AmazonTTSOptions,
+  CartesiaTTSOptions,
+  DeepgramTTSOptions,
+  ElevenLabsTTSOptions,
+  FishAudioTTSOptions,
+  GoogleTTSOptions,
+  HumeAITTSOptions,
+  MicrosoftTTSOptions,
+  MiniMaxTTSOptions,
+  MurfTTSOptions,
+  OpenAITTSOptions,
+  RimeTTSOptions,
+  SarvamTTSOptions,
+} from './vendors/tts.js';
 // TTS vendor classes
 export {
-    AmazonTTS,
-    CartesiaTTS,
-    DeepgramTTS,
-    ElevenLabsTTS,
-    FishAudioTTS,
-    GoogleTTS,
-    HumeAITTS,
-    MicrosoftTTS,
-    MiniMaxTTS,
-    MurfTTS,
-    OpenAITTS,
-    RimeTTS,
-    SarvamTTS,
-} from "./vendors/tts.js";
+  AmazonTTS,
+  CartesiaTTS,
+  DeepgramTTS,
+  ElevenLabsTTS,
+  FishAudioTTS,
+  GoogleTTS,
+  HumeAITTS,
+  MicrosoftTTS,
+  MiniMaxTTS,
+  MurfTTS,
+  OpenAITTS,
+  RimeTTS,
+  SarvamTTS,
+} from './vendors/tts.js';

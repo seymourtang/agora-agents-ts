@@ -159,6 +159,24 @@ const agent = new Agent({ name: 'generic-avatar-agent' })
   }));
 ```
 
+## Example: Generic avatar
+
+```typescript
+import { Agent, GenericAvatar, OpenAI, OpenAITTS, AresSTT } from 'agora-agent-server-sdk';
+
+const agent = new Agent({ name: 'generic-avatar-agent' })
+  .withLlm(new OpenAI({ apiKey: 'your-openai-key', model: 'gpt-4o-mini' }))
+  .withTts(new OpenAITTS({ apiKey: 'your-openai-tts-key', model: 'tts-1', voice: 'alloy' }))
+  .withStt(new AresSTT())
+  .withAvatar(new GenericAvatar({
+    apiKey: 'your-avatar-provider-key',
+    apiBaseUrl: 'https://avatar-provider.example.com',
+    avatarId: 'avatar-id',
+    agoraUid: '200',
+    // agoraAppId, agoraChannel, and agoraToken are filled from the session.
+  }));
+```
+
 ## Example: Akool avatar with ElevenLabs at 16kHz
 
 ```typescript
@@ -240,6 +258,27 @@ await session.start();
 |---|---|---|---|
 | `apiKey` | `string` | Yes | Akool API key |
 | `avatarId` | `string` | No | Akool avatar ID |
+| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+## AnamAvatar constructor options
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `apiKey` | `string` | Yes | Anam API key |
+| `personaId` | `string` | No | Anam persona ID |
+| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+## GenericAvatar constructor options
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `apiKey` | `string` | Yes | Custom avatar provider API key |
+| `apiBaseUrl` | `string` | Yes | Avatar provider API base URL |
+| `avatarId` | `string` | Yes | Avatar ID |
+| `agoraUid` | `string` | Yes | RTC UID for the avatar stream |
+| `agoraAppId` | `string` | No | Omit to use the session App ID |
+| `agoraChannel` | `string` | No | Omit to use the session channel |
+| `agoraToken` | `string` | No | Avatar token override. Omit to auto-generate at `session.start()` |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
 
 ## AnamAvatar constructor options

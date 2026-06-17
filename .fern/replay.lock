@@ -12,7 +12,13 @@ generations:
     cli_version: unknown
     generator_versions:
       fernapi/fern-typescript-node-sdk: 3.31.1
-current_generation: f3a80a04a20eb9da7644a99c3dc38db0eed2e1c9
+  - commit_sha: 928ea967be4207eab83bce9331c5d17566892b50
+    tree_hash: 0c2f83ef44c544bac9bf78effab417259d207d60
+    timestamp: 2026-06-17T06:35:03.915Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-typescript-node-sdk: 3.31.1
+current_generation: 928ea967be4207eab83bce9331c5d17566892b50
 patches:
   - id: patch-15221bbe
     content_hash: sha256:0313b116e57c2b5720fefbef818b6cc02ce528d1e593f57e1add9149d54ee841
@@ -13203,7 +13209,7 @@ patches:
     original_commit: 0119242c6b1808d596fe3e70fbfdd2c102bead8e
     original_message: updated tests
     original_author: digitallysavvy <hermes.frangoudis@gmail.com>
-    base_generation: f3a80a04a20eb9da7644a99c3dc38db0eed2e1c9
+    base_generation: 928ea967be4207eab83bce9331c5d17566892b50
     files:
       - tests/agentkit/parity.test.ts
     patch_content: |+
@@ -24206,35 +24212,42 @@ patches:
         }
     status: unresolved
   - id: patch-6ce12ba0
-    content_hash: sha256:14b87c4a28739d602cef37f1632c43068c4a94f320e12125061017b65746784f
+    content_hash: sha256:0913022e6b53df666d2b1427c88a82421d664bf7d0e1de7b57c446776920983a
     original_commit: 6ce12ba0648f2acc536d8a9a52790529b7875675
     original_message: fix repository links for package rename
     original_author: chenyuguo <chenyuguo@agora.io>
-    base_generation: f3a80a04a20eb9da7644a99c3dc38db0eed2e1c9
+    base_generation: 928ea967be4207eab83bce9331c5d17566892b50
     files:
       - compat/agora-agent-server-sdk/package.json
     patch_content: |
       diff --git a/compat/agora-agent-server-sdk/package.json b/compat/agora-agent-server-sdk/package.json
-      index 64ee890..437cb37 100644
+      index 7b5fc5f..37ec9bc 100644
       --- a/compat/agora-agent-server-sdk/package.json
       +++ b/compat/agora-agent-server-sdk/package.json
-      @@ -3,7 +3,7 @@
-           "version": "2.0.0",
+      @@ -1,6 +1,6 @@
+       {
+           "name": "agora-agent-server-sdk",
+      -    "version": "2.1.1",
+      +    "version": "2.2.0",
            "private": false,
            "description": "Compatibility shim for the renamed agora-agents package.",
-      -    "repository": "github:AgoraIO-Conversational-AI/agora-agents-ts",
-      +    "repository": "github:AgoraIO-Conversational-AI/agent-server-sdk-ts",
-           "license": "MIT",
-           "main": "./index.js",
-           "module": "./index.mjs",
+           "repository": "github:AgoraIO/agora-agents-ts",
+      @@ -25,6 +25,6 @@
+           ],
+           "sideEffects": false,
+           "dependencies": {
+      -        "agora-agents": "^2.1.1"
+      +        "agora-agents": "^2.2.0"
+           }
+       }
     theirs_snapshot:
       compat/agora-agent-server-sdk/package.json: |
         {
             "name": "agora-agent-server-sdk",
-            "version": "2.0.0",
+            "version": "2.2.0",
             "private": false,
             "description": "Compatibility shim for the renamed agora-agents package.",
-            "repository": "github:AgoraIO-Conversational-AI/agent-server-sdk-ts",
+            "repository": "github:AgoraIO/agora-agents-ts",
             "license": "MIT",
             "main": "./index.js",
             "module": "./index.mjs",
@@ -24256,7 +24269,7 @@ patches:
             ],
             "sideEffects": false,
             "dependencies": {
-                "agora-agents": "^2.0.0"
+                "agora-agents": "^2.2.0"
             }
         }
     user_owned: true
@@ -28716,35 +28729,24 @@ patches:
         console.log("Docs check passed.");
     status: unresolved
   - id: patch-8ac744c8
-    content_hash: sha256:2bb43a8d50771ba89b09b0e47bb4c58356531024d9ebbb7c0a1a00727b2b9f9e
+    content_hash: sha256:11bc8a63672ace8d93497e3873e458d3d543e43e3ab49179f78816d39d8c96b9
     original_commit: 8ac744c8b91850aaa44b027964cf6e1bf2215be0
     original_message: Move package rename guidance to installation docs and lint legacy package references. Consolidate migration notes into the installation guide, add a README pointer, extend docs-check to flag legacy package names outside compat paths, and exclude compat and workflow files from Fern generation.
     original_author: digitallysavvy <hermes.frangoudis@gmail.com>
-    base_generation: f3a80a04a20eb9da7644a99c3dc38db0eed2e1c9
+    base_generation: 928ea967be4207eab83bce9331c5d17566892b50
     files:
       - compat/agora-agent-server-sdk/README.md
       - docs/getting-started/installation.md
       - scripts/docs-check.js
     patch_content: |
-      diff --git a/compat/agora-agent-server-sdk/README.md b/compat/agora-agent-server-sdk/README.md
-      index 64b1f0e..e0adc91 100644
-      --- a/compat/agora-agent-server-sdk/README.md
-      +++ b/compat/agora-agent-server-sdk/README.md
-      @@ -11,3 +11,5 @@ npm install agora-agents
-       This compatibility package re-exports the public API from `agora-agents` to support existing installs during the migration window.
-       
-       Maintainers: dual-publish steps live in the repository release workflow, not in the root README.
-      +
-      +Maintainers: dual-publish steps live in the repository release workflow, not in the root README.
       diff --git a/docs/getting-started/installation.md b/docs/getting-started/installation.md
-      index 514d05d..84c5963 100644
+      index 84c5963..f6c9cae 100644
       --- a/docs/getting-started/installation.md
       +++ b/docs/getting-started/installation.md
-      @@ -60,3 +60,24 @@ The npm package was renamed from `agora-agent-server-sdk` to `agora-agents` in v
-       The legacy npm name remains available as a compatibility shim that re-exports `agora-agents`. See [compat/agora-agent-server-sdk](../../compat/agora-agent-server-sdk/README.md).
+      @@ -48,6 +48,14 @@ import { Agent, AgoraClient, Area, DeepgramSTT, OpenAI } from 'agora-agents';
        
-       For release and version details, see [changelog — Migration notes](../../changelog.md#migration-notes).
-      +
+       The package installs as `agora-agents`.
+       
       +## Imports
       +
       +```typescript
@@ -28753,18 +28755,9 @@ patches:
       +
       +The package installs as `agora-agents`.
       +
-      +## Next steps
-      +
-      +- [Authentication](./authentication.md) — configure your credentials
-      +- [Quick Start](./quick-start.md) — build your first conversational agent
-      +
-      +## Migrating from a previous package name
-      +
-      +The npm package was renamed from `agora-agent-server-sdk` to `agora-agents` in v2.0.0. Update `package.json` and change imports to `agora-agents`; the public API is unchanged.
-      +
-      +The legacy npm name remains available as a compatibility shim that re-exports `agora-agents`. See [compat/agora-agent-server-sdk](../../compat/agora-agent-server-sdk/README.md).
-      +
-      +For release and version details, see [changelog — Migration notes](../../changelog.md#migration-notes).
+       ## Next steps
+       
+       - [Authentication](./authentication.md) — configure your credentials
     theirs_snapshot:
       compat/agora-agent-server-sdk/README.md: |
         # agora-agent-server-sdk
@@ -28824,6 +28817,14 @@ patches:
         ## Server-side only
 
         This SDK is designed for server-side use. Do not use it in a browser or expose it client-side — your App Certificate must never be sent to the client. If you need a client-side integration, use the [Agora RTC SDK](https://docs.agora.io/en/video-calling/overview) for the media layer and call your own backend to manage agents.
+
+        ## Imports
+
+        ```typescript
+        import { Agent, AgoraClient, Area, DeepgramSTT, OpenAI } from 'agora-agents';
+        ```
+
+        The package installs as `agora-agents`.
 
         ## Imports
 
@@ -30443,7 +30444,7 @@ patches:
     original_commit: 62db14d779158099cdbcc248ef509912a3f31c97
     original_message: Allow legacy package name references in migration docs during docs check. Permit agora-agent-server-sdk mentions in migration and rename context so installation guide copy passes the legacy package lint.
     original_author: digitallysavvy <hermes.frangoudis@gmail.com>
-    base_generation: f3a80a04a20eb9da7644a99c3dc38db0eed2e1c9
+    base_generation: 928ea967be4207eab83bce9331c5d17566892b50
     files:
       - scripts/docs-check.js
     patch_content: |+
@@ -32463,19 +32464,19 @@ patches:
         | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
     status: unresolved
   - id: patch-ef8ffa5d
-    content_hash: sha256:d3824c53273e05b167621256cd9cd3392493b8cc438aea308a9eb6a1d500af2f
+    content_hash: sha256:a89801561157e403fb7da313a1a28a9870b213f7f5835fcfea541385370c6eb5
     original_commit: ef8ffa5d71656583a7cd5c2516cc89e9dc995fdb
     original_message: "ci: use local package for compat build"
     original_author: plutoless <qianze.zhang@hotmail.com>
-    base_generation: f3a80a04a20eb9da7644a99c3dc38db0eed2e1c9
+    base_generation: 928ea967be4207eab83bce9331c5d17566892b50
     files:
       - .github/workflows/ci.yml
     patch_content: |+
       diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
-      index 9f95067..029151c 100644
+      index 9f95067..05d86ee 100644
       --- a/.github/workflows/ci.yml
       +++ b/.github/workflows/ci.yml
-      @@ -54,6 +54,31 @@ jobs:
+      @@ -54,6 +54,57 @@ jobs:
              - name: Test
                run: pnpm test
        
@@ -32501,6 +32502,32 @@ patches:
       +          ROOT_TARBALL="$(npm pack --pack-destination "$RUNNER_TEMP")"
       +          cd compat/agora-agent-server-sdk
       +          npm install --no-save "$RUNNER_TEMP/$ROOT_TARBALL"
+      +          npm pack --dry-run
+      +          node verify-compat.js
+      +
+      +  compat-build:
+      +    runs-on: ubuntu-latest
+      +
+      +    steps:
+      +      - name: Checkout repo
+      +        uses: actions/checkout@v4
+      +
+      +      - name: Set up node
+      +        uses: actions/setup-node@v4
+      +        with:
+      +          node-version: 24
+      +
+      +      - name: Install pnpm
+      +        uses: pnpm/action-setup@v4
+      +
+      +      - name: Install dependencies
+      +        run: pnpm install
+      +
+      +      - name: Build and verify compatibility shim
+      +        run: |
+      +          pnpm build
+      +          cd compat/agora-agent-server-sdk
+      +          npm install --no-save file:../..
       +          npm pack --dry-run
       +          node verify-compat.js
       +
@@ -32611,6 +32638,32 @@ patches:
               - name: Build and verify compatibility shim
                 run: |
                   pnpm build
+                  cd compat/agora-agent-server-sdk
+                  npm install --no-save file:../..
+                  npm pack --dry-run
+                  node verify-compat.js
+
+          compat-build:
+            runs-on: ubuntu-latest
+
+            steps:
+              - name: Checkout repo
+                uses: actions/checkout@v4
+
+              - name: Set up node
+                uses: actions/setup-node@v4
+                with:
+                  node-version: 24
+
+              - name: Install pnpm
+                uses: pnpm/action-setup@v4
+
+              - name: Install dependencies
+                run: pnpm install
+
+              - name: Build and verify compatibility shim
+                run: |
+                  pnpm build
                   ROOT_TARBALL="$(npm pack --pack-destination "$RUNNER_TEMP")"
                   cd compat/agora-agent-server-sdk
                   npm install --no-save "$RUNNER_TEMP/$ROOT_TARBALL"
@@ -32618,32 +32671,39 @@ patches:
                   node verify-compat.js
     user_owned: true
   - id: patch-ec1d6606
-    content_hash: sha256:6e8d69f6be3ef098cbce2315e388b7c7fe3b11bb6dd3a908da8b654247772b78
+    content_hash: sha256:0913022e6b53df666d2b1427c88a82421d664bf7d0e1de7b57c446776920983a
     original_commit: ec1d66063b043c0a03894a4b6daee94e21098ad6
     original_message: "chore: update package repository metadata"
     original_author: plutoless <qianze.zhang@hotmail.com>
-    base_generation: f3a80a04a20eb9da7644a99c3dc38db0eed2e1c9
+    base_generation: 928ea967be4207eab83bce9331c5d17566892b50
     files:
       - compat/agora-agent-server-sdk/package.json
     patch_content: |
       diff --git a/compat/agora-agent-server-sdk/package.json b/compat/agora-agent-server-sdk/package.json
-      index 437cb37..90eb19b 100644
+      index 7b5fc5f..37ec9bc 100644
       --- a/compat/agora-agent-server-sdk/package.json
       +++ b/compat/agora-agent-server-sdk/package.json
-      @@ -3,7 +3,7 @@
-           "version": "2.0.0",
+      @@ -1,6 +1,6 @@
+       {
+           "name": "agora-agent-server-sdk",
+      -    "version": "2.1.1",
+      +    "version": "2.2.0",
            "private": false,
            "description": "Compatibility shim for the renamed agora-agents package.",
-      -    "repository": "github:AgoraIO-Conversational-AI/agent-server-sdk-ts",
-      +    "repository": "github:AgoraIO/agora-agents-ts",
-           "license": "MIT",
-           "main": "./index.js",
-           "module": "./index.mjs",
+           "repository": "github:AgoraIO/agora-agents-ts",
+      @@ -25,6 +25,6 @@
+           ],
+           "sideEffects": false,
+           "dependencies": {
+      -        "agora-agents": "^2.1.1"
+      +        "agora-agents": "^2.2.0"
+           }
+       }
     theirs_snapshot:
       compat/agora-agent-server-sdk/package.json: |
         {
             "name": "agora-agent-server-sdk",
-            "version": "2.0.0",
+            "version": "2.2.0",
             "private": false,
             "description": "Compatibility shim for the renamed agora-agents package.",
             "repository": "github:AgoraIO/agora-agents-ts",
@@ -32668,7 +32728,7 @@ patches:
             ],
             "sideEffects": false,
             "dependencies": {
-                "agora-agents": "^2.0.0"
+                "agora-agents": "^2.2.0"
             }
         }
     user_owned: true
@@ -32739,7 +32799,7 @@ patches:
     original_commit: a008d8229479dea56234bb257c60e13bf3d8be8b
     original_message: "chore: add release preparation script"
     original_author: plutoless <qianze.zhang@hotmail.com>
-    base_generation: f3a80a04a20eb9da7644a99c3dc38db0eed2e1c9
+    base_generation: 928ea967be4207eab83bce9331c5d17566892b50
     files:
       - scripts/prepare-release.js
     patch_content: |
@@ -38083,7 +38143,7 @@ patches:
         });
     status: unresolved
   - id: patch-39f1e664
-    content_hash: sha256:cb3580d320bf2c8e4216e49a95ba8ede0a072c0f7eeeb1ec803e0dad0752685c
+    content_hash: sha256:7a6e01ec06610aefb23c893cb47bc1cafd27aef7ccc927a08b7670f28064196c
     original_commit: 39f1e664a9581fe24a21b9defb4282bb1430fc27
     original_message: "docs(agentkit): align OpenAI TTS instructions support"
     original_author: digitallysavvy <hermes.frangoudis@gmail.com>
@@ -38131,59 +38191,6 @@ patches:
        <!-- snippet: fragment -->
        ```typescript
        new AnamAvatar(options: AnamAvatarOptions)
-      diff --git a/tests/unit/agentkit/tts-vendors.test.ts b/tests/unit/agentkit/tts-vendors.test.ts
-      index 548a793..221a556 100644
-      --- a/tests/unit/agentkit/tts-vendors.test.ts
-      +++ b/tests/unit/agentkit/tts-vendors.test.ts
-      @@ -73,6 +73,48 @@ describe("TTS vendor helpers", () => {
-                   backend: "speech-1.5",
-               });
-       
-      +        expect(new ElevenLabsTTS({ key: "eleven-key", modelId: "eleven_flash_v2_5", voiceId: "voice", baseUrl: "wss://api.elevenlabs.io/v1" }).toConfig().params).toMatchObject({
-      +            key: "eleven-key",
-      +            base_url: "wss://api.elevenlabs.io/v1",
-      +            model_id: "eleven_flash_v2_5",
-      +            voice_id: "voice",
-      +        });
-      +
-      +        expect(new DeepgramTTS({ apiKey: "deepgram-key", model: "aura-2-thalia-en", baseUrl: "wss://api.deepgram.com/v1/speak", sampleRate: 24000, additionalParams: { encoding: "linear16" } }).toConfig().params).toMatchObject({
-      +            api_key: "deepgram-key",
-      +            model: "aura-2-thalia-en",
-      +            base_url: "wss://api.deepgram.com/v1/speak",
-      +            sample_rate: 24000,
-      +            encoding: "linear16",
-      +        });
-      +
-      +        expect(new OpenAITTS({ apiKey: "openai-key", voice: "coral", model: "gpt-4o-mini-tts", baseUrl: "https://api.openai.com/v1", instructions: "speak clearly" }).toConfig().params).toMatchObject({
-      +            api_key: "openai-key",
-      +            base_url: "https://api.openai.com/v1",
-      +            model: "gpt-4o-mini-tts",
-      +            voice: "coral",
-      +            instructions: "speak clearly",
-      +        });
-      +
-      +        expect(new OpenAITTS({ voice: "coral" }).toConfig().params).toEqual({
-      +
-      +
-      +        });
-      +
-      +        expect(new HumeAITTS({ key: "hume-key", voiceId: "voice", provider: "CUSTOM_VOICE" }).toConfig().params).toMatchObject({
-      +            key: "hume-key",
-      +            voice_id: "voice",
-      +            provider: "CUSTOM_VOICE",
-      +        });
-      +
-      +        expect(new MiniMaxTTS({ key: "minimax-key", groupId: "group", model: "speech-02-turbo", voiceId: "voice", url: "wss://api-uw.minimax.io/ws/v1/t2a_v2" }).toConfig().params).toMatchObject({
-      +            key: "minimax-key",
-      +            group_id: "group",
-      +            model: "speech-02-turbo",
-      +            voice_setting: { voice_id: "voice" },
-      +            url: "wss://api-uw.minimax.io/ws/v1/t2a_v2",
-      +        });
-      +
-               expect(
-                   new ElevenLabsTTS({
-                       key: "eleven-key",
     theirs_snapshot:
       docs/reference/vendors.md: |
         ---
@@ -38434,6 +38441,7 @@ patches:
         | `apiKey` | `string` | No | Deepgram API key. Optional only for `nova-2` and `nova-3` Agora-managed usage. |
         | `model` | `string` | No | Model (e.g., `'nova-2'`, `'enhanced'`) |
         | `language` | `string` | No | Language code (e.g., `'en-US'`) |
+        | `keyterm` | `string` | No | Boost specialized terms and brands; serialized as `asr.params.keyterm` |
         | `smartFormat` | `boolean` | No | Enable smart formatting |
         | `punctuation` | `boolean` | No | Enable punctuation |
         | `additionalParams` | `Record<string, unknown>` | No | Additional vendor params |
@@ -38442,7 +38450,7 @@ patches:
 
         ### Other STT vendors
 
-        Use `turnDetection.language` for Agora interaction language; it defaults to `en-US`. Provider-specific language values stay under `asr.params` and may use a different format.
+        Use `turnDetection.language` for Agora interaction language; it defaults to `en-US`. Provider-specific language values stay under `asr.params` and may use a different format. AgentKit populates REST `asr.language` from `turnDetection.language`.
 
         | Class | Key params |
         |---|---|
@@ -38452,7 +38460,7 @@ patches:
         | `GoogleSTT` | `projectId`, `location`, `adcCredentialsString`, `language`, `model?` |
         | `AmazonSTT` | `accessKey`, `secretKey`, `region`, `language` |
         | `AssemblyAISTT` | `apiKey`, `language`, `uri?` |
-        | `AresSTT` | `language?` |
+        | `AresSTT` | — |
         | `SarvamSTT` | `apiKey`, `language` |
 
         ---
@@ -38670,6 +38678,7 @@ patches:
             FishAudioTTS,
             GoogleTTS,
             HumeAITTS,
+            MicrosoftTTS,
             MiniMaxTTS,
             MurfTTS,
             OpenAITTS,
@@ -38734,48 +38743,6 @@ patches:
                     api_key: "fish-key",
                     reference_id: "ref",
                     backend: "speech-1.5",
-                });
-
-                expect(new ElevenLabsTTS({ key: "eleven-key", modelId: "eleven_flash_v2_5", voiceId: "voice", baseUrl: "wss://api.elevenlabs.io/v1" }).toConfig().params).toMatchObject({
-                    key: "eleven-key",
-                    base_url: "wss://api.elevenlabs.io/v1",
-                    model_id: "eleven_flash_v2_5",
-                    voice_id: "voice",
-                });
-
-                expect(new DeepgramTTS({ apiKey: "deepgram-key", model: "aura-2-thalia-en", baseUrl: "wss://api.deepgram.com/v1/speak", sampleRate: 24000, additionalParams: { encoding: "linear16" } }).toConfig().params).toMatchObject({
-                    api_key: "deepgram-key",
-                    model: "aura-2-thalia-en",
-                    base_url: "wss://api.deepgram.com/v1/speak",
-                    sample_rate: 24000,
-                    encoding: "linear16",
-                });
-
-                expect(new OpenAITTS({ apiKey: "openai-key", voice: "coral", model: "gpt-4o-mini-tts", baseUrl: "https://api.openai.com/v1", instructions: "speak clearly" }).toConfig().params).toMatchObject({
-                    api_key: "openai-key",
-                    base_url: "https://api.openai.com/v1",
-                    model: "gpt-4o-mini-tts",
-                    voice: "coral",
-                    instructions: "speak clearly",
-                });
-
-                expect(new OpenAITTS({ voice: "coral" }).toConfig().params).toEqual({
-
-
-                });
-
-                expect(new HumeAITTS({ key: "hume-key", voiceId: "voice", provider: "CUSTOM_VOICE" }).toConfig().params).toMatchObject({
-                    key: "hume-key",
-                    voice_id: "voice",
-                    provider: "CUSTOM_VOICE",
-                });
-
-                expect(new MiniMaxTTS({ key: "minimax-key", groupId: "group", model: "speech-02-turbo", voiceId: "voice", url: "wss://api-uw.minimax.io/ws/v1/t2a_v2" }).toConfig().params).toMatchObject({
-                    key: "minimax-key",
-                    group_id: "group",
-                    model: "speech-02-turbo",
-                    voice_setting: { voice_id: "voice" },
-                    url: "wss://api-uw.minimax.io/ws/v1/t2a_v2",
                 });
 
                 expect(
@@ -38853,6 +38820,14 @@ patches:
                 });
 
                 expect(
+                    new MicrosoftTTS({ key: "ms-key", region: "eastus", voiceName: "en-US-JennyNeural" }).toConfig().params,
+                ).toMatchObject({
+                    key: "ms-key",
+                    region: "eastus",
+                    voice_name: "en-US-JennyNeural",
+                });
+
+                expect(
                     new SarvamTTS({
                         key: "sarvam-key",
                         speaker: "anushka",
@@ -38909,6 +38884,7 @@ patches:
             });
         });
     user_owned: true
+    status: unresolved
   - id: patch-d975c779
     content_hash: sha256:0644b816df429c65a59a8c8652327811e2f1d58aca10e70eee2a03962575ae1e
     original_commit: d975c77933e0366925ee90ee43d6467dac62d054
@@ -46682,17 +46658,16 @@ patches:
         export const SDK_VERSION = "v2.1.1";
     status: unresolved
   - id: patch-c6377512
-    content_hash: sha256:d2be816df1e42c49067901499f98992346b62a7ffbb9f9cb65d6ae4ab3eb9029
+    content_hash: sha256:ea0c16669608f711933b2d6e2e434fea03a19c6eac0a8f3997dc86a20d63a3a7
     original_commit: c6377512b913ebb5d657fca0b1e32e44d20dcf31
     original_message: "fix(ts): resolve blocking Biome errors in check"
     original_author: digitallysavvy <hermes.frangoudis@gmail.com>
-    base_generation: f3a80a04a20eb9da7644a99c3dc38db0eed2e1c9
+    base_generation: 928ea967be4207eab83bce9331c5d17566892b50
     files:
       - src/Client.ts
       - src/agentkit/Agent.ts
       - src/core/base64.ts
       - src/core/fetcher/requestWithRetries.ts
-      - tests/unit/agentkit/preset-validation.test.ts
     patch_content: |
       diff --git a/src/Client.ts b/src/Client.ts
       index 70df401..132e0a0 100644
@@ -46738,89 +46713,37 @@ patches:
            }
        }
       diff --git a/src/agentkit/Agent.ts b/src/agentkit/Agent.ts
-      index 66c0b7e..3472bc0 100644
+      index 0e6590f..b3fc382 100644
       --- a/src/agentkit/Agent.ts
       +++ b/src/agentkit/Agent.ts
-      @@ -14,6 +14,7 @@ import type {
-           AvatarConfig,
-           FillerWordsConfig,
-           GeofenceConfig,
-      +    InteractionLanguage,
-           InterruptionConfig,
-           Labels,
-           LlmConfig,
-      @@ -179,6 +180,7 @@ export class Agent<TTSSampleRate extends number = number> {
-           private _rtc?: RtcConfig;
-           private _fillerWords?: FillerWordsConfig;
-           private _greetingConfigs?: LlmGreetingConfigs;
-      +    private _interactionLanguage?: InteractionLanguage;
-       
-           constructor(options: AgentOptions = {}) {
-               this._name = options.name;
-      @@ -206,6 +208,9 @@ export class Agent<TTSSampleRate extends number = number> {
-               if (options.parameters) {
-                   this._parameters = options.parameters;
-               }
-      +        if (options.interactionLanguage) {
-      +            this._interactionLanguage = options.interactionLanguage;
-      +        }
-               if (options.geofence) {
-                   this._geofence = options.geofence;
-               }
-      @@ -273,6 +278,18 @@ export class Agent<TTSSampleRate extends number = number> {
-               return newAgent;
-           }
-       
-      +    /**
-      +     * Returns a new Agent with the Agora interaction language.
-      +     *
-      +     * This serializes to `asr.language`. Vendor-specific language values remain
-      +     * under `asr.params`, for example `asr.params.language`.
-      +     */
-      +    withInteractionLanguage(language: InteractionLanguage): Agent<TTSSampleRate> {
-      +        const newAgent = this._clone();
-      +        newAgent._interactionLanguage = language;
-      +        return newAgent;
-      +    }
-      +
-           /**
-            * Returns a new Agent with the specified MLLM vendor.
+      @@ -323,6 +323,7 @@ export class Agent<TTSSampleRate extends number = number> {
             *
-      @@ -936,9 +953,34 @@ export class Agent<TTSSampleRate extends number = number> {
-               newAgent._rtc = this._rtc;
-               newAgent._fillerWords = this._fillerWords;
-               newAgent._greetingConfigs = this._greetingConfigs;
-      +        newAgent._interactionLanguage = this._interactionLanguage;
-               return newAgent;
-           }
+            * const agent = new Agent({ name: 'avatar-assistant' })
+            *   .withTts(new ElevenLabsTTS({
+      +
+            *     key: '...',
+            *     modelId: '...',
+            *     voiceId: '...',
+      @@ -879,6 +880,19 @@ export class Agent<TTSSampleRate extends number = number> {
+                   throw new Error("LLM configuration is required. Use withLlm() to set it.");
+               }
        
-      +    private _resolveAsrConfig(): SttConfig | undefined {
-      +        const asrConfig = { ...(this._stt ?? {}) } as SttConfig & { language?: string };
-      +        if (this._stt === undefined) {
-      +            asrConfig.vendor = "ares";
+      +        const skipLlmValidation = skipCategories.has("llm");
+      +        const skipTtsValidation = skipCategories.has("tts");
+      +        const allowMissingAsr = allowMissingCategories.has("asr");
+      +        const allowMissingLlm = allowMissingCategories.has("llm");
+      +        const allowMissingTts = allowMissingCategories.has("tts");
+      +
+      +        if (!this._tts && !(skipTtsValidation || allowMissingTts)) {
+      +            throw new Error("TTS configuration is required. Use withTts() to set it.");
       +        }
-      +        const existingLanguage = asrConfig.language;
-      +        const language =
-      +            this._interactionLanguage ??
+      +        if (!this._llm && !(skipLlmValidation || allowMissingLlm)) {
+      +            throw new Error("LLM configuration is required. Use withLlm() to set it.");
+      +        }
       +
-      +                ? existingLanguage
-      +                : DEFAULT_INTERACTION_LANGUAGE);
-      +
-      +        asrConfig.language = language;
-      +
-      +        return Object.keys(asrConfig).length > 0 ? asrConfig : undefined;
-      +    }
-      +
-      +function _parseNumericUid(uid: string, label: string): number {
-      +    if (!/^\d+$/.test(uid)) {
-      +        throw new Error(`${label} must be a numeric RTC UID when auto-generating a ConvoAI token`);
-      +    }
-      +    return Number(uid);
-      +}
-      +
-           private _resolveAsrConfig(): SttConfig | undefined {
-               const asrConfig = { ...(this._stt ?? {}) } as SttConfig & { language?: string };
-               if (this._stt === undefined) {
+               const llmConfig: Agora.Llm | undefined = this._llm
+                   ? {
+                         ...this._llm,
       diff --git a/src/core/base64.ts b/src/core/base64.ts
       index 448a0db..663f13f 100644
       --- a/src/core/base64.ts
@@ -46927,7 +46850,6 @@ patches:
             AvatarConfig,
             FillerWordsConfig,
             GeofenceConfig,
-            InteractionLanguage,
             InterruptionConfig,
             Labels,
             LlmConfig,
@@ -46988,7 +46910,7 @@ patches:
 
         function assertTurnDetectionLanguage(value: string): asserts value is TurnDetectionLanguage {
             if (!isTurnDetectionLanguage(value)) {
-                throw new Error(`Invalid interaction language: ${value}`);
+                throw new Error(`Invalid turnDetection.language: ${value}`);
             }
         }
 
@@ -47093,7 +47015,6 @@ patches:
             private _rtc?: RtcConfig;
             private _fillerWords?: FillerWordsConfig;
             private _greetingConfigs?: LlmGreetingConfigs;
-            private _interactionLanguage?: InteractionLanguage;
 
             constructor(options: AgentOptions = {}) {
                 this._name = options.name;
@@ -47120,9 +47041,6 @@ patches:
                 }
                 if (options.parameters) {
                     this._parameters = options.parameters;
-                }
-                if (options.interactionLanguage) {
-                    this._interactionLanguage = options.interactionLanguage;
                 }
                 if (options.geofence) {
                     this._geofence = options.geofence;
@@ -47192,18 +47110,6 @@ patches:
             }
 
             /**
-             * Returns a new Agent with the Agora interaction language.
-             *
-             * This serializes to `asr.language`. Vendor-specific language values remain
-             * under `asr.params`, for example `asr.params.language`.
-             */
-            withInteractionLanguage(language: InteractionLanguage): Agent<TTSSampleRate> {
-                const newAgent = this._clone();
-                newAgent._interactionLanguage = language;
-                return newAgent;
-            }
-
-            /**
              * Returns a new Agent with the specified MLLM vendor.
              *
              * MLLM vendors handle real-time audio end-to-end, bypassing the standard
@@ -47253,6 +47159,7 @@ patches:
              *
              * const agent = new Agent({ name: 'avatar-assistant' })
              *   .withTts(new ElevenLabsTTS({
+
              *     key: '...',
              *     modelId: '...',
              *     voiceId: '...',
@@ -47780,7 +47687,11 @@ patches:
                             c.failure_message = this._failureMessage;
                         }
                     }
-                    return { ...base, mllm: mllmConfig, turn_detection: this._turnDetection };
+                    return {
+                        ...base,
+                        mllm: mllmConfig,
+                        turn_detection: this._turnDetection as Agora.StartAgentsRequest.Properties.TurnDetection | undefined,
+                    };
                 }
 
                 const skipCategories = new Set(opts.skipVendorValidationCategories ?? []);
@@ -47805,29 +47716,45 @@ patches:
                     throw new Error("LLM configuration is required. Use withLlm() to set it.");
                 }
 
+                const skipLlmValidation = skipCategories.has("llm");
+                const skipTtsValidation = skipCategories.has("tts");
+                const allowMissingAsr = allowMissingCategories.has("asr");
+                const allowMissingLlm = allowMissingCategories.has("llm");
+                const allowMissingTts = allowMissingCategories.has("tts");
+
+                if (!this._tts && !(skipTtsValidation || allowMissingTts)) {
+                    throw new Error("TTS configuration is required. Use withTts() to set it.");
+                }
+                if (!this._llm && !(skipLlmValidation || allowMissingLlm)) {
+                    throw new Error("LLM configuration is required. Use withLlm() to set it.");
+                }
+
                 const llmConfig: Agora.Llm | undefined = this._llm
                     ? {
                           ...this._llm,
-                          system_messages: this._instructions
-                              ? [{ role: "system", content: this._instructions }]
-                              : this._llm.system_messages,
-                          greeting_message: this._greeting ?? this._llm.greeting_message,
-                          greeting_configs: this._greetingConfigs ?? this._llm.greeting_configs,
-                          failure_message: this._failureMessage ?? this._llm.failure_message,
-                          max_history: this._maxHistory ?? this._llm.max_history,
+                          system_messages:
+                              this._llm.system_messages !== undefined
+                                  ? this._llm.system_messages
+                                  : this._instructions
+                                    ? [{ role: "system", content: this._instructions }]
+                                    : undefined,
+                          greeting_message: this._llm.greeting_message ?? this._greeting,
+                          greeting_configs: this._llm.greeting_configs ?? this._greetingConfigs,
+                          failure_message: this._llm.failure_message ?? this._failureMessage,
+                          max_history: this._llm.max_history ?? this._maxHistory,
                       }
                     : undefined;
 
+                const turnDetectionConfig = this._resolveTurnDetectionConfig();
                 const asrConfig =
                     this._stt !== undefined || !allowMissingAsr
-                        ? (this._resolveAsrConfig() as Agora.Asr | undefined)
+                        ? (this._resolveAsrConfig(turnDetectionConfig) as Agora.Asr | undefined)
                         : undefined;
-                const turnDetectionConfig = this._resolveTurnDetectionConfig();
                 const ttsConfig = this._tts;
 
                 return {
                     ...base,
-                    turn_detection: turnDetectionConfig,
+                    turn_detection: turnDetectionConfig as Agora.StartAgentsRequest.Properties.TurnDetection,
                     ...(llmConfig && { llm: llmConfig }),
                     ...(ttsConfig && { tts: ttsConfig }),
                     ...(asrConfig && { asr: asrConfig }),
@@ -47866,40 +47793,15 @@ patches:
                 newAgent._rtc = this._rtc;
                 newAgent._fillerWords = this._fillerWords;
                 newAgent._greetingConfigs = this._greetingConfigs;
-                newAgent._interactionLanguage = this._interactionLanguage;
                 return newAgent;
             }
 
-            private _resolveAsrConfig(): SttConfig | undefined {
+            private _resolveAsrConfig(turnDetectionConfig: TurnDetectionConfig): SttConfig | undefined {
                 const asrConfig = { ...(this._stt ?? {}) } as SttConfig & { language?: string };
                 if (this._stt === undefined) {
                     asrConfig.vendor = "ares";
                 }
-                const existingLanguage = asrConfig.language;
-                const language =
-                    this._interactionLanguage ??
-
-                        ? existingLanguage
-                        : DEFAULT_INTERACTION_LANGUAGE);
-
-                asrConfig.language = language;
-
-                return Object.keys(asrConfig).length > 0 ? asrConfig : undefined;
-            }
-
-        function _parseNumericUid(uid: string, label: string): number {
-            if (!/^\d+$/.test(uid)) {
-                throw new Error(`${label} must be a numeric RTC UID when auto-generating a ConvoAI token`);
-            }
-            return Number(uid);
-        }
-
-            private _resolveAsrConfig(): SttConfig | undefined {
-                const asrConfig = { ...(this._stt ?? {}) } as SttConfig & { language?: string };
-                if (this._stt === undefined) {
-                    asrConfig.vendor = "ares";
-                }
-                delete asrConfig.language;
+                asrConfig.language = turnDetectionConfig.language;
 
                 return Object.keys(asrConfig).length > 0 ? asrConfig : undefined;
             }
@@ -47907,12 +47809,7 @@ patches:
             private _resolveTurnDetectionConfig(): TurnDetectionConfig {
                 const turnDetection = { ...(this._turnDetection ?? {}) } as TurnDetectionConfig & { language?: string };
                 const existingTurnDetectionLanguage = turnDetection.language;
-                const existingAsrLanguage = this._stt?.language;
-                const language =
-                    existingTurnDetectionLanguage ??
-                    (existingAsrLanguage !== undefined && isTurnDetectionLanguage(existingAsrLanguage)
-                        ? existingAsrLanguage
-                        : DEFAULT_TURN_DETECTION_LANGUAGE);
+                const language = existingTurnDetectionLanguage ?? DEFAULT_TURN_DETECTION_LANGUAGE;
 
                 assertTurnDetectionLanguage(language);
                 turnDetection.language = language;
@@ -48026,127 +47923,221 @@ patches:
             }
             return response;
         }
-      tests/unit/agentkit/preset-validation.test.ts: |
-        import { describe, expect, test, vi } from "vitest";
-        import { Agent } from "../../../src/agentkit/Agent.js";
-        import { OpenAI } from "../../../src/agentkit/vendors/llm.js";
-        import { DeepgramSTT } from "../../../src/agentkit/vendors/stt.js";
-        import { MiniMaxTTS, OpenAITTS } from "../../../src/agentkit/vendors/tts.js";
-        import type * as Agora from "../../../src/api/index.js";
-        import type { AgoraClient } from "../../../src/Client.js";
+    user_owned: true
+  - id: patch-a81eaff0
+    content_hash: sha256:b8c1a86476654f247f78c604c0b6f589f07eef0ffd187bab811bcf827c0913b6
+    original_commit: a81eaff0a7cf93a67a41e7dcc59f1be7ec25e979
+    original_message: "fix(lint): suppress noExplicitAny in fern-generated src/api files, apply biome format"
+    original_author: digitallysavvy <hermes.frangoudis@gmail.com>
+    base_generation: 928ea967be4207eab83bce9331c5d17566892b50
+    files:
+      - biome.json
+    patch_content: |
+      diff --git a/biome.json b/biome.json
+      index a777468..2a9e837 100644
+      --- a/biome.json
+      +++ b/biome.json
+      @@ -43,6 +43,18 @@
+                   }
+               }
+           },
+      +    "overrides": [
+      +        {
+      +            "includes": ["src/api/**"],
+      +            "linter": {
+      +                "rules": {
+      +                    "suspicious": {
+      +                        "noExplicitAny": "off"
+      +                    }
+      +                }
+      +            }
+      +        }
+      +    ],
+           "linter": {
+               "rules": {
+                   "style": {
+    theirs_snapshot:
+      biome.json: |
+        {
+            "$schema": "https://biomejs.dev/schemas/2.3.1/schema.json",
+            "root": true,
+            "vcs": {
+                "enabled": false
+            },
+            "files": {
+                "ignoreUnknown": true,
+                "includes": [
+                    "**",
+                    "!!dist",
+                    "!!**/dist",
+                    "!!lib",
+                    "!!**/lib",
+                    "!!_tmp_*",
+                    "!!**/_tmp_*",
+                    "!!*.tmp",
+                    "!!**/*.tmp",
+                    "!!.tmp/",
+                    "!!**/.tmp/",
+                    "!!*.log",
+                    "!!**/*.log",
+                    "!!**/.DS_Store",
+                    "!!**/Thumbs.db"
+                ]
+            },
+            "formatter": {
+                "enabled": true,
+                "indentStyle": "space",
+                "indentWidth": 4,
+                "lineWidth": 120
+            },
+            "javascript": {
+                "formatter": {
+                    "quoteStyle": "double"
+                }
+            },
+            "assist": {
+                "enabled": true,
+                "actions": {
+                    "source": {
+                        "organizeImports": "on"
+                    }
+                }
+            },
+            "overrides": [
+                {
+                    "includes": ["src/api/**"],
+                    "linter": {
+                        "rules": {
+                            "suspicious": {
+                                "noExplicitAny": "off"
+                            }
+                        }
+                    }
+                }
+            ],
+            "linter": {
+                "rules": {
+                    "style": {
+                        "useNodejsImportProtocol": "off"
+                    },
+                    "suspicious": {
+                        "noAssignInExpressions": "warn",
+                        "noUselessEscapeInString": {
+                            "level": "warn",
+                            "fix": "none",
+                            "options": {}
+                        },
+                        "noThenProperty": "warn",
+                        "useIterableCallbackReturn": "warn",
+                        "noShadowRestrictedNames": "warn",
+                        "noTsIgnore": {
+                            "level": "warn",
+                            "fix": "none",
+                            "options": {}
+                        },
+                        "noConfusingVoidType": {
+                            "level": "warn",
+                            "fix": "none",
+                            "options": {}
+                        }
+                    }
+                }
+            }
+        }
+  - id: patch-aa937e08
+    content_hash: sha256:8c48c136701333e7f22d166c433f06564b21ce3c1ca6753cee15ff2e380721d8
+    original_commit: aa937e08c52915b98d97d189488dad592b8797f6
+    original_message: Prepare TypeScript SDK v2.2.0 release
+    original_author: digitallysavvy <hermes.frangoudis@gmail.com>
+    base_generation: 9ab62914505c00575e02a0778c157880cd8d22d6
+    files:
+      - src/BaseClient.ts
+      - src/version.ts
+    patch_content: |
+      diff --git a/src/BaseClient.ts b/src/BaseClient.ts
+      index b11191d..0973d9f 100644
+      --- a/src/BaseClient.ts
+      +++ b/src/BaseClient.ts
+      @@ -44,8 +44,8 @@ export function normalizeClientOptions<T extends BaseClientOptions>(options: T):
+               {
+                   "X-Fern-Language": "JavaScript",
+                   "X-Fern-SDK-Name": "agora-agents",
+      -            "X-Fern-SDK-Version": "v2.1.2",
+      -            "User-Agent": "agora-agents/v2.1.2",
+      +            "X-Fern-SDK-Version": "v2.2.0",
+      +            "User-Agent": "agora-agents/v2.2.0",
+                   "X-Fern-Runtime": core.RUNTIME.type,
+                   "X-Fern-Runtime-Version": core.RUNTIME.version,
+               },
+      diff --git a/src/version.ts b/src/version.ts
+      index 000de3f..8fe89e8 100644
+      --- a/src/version.ts
+      +++ b/src/version.ts
+      @@ -1 +1 @@
+      -export const SDK_VERSION = "v2.1.2";
+      +export const SDK_VERSION = "v2.2.0";
+    theirs_snapshot:
+      src/BaseClient.ts: |
+        // This file was auto-generated by Fern from our API Definition.
 
-        function createClient() {
-            const start = vi.fn(async (_request: Agora.StartAgentsRequest) => ({
-                agent_id: "agent-id",
-                create_ts: 1737111452,
-                status: "RUNNING" as const,
-            }));
+        import { mergeHeaders } from "./core/headers.js";
+        import * as core from "./core/index.js";
+        import type * as environments from "./environments.js";
 
-            const client = {
-                appId: "appid",
-                agents: { start },
-            } as unknown as AgoraClient & { readonly appId: string };
-
-            return { client, start };
+        export interface BaseClientOptions {
+            environment?: core.Supplier<environments.AgoraEnvironment | string>;
+            /** Specify a custom URL to connect the client to. */
+            baseUrl?: core.Supplier<string>;
+            username: core.Supplier<string>;
+            password: core.Supplier<string>;
+            /** Override the Authorization header */
+            authorization: core.Supplier<string>;
+            /** Additional headers to include in requests. */
+            headers?: Record<string, string | core.Supplier<string | null | undefined> | null | undefined>;
+            /** The default maximum time to wait for a response in seconds. */
+            timeoutInSeconds?: number;
+            /** The default number of times to retry the request. Defaults to 2. */
+            maxRetries?: number;
+            /** Provide a custom fetch implementation. Useful for platforms that don't have a built-in fetch or need a custom implementation. */
+            fetch?: typeof fetch;
+            /** Configure logging for the client. */
+            logging?: core.logging.LogConfig | core.logging.Logger;
         }
 
-        describe("Agent preset validation", () => {
-            test("explicit ASR preset still requires LLM and TTS", async () => {
-                const { client, start } = createClient();
-                const agent = new Agent({ name: "support" });
+        export interface BaseRequestOptions {
+            /** The maximum time to wait for a response in seconds. */
+            timeoutInSeconds?: number;
+            /** The number of times to retry the request. Defaults to 2. */
+            maxRetries?: number;
+            /** A hook to abort the request. */
+            abortSignal?: AbortSignal;
+            /** Override the Authorization header */
+            authorization?: string;
+            /** Additional query string parameters to include in the request. */
+            queryParams?: Record<string, unknown>;
+            /** Additional headers to include in the request. */
+            headers?: Record<string, string | core.Supplier<string | null | undefined> | null | undefined>;
+        }
 
-                const session = agent.createSession(client, {
-                    channel: "channel",
-                    token: "token",
-                    agentUid: "1",
-                    remoteUids: ["100"],
-                    preset: "deepgram_nova_3",
-                });
+        export function normalizeClientOptions<T extends BaseClientOptions>(options: T): T {
+            const headers = mergeHeaders(
+                {
+                    "X-Fern-Language": "JavaScript",
+                    "X-Fern-SDK-Name": "agora-agents",
+                    "X-Fern-SDK-Version": "v2.2.0",
+                    "User-Agent": "agora-agents/v2.2.0",
+                    "X-Fern-Runtime": core.RUNTIME.type,
+                    "X-Fern-Runtime-Version": core.RUNTIME.version,
+                },
+                options?.headers,
+            );
 
-                await expect(session.start()).rejects.toThrow("TTS configuration is required");
-                expect(start).not.toHaveBeenCalled();
-            });
-
-            test("explicit LLM preset still requires TTS", async () => {
-                const { client, start } = createClient();
-                const agent = new Agent({ name: "support" });
-
-                const session = agent.createSession(client, {
-                    channel: "channel",
-                    token: "token",
-                    agentUid: "1",
-                    remoteUids: ["100"],
-                    preset: "openai_gpt_4o_mini",
-                });
-
-                await expect(session.start()).rejects.toThrow("TTS configuration is required");
-                expect(start).not.toHaveBeenCalled();
-            });
-
-            test("explicit TTS preset still requires LLM", async () => {
-                const { client, start } = createClient();
-                const agent = new Agent({ name: "support" });
-
-                const session = agent.createSession(client, {
-                    channel: "channel",
-                    token: "token",
-                    agentUid: "1",
-                    remoteUids: ["100"],
-                    preset: "openai_tts_1",
-                });
-
-                await expect(session.start()).rejects.toThrow("LLM configuration is required");
-                expect(start).not.toHaveBeenCalled();
-            });
-
-            test("infers ASR, LLM, and TTS presets without skipping unrelated validation", async () => {
-                const { client, start } = createClient();
-                const agent = new Agent({ name: "support" })
-                    .withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }))
-                    .withLlm(new OpenAI({ model: "gpt-4o-mini" }))
-                    .withTts(new OpenAITTS({ voice: "alloy" }));
-
-                const session = agent.createSession(client, {
-                    channel: "channel",
-                    token: "token",
-                    agentUid: "1",
-                    remoteUids: ["100"],
-                });
-
-                await session.start();
-
-                const request = start.mock.calls[0]?.[0];
-                expect(request?.preset).toBe("deepgram_nova_3,openai_gpt_4o_mini,openai_tts_1");
-                expect(request?.properties.asr?.params).toEqual({ language: "en-US" });
-                expect(request?.properties.tts?.params).toEqual({ voice: "alloy" });
-            });
-
-            test("infers hyphenated MiniMax managed preset model", async () => {
-                const { client, start } = createClient();
-                const agent = new Agent({ name: "support" })
-                    .withLlm(new OpenAI({ model: "gpt-4o-mini" }))
-                    .withTts(new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }));
-
-                const session = agent.createSession(client, {
-                    channel: "channel",
-                    token: "token",
-                    agentUid: "1",
-                    remoteUids: ["100"],
-                });
-
-                await session.start();
-
-                const request = start.mock.calls[0]?.[0];
-                expect(request?.preset).toBe("openai_gpt_4o_mini,minimax_speech_2_6_turbo");
-                expect(request?.properties.tts?.params).toEqual({
-                    voice_setting: { voice_id: "English_captivating_female1" },
-                });
-            });
-
-            test("speech-02-turbo requires BYOK", () => {
-                expect(() => new MiniMaxTTS({ model: "speech-02-turbo", voiceId: "English_captivating_female1" })).toThrow(
-                    "MiniMaxTTS requires key unless using a supported Agora-managed model",
-                );
-            });
-        });
-    user_owned: true
+            return {
+                ...options,
+                logging: core.logging.createLogger(options?.logging),
+                headers,
+            } as T;
+        }
+      src/version.ts: |
+        export const SDK_VERSION = "v2.2.0";
+    status: unresolved
