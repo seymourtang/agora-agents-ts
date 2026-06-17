@@ -60,5 +60,5 @@ export async function requestWithRetries(
             break;
         }
     }
-    return response;
+    return response!;
 }
