@@ -1,4 +1,6 @@
 import { describe, expect, test } from "vitest";
+import { AgoraClient } from "../../../src/AgoraPoolClient.js";
+import { Area } from "../../../src/core/domain/index.js";
 import { Agent } from "../../../src/agentkit/Agent.js";
 import { OpenAI } from "../../../src/agentkit/vendors/llm.js";
 import {
@@ -11,8 +13,14 @@ import {
 } from "../../../src/agentkit/vendors/stt.js";
 import { ElevenLabsTTS } from "../../../src/agentkit/vendors/tts.js";
 
+const TEST_AGENT_CLIENT = new AgoraClient({
+    area: Area.US,
+    appId: "test-app-id",
+    appCertificate: "test-app-certificate",
+});
+
 function baseAgent() {
-    return new Agent()
+    return new Agent({ client: TEST_AGENT_CLIENT })
         .withLlm(
             new OpenAI({ apiKey: "llm-key", model: "gpt-4o-mini", url: "https://api.openai.com/v1/chat/completions" }),
         )
@@ -70,7 +78,7 @@ describe("STT language serialization", () => {
     });
 
     test("uses turn detection language when it differs from provider language", () => {
-        const properties = new Agent({ turnDetection: { language: "fr-FR" } })
+        const properties = new Agent({ client: TEST_AGENT_CLIENT, turnDetection: { language: "fr-FR" } })
             .withLlm(
                 new OpenAI({
                     apiKey: "llm-key",
@@ -106,7 +114,7 @@ describe("STT language serialization", () => {
 
     test("rejects invalid turn detection language", () => {
         expect(() =>
-            new Agent({ turnDetection: { language: "xx" as never } })
+            new Agent({ client: TEST_AGENT_CLIENT, turnDetection: { language: "xx" as never } })
                 .withLlm(
                     new OpenAI({
                         apiKey: "llm-key",
@@ -228,7 +236,7 @@ describe("STT language serialization", () => {
     });
 
     test("keeps AssemblyAI params nested and sources asr language from turn detection", () => {
-        const properties = new Agent({ turnDetection: { language: "fr-FR" } })
+        const properties = new Agent({ client: TEST_AGENT_CLIENT, turnDetection: { language: "fr-FR" } })
             .withLlm(
                 new OpenAI({
                     apiKey: "llm-key",

@@ -46,7 +46,8 @@ export interface OpenAIRealtimeOptions {
  *
  * @example
  * ```typescript
- * const agent = new Agent()
+ * const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+ * const agent = new Agent({ client })
  *   .withMllm(new OpenAIRealtime({
  *     apiKey: process.env.OPENAI_API_KEY,
  *     greetingMessage: 'Hello! How can I help you?',
@@ -152,7 +153,8 @@ export interface GeminiLiveOptions {
  *
  * @example
  * ```typescript
- * const agent = new Agent()
+ * const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+ * const agent = new Agent({ client })
  *   .withMllm(new GeminiLive({
  *     apiKey: process.env.GOOGLE_API_KEY,
  *     model: 'gemini-live-2.5-flash',
@@ -258,7 +260,8 @@ export interface VertexAIOptions {
  *
  * @example
  * ```typescript
- * const agent = new Agent()
+ * const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+ * const agent = new Agent({ client })
  *   .withMllm(new VertexAI({
  *     model: 'gemini-live-2.5-flash-preview-native-audio-09-2025',
  *     projectId: process.env.GOOGLE_PROJECT_ID,
@@ -366,7 +369,8 @@ export interface XaiGrokOptions {
  *
  * @example
  * ```typescript
- * const agent = new Agent()
+ * const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+ * const agent = new Agent({ client })
  *   .withMllm(new XaiGrok({
  *     apiKey: process.env.XAI_API_KEY,
  *     voice: 'eve',

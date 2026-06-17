@@ -19,14 +19,14 @@ import { AgoraClient, Area } from 'agora-agents';
 
 <!-- snippet: fragment -->
 ```typescript
-const client = new AgoraClient(options: AgoraClient.Options);
+const client = new AgoraClient<TArea>(options: AgoraClient.Options<TArea>);
 ```
 
 ### Options
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `area` | `Area` | Yes | Region for API routing (`Area.US`, `Area.EU`, `Area.AP`, `Area.CN`) |
+| `area` | `AgoraArea` | Yes | Region for API routing (`Area.US`, `Area.EU`, `Area.AP`, `Area.CN`) |
 | `appId` | `string` | Yes | Agora App ID |
 | `appCertificate` | `string` | Yes | Agora App Certificate (keep secret) |
 | `customerId` | `string` | No | Customer ID for Basic Auth |
@@ -54,13 +54,14 @@ See [Authentication](../getting-started/authentication.md) for details on each m
 | `appId` | `string` (readonly) | The Agora App ID |
 | `appCertificate` | `string` (readonly) | The Agora App Certificate |
 | `authMode` | `AgoraAuthMode` (readonly) | `"basic"`, `"token"`, or `"app-credentials"` |
+| `area` | `TArea` (readonly) | The configured routing area |
 | `pool` | `Pool` (readonly) | The domain pool instance |
 
 ## Public methods
 
-### `agent(options?): Agent`
+### `stopAgent(agentId: string): Promise<void>`
 
-Create an {@link Agent} bound to this client.
+Stop a running agent by ID without holding an `AgentSession` reference. Uses the same credentials as this client. Returns successfully if the agent has already stopped (404 is treated as success). When `authMode` is `"app-credentials"`, the SDK mints a short-lived REST token for the stop request.
 
 ### `nextRegion(): void`
 

@@ -65,8 +65,8 @@ async function main(): Promise<void> {
     );
 
   const session = agent.createSession({
-    name: 'support-assistant',
-    channel: 'support-room-123',
+    name: `conversation-${Date.now()}`,
+    channel: `demo-channel-${Date.now()}`,
     agentUid: '1',
     remoteUids: ['100'],
     idleTimeout: 120,

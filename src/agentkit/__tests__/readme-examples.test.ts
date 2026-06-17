@@ -102,8 +102,8 @@ new Agent({
             }),
         )
         .createSession({
-            name: "cn-assistant",
-            channel: "cn-room",
+            name: `conversation-${Date.now()}`,
+            channel: `demo-channel-${Date.now()}`,
             agentUid: "1001",
             remoteUids: ["100"],
         });
@@ -138,11 +138,8 @@ new Agent({
         )
         .withTts(
             new MiniMaxTTS({
-                key: "minimax-key",
-                groupId: "minimax-group",
                 model: "speech_2_6_turbo",
                 voiceId: "English_captivating_female1",
-                url: "wss://api-uw.minimax.io/ws/v1/t2a_v2",
             }),
         );
 }

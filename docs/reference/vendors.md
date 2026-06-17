@@ -27,7 +27,7 @@ const client = new AgoraClient({
   appCertificate: process.env.AGORA_APP_CERTIFICATE!,
 });
 
-const agent = client.agent({})
+const agent = new Agent({ client })
   .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
   .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
   .withTts(new MiniMaxTTS({
@@ -36,8 +36,8 @@ const agent = client.agent({})
   }));
 
 const session = agent.createSession({
-  name: 'global-agent',
-  channel: 'global-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
@@ -54,7 +54,7 @@ const client = new AgoraClient({
   appCertificate: process.env.AGORA_APP_CERTIFICATE!,
 });
 
-const agent = client.agent({})
+const agent = new Agent({ client })
   .withStt(new FengmingSTT())
   .withLlm(new AliyunLLM({
     url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
@@ -67,8 +67,8 @@ const agent = client.agent({})
   }));
 
 const session = agent.createSession({
-  name: 'cn-agent',
-  channel: 'cn-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });

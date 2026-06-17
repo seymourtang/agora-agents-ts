@@ -228,7 +228,7 @@ export function isAvatarTokenManaged(config: StrictAvatarConfig): boolean {
  *
  * @param options.requireSessionFields - When true, require fields AgentKit
  * fills during `AgentSession.start()` for Generic avatars (`agora_appid`,
- * `agora_channel`, `agora_token`) and SenseTime avatars (`agora_token`).
+ * `agora_channel`, `agora_token`).
  * @throws {Error} If the configuration is invalid
  */
 export function validateAvatarConfig(
@@ -298,9 +298,6 @@ export function validateAvatarConfig(
         }
         if (!Array.isArray(config.params.sceneList) || config.params.sceneList.length === 0) {
             throw new Error("SenseTime avatar requires a non-empty sceneList");
-        }
-        if (options.requireSessionFields && !config.params.agora_token) {
-            throw new Error("SenseTime avatar requires agora_token after session enrichment");
         }
     }
 }

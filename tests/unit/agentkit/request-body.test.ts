@@ -1,4 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
+import { AgoraClient } from "../../../src/AgoraPoolClient.js";
+import { Area } from "../../../src/core/domain/index.js";
 import { Agent } from "../../../src/agentkit/Agent.js";
 import {
     AmazonBedrock,
@@ -44,6 +46,12 @@ import type { AgoraClient } from "../../../src/Client.js";
 // ---------------------------------------------------------------------------
 // Shared helpers
 // ---------------------------------------------------------------------------
+
+const TEST_AGENT_CLIENT = new AgoraClient({
+    area: Area.US,
+    appId: "test-app-id",
+    appCertificate: "test-app-certificate",
+});
 
 function createClient() {
     const start = vi.fn(async (_request: Agora.StartAgentsRequest) => ({
@@ -92,7 +100,7 @@ const ALLOW_ALL: { allowMissingVendorCategories: ReadonlySet<"asr" | "llm" | "tt
 
 describe("Scenario 1 — BYOK pipeline properties shape", () => {
     test("OpenAI LLM + Deepgram BYOK STT + ElevenLabs TTS produces correct properties", () => {
-        const agent = new Agent()
+        const agent = new Agent({ client: TEST_AGENT_CLIENT })
             .withStt(new DeepgramSTT({ apiKey: "dg-key", model: "nova-2", language: "en-US" }))
             .withLlm(
                 new OpenAI({
@@ -194,7 +202,7 @@ describe("Scenario 2 — Preset-backed pipeline (managed models)", () => {
 
 describe("Scenario 3 — LLM vendor greeting wins over agent-level greeting", () => {
     test("LLM greetingMessage takes precedence over agent-level greeting", () => {
-        const agent = new Agent({ greeting: "agent-level greeting" }).withLlm(
+        const agent = new Agent({ client: TEST_AGENT_CLIENT, greeting: "agent-level greeting" }).withLlm(
             new OpenAI({
                 apiKey: "openai-key",
                 url: "https://api.openai.com/v1/chat/completions",
@@ -213,7 +221,7 @@ describe("Scenario 3 — LLM vendor greeting wins over agent-level greeting", ()
     });
 
     test("agent-level greeting fills in when LLM has no greetingMessage", () => {
-        const agent = new Agent({ greeting: "agent greeting" }).withLlm(
+        const agent = new Agent({ client: TEST_AGENT_CLIENT, greeting: "agent greeting" }).withLlm(
             new OpenAI({
                 apiKey: "openai-key",
                 url: "https://api.openai.com/v1/chat/completions",
@@ -236,7 +244,7 @@ describe("Scenario 3 — LLM vendor greeting wins over agent-level greeting", ()
 
 describe("Scenario 4 — VertexAILLM URL construction", () => {
     test("VertexAILLM builds correct URL from projectId and location", () => {
-        const agent = new Agent().withLlm(
+        const agent = new Agent({ client: TEST_AGENT_CLIENT }).withLlm(
             new VertexAILLM({
                 apiKey: "vertex-key",
                 model: "gemini-pro",
@@ -268,7 +276,7 @@ describe("Scenario 5 — OpenAISTT parameter shape", () => {
     const llmAndTtsAllowed = { allowMissingVendorCategories: new Set(["llm", "tts"]) } as const;
 
     test("5a: OpenAISTT with all fields serializes correctly", () => {
-        const agent = new Agent().withStt(
+        const agent = new Agent({ client: TEST_AGENT_CLIENT }).withStt(
             new OpenAISTT({
                 apiKey: "openai-stt-key",
                 model: "gpt-4o-mini-transcribe",
@@ -450,7 +458,7 @@ describe("Scenario 8 — MLLM mode", () => {
     });
 
     test("8b: GeminiLive toProperties has correct vendor and params", () => {
-        const agent = new Agent().withMllm(
+        const agent = new Agent({ client: TEST_AGENT_CLIENT }).withMllm(
             new GeminiLive({
                 apiKey: "gemini-key",
                 model: "gemini-live-2.5-flash",
@@ -471,7 +479,7 @@ describe("Scenario 8 — MLLM mode", () => {
     });
 
     test("8c: VertexAI MLLM toProperties has project_id, location, adc_credentials_string at top level", () => {
-        const agent = new Agent().withMllm(
+        const agent = new Agent({ client: TEST_AGENT_CLIENT }).withMllm(
             new VertexAI({
                 model: "gemini-live-2.5-flash-preview-native-audio-09-2025",
                 projectId: "my-project",
@@ -500,7 +508,7 @@ describe("Scenario 8 — MLLM mode", () => {
 
 describe("ASR vendor coverage", () => {
     test("DeepgramSTT BYOK serializes key and model in params", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withStt(new DeepgramSTT({ apiKey: "dg-key", model: "nova-2", language: "en-US" }))
             .toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
 
@@ -525,7 +533,7 @@ describe("ASR vendor coverage", () => {
     });
 
     test("MicrosoftSTT serializes key, region, language in params", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withStt(new MicrosoftSTT({ key: "ms-key", region: "eastus", language: "en-US" }))
             .toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
 
@@ -535,7 +543,7 @@ describe("ASR vendor coverage", () => {
     });
 
     test("GoogleSTT serializes project_id, location, adc_credentials_string, language, model", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withStt(
                 new GoogleSTT({
                     projectId: "proj",
@@ -556,7 +564,7 @@ describe("ASR vendor coverage", () => {
     });
 
     test("AmazonSTT serializes access_key_id, secret_access_key, region, language_code", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withStt(
                 new AmazonSTT({
                     accessKey: "access",
@@ -575,7 +583,7 @@ describe("ASR vendor coverage", () => {
     });
 
     test("AssemblyAISTT serializes api_key and language in params", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withStt(new AssemblyAISTT({ apiKey: "assembly-key", language: "en-US" }))
             .toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
 
@@ -585,14 +593,14 @@ describe("ASR vendor coverage", () => {
     });
 
     test("AresSTT produces no params key", () => {
-        const p = new Agent().withStt(new AresSTT()).toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
+        const p = new Agent({ client: TEST_AGENT_CLIENT }).withStt(new AresSTT()).toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
 
         expect(p.asr?.vendor).toBe("ares");
         expect(p.asr?.params).toBeUndefined();
     });
 
     test("SpeechmaticsSTT serializes api_key and language in params", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withStt(new SpeechmaticsSTT({ apiKey: "sm-key", language: "en" }))
             .toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
 
@@ -602,7 +610,7 @@ describe("ASR vendor coverage", () => {
     });
 
     test("SarvamSTT serializes api_key in params", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withStt(new SarvamSTT({ apiKey: "sarvam-key", language: "en" }))
             .toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
 
@@ -611,7 +619,7 @@ describe("ASR vendor coverage", () => {
     });
 
     test("Default ASR (no STT set) produces ares vendor with language", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(STUB_TTS)
             .toProperties({ ...SESSION_OPTS });
@@ -627,7 +635,7 @@ describe("ASR vendor coverage", () => {
 
 describe("LLM vendor coverage", () => {
     test("OpenAI BYOK serializes api_key, url, style=openai, model in params", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(
                 new OpenAI({
                     apiKey: "openai-key",
@@ -644,7 +652,7 @@ describe("LLM vendor coverage", () => {
     });
 
     test("AzureOpenAI serializes api_key, url constructed from resourceName, style=openai", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(
                 new AzureOpenAI({
                     apiKey: "azure-key",
@@ -663,7 +671,7 @@ describe("LLM vendor coverage", () => {
     });
 
     test("Anthropic serializes api_key, url, style=anthropic, max_tokens, anthropic-version header", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(
                 new Anthropic({
                     apiKey: "anthropic-key",
@@ -684,7 +692,7 @@ describe("LLM vendor coverage", () => {
     });
 
     test("Gemini serializes api_key, url, style=gemini, model in params", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(
                 new Gemini({
                     apiKey: "gemini-key",
@@ -700,7 +708,7 @@ describe("LLM vendor coverage", () => {
     });
 
     test("Groq serializes api_key, url, style=openai", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(
                 new Groq({
                     apiKey: "groq-key",
@@ -717,7 +725,7 @@ describe("LLM vendor coverage", () => {
     });
 
     test("CustomLLM serializes api_key, url, style=openai, vendor=custom", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(
                 new CustomLLM({
                     apiKey: "custom-key",
@@ -733,7 +741,7 @@ describe("LLM vendor coverage", () => {
     });
 
     test("VertexAILLM serializes style=gemini and constructed URL", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(
                 new VertexAILLM({
                     apiKey: "vertex-key",
@@ -751,7 +759,7 @@ describe("LLM vendor coverage", () => {
     });
 
     test("AmazonBedrock serializes style=bedrock and correct URL", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(
                 new AmazonBedrock({
                     accessKey: "access",
@@ -770,7 +778,7 @@ describe("LLM vendor coverage", () => {
     });
 
     test("Dify serializes api_key, url, style=dify", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(
                 new Dify({
                     apiKey: "dify-key",
@@ -792,7 +800,7 @@ describe("LLM vendor coverage", () => {
 
 describe("TTS vendor coverage", () => {
     test("ElevenLabsTTS serializes key, model_id, voice_id, base_url", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new ElevenLabsTTS({
@@ -812,7 +820,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("MicrosoftTTS serializes key, region, voice_name", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new MicrosoftTTS({
@@ -830,7 +838,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("OpenAITTS BYOK serializes api_key, model, voice, base_url", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new OpenAITTS({
@@ -850,7 +858,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("CartesiaTTS serializes api_key and voice object", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new CartesiaTTS({
@@ -867,7 +875,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("GoogleTTS serializes credentials and VoiceSelectionParams", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new GoogleTTS({
@@ -885,7 +893,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("AmazonTTS serializes aws_access_key_id, aws_secret_access_key, region_name, voice", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new AmazonTTS({
@@ -906,7 +914,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("DeepgramTTS serializes api_key and model", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new DeepgramTTS({
@@ -922,7 +930,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("HumeAITTS serializes key, voice_id, provider", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new HumeAITTS({
@@ -940,7 +948,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("RimeTTS serializes api_key, speaker, modelId", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new RimeTTS({
@@ -958,7 +966,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("FishAudioTTS serializes api_key, reference_id, backend", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new FishAudioTTS({
@@ -976,7 +984,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("MiniMaxTTS BYOK serializes key, group_id, model, url, voice_setting", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new MiniMaxTTS({
@@ -1000,7 +1008,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("SarvamTTS serializes api_subscription_key, speaker, target_language_code", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new SarvamTTS({
@@ -1018,7 +1026,7 @@ describe("TTS vendor coverage", () => {
     });
 
     test("MurfTTS serializes api_key", () => {
-        const p = new Agent()
+        const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(
                 new MurfTTS({

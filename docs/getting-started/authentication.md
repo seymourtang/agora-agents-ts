@@ -28,8 +28,8 @@ const agent = new Agent({ client })
   .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
 
 const session = agent.createSession({
-  name: 'room-123',
-  channel: 'room-123',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });

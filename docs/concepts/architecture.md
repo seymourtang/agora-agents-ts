@@ -24,7 +24,7 @@ The SDK is built in three layers: a hand-written AgentKit layer on top of a regi
 
 | Use case | Layer | Entry point |
 |---|---|---|
-| Start a voice agent with typed vendor config | AgentKit | `new Agent().withLlm().withTts().withStt()` |
+| Start a voice agent with typed vendor config | AgentKit | `new Agent({ client }).withLlm().withTts().withStt()` |
 | Manage session lifecycle and events | AgentKit | `session.start()`, `session.stop()`, `session.on()` |
 | Auto-generate RTC/ConvoAI tokens | AgentKit | App-credentials auth mode, `generateRtcToken()` |
 | Access a new API endpoint not yet in the agentkit | Raw client | `session.raw.someNewEndpoint()` |

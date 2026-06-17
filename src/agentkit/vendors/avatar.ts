@@ -73,7 +73,8 @@ export interface AkoolAvatarOptions {
  *   sampleRate: 16000, // Required for Akool
  * });
  *
- * const agent = new Agent()
+ * const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+ * const agent = new Agent({ client })
  *   .withTts(tts)
  *   .withAvatar(avatar);
  * ```
@@ -144,7 +145,8 @@ export class AkoolAvatar extends BaseAvatar<AkoolSampleRate> {
  *   sampleRate: 24000, // Required for LiveAvatar
  * });
  *
- * const agent = new Agent()
+ * const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+ * const agent = new Agent({ client })
  *   .withTts(tts)
  *   .withAvatar(avatar);
  * ```
@@ -297,7 +299,8 @@ export interface AnamAvatarOptions {
  *   personaId: 'persona-id',
  * });
  *
- * const agent = new Agent()
+ * const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+ * const agent = new Agent({ client })
  *   .withAvatar(avatar);
  * ```
  *

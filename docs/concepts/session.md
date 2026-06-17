@@ -13,8 +13,8 @@ Create a session via [`agent.createSession()`](./agent.md):
 <!-- snippet: fragment -->
 ```typescript
 const session = agent.createSession({
-  name: 'my-room',
-  channel: 'my-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
@@ -68,7 +68,9 @@ When you omit credentials for supported Agora-managed global models on the build
 
 <!-- snippet: fragment -->
 ```typescript
-const agent = new Agent()
+const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+
+const agent = new Agent({ client })
   .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
   .withLlm(new OpenAI({
     model: 'gpt-4o-mini',
@@ -118,8 +120,8 @@ const agent = new Agent({ client })
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key', model: 'nova-2' }));
 
 const session = agent.createSession({
-  name: 'event-demo',
-  channel: 'my-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });

@@ -12,10 +12,7 @@ const client = new AgoraClient({
     appCertificate: "app-certificate",
 });
 
-client
-    .agent({
-        turnDetection: { language: "en-US" },
-    })
+new Agent({ client, turnDetection: { language: "en-US" } })
     .withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }))
     .withLlm(new OpenAI({ model: "gpt-5-mini" }))
     .withTts(new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }))
@@ -27,9 +24,9 @@ client
     });
 
 // Area and provider may differ.
-client.agent({}).withStt(new FengmingSTT());
-client.agent({}).withLlm(new AliyunLLM({ url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", model: "qwen-plus" }));
-client.agent({}).withTts(new MiniMaxCNTTS({ key: "minimax-key", model: "speech-01-turbo", voiceSetting: { voice_id: "female-shaonv" } }));
+new Agent({ client }).withStt(new FengmingSTT());
+new Agent({ client }).withLlm(new AliyunLLM({ url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", model: "qwen-plus" }));
+new Agent({ client }).withTts(new MiniMaxCNTTS({ key: "minimax-key", model: "speech-01-turbo", voiceSetting: { voice_id: "female-shaonv" } }));
 
 {
     const client = new AgoraClient({
@@ -38,10 +35,7 @@ client.agent({}).withTts(new MiniMaxCNTTS({ key: "minimax-key", model: "speech-0
         appCertificate: "app-certificate",
     });
 
-    client
-        .agent({
-            turnDetection: { language: "zh-CN" },
-        })
+    new Agent({ client, turnDetection: { language: "zh-CN" } })
         .withStt(new FengmingSTT())
         .withLlm(
             new AliyunLLM({
@@ -64,11 +58,9 @@ client.agent({}).withTts(new MiniMaxCNTTS({ key: "minimax-key", model: "speech-0
             remoteUids: ["100"],
         });
 
-    client.agent({}).withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }));
-    client.agent({}).withLlm(new OpenAI({ model: "gpt-5-mini" }));
-    client.agent({}).withTts(new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }));
+    new Agent({ client }).withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }));
+    new Agent({ client }).withLlm(new OpenAI({ model: "gpt-5-mini" }));
+    new Agent({ client }).withTts(new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }));
 }
 
-new Agent({
-    client,
-}).withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }));
+new Agent({ client }).withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }));

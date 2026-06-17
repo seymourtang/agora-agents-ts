@@ -63,8 +63,8 @@ const agent = new Agent({
   .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
 
 const session = agent.createSession({
-  name: 'global-agent',
-  channel: 'global-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1001',
   remoteUids: ['*'],
 });
@@ -98,8 +98,8 @@ const agent = new Agent({
   }));
 
 const session = agent.createSession({
-  name: 'cn-agent',
-  channel: 'cn-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1001',
   remoteUids: ['*'],
 });
@@ -149,8 +149,8 @@ const agent = new Agent({ client })
   .withStt(new DeepgramSTT({ apiKey: 'your-deepgram-key' }));
 
 const session = agent.createSession({
-  name: 'failover-demo',
-  channel: 'my-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });

@@ -122,8 +122,8 @@ export interface AgentSessionOptions {
  *   .withStt(new DeepgramSTT({ apiKey: '...', language: 'en-US' }));
  *
  * const session = agent.createSession({
- *   name: 'support-assistant',
- *   channel: 'support-room-123',
+ *   name: `conversation-${Date.now()}`,
+ *   channel: `demo-channel-${Date.now()}`,
  *   agentUid: '1',
  *   remoteUids: ['100'],
  * });
@@ -310,10 +310,10 @@ export class AgentSession {
         if (
             isHeyGenAvatar(strictAvatar) ||
             isLiveAvatarAvatar(strictAvatar) ||
+            isSensetimeAvatar(strictAvatar) ||
             isAkoolAvatar(strictAvatar) ||
             isAnamAvatar(strictAvatar) ||
-            isGenericAvatar(strictAvatar) ||
-            isSensetimeAvatar(strictAvatar)
+            isGenericAvatar(strictAvatar)
         ) {
             validateAvatarConfig(strictAvatar);
         }
@@ -421,13 +421,13 @@ export class AgentSession {
         if (
             isHeyGenAvatar(strictAvatar) ||
             isLiveAvatarAvatar(strictAvatar) ||
+            isSensetimeAvatar(strictAvatar) ||
             isAkoolAvatar(strictAvatar) ||
             isAnamAvatar(strictAvatar) ||
-            isGenericAvatar(strictAvatar) ||
-            isSensetimeAvatar(strictAvatar)
+            isGenericAvatar(strictAvatar)
         ) {
             validateAvatarConfig(strictAvatar, {
-                requireSessionFields: isGenericAvatar(strictAvatar) || isSensetimeAvatar(strictAvatar),
+                requireSessionFields: isGenericAvatar(strictAvatar),
             });
         }
 

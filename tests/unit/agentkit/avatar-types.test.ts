@@ -49,14 +49,7 @@ describe("SensetimeAvatarConfig", () => {
         const config = validSensetimeConfig();
         delete (config.params as { agora_token?: string }).agora_token;
         expect(() => validateAvatarConfig(config)).not.toThrow();
-    });
-
-    it("validateAvatarConfig rejects missing agora_token after enrichment", () => {
-        const config = validSensetimeConfig();
-        delete (config.params as { agora_token?: string }).agora_token;
-        expect(() => validateAvatarConfig(config, { requireSessionFields: true })).toThrow(
-            "SenseTime avatar requires agora_token after session enrichment",
-        );
+        expect(() => validateAvatarConfig(config, { requireSessionFields: true })).not.toThrow();
     });
 
     it("validateAvatarConfig rejects missing appId", () => {

@@ -50,8 +50,8 @@ const agent = new Agent({ client })
   }));
 
 const session = agent.createSession({
-  name: 'realtime-assistant',
-  channel: 'realtime-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
@@ -84,8 +84,8 @@ const agent = new Agent({ client })
   }));
 
 const session = agent.createSession({
-  name: 'gemini-assistant',
-  channel: 'gemini-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
@@ -116,8 +116,8 @@ const agent = new Agent({ client })
   }));
 
 const session = agent.createSession({
-  name: 'grok-assistant',
-  channel: 'grok-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
@@ -133,7 +133,15 @@ Configure MLLM turn detection on the MLLM vendor with `turnDetection`. When set,
 Example:
 
 ```typescript
-const agent = new Agent()
+import { AgoraClient, Area, Agent, OpenAIRealtime } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ client })
   .withMllm(new OpenAIRealtime({
     apiKey: 'your-openai-key',
     model: 'gpt-4o-realtime-preview',
@@ -144,7 +152,7 @@ const agent = new Agent()
         idle_timeout_ms: 5000,
       },
     },
-  });
+  }));
 ```
 
 ## How MLLM mode works internally

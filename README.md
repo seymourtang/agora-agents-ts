@@ -94,7 +94,7 @@ export async function startConversation(): Promise<string> {
 
   const session = agent.createSession({
     name: `conversation-${Date.now()}`,
-    channel: "demo-channel-" + Date.now(),  // Unique channel name
+    channel: `demo-channel-${Date.now()}`,  // Unique channel name
     agentUid: '123456',                     // Unique agent UID. Can be a random number or a specific user ID.
     remoteUids: ['*'],                     // '*' is a wildcard, or use a specific user ID.
     idleTimeout: 30,
@@ -133,8 +133,8 @@ const agent = new Agent({
 });
 
 const session = agent.createSession({
-  name: 'support',
-  channel: 'support-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
@@ -144,8 +144,8 @@ You can override it per session:
 
 ```typescript
 const session = agent.createSession({
-  name: 'support',
-  channel: 'support-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
   pipelineId: 'session-pipeline-id',
@@ -192,11 +192,8 @@ const agent = new Agent({ client, turnDetection: { language: 'en-US' } })
   )
   .withTts(
     new MiniMaxTTS({
-      key: process.env.MINIMAX_API_KEY!,
-      groupId: process.env.MINIMAX_GROUP_ID!,
       model: 'speech_2_6_turbo',
       voiceId: 'English_captivating_female1',
-      url: 'wss://api-uw.minimax.io/ws/v1/t2a_v2',
     }),
   );
 ```
@@ -237,7 +234,7 @@ See the [MLLM Flow guide](./docs/guides/mllm-flow.md) for full examples with Gem
 
 ## Avatars
 
-AgentKit supports LiveAvatar, Generic Avatar, Anam, Akool, and deprecated HeyGen. Avatar `agoraToken` is optional: when omitted, `session.start()` generates a token using the same ConvoAI token format as the agent token, scoped to the avatar `agoraUid`. Avatars require the cascading ASR + LLM + TTS pipeline (not MLLM).
+AgentKit supports LiveAvatar, Generic Avatar, Anam, Akool, SenseTime (CN), and deprecated HeyGen. Avatar `agoraToken` is optional: when omitted, `session.start()` generates a token using the same ConvoAI token format as the agent token, scoped to the avatar `agoraUid`. Avatars require the cascading ASR + LLM + TTS pipeline (not MLLM).
 
 See the [Avatar Integration guide](./docs/guides/avatars.md) for sample-rate requirements and Generic Avatar setup.
 

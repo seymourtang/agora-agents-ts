@@ -47,7 +47,7 @@ npm install agora-agents
 | [Vendors](./concepts/vendors.md) | LLM, TTS, STT, MLLM, and Avatar provider catalog |
 | [Cascading Flow Guide](./guides/cascading-flow.md) | Step-by-step ASR -> LLM -> TTS |
 | [MLLM Flow Guide](./guides/mllm-flow.md) | OpenAI Realtime, Gemini Live, Vertex AI, and xAI Grok |
-| [Avatar Integration](./guides/avatars.md) | LiveAvatar, Generic Avatar, Anam, HeyGen, and Akool integration |
+| [Avatar Integration](./guides/avatars.md) | LiveAvatar, Generic Avatar, Anam, Akool, SenseTime (CN), and HeyGen integration |
 | [Agent Builder Features](./guides/agent-builder-features.md) | Turn detection, SAL, filler words, and advanced agent options |
 | [Regional Routing](./guides/regional-routing.md) | Area enum, domain pool, failover |
 | [Error Handling](./guides/error-handling.md) | AgoraError and API error handling |

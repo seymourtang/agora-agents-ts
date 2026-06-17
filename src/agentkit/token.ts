@@ -24,8 +24,8 @@ export const MAX_EXPIRY_SECONDS = 86400;
  * @example
  * ```typescript
  * agent.createSession({
- *   name: 'room-123',
- *   channel: 'room-123',
+ *   name: `conversation-${Date.now()}`,
+ *   channel: `demo-channel-${Date.now()}`,
  *   agentUid: '1',
  *   remoteUids: ['100'],
  *   expiresIn: ExpiresIn.hours(12),

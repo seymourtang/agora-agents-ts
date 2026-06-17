@@ -57,8 +57,8 @@ const agent = new Agent({ client })
   }));
 
 const session = agent.createSession({
-  name: 'my-room',
-  channel: 'my-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
   idleTimeout: 120,
@@ -180,8 +180,8 @@ const agent = new Agent({ client })
   }));
 
 const session = agent.createSession({
-  name: 'support-room',
-  channel: 'support-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });

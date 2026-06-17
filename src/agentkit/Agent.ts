@@ -88,8 +88,8 @@ function assertTurnDetectionLanguage(value: string): asserts value is TurnDetect
  * to configure vendor settings after construction.
  */
 export interface AgentOptions<TArea extends AgoraArea = AgoraArea> {
-    /** Optional client bound to this agent. Enables `createSession(options)` without re-passing the client. */
-    client?: AgoraClient<TArea>;
+    /** Agora client bound to this agent. Required for `createSession()`. */
+    client: AgoraClient<TArea>;
     /**
      * Published AI Studio pipeline ID to use as this agent's base configuration.
      * Explicit Agent config such as .withLlm(), .withTts(), .withStt(),
@@ -160,15 +160,15 @@ export interface AgentOptions<TArea extends AgoraArea = AgoraArea> {
  *   .withStt(new DeepgramSTT({ apiKey: '...', model: 'nova-2' }));
  *
  * const session = agent.createSession({
- *   name: 'support-assistant',
- *   channel: 'room-123',
+ *   name: `conversation-${Date.now()}`,
+ *   channel: `demo-channel-${Date.now()}`,
  *   agentUid: '1',
  *   remoteUids: ['100'],
  * });
  * ```
  */
 export class Agent<TTSSampleRate extends number = number, TArea extends AgoraArea = AgoraArea> {
-    private _client?: AgoraClient<TArea>;
+    private _client: AgoraClient<TArea>;
     private _pipelineId?: string;
     private _llm?: LlmConfig;
     private _tts?: TtsConfig;
@@ -190,7 +190,7 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
     private _fillerWords?: FillerWordsConfig;
     private _greetingConfigs?: LlmGreetingConfigs;
 
-    constructor(options: AgentOptions<TArea> = {}) {
+    constructor(options: AgentOptions<TArea>) {
         this._client = options.client;
         this._pipelineId = options.pipelineId;
         this._instructions = options.instructions;
@@ -331,7 +331,8 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
      * ```typescript
      * import { HeyGenAvatar, ElevenLabsTTS } from 'agora-agents';
      *
-     * const agent = new Agent()
+     * const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
+     * const agent = new Agent({ client })
      *   .withTts(new ElevenLabsTTS({
      *     key: '...',
      *     modelId: '...',
@@ -679,6 +680,7 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
         mllm?: MllmConfig;
     } {
         return {
+            client: this._client,
             pipelineId: this._pipelineId,
             instructions: this._instructions,
             turnDetection: this._turnDetection,
@@ -716,8 +718,8 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
      *   .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
      *
      * const session = agent.createSession({
-     *   name: 'support-assistant',
-     *   channel: 'room-123',
+     *   name: `conversation-${Date.now()}`,
+     *   channel: `demo-channel-${Date.now()}`,
      *   agentUid: '1',
      *   remoteUids: ['100'],
      *   idleTimeout: 120,
@@ -727,11 +729,6 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
      * ```
      */
     createSession(options: SessionOptions): AgentSession {
-        if (!this._client) {
-            throw new Error(
-                "Agent client is not configured. Pass `client` to `new Agent({ client, ... })` before calling createSession(options).",
-            );
-        }
         const name = options.name ?? `agent-${Date.now()}`;
         return new AgentSession({
             client: this._client,
@@ -920,8 +917,7 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
      * If a new private field is added to Agent, it MUST also be added here.
      */
     private _clone(): Agent<TTSSampleRate, TArea> {
-        const newAgent = new Agent() as Agent<TTSSampleRate, TArea>;
-        newAgent._client = this._client;
+        const newAgent = new Agent({ client: this._client }) as Agent<TTSSampleRate, TArea>;
         newAgent._pipelineId = this._pipelineId;
         newAgent._llm = this._llm;
         newAgent._tts = this._tts;

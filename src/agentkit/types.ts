@@ -79,8 +79,8 @@ export type SttConfig =
 /** ASR configuration — alias for {@link SttConfig} (wire field: `asr`). */
 export type AsrConfig = SttConfig;
 
-/** STT vendor (ares, microsoft, deepgram, openai, etc.) */
-export type SttVendor = string;
+/** Wire ASR vendor identifier (e.g. `"deepgram"`, `"fengming"`). */
+export type AsrVendorName = string;
 
 /** TTS (Text-to-Speech) configuration - discriminated union */
 export type TtsConfig = Tts;
@@ -95,7 +95,8 @@ export type MllmVendor = Mllm.Vendor;
 export type AvatarConfig = StartAgentsRequest.Properties.Avatar;
 
 /** Avatar vendor (akool, liveavatar, anam, generic, deprecated heygen) */
-export type AvatarVendor = StartAgentsRequest.Properties.Avatar.Vendor;
+/** Wire avatar vendor identifier (e.g. `"liveavatar"`, `"sensetime"`). */
+export type AvatarWireVendor = StartAgentsRequest.Properties.Avatar.Vendor;
 
 /** BCP-47 language tag used by `turn_detection.language`. */
 export type TurnDetectionLanguage = AsrLanguage;

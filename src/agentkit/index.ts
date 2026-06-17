@@ -92,6 +92,7 @@ export type {
     OpenAIPresetModel,
     OpenAITtsPresetModel,
     PresetInput,
+    PresetCategory,
     TtsPreset,
 } from "./presets.js";
 export { AgentPresets, normalizePresetInput } from "./presets.js";
@@ -115,8 +116,9 @@ export type {
     AmazonTts,
     AmazonTtsParams,
     AsrConfig,
+    AsrVendorName,
     AvatarConfig,
-    AvatarVendor,
+    AvatarWireVendor,
     CartesiaTts,
     CartesiaTtsParams,
     // Conversation types
@@ -201,7 +203,6 @@ export type {
     StartOfSpeechMode,
     StartOfSpeechVadConfig,
     SttConfig,
-    SttVendor,
     ThinkOnListeningAction,
     ThinkOnSpeakingAction,
     ThinkOnThinkingAction,
@@ -213,6 +214,20 @@ export type {
     TurnDetectionNestedConfig,
     TurnDetectionType,
 } from "./types.js";
+export type {
+    AvatarVendor,
+    CNAvatarVendor,
+    CNLlmVendor,
+    CNSttVendor,
+    CNTtsVendor,
+    GlobalAvatarVendor,
+    GlobalLlmVendor,
+    GlobalSttVendor,
+    GlobalTtsVendor,
+    LlmVendor,
+    SttVendor,
+    TtsVendor,
+} from "./region-vendors.js";
 export type {
     AkoolAvatarOptions,
     AnamAvatarOptions,

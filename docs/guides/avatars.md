@@ -57,15 +57,21 @@ Avatars require the TTS audio to be at a specific sample rate. If you use the wr
 The `Agent` class tracks the TTS sample rate as a type parameter. When you call `.withAvatar()`, TypeScript checks that the TTS sample rate type matches the avatar's required rate. If they don't match, you get a compile error:
 
 ```typescript
-import { Agent, ElevenLabsTTS, HeyGenAvatar } from 'agora-agents';
+import { AgoraClient, Area, Agent, ElevenLabsTTS, HeyGenAvatar } from 'agora-agents';
+
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
 
 // This works — ElevenLabs at 24kHz matches HeyGen's requirement
-const good = new Agent()
+const good = new Agent({ client })
   .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
   .withAvatar(new HeyGenAvatar({ apiKey: 'your-heygen-key', quality: 'high', agoraUid: '12345' }));
 
 // This fails at compile time — 16kHz does not match HeyGen's required 24kHz
-const bad = new Agent()
+const bad = new Agent({ client })
   .withTts(new ElevenLabsTTS({ key: 'your-key', modelId: 'eleven_flash_v2_5', voiceId: 'your-voice-id', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 16000 }))
   .withAvatar(new HeyGenAvatar({ apiKey: 'your-heygen-key', quality: 'high', agoraUid: '12345' }));
   //         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -134,8 +140,8 @@ const agent = new Agent({ client })
   }));
 
 const session = agent.createSession({
-  name: 'avatar-assistant',
-  channel: 'avatar-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1', // distinct from avatar agoraUid
   remoteUids: ['100'],
 });
@@ -146,9 +152,15 @@ await session.start();
 ## Example: Generic avatar
 
 ```typescript
-import { Agent, GenericAvatar, OpenAI, OpenAITTS, AresSTT } from 'agora-agents';
+import { AgoraClient, Area, Agent, GenericAvatar, OpenAI, OpenAITTS, AresSTT } from 'agora-agents';
 
-const agent = new Agent()
+const client = new AgoraClient({
+  area: Area.US,
+  appId: 'your-app-id',
+  appCertificate: 'your-app-certificate',
+});
+
+const agent = new Agent({ client })
   .withLlm(new OpenAI({ apiKey: 'your-openai-key', url: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o-mini' }))
   .withTts(new OpenAITTS({ apiKey: 'your-openai-tts-key', model: 'tts-1', baseUrl: 'https://api.openai.com/v1', voice: 'alloy' }))
   .withStt(new AresSTT())
@@ -202,8 +214,8 @@ const agent = new Agent({ client })
   }));
 
 const session = agent.createSession({
-  name: 'avatar-assistant',
-  channel: 'avatar-room',
+  name: `conversation-${Date.now()}`,
+  channel: `demo-channel-${Date.now()}`,
   agentUid: '1',
   remoteUids: ['100'],
 });
