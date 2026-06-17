@@ -5,14 +5,13 @@
  * including starting, stopping, and interacting with the agent.
  */
 
-import type { AgoraAuthMode } from "../AgoraPoolClient.js";
-import type { AgoraClient } from "../AgoraPoolClient.js";
+import type { AgoraAuthMode, AgoraClient } from "../AgoraPoolClient.js";
 import type * as Agora from "../api/index.js";
 import type { AgentManagementClient } from "../api/resources/agentManagement/client/Client.js";
 import type { AgentsClient } from "../api/resources/agents/client/Client.js";
 import { AgoraError } from "../errors/index.js";
-import type { AgoraArea } from "./area.js";
 import type { Agent } from "./Agent.js";
+import type { AgoraArea } from "./area.js";
 import {
     isAkoolAvatar,
     isAnamAvatar,

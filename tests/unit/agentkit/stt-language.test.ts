@@ -1,6 +1,5 @@
 import { describe, expect, test } from "vitest";
 import { AgoraClient } from "../../../src/AgoraPoolClient.js";
-import { Area } from "../../../src/core/domain/index.js";
 import { Agent } from "../../../src/agentkit/Agent.js";
 import { OpenAI } from "../../../src/agentkit/vendors/llm.js";
 import {
@@ -12,6 +11,7 @@ import {
     SpeechmaticsSTT,
 } from "../../../src/agentkit/vendors/stt.js";
 import { ElevenLabsTTS } from "../../../src/agentkit/vendors/tts.js";
+import { Area } from "../../../src/core/domain/index.js";
 
 const TEST_AGENT_CLIENT = new AgoraClient({
     area: Area.US,

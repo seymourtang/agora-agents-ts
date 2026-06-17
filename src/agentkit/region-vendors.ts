@@ -1,4 +1,13 @@
-import type { BaseAvatar, BaseCNAvatar, BaseCNLLM, BaseCNSTT, BaseCNTTS, BaseLLM, BaseSTT, BaseTTS } from "./vendors/base.js";
+import type {
+    BaseAvatar,
+    BaseCNAvatar,
+    BaseCNLLM,
+    BaseCNSTT,
+    BaseCNTTS,
+    BaseLLM,
+    BaseSTT,
+    BaseTTS,
+} from "./vendors/base.js";
 import type { MicrosoftCNSampleRate, MicrosoftCNSTT, MicrosoftCNTTS } from "./vendors/cn.js";
 import type { CustomLLM } from "./vendors/llm.js";
 

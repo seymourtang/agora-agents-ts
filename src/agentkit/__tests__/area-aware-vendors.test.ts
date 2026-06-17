@@ -1,5 +1,5 @@
-import { Area } from "../../core/domain/index.js";
 import { AgoraClient } from "../../AgoraPoolClient.js";
+import { Area } from "../../core/domain/index.js";
 import { Agent } from "../Agent.js";
 import { AliyunLLM, FengmingSTT, MiniMaxCNTTS } from "../vendors/cn.js";
 import { OpenAI } from "../vendors/llm.js";
@@ -25,8 +25,12 @@ new Agent({ client, turnDetection: { language: "en-US" } })
 
 // Area and provider may differ.
 new Agent({ client }).withStt(new FengmingSTT());
-new Agent({ client }).withLlm(new AliyunLLM({ url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", model: "qwen-plus" }));
-new Agent({ client }).withTts(new MiniMaxCNTTS({ key: "minimax-key", model: "speech-01-turbo", voiceSetting: { voice_id: "female-shaonv" } }));
+new Agent({ client }).withLlm(
+    new AliyunLLM({ url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", model: "qwen-plus" }),
+);
+new Agent({ client }).withTts(
+    new MiniMaxCNTTS({ key: "minimax-key", model: "speech-01-turbo", voiceSetting: { voice_id: "female-shaonv" } }),
+);
 
 {
     const client = new AgoraClient({
@@ -60,7 +64,9 @@ new Agent({ client }).withTts(new MiniMaxCNTTS({ key: "minimax-key", model: "spe
 
     new Agent({ client }).withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }));
     new Agent({ client }).withLlm(new OpenAI({ model: "gpt-5-mini" }));
-    new Agent({ client }).withTts(new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }));
+    new Agent({ client }).withTts(
+        new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }),
+    );
 }
 
 new Agent({ client }).withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }));

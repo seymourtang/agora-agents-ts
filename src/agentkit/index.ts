@@ -91,11 +91,25 @@ export type {
     MiniMaxPresetModel,
     OpenAIPresetModel,
     OpenAITtsPresetModel,
-    PresetInput,
     PresetCategory,
+    PresetInput,
     TtsPreset,
 } from "./presets.js";
 export { AgentPresets, normalizePresetInput } from "./presets.js";
+export type {
+    AvatarVendor,
+    CNAvatarVendor,
+    CNLlmVendor,
+    CNSttVendor,
+    CNTtsVendor,
+    GlobalAvatarVendor,
+    GlobalLlmVendor,
+    GlobalSttVendor,
+    GlobalTtsVendor,
+    LlmVendor,
+    SttVendor,
+    TtsVendor,
+} from "./region-vendors.js";
 export type {
     GenerateConvoAITokenOptions,
     GenerateTokenOptions,
@@ -215,20 +229,6 @@ export type {
     TurnDetectionType,
 } from "./types.js";
 export type {
-    AvatarVendor,
-    CNAvatarVendor,
-    CNLlmVendor,
-    CNSttVendor,
-    CNTtsVendor,
-    GlobalAvatarVendor,
-    GlobalLlmVendor,
-    GlobalSttVendor,
-    GlobalTtsVendor,
-    LlmVendor,
-    SttVendor,
-    TtsVendor,
-} from "./region-vendors.js";
-export type {
     AkoolAvatarOptions,
     AnamAvatarOptions,
     GenericAvatarOptions,
@@ -267,29 +267,6 @@ export {
     BaseTTS,
     type GoogleTTSSampleRate,
 } from "./vendors/base.js";
-export type {
-    AmazonBedrockOptions,
-    AnthropicOptions,
-    AzureOpenAIOptions,
-    CustomLLMOptions,
-    DifyOptions,
-    GeminiOptions,
-    GroqOptions,
-    OpenAIOptions,
-    VertexAILLMOptions,
-} from "./vendors/llm.js";
-// LLM vendor classes
-export {
-    AmazonBedrock,
-    Anthropic,
-    AzureOpenAI,
-    CustomLLM,
-    Dify,
-    Gemini,
-    Groq,
-    OpenAI,
-    VertexAILLM,
-} from "./vendors/llm.js";
 export type {
     AliyunLLMOptions,
     BytedanceDuplexTTSOptions,
@@ -330,6 +307,29 @@ export {
     XfyunDialectSTT,
     XfyunSTT,
 } from "./vendors/cn.js";
+export type {
+    AmazonBedrockOptions,
+    AnthropicOptions,
+    AzureOpenAIOptions,
+    CustomLLMOptions,
+    DifyOptions,
+    GeminiOptions,
+    GroqOptions,
+    OpenAIOptions,
+    VertexAILLMOptions,
+} from "./vendors/llm.js";
+// LLM vendor classes
+export {
+    AmazonBedrock,
+    Anthropic,
+    AzureOpenAI,
+    CustomLLM,
+    Dify,
+    Gemini,
+    Groq,
+    OpenAI,
+    VertexAILLM,
+} from "./vendors/llm.js";
 export type {
     GeminiLiveOptions,
     OpenAIRealtimeOptions,

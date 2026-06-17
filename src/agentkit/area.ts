@@ -1,4 +1,4 @@
-import { Area } from "../core/domain/index.js";
+import type { Area } from "../core/domain/index.js";
 
 export type AgoraArea = Area.US | Area.EU | Area.AP | Area.CN;
 

@@ -6,8 +6,8 @@
  * {@link Agent.createSession}, not on the Agent itself.
  */
 
-import type * as Agora from "../api/index.js";
 import type { AgoraClient } from "../AgoraPoolClient.js";
+import type * as Agora from "../api/index.js";
 import { AgentSession } from "./AgentSession.js";
 import type { AgoraArea } from "./area.js";
 import { AudioScenario } from "./constants.js";
@@ -33,7 +33,7 @@ import type {
     TurnDetectionConfig,
     TurnDetectionLanguage,
 } from "./types.js";
-import type { BaseAvatar, BaseMLLM, BaseTTS } from "./vendors/base.js";
+import type { BaseMLLM } from "./vendors/base.js";
 
 const DEFAULT_TURN_DETECTION_LANGUAGE: TurnDetectionLanguage = "en-US";
 
@@ -965,7 +965,6 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
 
         return turnDetection;
     }
-
 }
 
 function _parseNumericUid(uid: string, label: string): number {

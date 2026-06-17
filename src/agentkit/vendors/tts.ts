@@ -707,14 +707,7 @@ export class MiniMaxTTS extends BaseTTS {
     }
 
     toConfig(): TtsConfig {
-        const {
-            key,
-            groupId,
-            model,
-            voiceId,
-            url,
-            skipPatterns,
-        } = this.options;
+        const { key, groupId, model, voiceId, url, skipPatterns } = this.options;
 
         return {
             vendor: "minimax",
