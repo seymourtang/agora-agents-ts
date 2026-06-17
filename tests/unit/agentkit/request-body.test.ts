@@ -2,6 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 import { AgoraClient } from "../../../src/AgoraPoolClient.js";
 import { Area } from "../../../src/core/domain/index.js";
 import { Agent } from "../../../src/agentkit/Agent.js";
+import { AudioScenario } from "../../../src/agentkit/constants.js";
 import {
     AmazonBedrock,
     Anthropic,
@@ -145,6 +146,29 @@ describe("Scenario 1 — BYOK pipeline properties shape", () => {
         expect((normalized.tts?.params as Record<string, unknown>)?.voice_id).toBe("voice-id");
         expect((normalized.tts?.params as Record<string, unknown>)?.model_id).toBe("eleven_flash_v2_5");
         expect((normalized.tts?.params as Record<string, unknown>)?.base_url).toBe("wss://api.elevenlabs.io/v1");
+    });
+});
+
+describe("Session parameters defaults", () => {
+    test("toProperties defaults audio_scenario to default when omitted", () => {
+        const properties = new Agent({ client: TEST_AGENT_CLIENT })
+            .withStt(STUB_STT)
+            .withLlm(STUB_LLM)
+            .withTts(STUB_TTS)
+            .toProperties({ ...SESSION_OPTS });
+
+        expect(properties.parameters?.audio_scenario).toBe(AudioScenario.Default);
+    });
+
+    test("toProperties preserves explicit audio_scenario", () => {
+        const properties = new Agent({ client: TEST_AGENT_CLIENT })
+            .withStt(STUB_STT)
+            .withLlm(STUB_LLM)
+            .withTts(STUB_TTS)
+            .withAudioScenario(AudioScenario.Aiserver)
+            .toProperties({ ...SESSION_OPTS });
+
+        expect(properties.parameters?.audio_scenario).toBe(AudioScenario.Aiserver);
     });
 });
 

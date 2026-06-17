@@ -10,6 +10,7 @@ import type * as Agora from "../api/index.js";
 import type { AgoraClient } from "../AgoraPoolClient.js";
 import { AgentSession } from "./AgentSession.js";
 import type { AgoraArea } from "./area.js";
+import { AudioScenario } from "./constants.js";
 import type { AvatarVendor, LlmVendor, SttVendor, TtsVendor } from "./region-vendors.js";
 import { generateConvoAIToken } from "./token.js";
 import type {
@@ -809,10 +810,13 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
         // When RTM is enabled, data_channel must also be 'rtm' for the client
         // to receive transcripts and state events. Default it automatically so
         // callers only need to set advancedFeatures.enable_rtm: true.
-        const resolvedParameters =
-            this._advancedFeatures?.enable_rtm && !this._parameters?.data_channel
-                ? { ...this._parameters, data_channel: "rtm" as const }
-                : this._parameters;
+        let resolvedParameters = this._parameters;
+        if (this._advancedFeatures?.enable_rtm && !resolvedParameters?.data_channel) {
+            resolvedParameters = { ...resolvedParameters, data_channel: "rtm" as const };
+        }
+        if (resolvedParameters?.audio_scenario === undefined) {
+            resolvedParameters = { ...resolvedParameters, audio_scenario: AudioScenario.Default };
+        }
 
         const base = {
             channel: opts.channel,
