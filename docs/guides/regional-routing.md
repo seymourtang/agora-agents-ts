@@ -33,19 +33,20 @@ const client = new AgoraClient({
 });
 ```
 
-## Area-aware vendor hints
+## Vendor classes
 
-Use `client.vendors.*` when you want IDE auto-complete to narrow vendor choices after selecting `area`, and pass `client` into `new Agent({ client, ... })`.
+Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and `.withTts()`. `client.area` controls API routing only and does not restrict provider choice.
 
-| Client area | ASR helpers | LLM helpers | TTS helpers | Avatar helpers |
-|---|---|---|---|---|
-| `Area.US`, `Area.EU`, `Area.AP` | `DeepgramSTT`, `SpeechmaticsSTT`, `MicrosoftSTT`, `OpenAISTT`, `GoogleSTT`, `AmazonSTT`, `AssemblyAISTT`, `AresSTT`, `SarvamSTT` | `OpenAI`, `AzureOpenAI`, `Anthropic`, `Gemini`, `Groq`, `VertexAILLM`, `AmazonBedrock`, `Dify`, `CustomLLM` | `ElevenLabsTTS`, `MicrosoftTTS`, `OpenAITTS`, `CartesiaTTS`, `GoogleTTS`, `AmazonTTS`, `DeepgramTTS`, `HumeAITTS`, `RimeTTS`, `FishAudioTTS`, `MiniMaxTTS`, `MurfTTS`, `SarvamTTS` | `LiveAvatarAvatar`, `HeyGenAvatar`, `AkoolAvatar`, `AnamAvatar`, `GenericAvatar` |
-| `Area.CN` | `FengmingSTT`, `TencentSTT`, `MicrosoftCNSTT`, `XfyunSTT`, `XfyunBigModelSTT`, `XfyunDialectSTT` | `AliyunLLM`, `BytedanceLLM`, `DeepSeekLLM`, `TencentLLM`, `CustomLLM` | `MiniMaxCNTTS`, `TencentTTS`, `BytedanceTTS`, `MicrosoftCNTTS`, `CosyVoiceTTS`, `BytedanceDuplexTTS`, `StepFunTTS` | `SensetimeAvatar` |
+| Typical global providers | Typical CN providers |
+|---|---|
+| `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, … |
+
+See the tables below for the full catalog. You may combine any vendor with any `client.area`.
 
 Global client example:
 
 ```typescript
-import { AgoraClient, Agent, Area } from 'agora-agents';
+import { AgoraClient, Agent, Area, DeepgramSTT, MiniMaxTTS, OpenAI } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
@@ -58,9 +59,9 @@ const agent = new Agent({
   name: 'global-agent',
   turnDetection: { language: 'en-US' },
 })
-  .withStt(client.vendors.stt.deepgram({ model: 'nova-3', language: 'en-US' }))
-  .withLlm(client.vendors.llm.openai({ model: 'gpt-4o-mini' }))
-  .withTts(client.vendors.tts.minimax({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
+  .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
+  .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
+  .withTts(new MiniMaxTTS({ model: 'speech_2_6_turbo', voiceId: 'English_captivating_female1' }));
 
 const session = agent.createSession({
   channel: 'global-room',
@@ -72,7 +73,7 @@ const session = agent.createSession({
 CN client example:
 
 ```typescript
-import { AgoraClient, Agent, Area } from 'agora-agents';
+import { AgoraClient, Agent, Area, AliyunLLM, FengmingSTT, MiniMaxCNTTS } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.CN,
@@ -85,12 +86,12 @@ const agent = new Agent({
   name: 'cn-agent',
   turnDetection: { language: 'zh-CN' },
 })
-  .withStt(client.vendors.stt.fengming())
-  .withLlm(client.vendors.llm.aliyun({
+  .withStt(new FengmingSTT())
+  .withLlm(new AliyunLLM({
     url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
     model: 'qwen-plus',
   }))
-  .withTts(client.vendors.tts.minimax({
+  .withTts(new MiniMaxCNTTS({
     key: process.env.MINIMAX_API_KEY!,
     model: 'speech-01-turbo',
     voiceSetting: { voice_id: 'female-shaonv' },

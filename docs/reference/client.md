@@ -58,16 +58,9 @@ See [Authentication](../getting-started/authentication.md) for details on each m
 
 ## Public methods
 
-### `vendors`
+### `agent(options?): Agent`
 
-Area-aware vendor factories exposed under:
-
-- `client.vendors.stt`
-- `client.vendors.llm`
-- `client.vendors.tts`
-- `client.vendors.avatar`
-
-These factories narrow available vendors based on `client.area`.
+Create an {@link Agent} bound to this client.
 
 ### `nextRegion(): void`
 

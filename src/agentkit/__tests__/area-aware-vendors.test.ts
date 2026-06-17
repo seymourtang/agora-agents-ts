@@ -1,6 +1,10 @@
 import { Area } from "../../core/domain/index.js";
 import { AgoraClient } from "../../AgoraPoolClient.js";
 import { Agent } from "../Agent.js";
+import { AliyunLLM, FengmingSTT, MiniMaxCNTTS } from "../vendors/cn.js";
+import { OpenAI } from "../vendors/llm.js";
+import { DeepgramSTT } from "../vendors/stt.js";
+import { MiniMaxTTS } from "../vendors/tts.js";
 
 const client = new AgoraClient({
     area: Area.US,
@@ -8,26 +12,24 @@ const client = new AgoraClient({
     appCertificate: "app-certificate",
 });
 
-new Agent({
-    client,
-    name: "assistant",
-    turnDetection: { language: "en-US" },
-})
-    .withStt(client.vendors.stt.deepgram({ model: "nova-3", language: "en-US" }))
-    .withLlm(client.vendors.llm.openai({ model: "gpt-5-mini" }))
-    .withTts(client.vendors.tts.minimax({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }))
+client
+    .agent({
+        name: "assistant",
+        turnDetection: { language: "en-US" },
+    })
+    .withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }))
+    .withLlm(new OpenAI({ model: "gpt-5-mini" }))
+    .withTts(new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }))
     .createSession({
         channel: "test-room",
         agentUid: "1",
         remoteUids: ["100"],
     });
 
-// @ts-expect-error global client should not expose CN STT vendors.
-client.vendors.stt.fengming();
-// @ts-expect-error global client should not expose CN LLM vendors.
-client.vendors.llm.aliyun({ url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", model: "qwen-plus" });
-// @ts-expect-error global client should not expose CN TTS vendors.
-client.vendors.tts.stepfun({ apiKey: "stepfun-key", model: "step-tts-mini" });
+// Area and provider may differ.
+client.agent({}).withStt(new FengmingSTT());
+client.agent({}).withLlm(new AliyunLLM({ url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", model: "qwen-plus" }));
+client.agent({}).withTts(new MiniMaxCNTTS({ key: "minimax-key", model: "speech-01-turbo", voiceSetting: { voice_id: "female-shaonv" } }));
 
 {
     const client = new AgoraClient({
@@ -36,20 +38,20 @@ client.vendors.tts.stepfun({ apiKey: "stepfun-key", model: "step-tts-mini" });
         appCertificate: "app-certificate",
     });
 
-    new Agent({
-        client,
-        name: "assistant",
-        turnDetection: { language: "zh-CN" },
-    })
-        .withStt(client.vendors.stt.fengming())
+    client
+        .agent({
+            name: "assistant",
+            turnDetection: { language: "zh-CN" },
+        })
+        .withStt(new FengmingSTT())
         .withLlm(
-            client.vendors.llm.aliyun({
+            new AliyunLLM({
                 url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
                 model: "qwen-plus",
             }),
         )
         .withTts(
-            client.vendors.tts.minimax({
+            new MiniMaxCNTTS({
                 key: "minimax-key",
                 model: "speech-01-turbo",
                 voiceSetting: { voice_id: "female-shaonv" },
@@ -62,15 +64,12 @@ client.vendors.tts.stepfun({ apiKey: "stepfun-key", model: "step-tts-mini" });
             remoteUids: ["100"],
         });
 
-    // @ts-expect-error CN client should not expose global STT vendors.
-    client.vendors.stt.deepgram({ model: "nova-3", language: "en-US" });
-    // @ts-expect-error CN client should not expose global LLM vendors.
-    client.vendors.llm.openai({ model: "gpt-5-mini" });
-    // @ts-expect-error CN client should not expose global TTS vendors.
-    client.vendors.tts.elevenlabs({
-        key: "eleven-key",
-        modelId: "eleven_flash_v2_5",
-        voiceId: "voice-id",
-        baseUrl: "wss://api.elevenlabs.io/v1",
-    });
+    client.agent({}).withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }));
+    client.agent({}).withLlm(new OpenAI({ model: "gpt-5-mini" }));
+    client.agent({}).withTts(new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }));
 }
+
+new Agent({
+    client,
+    name: "assistant",
+}).withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }));

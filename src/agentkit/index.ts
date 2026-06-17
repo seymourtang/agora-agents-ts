@@ -30,8 +30,6 @@ export type {
     AgentSessionOptions,
 } from "./AgentSession.js";
 export { AgentSession } from "./AgentSession.js";
-export type { VendorsForArea, GlobalVendorFactories, CNVendorFactories } from "./vendors.js";
-export { createVendorsForArea } from "./vendors.js";
 // Vendor-specific avatar types with strict constraints
 export type {
     AkoolAvatarConfig,

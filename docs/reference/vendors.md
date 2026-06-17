@@ -8,51 +8,56 @@ description: Constructor options for all LLM, TTS, STT, MLLM, and Avatar vendor 
 
 All vendor classes are imported from `agora-agents`.
 
-## Area-aware vendor factories
+## Vendor classes
 
-If you want IDE completion to narrow vendor availability after selecting `area`, construct vendors from `client.vendors.*` instead of importing vendor classes directly.
+Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and `.withTts()`. `client.area` controls API routing only and does not restrict provider choice.
 
-| Area | `client.vendors.stt` | `client.vendors.llm` | `client.vendors.tts` | `client.vendors.avatar` |
-|---|---|---|---|---|
-| `Area.US`, `Area.EU`, `Area.AP` | `deepgram`, `speechmatics`, `microsoft`, `openai`, `google`, `amazon`, `assemblyai`, `ares`, `sarvam` | `openai`, `azureOpenai`, `anthropic`, `gemini`, `groq`, `vertexAi`, `amazonBedrock`, `dify`, `custom` | `elevenlabs`, `microsoft`, `openai`, `cartesia`, `google`, `amazon`, `deepgram`, `humeai`, `rime`, `fishaudio`, `minimax`, `murf`, `sarvam` | `liveavatar`, `heygen`, `akool`, `anam`, `generic` |
-| `Area.CN` | `fengming`, `tencent`, `microsoft`, `xfyun`, `xfyunBigmodel`, `xfyunDialect` | `aliyun`, `bytedance`, `deepseek`, `tencent`, `custom` | `minimax`, `tencent`, `bytedance`, `microsoft`, `cosyvoice`, `bytedanceDuplex`, `stepfun` | `sensetime` |
+| Global-oriented classes | CN-oriented classes |
+|---|---|
+| `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, … |
 
 Global example:
 
 ```typescript
+import { AgoraClient, Area, DeepgramSTT, MiniMaxTTS, OpenAI } from 'agora-agents';
+
 const client = new AgoraClient({
   area: Area.US,
   appId: process.env.AGORA_APP_ID!,
   appCertificate: process.env.AGORA_APP_CERTIFICATE!,
 });
 
-const stt = client.vendors.stt.deepgram({ model: 'nova-3', language: 'en-US' });
-const llm = client.vendors.llm.openai({ model: 'gpt-4o-mini' });
-const tts = client.vendors.tts.minimax({
-  model: 'speech_2_6_turbo',
-  voiceId: 'English_captivating_female1',
-});
+const agent = client.agent({ name: 'assistant' })
+  .withStt(new DeepgramSTT({ model: 'nova-3', language: 'en-US' }))
+  .withLlm(new OpenAI({ model: 'gpt-4o-mini' }))
+  .withTts(new MiniMaxTTS({
+    model: 'speech_2_6_turbo',
+    voiceId: 'English_captivating_female1',
+  }));
 ```
 
 CN example:
 
 ```typescript
+import { AgoraClient, Area, AliyunLLM, FengmingSTT, MiniMaxCNTTS } from 'agora-agents';
+
 const client = new AgoraClient({
   area: Area.CN,
   appId: process.env.AGORA_APP_ID!,
   appCertificate: process.env.AGORA_APP_CERTIFICATE!,
 });
 
-const stt = client.vendors.stt.fengming();
-const llm = client.vendors.llm.aliyun({
-  url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-  model: 'qwen-plus',
-});
-const tts = client.vendors.tts.minimax({
-  key: process.env.MINIMAX_API_KEY!,
-  model: 'speech-01-turbo',
-  voiceSetting: { voice_id: 'female-shaonv' },
-});
+const agent = client.agent({ name: 'assistant' })
+  .withStt(new FengmingSTT())
+  .withLlm(new AliyunLLM({
+    url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    model: 'qwen-plus',
+  }))
+  .withTts(new MiniMaxCNTTS({
+    key: process.env.MINIMAX_API_KEY!,
+    model: 'speech-01-turbo',
+    voiceSetting: { voice_id: 'female-shaonv' },
+  }));
 ```
 
 ## LLM vendors
@@ -531,11 +536,11 @@ All CN LLM helpers share the OpenAI-compatible shape and require `url` + `model`
 | `BytedanceLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
 | `DeepSeekLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
 | `TencentLLM` | `url`, `model`, `apiKey?`, `systemMessages?`, `greetingMessage?`, `failureMessage?`, `maxHistory?`, `params?`, `headers?` |
-| `CustomLLM` | `apiKey`, `model`, `url`; in CN usage the same class is reused under `client.vendors.llm.custom(...)` |
+| `CustomLLM` | `apiKey`, `model`, `url` |
 
 ### CN TTS vendors
 
-CN TTS helpers reuse shared vendor names where possible. `MiniMaxCNTTS` and `MicrosoftCNTTS` are the CN-specific classes; `client.vendors.tts.minimax(...)` and `client.vendors.tts.microsoft(...)` construct them for `Area.CN`. `MiniMaxTTS` remains the global helper.
+CN TTS helpers reuse shared vendor names where possible. `MiniMaxCNTTS` and `MicrosoftCNTTS` are the CN-specific classes; `MiniMaxTTS` and `MicrosoftTTS` remain the global helpers.
 
 | Class | Key options |
 |---|---|

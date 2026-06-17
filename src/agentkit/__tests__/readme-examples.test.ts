@@ -1,6 +1,10 @@
 import { Area } from "../../core/domain/index.js";
 import { AgoraClient } from "../../AgoraPoolClient.js";
 import { Agent } from "../Agent.js";
+import { AliyunLLM, FengmingSTT, MiniMaxCNTTS } from "../vendors/cn.js";
+import { OpenAI } from "../vendors/llm.js";
+import { DeepgramSTT } from "../vendors/stt.js";
+import { MiniMaxTTS } from "../vendors/tts.js";
 
 const AGENT_PROMPT = "You are a concise, technically credible voice assistant. Keep replies short unless the user asks for detail.";
 const GREETING = "Hi there! I am your Agora voice assistant. How can I help?";
@@ -43,9 +47,9 @@ new Agent({
         enable_error_message: true,
     },
 })
-    .withStt(client.vendors.stt.deepgram({ model: "nova-3", language: "en" }))
+    .withStt(new DeepgramSTT({ model: "nova-3", language: "en" }))
     .withLlm(
-        client.vendors.llm.openai({
+        new OpenAI({
             model: "gpt-4o-mini",
             systemMessages: [{ role: "system", content: AGENT_PROMPT }],
             greetingMessage: GREETING,
@@ -59,7 +63,7 @@ new Agent({
         }),
     )
     .withTts(
-        client.vendors.tts.minimax({
+        new MiniMaxTTS({
             model: "speech_2_6_turbo",
             voiceId: "English_captivating_female1",
         }),
@@ -83,15 +87,15 @@ new Agent({
         name: "assistant",
         turnDetection: { language: "zh-CN" },
     })
-        .withStt(client.vendors.stt.fengming())
+        .withStt(new FengmingSTT())
         .withLlm(
-            client.vendors.llm.aliyun({
+            new AliyunLLM({
                 url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
                 model: "qwen-plus",
             }),
         )
         .withTts(
-            client.vendors.tts.minimax({
+            new MiniMaxCNTTS({
                 key: "minimax-key",
                 model: "speech-01-turbo",
                 voiceSetting: { voice_id: "female-shaonv" },
@@ -114,14 +118,14 @@ new Agent({
 
     new Agent({ client, turnDetection: { language: "en-US" } })
         .withStt(
-            client.vendors.stt.deepgram({
+            new DeepgramSTT({
                 apiKey: "deepgram-key",
                 model: "nova-3",
                 language: "en",
             }),
         )
         .withLlm(
-            client.vendors.llm.openai({
+            new OpenAI({
                 apiKey: "openai-key",
                 url: "https://api.openai.com/v1/chat/completions",
                 model: "gpt-4o-mini",
@@ -133,7 +137,7 @@ new Agent({
             }),
         )
         .withTts(
-            client.vendors.tts.minimax({
+            new MiniMaxTTS({
                 key: "minimax-key",
                 groupId: "minimax-group",
                 model: "speech_2_6_turbo",

@@ -305,8 +305,6 @@ export {
 } from "./agentkit/index.js";
 export * as Agora from "./api/index.js";
 export type { AgoraArea, AreaScope, GlobalArea } from "./agentkit/area.js";
-export type { CNVendorFactories, GlobalVendorFactories, VendorsForArea } from "./agentkit/vendors.js";
-export { createVendorsForArea } from "./agentkit/vendors.js";
 export type { BaseClientOptions, BaseRequestOptions } from "./BaseClient.js";
 export { Area } from "./core/domain/index.js";
 export { AgoraEnvironment } from "./environments.js";

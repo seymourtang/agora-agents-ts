@@ -1,5 +1,3 @@
-import { Area } from "../core/domain/index.js";
-import type { AgoraArea } from "./area.js";
 import type { BaseAvatar, BaseCNAvatar, BaseCNLLM, BaseCNSTT, BaseCNTTS, BaseLLM, BaseSTT, BaseTTS } from "./vendors/base.js";
 import type { MicrosoftCNSampleRate, MicrosoftCNSTT, MicrosoftCNTTS } from "./vendors/cn.js";
 import type { CustomLLM } from "./vendors/llm.js";
@@ -16,12 +14,7 @@ export type CNTtsVendor<SR extends number = number> =
 export type CNSttVendor = BaseCNSTT | MicrosoftCNSTT;
 export type CNAvatarVendor<SR extends number = number> = BaseCNAvatar<SR>;
 
-export type RegionalLlmVendor<TArea extends AgoraArea> = TArea extends Area.CN ? CNLlmVendor : GlobalLlmVendor;
-
-export type RegionalTtsVendor<TArea extends AgoraArea, SR extends number = number> =
-    TArea extends Area.CN ? CNTtsVendor<SR> : GlobalTtsVendor<SR>;
-
-export type RegionalSttVendor<TArea extends AgoraArea> = TArea extends Area.CN ? CNSttVendor : GlobalSttVendor;
-
-export type RegionalAvatarVendor<TArea extends AgoraArea, SR extends number = number> =
-    TArea extends Area.CN ? CNAvatarVendor<SR> : GlobalAvatarVendor<SR>;
+export type LlmVendor = GlobalLlmVendor | CNLlmVendor;
+export type TtsVendor<SR extends number = number> = GlobalTtsVendor<SR> | CNTtsVendor<SR>;
+export type SttVendor = GlobalSttVendor | CNSttVendor;
+export type AvatarVendor<SR extends number = number> = GlobalAvatarVendor<SR> | CNAvatarVendor<SR>;

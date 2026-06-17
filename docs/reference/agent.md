@@ -11,7 +11,7 @@ description: Full API reference for the Agent builder class.
 import { Agent } from 'agora-agents';
 ```
 
-If you want vendor availability to come from the client, prefer `AgoraClient` + `Agent` with `client.vendors.*`:
+If you want to bind routing credentials once, use `AgoraClient` + `Agent`:
 
 <!-- snippet: fragment -->
 ```typescript
@@ -19,7 +19,7 @@ const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '.
 const agent = new Agent({ client, name: 'global-agent' });
 ```
 
-`new Agent()` remains the direct TS builder style. Pass `client` into the constructor when you want `createSession(options)` without re-passing the client.
+Configure vendors with `new DeepgramSTT()`, `new OpenAI()`, and similar classes on `.withStt()`, `.withLlm()`, and `.withTts()`.
 
 ## Constructor
 

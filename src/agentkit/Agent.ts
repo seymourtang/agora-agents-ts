@@ -9,12 +9,7 @@ import type * as Agora from "../api/index.js";
 import type { AgoraClient } from "../AgoraPoolClient.js";
 import { AgentSession } from "./AgentSession.js";
 import type { AgoraArea } from "./area.js";
-import type {
-    RegionalAvatarVendor,
-    RegionalLlmVendor,
-    RegionalSttVendor,
-    RegionalTtsVendor,
-} from "./region-vendors.js";
+import type { AvatarVendor, LlmVendor, SttVendor, TtsVendor } from "./region-vendors.js";
 import { generateConvoAIToken } from "./token.js";
 import type {
     AdvancedFeatures,
@@ -91,9 +86,9 @@ function assertTurnDetectionLanguage(value: string): asserts value is TurnDetect
  * Use the fluent builder methods (.withLlm(), .withTts(), .withStt(), .withMllm())
  * to configure vendor settings after construction.
  */
-export interface AgentOptions {
+export interface AgentOptions<TArea extends AgoraArea = AgoraArea> {
     /** Optional client bound to this agent. Enables `createSession(options)` without re-passing the client. */
-    client?: AgoraClient<AgoraArea>;
+    client?: AgoraClient<TArea>;
     /** Optional name for the agent (used as default session name) */
     name?: string;
     /**
@@ -190,8 +185,8 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
     private _fillerWords?: FillerWordsConfig;
     private _greetingConfigs?: LlmGreetingConfigs;
 
-    constructor(options: AgentOptions = {}) {
-        this._client = options.client as AgoraClient<TArea> | undefined;
+    constructor(options: AgentOptions<TArea> = {}) {
+        this._client = options.client;
         this._name = options.name;
         this._pipelineId = options.pipelineId;
         this._instructions = options.instructions;
@@ -239,7 +234,7 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
      *
      * @param vendor - LLM vendor instance (e.g., new OpenAI({ apiKey: '...', model: 'gpt-4', url: 'https://api.openai.com/v1/chat/completions' }))
      */
-    withLlm(vendor: RegionalLlmVendor<TArea>): Agent<TTSSampleRate, TArea> {
+    withLlm(vendor: LlmVendor): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._llm = vendor.toConfig();
         return newAgent;
@@ -254,7 +249,7 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
      * @param vendor - TTS vendor instance (e.g., new ElevenLabsTTS({ key: '...', modelId: '...', voiceId: '...', baseUrl: 'wss://api.elevenlabs.io/v1', sampleRate: 24000 }))
      * @returns Agent with tracked sample rate type
      */
-    withTts<SR extends number>(vendor: RegionalTtsVendor<TArea, SR>): Agent<SR, TArea> {
+    withTts<SR extends number>(vendor: TtsVendor<SR>): Agent<SR, TArea> {
         // Cast is intentional: _clone() preserves TTSSampleRate but withTts
         // changes the type parameter to SR (the new vendor's sample rate).
         // The cast is safe because _clone copies all fields before the reassignment.
@@ -278,7 +273,7 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
      * }));
      * ```
      */
-    withStt(vendor: RegionalSttVendor<TArea>): Agent<TTSSampleRate, TArea> {
+    withStt(vendor: SttVendor): Agent<TTSSampleRate, TArea> {
         const newAgent = this._clone();
         newAgent._stt = vendor.toConfig();
         return newAgent;
@@ -349,7 +344,7 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
      */
     withAvatar<RequiredSR extends number>(
         this: Agent<RequiredSR, TArea>,
-        vendor: RegionalAvatarVendor<TArea, RequiredSR>,
+        vendor: AvatarVendor<RequiredSR>,
     ): Agent<RequiredSR, TArea> {
         // No cast needed: _clone() returns Agent<TTSSampleRate>, and since
         // `this: Agent<RequiredSR>`, TTSSampleRate = RequiredSR here.

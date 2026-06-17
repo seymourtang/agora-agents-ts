@@ -15,11 +15,11 @@ npm install agora-agents
 
 ## Quick Start
 
-Start with the `Agent` builder: create a client with app credentials, pick ASR, LLM, and TTS through `client.vendors`, then start a session. Omit vendor API keys for supported Agora-managed models, or provide keys when you want BYOK.
+Start with the `Agent` builder: create a client with app credentials, configure ASR, LLM, and TTS with vendor classes, then start a session. Omit vendor API keys for supported Agora-managed models, or provide keys when you want BYOK.
 Set Agora interaction language with `turnDetection.language`; provider-specific STT language values remain under `asr.params`. Ares uses only the REST `asr.language` value sourced from `turnDetection.language`.
 
 ```typescript
-import { AgoraClient, Agent, Area, ExpiresIn } from 'agora-agents';
+import { AgoraClient, Agent, Area, DeepgramSTT, ExpiresIn, MiniMaxTTS, OpenAI } from 'agora-agents';
 
 const AGENT_PROMPT = `You are a concise, technically credible voice assistant. Keep replies short unless the user asks for detail.`;
 
@@ -67,13 +67,13 @@ export async function startConversation(): Promise<string> {
     },
   })
     .withStt(
-      client.vendors.stt.deepgram({
+      new DeepgramSTT({
         model: 'nova-3',
         language: 'en',
       }),
     )
     .withLlm(
-      client.vendors.llm.openai({
+      new OpenAI({
         model: 'gpt-4o-mini',
         systemMessages: [{ role: 'system', content: AGENT_PROMPT }],
         greetingMessage: GREETING,
@@ -87,7 +87,7 @@ export async function startConversation(): Promise<string> {
       }),
     )
     .withTts(
-      client.vendors.tts.minimax({
+      new MiniMaxTTS({
         model: 'speech_2_6_turbo',
         voiceId: 'English_captivating_female1',
       }),
@@ -108,11 +108,11 @@ export async function startConversation(): Promise<string> {
 
 ### Why no token or vendor key in the example?
 
-`AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically when you provide `appId` and `appCertificate`. For supported Agora-managed global models, leave vendor API keys unset; provide keys when you want BYOK. CN MiniMax TTS is not Agora-managed and always requires `key`. CN custom LLM routing reuses `CustomLLM`, so `apiKey` is also required for `client.vendors.llm.custom(...)`.
+`AgoraClient` generates the required ConvoAI REST auth and RTC join tokens automatically when you provide `appId` and `appCertificate`. For supported Agora-managed global models, leave vendor API keys unset; provide keys when you want BYOK. CN MiniMax TTS is not Agora-managed and always requires `key`. CN custom LLM routing reuses `CustomLLM`, so `apiKey` is also required.
 
 ### Regional agent builders
 
-Use `client.vendors.*` so vendor availability follows `client.area`. The Quick Start above is the global (`Area.US`) pattern; CN uses a different vendor catalog. See [`docs/guides/regional-routing.md`](./docs/guides/regional-routing.md) for regional examples.
+`client.area` controls API routing only. You may combine any supported vendor class with any area. See [`docs/guides/regional-routing.md`](./docs/guides/regional-routing.md) for examples.
 
 ## AI Studio pipeline IDs
 
@@ -158,7 +158,7 @@ AgentKit sends the resolved value as the top-level `/join` field `pipeline_id`, 
 Use the same `Agent` builder shape, but provide credentials explicitly when you want vendor-managed billing and routing instead of Agora-managed models.
 
 ```typescript
-import { AgoraClient, Agent, Area } from 'agora-agents';
+import { AgoraClient, Agent, Area, DeepgramSTT, MiniMaxTTS, OpenAI } from 'agora-agents';
 
 const client = new AgoraClient({
   area: Area.US,
@@ -171,14 +171,14 @@ const GREETING = 'Hi there! I am your Agora voice assistant. How can I help?';
 
 const agent = new Agent({ client, turnDetection: { language: 'en-US' } })
   .withStt(
-    client.vendors.stt.deepgram({
+    new DeepgramSTT({
       apiKey: process.env.DEEPGRAM_API_KEY!,
       model: 'nova-3',
       language: 'en',
     }),
   )
   .withLlm(
-    client.vendors.llm.openai({
+    new OpenAI({
       apiKey: process.env.OPENAI_API_KEY!,
       url: 'https://api.openai.com/v1/chat/completions',
       model: 'gpt-4o-mini',
@@ -190,7 +190,7 @@ const agent = new Agent({ client, turnDetection: { language: 'en-US' } })
     }),
   )
   .withTts(
-    client.vendors.tts.minimax({
+    new MiniMaxTTS({
       key: process.env.MINIMAX_API_KEY!,
       groupId: process.env.MINIMAX_GROUP_ID!,
       model: 'speech_2_6_turbo',
