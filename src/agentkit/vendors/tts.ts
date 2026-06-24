@@ -18,6 +18,12 @@ function requireString(value: unknown, field: string, vendor: string): asserts v
     }
 }
 
+function requireRecord(value: unknown, field: string, vendor: string): asserts value is Record<string, string> {
+    if (value == null || typeof value !== "object" || Array.isArray(value)) {
+        throw new Error(`${vendor} requires ${field}`);
+    }
+}
+
 function isOpenAITtsManagedModel(model: string | undefined): boolean {
     return model === undefined || OpenAITtsPresetModels.includes(model.trim().toLowerCase() as OpenAITtsPresetModel);
 }
@@ -845,6 +851,131 @@ export class MurfTTS extends BaseTTS {
                 ...(model && { model }),
                 ...(sampleRate !== undefined && { sample_rate: sampleRate }),
             } as unknown as import("../types.js").MurfTtsParams,
+            ...(skipPatterns && { skip_patterns: skipPatterns }),
+        } as TtsConfig;
+    }
+}
+
+/**
+ * Constructor options for Generic OpenAI-compatible TTS.
+ */
+export interface GenericTTSOptions {
+    /** Callback address of the generic TTS service */
+    url: string;
+    /** Custom headers to include in requests to the generic TTS service */
+    headers: Record<string, string>;
+    /** API key for the generic TTS service */
+    apiKey?: string;
+    /** TTS model name */
+    model: string;
+    /** Voice name */
+    voice: string;
+    /** Speech rate */
+    speed?: number;
+    /** Output audio sample rate in Hz */
+    sampleRate?: number;
+    /** Output audio format. ConvoAI currently supports `pcm` only. */
+    responseFormat?: "pcm";
+    /** Additional voice style control instruction */
+    instruction?: string;
+    /** Additional vendor-specific parameters */
+    additionalParams?: Record<string, unknown>;
+    /** Skip patterns for bracketed content */
+    skipPatterns?: number[];
+}
+
+/**
+ * Generic OpenAI-compatible TTS vendor.
+ */
+export class GenericTTS extends BaseTTS {
+    private readonly options: GenericTTSOptions;
+
+    constructor(options: GenericTTSOptions) {
+        super();
+        requireString(options.url, "url", "GenericTTS");
+        requireRecord(options.headers, "headers", "GenericTTS");
+        requireString(options.model, "model", "GenericTTS");
+        requireString(options.voice, "voice", "GenericTTS");
+        this.options = options;
+    }
+
+    toConfig(): TtsConfig {
+        const {
+            url,
+            headers,
+            apiKey,
+            model,
+            voice,
+            speed,
+            sampleRate,
+            responseFormat,
+            instruction,
+            additionalParams,
+            skipPatterns,
+        } = this.options;
+
+        return {
+            vendor: "generic",
+            url,
+            headers,
+            params: {
+                ...additionalParams,
+                ...(apiKey !== undefined && { api_key: apiKey }),
+                model,
+                voice,
+                ...(speed !== undefined && { speed }),
+                ...(sampleRate !== undefined && { sample_rate: sampleRate }),
+                ...(responseFormat !== undefined && { response_format: responseFormat }),
+                ...(instruction !== undefined && { instruction }),
+            } as unknown as import("../types.js").GenericTtsParams,
+            ...(skipPatterns && { skip_patterns: skipPatterns }),
+        } as TtsConfig;
+    }
+}
+
+/**
+ * Constructor options for xAI TTS.
+ */
+export interface XAiTTSOptions {
+    /** xAI API key */
+    apiKey: string;
+    /** BCP-47 language code for speech synthesis */
+    language: string;
+    /** xAI voice identifier */
+    voiceId?: string;
+    /** Audio sample rate in Hz */
+    sampleRate?: number;
+    /** Additional vendor-specific parameters */
+    additionalParams?: Record<string, unknown>;
+    /** Skip patterns for bracketed content */
+    skipPatterns?: number[];
+}
+
+/**
+ * xAI TTS vendor.
+ */
+export class XAiTTS extends BaseTTS {
+    private readonly options: XAiTTSOptions;
+
+    constructor(options: XAiTTSOptions) {
+        super();
+        requireString(options.apiKey, "apiKey", "XAiTTS");
+        requireString(options.language, "language", "XAiTTS");
+        this.options = options;
+    }
+
+    toConfig(): TtsConfig {
+        const { apiKey, language, voiceId, sampleRate, additionalParams, skipPatterns } = this.options;
+
+        return {
+            vendor: "xai",
+            params: {
+                ...additionalParams,
+                api_key: apiKey,
+                language,
+                ...(voiceId !== undefined && { voice_id: voiceId }),
+                ...(sampleRate !== undefined && { sample_rate: sampleRate }),
+            } as unknown as import("../types.js").XAiTtsParams,
             ...(skipPatterns && { skip_patterns: skipPatterns }),
         } as TtsConfig;
     }

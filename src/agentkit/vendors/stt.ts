@@ -493,3 +493,54 @@ export class SarvamSTT extends BaseSTT {
         };
     }
 }
+
+/**
+ * Constructor options for xAI STT.
+ */
+export interface XAiSTTOptions {
+    /** xAI API key */
+    apiKey: string;
+    /** Language code for speech recognition */
+    language?: string;
+    /** WebSocket endpoint URL for the xAI streaming STT API */
+    baseUrl?: string;
+    /** Audio sample rate in Hz */
+    sampleRate?: number;
+    /** Additional vendor-specific parameters */
+    additionalParams?: Record<string, unknown>;
+}
+
+/**
+ * xAI STT vendor.
+ *
+ * @example
+ * ```typescript
+ * const stt = new XAiSTT({
+ *   apiKey: process.env.XAI_API_KEY,
+ *   language: 'en',
+ * });
+ * ```
+ */
+export class XAiSTT extends BaseSTT {
+    private readonly options: XAiSTTOptions;
+
+    constructor(options: XAiSTTOptions) {
+        super();
+        this.options = options;
+    }
+
+    toConfig(): SttConfig {
+        const { apiKey, language, baseUrl, sampleRate, additionalParams } = this.options;
+
+        return {
+            vendor: "xai",
+            params: {
+                ...additionalParams,
+                api_key: apiKey,
+                ...(baseUrl !== undefined && { base_url: baseUrl }),
+                ...(sampleRate !== undefined && { sample_rate: sampleRate }),
+                ...(language !== undefined && { language }),
+            },
+        };
+    }
+}

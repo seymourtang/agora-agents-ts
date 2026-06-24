@@ -15,6 +15,8 @@ import type {
     ElevenLabsTts as ElevenLabsTtsType,
     FishAudioTtsParams as FishAudioTtsParamsType,
     FishAudioTts as FishAudioTtsType,
+    GenericTts as GenericTtsType,
+    GenericTtsParams as GenericTtsParamsType,
     GetAgentsResponse,
     GetHistoryAgentsResponse,
     GetTurnsAgentsResponse,
@@ -40,9 +42,14 @@ import type {
     SarvamTtsParams as SarvamTtsParamsType,
     SarvamTts as SarvamTtsType,
     SpeakAgentsRequest,
+    SpatiusAvatarParams as SpatiusAvatarParamsType,
     StartAgentsRequest,
     Tts,
     UpdateAgentsRequest,
+    XAiAsrParams as XAiAsrParamsType,
+    XAiAsr as XAiAsrType,
+    XAiTts as XAiTtsType,
+    XAiTtsParams as XAiTtsParamsType,
 } from "../api/index.js";
 import type { AgentThinkAgentManagementRequest } from "../api/resources/agentManagement/client/requests/AgentThinkAgentManagementRequest.js";
 import type { PresetInput } from "./presets.js";
@@ -74,6 +81,7 @@ export type SttConfig =
     | { vendor: "assemblyai"; language?: TurnDetectionLanguage; params: AssemblyAiParams }
     | { vendor: "ares"; language?: TurnDetectionLanguage; params?: AresParams }
     | { vendor: "sarvam"; language?: TurnDetectionLanguage; params: SarvamAsrParams }
+    | { vendor: "xai"; language?: TurnDetectionLanguage; params: XAiAsrParams }
     | Asr; // Fallback for shorthand/untyped configs
 
 /** ASR configuration — alias for {@link SttConfig} (wire field: `asr`). */
@@ -95,7 +103,7 @@ export type MllmVendor = Mllm.Vendor;
 export type AvatarConfig = StartAgentsRequest.Properties.Avatar;
 
 /** Avatar vendor (akool, liveavatar, anam, generic, deprecated heygen) */
-/** Wire avatar vendor identifier (e.g. `"liveavatar"`, `"sensetime"`). */
+/** Wire avatar vendor identifier (e.g. `"liveavatar"`, `"sensetime"`, `"spatius"`). */
 export type AvatarWireVendor = StartAgentsRequest.Properties.Avatar.Vendor;
 
 /** BCP-47 language tag used by `turn_detection.language`. */
@@ -274,10 +282,10 @@ export type Labels = Record<string, string>;
 // =============================================================================
 
 /** LLM greeting broadcast configuration (`llm.greeting_configs`) */
-export type LlmGreetingConfigs = Record<string, unknown>;
+export type LlmGreetingConfigs = Llm.GreetingConfigs;
 
-/** Greeting broadcast mode: `"single_every"` | `"single_first"` */
-export type LlmGreetingConfigsMode = string;
+/** Greeting broadcast ASR policy: `"merge_reply"` | `"context"` */
+export type LlmGreetingConfigsMode = Llm.GreetingConfigs.UninterruptibleAsrPolicy;
 
 /** MCP server config item (`llm.mcp_servers[]`) */
 export type McpServersItem = Record<string, unknown>;
@@ -478,6 +486,8 @@ interface BaseLlmConfig {
     output_modalities?: string[];
     /** Agent greeting message */
     greeting_message?: string;
+    /** Publicly accessible greeting audio URL */
+    greeting_audio_url?: string;
     /** Failure message when LLM call fails */
     failure_message?: string;
     /** LLM provider (e.g., 'azure', 'custom') */
@@ -646,6 +656,13 @@ export interface SarvamAsrParams {
     [key: string]: unknown;
 }
 
+/**
+ * xAI STT parameters
+ * @see https://docs.agora.io/en/conversational-ai/models/asr/overview
+ */
+export type XAiAsr = XAiAsrType;
+export type XAiAsrParams = XAiAsrParamsType;
+
 // =============================================================================
 // TTS Vendor-Specific Types (re-exports for convenience)
 // =============================================================================
@@ -664,6 +681,8 @@ export type RimeTts = RimeTtsType;
 export type RimeTtsParams = RimeTtsParamsType;
 export type FishAudioTts = FishAudioTtsType;
 export type FishAudioTtsParams = FishAudioTtsParamsType;
+export type GenericTts = GenericTtsType;
+export type GenericTtsParams = GenericTtsParamsType;
 export type GoogleTts = GoogleTtsType;
 export type GoogleTtsParams = GoogleTtsParamsType;
 export type AmazonTts = AmazonTtsType;
@@ -674,3 +693,6 @@ export type MurfTts = MurfTtsType;
 export type MurfTtsParams = MurfTtsParamsType;
 export type SarvamTts = SarvamTtsType;
 export type SarvamTtsParams = SarvamTtsParamsType;
+export type XAiTts = XAiTtsType;
+export type XAiTtsParams = XAiTtsParamsType;
+export type SpatiusAvatarParams = SpatiusAvatarParamsType;

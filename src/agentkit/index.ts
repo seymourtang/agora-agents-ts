@@ -38,6 +38,7 @@ export type {
     HeyGenAvatarConfig,
     LiveAvatarAvatarConfig,
     SensetimeAvatarConfig,
+    SpatiusAvatarConfig,
     StrictAvatarConfig,
 } from "./avatar-types.js";
 export {
@@ -48,6 +49,7 @@ export {
     isHeyGenAvatar,
     isLiveAvatarAvatar,
     isSensetimeAvatar,
+    isSpatiusAvatar,
     toBaseAvatarConfig,
     validateAvatarConfig,
     validateTtsSampleRate,
@@ -157,6 +159,8 @@ export type {
     FillerWordsTriggerFixedTimeConfig,
     FishAudioTts,
     FishAudioTtsParams,
+    GenericTts,
+    GenericTtsParams,
     GeofenceArea,
     GeofenceConfig,
     GeofenceExcludeArea,
@@ -227,6 +231,11 @@ export type {
     TurnDetectionLanguage,
     TurnDetectionNestedConfig,
     TurnDetectionType,
+    XAiAsr,
+    XAiAsrParams,
+    XAiTts,
+    XAiTtsParams,
+    SpatiusAvatarParams,
 } from "./types.js";
 export type {
     AkoolAvatarOptions,
@@ -279,6 +288,7 @@ export type {
     MicrosoftCNTTSOptions,
     MiniMaxCNTTSOptions,
     SensetimeAvatarOptions,
+    SpatiusAvatarOptions,
     StepFunTTSOptions,
     TencentLLMOptions,
     TencentSTTOptions,
@@ -299,6 +309,7 @@ export {
     MicrosoftCNTTS,
     MiniMaxCNTTS,
     SensetimeAvatar,
+    SpatiusAvatar,
     StepFunTTS,
     TencentLLM,
     TencentSTT,
@@ -353,6 +364,7 @@ export type {
     OpenAISTTOptions,
     SarvamSTTOptions,
     SpeechmaticsSTTOptions,
+    XAiSTTOptions,
 } from "./vendors/stt.js";
 // STT vendor classes
 export {
@@ -365,6 +377,7 @@ export {
     OpenAISTT,
     SarvamSTT,
     SpeechmaticsSTT,
+    XAiSTT,
 } from "./vendors/stt.js";
 export type {
     AmazonTTSOptions,
@@ -372,6 +385,7 @@ export type {
     DeepgramTTSOptions,
     ElevenLabsTTSOptions,
     FishAudioTTSOptions,
+    GenericTTSOptions,
     GoogleTTSOptions,
     HumeAITTSOptions,
     MicrosoftTTSOptions,
@@ -380,6 +394,7 @@ export type {
     OpenAITTSOptions,
     RimeTTSOptions,
     SarvamTTSOptions,
+    XAiTTSOptions,
 } from "./vendors/tts.js";
 // TTS vendor classes
 export {
@@ -388,6 +403,7 @@ export {
     DeepgramTTS,
     ElevenLabsTTS,
     FishAudioTTS,
+    GenericTTS,
     GoogleTTS,
     HumeAITTS,
     MicrosoftTTS,
@@ -396,4 +412,5 @@ export {
     OpenAITTS,
     RimeTTS,
     SarvamTTS,
+    XAiTTS,
 } from "./vendors/tts.js";

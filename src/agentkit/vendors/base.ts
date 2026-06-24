@@ -35,6 +35,8 @@ export interface BaseLlmOptions {
      * - `"single_first"`: Broadcasts a greeting only once to the first user.
      */
     greetingConfigs?: LlmGreetingConfigs;
+    /** Publicly accessible greeting audio URL played when the session starts. */
+    greetingAudioUrl?: string;
     /**
      * Key-value pairs injected into `system_messages`, `greeting_message`, and
      * `failure_message` via `{{variable_name}}` syntax. Useful for per-session
@@ -107,6 +109,7 @@ abstract class ScopedBaseLLM<TScope extends VendorScope> {
     readonly areaScope: TScope;
     private readonly _outputModalities?: string[];
     private readonly _greetingConfigs?: LlmGreetingConfigs;
+    private readonly _greetingAudioUrl?: string;
     private readonly _templateVariables?: Record<string, string>;
     private readonly _vendor?: string;
     private readonly _mcpServers?: McpServersItem[];
@@ -115,6 +118,7 @@ abstract class ScopedBaseLLM<TScope extends VendorScope> {
         this.areaScope = areaScope;
         this._outputModalities = options?.outputModalities;
         this._greetingConfigs = options?.greetingConfigs;
+        this._greetingAudioUrl = options?.greetingAudioUrl;
         this._templateVariables = options?.templateVariables;
         this._vendor = options?.vendor;
         this._mcpServers = options?.mcpServers;
@@ -125,6 +129,9 @@ abstract class ScopedBaseLLM<TScope extends VendorScope> {
     }
     protected get greetingConfigs(): LlmGreetingConfigs | undefined {
         return this._greetingConfigs;
+    }
+    protected get greetingAudioUrl(): string | undefined {
+        return this._greetingAudioUrl;
     }
     protected get templateVariables(): Record<string, string> | undefined {
         return this._templateVariables;

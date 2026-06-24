@@ -6,6 +6,7 @@
  */
 
 import type { SensetimeAvatarParams } from "../api/types/SensetimeAvatarParams.js";
+import type { SpatiusAvatarParams } from "../api/types/SpatiusAvatarParams.js";
 import type { AvatarConfig as BaseAvatarConfig } from "./types.js";
 
 /**
@@ -153,6 +154,15 @@ export interface SensetimeAvatarConfig {
 }
 
 /**
+ * Spatius-specific avatar configuration.
+ */
+export interface SpatiusAvatarConfig {
+    enable?: boolean;
+    vendor: "spatius";
+    params: SpatiusAvatarParams;
+}
+
+/**
  * Discriminated union of all avatar configurations.
  * TypeScript will enforce vendor-specific constraints based on the vendor field.
  */
@@ -162,7 +172,8 @@ export type StrictAvatarConfig =
     | AkoolAvatarConfig
     | AnamAvatarConfig
     | GenericAvatarConfig
-    | SensetimeAvatarConfig;
+    | SensetimeAvatarConfig
+    | SpatiusAvatarConfig;
 
 /**
  * Helper type guard to check if an avatar config uses the legacy HeyGen wire vendor.
@@ -207,13 +218,26 @@ export function isSensetimeAvatar(config: StrictAvatarConfig): config is Senseti
 }
 
 /**
+ * Helper type guard to check if an avatar config is for Spatius.
+ */
+export function isSpatiusAvatar(config: StrictAvatarConfig): config is SpatiusAvatarConfig {
+    return config.vendor === "spatius";
+}
+
+/**
  * Returns true when AgentKit manages the avatar's RTC publisher identity
  * (i.e. fills `agora_token`, validates uniqueness against the agent UID).
  *
  * Mirrors the Go and Python SDK gate so all language SDKs behave identically.
  */
 export function isAvatarTokenManaged(config: StrictAvatarConfig): boolean {
-    return isHeyGenAvatar(config) || isLiveAvatarAvatar(config) || isGenericAvatar(config) || isSensetimeAvatar(config);
+    return (
+        isHeyGenAvatar(config) ||
+        isLiveAvatarAvatar(config) ||
+        isGenericAvatar(config) ||
+        isSensetimeAvatar(config) ||
+        isSpatiusAvatar(config)
+    );
 }
 
 /**
@@ -293,6 +317,22 @@ export function validateAvatarConfig(
         }
         if (!Array.isArray(config.params.sceneList) || config.params.sceneList.length === 0) {
             throw new Error("SenseTime avatar requires a non-empty sceneList");
+        }
+    } else if (isSpatiusAvatar(config)) {
+        if (!config.params.agora_uid) {
+            throw new Error("Spatius avatar requires agora_uid");
+        }
+        if (!config.params.spatius_api_key) {
+            throw new Error("Spatius avatar requires spatius_api_key");
+        }
+        if (!config.params.spatius_app_id) {
+            throw new Error("Spatius avatar requires spatius_app_id");
+        }
+        if (!config.params.spatius_avatar_id) {
+            throw new Error("Spatius avatar requires spatius_avatar_id");
+        }
+        if (options.requireSessionFields && !config.params.agora_token) {
+            throw new Error("Spatius avatar requires agora_token after session enrichment");
         }
     }
 }
