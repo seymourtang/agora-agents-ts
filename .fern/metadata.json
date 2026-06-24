@@ -1,8 +1,9 @@
 {
-    "cliVersion": "4.4.4",
+    "cliVersion": "5.0.0",
     "generatorName": "fernapi/fern-typescript-node-sdk",
     "generatorVersion": "3.31.1",
     "generatorConfig": {
         "namespaceExport": "Agora"
-    }
+    },
+    "originGitCommit": "b55cdf73dddbda3aa248668eefd04d21d60ee675"
 }

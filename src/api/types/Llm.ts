@@ -29,6 +29,8 @@ export interface Llm {
     output_modalities?: string[];
     /** Agent greeting. */
     greeting_message?: string;
+    /** Publicly accessible greeting audio URL. */
+    greeting_audio_url?: string;
     /** Prompt for agent activation failure. */
     failure_message?: string;
     /** LLM provider identifier. */
@@ -38,7 +40,7 @@ export interface Llm {
     /** Whether to handle empty Gemini responses. */
     ignore_empty?: boolean | null;
     /** Agent greeting broadcast configuration. */
-    greeting_configs?: Record<string, unknown>;
+    greeting_configs?: Llm.GreetingConfigs;
     /** Template parameter configuration. */
     template_variables?: Record<string, string>;
     /** MCP server configuration. */
@@ -59,4 +61,27 @@ export namespace Llm {
         Bedrock: "bedrock",
     } as const;
     export type Style = (typeof Style)[keyof typeof Style];
+
+    /**
+     * Agent greeting broadcast configuration.
+     */
+    export interface GreetingConfigs {
+        /** Timeout in milliseconds for downloading greeting audio. */
+        audio_download_timeout_ms?: number | null;
+        /** Sample rate in Hz for PCM greeting audio. */
+        audio_pcm_sample_rate?: number | null;
+        /** Policy for handling ASR text during uninterruptible greeting playback. */
+        uninterruptible_asr_policy?: GreetingConfigs.UninterruptibleAsrPolicy | null;
+        /** Accepts any additional properties */
+        [key: string]: any;
+    }
+
+    export namespace GreetingConfigs {
+        /** Policy for handling ASR text during uninterruptible greeting playback. */
+        export const UninterruptibleAsrPolicy = {
+            MergeReply: "merge_reply",
+            Context: "context",
+        } as const;
+        export type UninterruptibleAsrPolicy = (typeof UninterruptibleAsrPolicy)[keyof typeof UninterruptibleAsrPolicy];
+    }
 }

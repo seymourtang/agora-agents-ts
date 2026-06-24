@@ -14,6 +14,7 @@ export type Asr =
     | Agora.Asr.Assemblyai
     | Agora.Asr.Speechmatics
     | Agora.Asr.Sarvam
+    | Agora.Asr.Xai
     | Agora.Asr.Xfyun
     | Agora.Asr.XfyunBigmodel
     | Agora.Asr.XfyunDialect;
@@ -61,6 +62,10 @@ export namespace Asr {
 
     export interface Sarvam extends Agora.SarvamAsr {
         vendor: "sarvam";
+    }
+
+    export interface Xai extends Agora.XAiAsr {
+        vendor: "xai";
     }
 
     export interface Xfyun extends Agora.XfyunAsr {
