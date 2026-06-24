@@ -14,7 +14,7 @@ Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and
 
 | Global-oriented classes | CN-oriented classes |
 |---|---|
-| `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, … |
+| `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, `GenericTTS`, `XAiSTT`, `XAiTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, `SensetimeAvatar`, `SpatiusAvatar`, … |
 
 Global example:
 
@@ -97,6 +97,7 @@ new OpenAI(options: OpenAIOptions)
 | `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters (overrides `model` in params) |
 | `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingAudioUrl` | `string` | No | Publicly accessible greeting audio URL |
 | `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
 | `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
@@ -131,6 +132,7 @@ new AzureOpenAI(options: AzureOpenAIOptions)
 | `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
 | `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingAudioUrl` | `string` | No | Publicly accessible greeting audio URL |
 | `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
 | `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
@@ -155,6 +157,7 @@ new Anthropic(options: AnthropicOptions)
 | `inputModalities` | `string[]` | No | Input modalities (default: `["text"]`) |
 | `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
+| `greetingAudioUrl` | `string` | No | Publicly accessible greeting audio URL |
 | `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
 | `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
@@ -178,6 +181,7 @@ new Gemini(options: GeminiOptions)
 | `outputModalities` | `string[]` | No | Output modalities |
 | `params` | `Record<string, unknown>` | No | Additional LLM parameters |
 | `headers` | `Record<string, string>` | No | Custom HTTP headers forwarded to the LLM provider |
+| `greetingAudioUrl` | `string` | No | Publicly accessible greeting audio URL |
 | `greetingConfigs` | `LlmGreetingConfigs` | No | Greeting playback configuration |
 | `templateVariables` | `Record<string, string>` | No | Template variables for messages |
 
@@ -282,12 +286,14 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `GoogleTTS` | `key`, `voiceName`, `languageCode?`, `sampleRate?` |
 | `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId`, `engine` |
 | `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `additionalParams?` |
+| `GenericTTS` | `url`, `headers`, `apiKey?`, `model`, `voice`, `speed?`, `sampleRate?`, `responseFormat?`, `instruction?`, `additionalParams?` |
 | `HumeAITTS` | `key`, `voiceId`, `provider`, `configId?`, `baseUrl?`, `speed?`, `trailingSilence?` |
 | `RimeTTS` | `key`, `speaker`, `modelId`, `baseUrl?` |
 | `FishAudioTTS` | `key`, `referenceId`, `backend` |
 | `MiniMaxTTS` | `key?`, `groupId?`, `model`, `voiceId?`, `url?` |
 | `MurfTTS` | `key`, `voiceId?`, `baseUrl?`, `locale?`, `rate?`, `pitch?`, `model?`, `sampleRate?` |
 | `SarvamTTS` | `key`, `speaker`, `targetLanguageCode`, `pitch?`, `pace?`, `loudness?`, `sampleRate?` |
+| `XAiTTS` | `apiKey`, `language`, `voiceId?`, `sampleRate?`, `additionalParams?` |
 
 For `MiniMaxTTS`, `key` is optional only for Agora-managed models:
 
@@ -333,6 +339,7 @@ Use `turnDetection.language` for Agora interaction language; it defaults to `en-
 | `AssemblyAISTT` | `apiKey`, `language`, `uri?` |
 | `AresSTT` | — |
 | `SarvamSTT` | `apiKey`, `language` |
+| `XAiSTT` | `apiKey`, `language?`, `baseUrl?`, `sampleRate?`, `additionalParams?` |
 
 ---
 
@@ -430,7 +437,7 @@ new XaiGrok(options: XaiGrokOptions)
 
 ## Avatar vendors
 
-AgentKit auto-fills `agora_token` only for vendors that publish a separate RTC video identity: `HeyGenAvatar`, `LiveAvatarAvatar`, `GenericAvatar`, and `SensetimeAvatar`. When `agoraToken` is omitted on those vendors, AgentKit generates it at `session.start()` from the session App ID, channel, app certificate, and avatar `agoraUid`. Avatar tokens use the same ConvoAI token format as agent tokens, scoped to the avatar UID. Explicit `agoraToken` values are preserved. `AkoolAvatar` and `AnamAvatar` never receive an auto-generated token (the avatar provider handles publishing). Use `isAvatarTokenManaged(avatar)` to check whether a config is in the managed group.
+AgentKit auto-fills `agora_token` only for vendors that publish a separate RTC video identity: `HeyGenAvatar`, `LiveAvatarAvatar`, `GenericAvatar`, `SensetimeAvatar`, and `SpatiusAvatar`. When `agoraToken` is omitted on those vendors, AgentKit generates it at `session.start()` from the session App ID, channel, app certificate, and avatar `agoraUid`. Avatar tokens use the same ConvoAI token format as agent tokens, scoped to the avatar UID. Explicit `agoraToken` values are preserved. `AkoolAvatar` and `AnamAvatar` never receive an auto-generated token (the avatar provider handles publishing). Use `isAvatarTokenManaged(avatar)` to check whether a config is in the managed group.
 
 ### HeyGenAvatar
 
@@ -505,6 +512,27 @@ Generic avatars can omit `agoraAppId`, `agoraChannel`, and `agoraToken`. AgentKi
 | `agoraAppId` | `string` | No | Agora App ID override |
 | `agoraChannel` | `string` | No | Agora channel override |
 | `agoraToken` | `string` | No | Avatar token override |
+| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
+
+### SpatiusAvatar
+
+<!-- snippet: fragment -->
+```typescript
+new SpatiusAvatar(options: SpatiusAvatarOptions)
+```
+
+`SpatiusAvatar` is a CN avatar helper. `agoraToken` is optional; when omitted, AgentKit generates it at `session.start()`.
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `spatiusApiKey` | `string` | Yes | Spatius API key |
+| `spatiusAppId` | `string` | Yes | Spatius application ID |
+| `spatiusAvatarId` | `string` | Yes | Spatius avatar ID |
+| `agoraUid` | `string` | Yes | RTC UID for the avatar stream |
+| `agoraToken` | `string` | No | Avatar token override |
+| `region` | `string` | No | Spatius service region (for example, `cn-beijing`) |
+| `sampleRate` | `16000 \| 24000` | No | Audio sample rate in Hz |
+| `sessionExpireMinutes` | `number` | No | Spatius session validity duration in minutes |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
 
 <!-- snippet: fragment -->
@@ -582,3 +610,4 @@ CN TTS helpers reuse shared vendor names where possible. `MiniMaxCNTTS` and `Mic
 | Class | Key options |
 |---|---|
 | `SensetimeAvatar` | `agoraUid`, `appId`, `appKey`, `sceneList`; optional `agoraToken`, `enable`, `additionalParams` |
+| `SpatiusAvatar` | `spatiusApiKey`, `spatiusAppId`, `spatiusAvatarId`, `agoraUid`; optional `agoraToken`, `region`, `sampleRate`, `sessionExpireMinutes`, `enable`, `additionalParams` |

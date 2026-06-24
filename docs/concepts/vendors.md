@@ -50,7 +50,9 @@ const llm = new OpenAI({
 | `MiniMaxTTS`    | MiniMax          | `model` for supported Agora-managed models; BYOK accepts `key`, `groupId`, `model`, `voiceId`, and `url` |
 | `MurfTTS`       | Murf             | Configurable                            |
 | `DeepgramTTS`   | Deepgram         | Configurable                            |
+| `GenericTTS`    | Generic OpenAI-compatible TTS | Configurable                     |
 | `SarvamTTS`     | Sarvam AI        | Configurable                            |
+| `XAiTTS`        | xAI              | Configurable                            |
 
 <!-- snippet: executable -->
 
@@ -83,6 +85,7 @@ The `sampleRate` is critical when using avatars. See [Avatar Integration](../gui
 | `AssemblyAISTT`   | AssemblyAI        | `apiKey`, `language`, `uri?`                     |
 | `AresSTT`         | Agora ARES        | —                                                |
 | `SarvamSTT`       | Sarvam AI         | `apiKey`, `language`                             |
+| `XAiSTT`          | xAI               | `apiKey`, `language?`, `baseUrl?`, `sampleRate?` |
 
 <!-- snippet: executable -->
 
@@ -107,7 +110,7 @@ MLLM (Multimodal LLM) vendors handle audio end-to-end — no separate STT or TTS
 | `VertexAI`       | Vertex AI Gemini Live           | `model`, `url?`, `projectId`, `location`, `adcCredentialsString`, `voice?`, `greetingMessage?`, `failureMessage?`, `inputModalities?`, `outputModalities?`, `messages?`, `turnDetection?` |
 | `XaiGrok`        | xAI Grok (`mllm.vendor`: `xai`) | `apiKey`, `url?`, `voice?`, `language?`, `sampleRate?`, `greetingMessage?`, `failureMessage?`, `inputModalities?`, `outputModalities?`, `messages?`, `turnDetection?`                     |
 
-> Future xAI **STT** and **TTS** vendors will be named `XaiSTT` and `XaiTTS` (cascading pipeline).
+`XAiSTT` and `XAiTTS` are the cascading-pipeline xAI wrappers. `XaiGrok` is the realtime MLLM wrapper.
 
 <!-- snippet: executable -->
 
@@ -132,7 +135,7 @@ CN vendor classes use the same builder methods (`.withLlm()`, `.withStt()`, `.wi
 | LLM | `AliyunLLM`, `BytedanceLLM`, `DeepSeekLLM`, `TencentLLM`, `CustomLLM` |
 | STT | `FengmingSTT`, `TencentSTT`, `MicrosoftCNSTT`, `XfyunSTT`, `XfyunBigModelSTT`, `XfyunDialectSTT` |
 | TTS | `MiniMaxCNTTS`, `MicrosoftCNTTS`, `TencentTTS`, `CosyVoiceTTS`, `BytedanceDuplexTTS`, `StepFunTTS` |
-| Avatar | `SensetimeAvatar` |
+| Avatar | `SensetimeAvatar`, `SpatiusAvatar` |
 
 See [Regional Routing](../guides/regional-routing.md) and [Vendor Reference](../reference/vendors.md) for constructor options.
 
@@ -150,8 +153,9 @@ Avatars provide a visual representation for the agent. Several avatar vendors re
 | `AnamAvatar`       | Anam                                        | Provider-defined         |
 | `GenericAvatar`    | Custom avatar provider                      | Provider-defined         |
 | `SensetimeAvatar`  | SenseTime (CN)                              | Provider-defined         |
+| `SpatiusAvatar`    | Spatius (CN)                                | Provider-defined         |
 
-CN LLM, STT, TTS, and avatar vendors (`AliyunLLM`, `FengmingSTT`, `MiniMaxCNTTS`, `SensetimeAvatar`, …) are listed in [Vendor Reference](../reference/vendors.md) and [Regional Routing](../guides/regional-routing.md).
+CN LLM, STT, TTS, and avatar vendors (`AliyunLLM`, `FengmingSTT`, `MiniMaxCNTTS`, `SensetimeAvatar`, `SpatiusAvatar`, …) are listed in [Vendor Reference](../reference/vendors.md) and [Regional Routing](../guides/regional-routing.md).
 
 See [Avatar Integration](../guides/avatars.md) for full examples and the sample-rate constraint details.
 
