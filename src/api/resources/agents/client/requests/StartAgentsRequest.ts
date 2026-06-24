@@ -89,7 +89,7 @@ export namespace StartAgentsRequest {
          * - `false`: Both agent and subscriber user IDs must be integers.
          */
         enable_string_uid?: boolean;
-        /** Sets the timeout after all the users specified in `remote_rtc_uids` are detected to have left the channel. When the timeout value is exceeded, the agent automatically stops and exits the channel. A value of `0` means that the agent does not exit until it is stopped manually. */
+        /** Sets the timeout after all the users specified in `remote_rtc_uids` are detected to have left the channel. When the timeout value is exceeded, the agent automatically stops and exits the channel. A value of `0` disables exit due to channel idle timeout only; it does not allow the agent to run indefinitely. Regardless of this value, the maximum runtime of a single task is 72 hours, after which the agent automatically exits. */
         idle_timeout?: number;
         /** Regional access restriction configuration. Use this to limit which Agora servers the Conversational AI Engine can access based on geographic regions. */
         geofence?: Properties.Geofence;
@@ -181,6 +181,7 @@ export namespace StartAgentsRequest {
              * - `anam`: Anam (Beta)
              * - `generic`: Generic (Beta)
              * - `sensetime`: SenseTime Avatar
+             * - `spatius`: Spatius Avatar
              */
             vendor?: Avatar.Vendor;
             /** The configuration parameters for the avatar vendor. See [AI Avatar Overview](https://docs.agora.io/en/conversational-ai/models/avatar/overview) for details. */
@@ -195,6 +196,7 @@ export namespace StartAgentsRequest {
              * - `anam`: Anam (Beta)
              * - `generic`: Generic (Beta)
              * - `sensetime`: SenseTime Avatar
+             * - `spatius`: Spatius Avatar
              */
             export const Vendor = {
                 Akool: "akool",
@@ -208,6 +210,9 @@ export namespace StartAgentsRequest {
                 /**
                  * SenseTime Avatar */
                 Sensetime: "sensetime",
+                /**
+                 * Spatius Avatar */
+                Spatius: "spatius",
                 /**
                  * Deprecated: HeyGen has renamed to LiveAvatar. Use `liveavatar` instead. */
                 Heygen: "heygen",
@@ -291,6 +296,7 @@ export namespace StartAgentsRequest {
                      * - `vad`: Based on VAD (Voice Activity Detection). Uses audio signal detection.
                      * - `keywords`: Deprecated. Use `interruption.mode = "keywords"` instead.
                      * - `disabled`: Deprecated. Use `interruption.enable = false` with `interruption.disabled_config.strategy` to configure the handling strategy.
+                     * - `manual`: The client explicitly submits the start of the user turn through signaling.
                      */
                     mode: StartOfSpeech.Mode;
                     /** VAD configuration. Used when `mode` is `vad`. */
@@ -307,11 +313,13 @@ export namespace StartAgentsRequest {
                      * - `vad`: Based on VAD (Voice Activity Detection). Uses audio signal detection.
                      * - `keywords`: Deprecated. Use `interruption.mode = "keywords"` instead.
                      * - `disabled`: Deprecated. Use `interruption.enable = false` with `interruption.disabled_config.strategy` to configure the handling strategy.
+                     * - `manual`: The client explicitly submits the start of the user turn through signaling.
                      */
                     export const Mode = {
                         Vad: "vad",
                         Keywords: "keywords",
                         Disabled: "disabled",
+                        Manual: "manual",
                     } as const;
                     export type Mode = (typeof Mode)[keyof typeof Mode];
 
@@ -367,6 +375,7 @@ export namespace StartAgentsRequest {
                      * End of speech detection mode:
                      * - `vad`: Based on VAD (Voice Activity Detection). Detects silence duration.
                      * - `semantic`: Based on semantic triggering. Uses semantic understanding to determine when conversation ends.
+                     * - `manual`: The client explicitly submits the end of the user turn through signaling.
                      */
                     mode?: EndOfSpeech.Mode;
                     /** VAD configuration. Used when `mode` is `vad`. */
@@ -380,10 +389,12 @@ export namespace StartAgentsRequest {
                      * End of speech detection mode:
                      * - `vad`: Based on VAD (Voice Activity Detection). Detects silence duration.
                      * - `semantic`: Based on semantic triggering. Uses semantic understanding to determine when conversation ends.
+                     * - `manual`: The client explicitly submits the end of the user turn through signaling.
                      */
                     export const Mode = {
                         Vad: "vad",
                         Semantic: "semantic",
+                        Manual: "manual",
                     } as const;
                     export type Mode = (typeof Mode)[keyof typeof Mode];
 
@@ -692,6 +703,12 @@ export namespace StartAgentsRequest {
              * - `aiserver`: Optimized for interactions between the user and the conversational AI agent in terms of latency and network resilience.
              */
             audio_scenario?: Parameters.AudioScenario;
+            /**
+             * Whether to disable data retention for the current session:
+             * - `false`: Default. Session data retention remains enabled.
+             * - `true`: Disables session data retention. When disabled, historical session content cannot be used for troubleshooting, effectiveness review, or agent optimization.
+             */
+            opt_out?: boolean;
         }
 
         export namespace Parameters {

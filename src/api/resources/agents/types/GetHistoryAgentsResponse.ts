@@ -24,6 +24,12 @@ export namespace GetHistoryAgentsResponse {
             role?: Item.Role;
             /** Message content. */
             content?: string;
+            /** The start timestamp of the speech segment in milliseconds, relative to the beginning of the current session. Returned only when `llm.vendor='custom'`. */
+            speech_start_ms?: number;
+            /** The end timestamp of the speech segment in milliseconds, relative to the beginning of the current session. Returned only when `llm.vendor='custom'`. */
+            speech_end_ms?: number;
+            /** The total delay in milliseconds introduced by audio processing algorithms, including noise reduction, background voice suppression, and voiceprint locking, after audio is captured from the user's microphone. Use this value to align timestamps with cloud recording audio. Returned only when `llm.vendor='custom'`, `contents[].role='user'`, and actual voice input is present. */
+            speech_algorithmic_delay?: number;
         }
 
         export namespace Item {
