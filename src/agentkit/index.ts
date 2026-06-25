@@ -213,6 +213,7 @@ export type {
     SessionSummary,
     SilenceAction,
     SilenceConfig,
+    SpatiusAvatarParams,
     SpeakPriority,
     StartOfSpeechConfig,
     StartOfSpeechDisabledConfig,
@@ -235,7 +236,6 @@ export type {
     XAiAsrParams,
     XAiTts,
     XAiTtsParams,
-    SpatiusAvatarParams,
 } from "./types.js";
 export type {
     AkoolAvatarOptions,
