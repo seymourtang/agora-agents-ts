@@ -15,8 +15,8 @@ import type {
     ElevenLabsTts as ElevenLabsTtsType,
     FishAudioTtsParams as FishAudioTtsParamsType,
     FishAudioTts as FishAudioTtsType,
-    GenericTts as GenericTtsType,
     GenericTtsParams as GenericTtsParamsType,
+    GenericTts as GenericTtsType,
     GetAgentsResponse,
     GetHistoryAgentsResponse,
     GetTurnsAgentsResponse,
@@ -41,15 +41,15 @@ import type {
     RimeTts as RimeTtsType,
     SarvamTtsParams as SarvamTtsParamsType,
     SarvamTts as SarvamTtsType,
-    SpeakAgentsRequest,
     SpatiusAvatarParams as SpatiusAvatarParamsType,
+    SpeakAgentsRequest,
     StartAgentsRequest,
     Tts,
     UpdateAgentsRequest,
     XAiAsrParams as XAiAsrParamsType,
     XAiAsr as XAiAsrType,
-    XAiTts as XAiTtsType,
     XAiTtsParams as XAiTtsParamsType,
+    XAiTts as XAiTtsType,
 } from "../api/index.js";
 import type { AgentThinkAgentManagementRequest } from "../api/resources/agentManagement/client/requests/AgentThinkAgentManagementRequest.js";
 import type { PresetInput } from "./presets.js";
