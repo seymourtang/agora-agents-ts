@@ -536,6 +536,7 @@ function cnLlmConfig(options: CNLlmCommonOptions, vendor: string): LlmConfig {
         max_history: options.maxHistory,
         system_messages: options.systemMessages,
         greeting_message: options.greetingMessage,
+        greeting_audio_url: options.greetingAudioUrl,
         failure_message: options.failureMessage,
         input_modalities: options.inputModalities ?? ["text"],
         output_modalities: options.outputModalities,
@@ -627,6 +628,62 @@ export class SensetimeAvatar extends BaseCNAvatar<number> {
                 appId,
                 app_key: appKey,
                 sceneList,
+            },
+        };
+    }
+}
+
+export interface SpatiusAvatarOptions {
+    spatiusApiKey: string;
+    spatiusAppId: string;
+    spatiusAvatarId: string;
+    agoraUid: string;
+    agoraToken?: string;
+    region?: string;
+    sampleRate?: 16000 | 24000;
+    sessionExpireMinutes?: number;
+    enable?: boolean;
+    additionalParams?: Record<string, unknown>;
+}
+
+export class SpatiusAvatar extends BaseCNAvatar<number> {
+    readonly requiredSampleRate = 0 as number;
+
+    constructor(private readonly options: SpatiusAvatarOptions) {
+        super();
+        requireString(options.spatiusApiKey, "spatiusApiKey", "SpatiusAvatar");
+        requireString(options.spatiusAppId, "spatiusAppId", "SpatiusAvatar");
+        requireString(options.spatiusAvatarId, "spatiusAvatarId", "SpatiusAvatar");
+        requireString(options.agoraUid, "agoraUid", "SpatiusAvatar");
+    }
+
+    toConfig(): AvatarConfig {
+        const {
+            spatiusApiKey,
+            spatiusAppId,
+            spatiusAvatarId,
+            agoraUid,
+            agoraToken,
+            region,
+            sampleRate,
+            sessionExpireMinutes,
+            enable = true,
+            additionalParams,
+        } = this.options;
+
+        return {
+            enable,
+            vendor: "spatius",
+            params: {
+                ...additionalParams,
+                spatius_api_key: spatiusApiKey,
+                spatius_app_id: spatiusAppId,
+                spatius_avatar_id: spatiusAvatarId,
+                agora_uid: agoraUid,
+                ...(agoraToken && { agora_token: agoraToken }),
+                ...(region && { region }),
+                ...(sampleRate !== undefined && { sample_rate: sampleRate }),
+                ...(sessionExpireMinutes !== undefined && { session_expire_minutes: sessionExpireMinutes }),
             },
         };
     }

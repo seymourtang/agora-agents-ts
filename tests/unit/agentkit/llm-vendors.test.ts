@@ -118,6 +118,29 @@ describe("LLM vendor helpers", () => {
         });
     });
 
+    test("OpenAI serializes greetingAudioUrl and typed greetingConfigs", () => {
+        expect(
+            new OpenAI({
+                apiKey: "openai-key",
+                model: "gpt-4o",
+                url: "https://api.openai.com/v1/chat/completions",
+                greetingAudioUrl: "https://cdn.example.com/greeting.wav",
+                greetingConfigs: {
+                    audio_download_timeout_ms: 3000,
+                    audio_pcm_sample_rate: 24000,
+                    uninterruptible_asr_policy: "context",
+                },
+            }).toConfig(),
+        ).toMatchObject({
+            greeting_audio_url: "https://cdn.example.com/greeting.wav",
+            greeting_configs: {
+                audio_download_timeout_ms: 3000,
+                audio_pcm_sample_rate: 24000,
+                uninterruptible_asr_policy: "context",
+            },
+        });
+    });
+
     test("rejects missing required LLM fields at runtime", () => {
         expect(() => new OpenAI({ apiKey: "openai-key", model: "gpt-4o" } as never)).toThrow("OpenAI requires url");
         expect(() => new OpenAI({ model: "gpt-4o" } as never)).toThrow(

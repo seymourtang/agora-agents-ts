@@ -2,6 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 import { AgoraClient } from "../../../src/AgoraPoolClient.js";
 import { Agent } from "../../../src/agentkit/Agent.js";
 import { AudioScenario } from "../../../src/agentkit/constants.js";
+import { SpatiusAvatar } from "../../../src/agentkit/vendors/cn.js";
 import {
     AmazonBedrock,
     Anthropic,
@@ -24,6 +25,7 @@ import {
     OpenAISTT,
     SarvamSTT,
     SpeechmaticsSTT,
+    XAiSTT,
 } from "../../../src/agentkit/vendors/stt.js";
 import {
     AmazonTTS,
@@ -31,6 +33,7 @@ import {
     DeepgramTTS,
     ElevenLabsTTS,
     FishAudioTTS,
+    GenericTTS,
     GoogleTTS,
     HumeAITTS,
     MicrosoftTTS,
@@ -39,6 +42,7 @@ import {
     OpenAITTS,
     RimeTTS,
     SarvamTTS,
+    XAiTTS,
 } from "../../../src/agentkit/vendors/tts.js";
 import type * as Agora from "../../../src/api/index.js";
 import { Area } from "../../../src/core/domain/index.js";
@@ -168,6 +172,127 @@ describe("Session parameters defaults", () => {
             .toProperties({ ...SESSION_OPTS });
 
         expect(properties.parameters?.audio_scenario).toBe(AudioScenario.Aiserver);
+    });
+});
+
+describe("New OpenAPI high-level adapters", () => {
+    test("XAiSTT serializes vendor-specific params into asr", () => {
+        const properties = new Agent({ client: TEST_AGENT_CLIENT })
+            .withStt(
+                new XAiSTT({
+                    apiKey: "xai-asr-key",
+                    language: "en-US",
+                    baseUrl: "wss://api.x.ai/v1/stt",
+                    sampleRate: 16000,
+                }),
+            )
+            .withLlm(STUB_LLM)
+            .withTts(STUB_TTS)
+            .toProperties({ ...SESSION_OPTS });
+
+        expect(properties.asr).toMatchObject({
+            vendor: "xai",
+            params: {
+                api_key: "xai-asr-key",
+                base_url: "wss://api.x.ai/v1/stt",
+                sample_rate: 16000,
+                language: "en-US",
+            },
+        });
+    });
+
+    test("GenericTTS serializes url and headers at the top level", () => {
+        const properties = new Agent({ client: TEST_AGENT_CLIENT })
+            .withStt(STUB_STT)
+            .withLlm(STUB_LLM)
+            .withTts(
+                new GenericTTS({
+                    url: "https://tts.example.com/v1/audio/speech",
+                    headers: { Authorization: "Bearer tts-token" },
+                    apiKey: "generic-tts-key",
+                    model: "gpt-4o-mini-tts",
+                    voice: "alloy",
+                    responseFormat: "pcm",
+                    sampleRate: 16000,
+                }),
+            )
+            .toProperties({ ...SESSION_OPTS });
+
+        expect(properties.tts).toMatchObject({
+            vendor: "generic",
+            url: "https://tts.example.com/v1/audio/speech",
+            headers: { Authorization: "Bearer tts-token" },
+            params: {
+                api_key: "generic-tts-key",
+                model: "gpt-4o-mini-tts",
+                voice: "alloy",
+                response_format: "pcm",
+                sample_rate: 16000,
+            },
+        });
+    });
+
+    test("XAiTTS serializes vendor-specific params into tts", () => {
+        const properties = new Agent({ client: TEST_AGENT_CLIENT })
+            .withStt(STUB_STT)
+            .withLlm(STUB_LLM)
+            .withTts(
+                new XAiTTS({
+                    apiKey: "xai-tts-key",
+                    language: "en-US",
+                    voiceId: "voice-1",
+                    sampleRate: 24000,
+                }),
+            )
+            .toProperties({ ...SESSION_OPTS });
+
+        expect(properties.tts).toMatchObject({
+            vendor: "xai",
+            params: {
+                api_key: "xai-tts-key",
+                language: "en-US",
+                voice_id: "voice-1",
+                sample_rate: 24000,
+            },
+        });
+    });
+
+    test("SpatiusAvatar gets agora_token auto-generated at session start", async () => {
+        const { client, start } = createClient();
+        const typedClient = Object.assign(client, {
+            appId: "a".repeat(32),
+            appCertificate: "b".repeat(32),
+        }) as AgoraClient;
+
+        const agent = new Agent({ client: typedClient })
+            .withStt(STUB_STT)
+            .withLlm(STUB_LLM)
+            .withTts(STUB_TTS)
+            .withAvatar(
+                new SpatiusAvatar({
+                    spatiusApiKey: "spatius-key",
+                    spatiusAppId: "spatius-app",
+                    spatiusAvatarId: "avatar-id",
+                    agoraUid: "200",
+                    sampleRate: 24000,
+                }),
+            );
+
+        const session = agent.createSession({ ...SESSION_OPTS });
+        await session.start();
+
+        const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
+        expect(request.properties.avatar).toMatchObject({
+            vendor: "spatius",
+            params: {
+                spatius_api_key: "spatius-key",
+                spatius_app_id: "spatius-app",
+                spatius_avatar_id: "avatar-id",
+                agora_uid: "200",
+                sample_rate: 24000,
+            },
+        });
+        expect((request.properties.avatar?.params as Record<string, unknown>)?.agora_token).toEqual(expect.any(String));
     });
 });
 

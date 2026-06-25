@@ -54,6 +54,8 @@ new Agent<TTSSampleRate extends number = number, TArea extends AgoraArea = Agora
 | `fillerWords` | `FillerWordsConfig` | `undefined` | Filler words while waiting for LLM |
 | `greetingConfigs` | `LlmGreetingConfigs` | `undefined` | Deprecated. Configure this on the LLM vendor instead. |
 
+`LlmGreetingConfigs` matches the generated wire shape and includes fields such as `audio_download_timeout_ms`, `audio_pcm_sample_rate`, and `uninterruptible_asr_policy`. New LLM helper options also support `greetingAudioUrl` for a prerecorded greeting clip.
+
 The Agent-level `instructions`, `greeting`, `failureMessage`, `maxHistory`, and `greetingConfigs` fields are compatibility shims. New code should configure those values on the LLM or MLLM vendor because that matches the core request schema.
 
 ## Builder methods
@@ -64,7 +66,7 @@ Vendor parameter types (`LlmVendor`, `TtsVendor`, `SttVendor`, `AvatarVendor`) a
 
 ### `withLlm(vendor: LlmVendor): Agent<TTSSampleRate, TArea>`
 
-Set the LLM vendor. Accepts global classes (`OpenAI`, `AzureOpenAI`, `Anthropic`, `Gemini`, …) and CN classes (`AliyunLLM`, `TencentLLM`, `CustomLLM`, …).
+Set the LLM vendor. Accepts global classes (`OpenAI`, `AzureOpenAI`, `Anthropic`, `Gemini`, …) and CN classes (`AliyunLLM`, `TencentLLM`, `CustomLLM`, …). For prerecorded greetings, configure `greetingAudioUrl` on the chosen LLM helper.
 
 ### `withTts<SR extends number>(vendor: TtsVendor<SR>): Agent<SR, TArea>`
 
@@ -82,7 +84,7 @@ Set the MLLM vendor for multimodal mode. Pass `OpenAIRealtime`, `GeminiLive`, `V
 
 ### `withAvatar<RequiredSR extends number>(this: Agent<RequiredSR, TArea>, vendor: AvatarVendor<RequiredSR>): Agent<RequiredSR, TArea>`
 
-Set the avatar vendor. The `this` constraint enforces that the Agent's TTS sample rate matches the avatar's required rate at compile time. Accepts `LiveAvatarAvatar`, `HeyGenAvatar`, `AkoolAvatar`, `AnamAvatar`, `GenericAvatar`, `SensetimeAvatar`, and other exported avatar classes. Requires the cascading ASR + LLM + TTS pipeline; avatars are not supported with MLLM.
+Set the avatar vendor. The `this` constraint enforces that the Agent's TTS sample rate matches the avatar's required rate at compile time. Accepts `LiveAvatarAvatar`, `HeyGenAvatar`, `AkoolAvatar`, `AnamAvatar`, `GenericAvatar`, `SensetimeAvatar`, `SpatiusAvatar`, and other exported avatar classes. Requires the cascading ASR + LLM + TTS pipeline; avatars are not supported with MLLM.
 
 ### `withTurnDetection(config: TurnDetectionConfig): Agent<TTSSampleRate, TArea>`
 

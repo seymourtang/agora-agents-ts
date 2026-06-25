@@ -12,6 +12,7 @@ import {
     MicrosoftCNTTS,
     MiniMaxCNTTS,
     SensetimeAvatar,
+    SpatiusAvatar,
     StepFunTTS,
     TencentLLM,
     TencentSTT,
@@ -298,6 +299,47 @@ describe("CN vendor helpers", () => {
                 api_key: "api-key",
                 model: "step-tts-mini",
                 voice_id: "cixingnansheng",
+            },
+        });
+    });
+
+    test("serializes CN avatar vendors", () => {
+        expect(
+            new SensetimeAvatar({
+                agoraUid: "200",
+                appId: "sensetime-app-id",
+                appKey: "sensetime-app-key",
+                sceneList: [{ digital_role: { face_feature_id: "face", position: { x: 0, y: 0 }, url: "https://x" } }],
+            }).toConfig(),
+        ).toMatchObject({
+            vendor: "sensetime",
+            params: {
+                agora_uid: "200",
+                appId: "sensetime-app-id",
+                app_key: "sensetime-app-key",
+            },
+        });
+
+        expect(
+            new SpatiusAvatar({
+                spatiusApiKey: "spatius-key",
+                spatiusAppId: "spatius-app-id",
+                spatiusAvatarId: "spatius-avatar-id",
+                agoraUid: "201",
+                region: "cn-beijing",
+                sampleRate: 24000,
+                sessionExpireMinutes: 30,
+            }).toConfig(),
+        ).toMatchObject({
+            vendor: "spatius",
+            params: {
+                spatius_api_key: "spatius-key",
+                spatius_app_id: "spatius-app-id",
+                spatius_avatar_id: "spatius-avatar-id",
+                agora_uid: "201",
+                region: "cn-beijing",
+                sample_rate: 24000,
+                session_expire_minutes: 30,
             },
         });
     });

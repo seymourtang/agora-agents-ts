@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
     isAvatarTokenManaged,
     isSensetimeAvatar,
+    isSpatiusAvatar,
     type SensetimeAvatarConfig,
+    type SpatiusAvatarConfig,
     validateAvatarConfig,
 } from "../../../src/agentkit/avatar-types.js";
 
@@ -22,6 +24,18 @@ const validSensetimeConfig = (): SensetimeAvatarConfig => ({
                 },
             },
         ],
+    },
+});
+
+const validSpatiusConfig = (): SpatiusAvatarConfig => ({
+    vendor: "spatius",
+    params: {
+        spatius_api_key: "spatius-key",
+        spatius_app_id: "spatius-app-id",
+        spatius_avatar_id: "spatius-avatar-id",
+        agora_uid: "5678",
+        agora_token: "agora-token",
+        sample_rate: 24000,
     },
 });
 
@@ -62,5 +76,34 @@ describe("SensetimeAvatarConfig", () => {
         const config = validSensetimeConfig();
         config.params.sceneList = [];
         expect(() => validateAvatarConfig(config)).toThrow("SenseTime avatar requires a non-empty sceneList");
+    });
+});
+
+describe("SpatiusAvatarConfig", () => {
+    it("isSpatiusAvatar identifies spatius vendor", () => {
+        expect(isSpatiusAvatar(validSpatiusConfig())).toBe(true);
+    });
+
+    it("validateAvatarConfig accepts a complete spatius config", () => {
+        expect(() => validateAvatarConfig(validSpatiusConfig())).not.toThrow();
+    });
+
+    it("isAvatarTokenManaged includes spatius vendor", () => {
+        expect(isAvatarTokenManaged(validSpatiusConfig())).toBe(true);
+    });
+
+    it("validateAvatarConfig accepts spatius config without agora_token before enrichment", () => {
+        const config = validSpatiusConfig();
+        delete (config.params as { agora_token?: string }).agora_token;
+        expect(() => validateAvatarConfig(config)).not.toThrow();
+        expect(() => validateAvatarConfig(config, { requireSessionFields: true })).toThrow(
+            "Spatius avatar requires agora_token after session enrichment",
+        );
+    });
+
+    it("validateAvatarConfig rejects missing spatius_api_key", () => {
+        const config = validSpatiusConfig();
+        config.params.spatius_api_key = "";
+        expect(() => validateAvatarConfig(config)).toThrow("Spatius avatar requires spatius_api_key");
     });
 });

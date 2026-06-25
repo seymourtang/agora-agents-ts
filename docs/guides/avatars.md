@@ -15,6 +15,8 @@ Avatars attach a visual representation to the agent's audio output.
 | `AkoolAvatar` | Akool | **16,000 Hz** |
 | `AnamAvatar` | Anam | Consult provider docs |
 | `GenericAvatar` | Custom avatar provider | Consult provider docs |
+| `SensetimeAvatar` | SenseTime (CN) | Consult provider docs |
+| `SpatiusAvatar` | Spatius (CN) | Consult provider docs |
 
 ## Avatars require the cascading pipeline
 
@@ -41,6 +43,7 @@ AgentKit auto-fills `agora_token` for avatar vendors that publish a separate RTC
 - `LiveAvatarAvatar` (and the deprecated `HeyGenAvatar` alias)
 - `GenericAvatar`
 - `SensetimeAvatar` (CN)
+- `SpatiusAvatar` (CN)
 
 For `AkoolAvatar` and `AnamAvatar`, the avatar provider handles publishing on its own and AgentKit never injects an `agora_token`. Use `isAvatarTokenManaged(avatar)` to check whether a config falls into the managed group.
 

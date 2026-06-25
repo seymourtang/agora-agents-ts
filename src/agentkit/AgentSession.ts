@@ -20,6 +20,7 @@ import {
     isHeyGenAvatar,
     isLiveAvatarAvatar,
     isSensetimeAvatar,
+    isSpatiusAvatar,
     validateAvatarConfig,
     validateTtsSampleRate,
 } from "./avatar-types.js";
@@ -310,6 +311,7 @@ export class AgentSession {
             isHeyGenAvatar(strictAvatar) ||
             isLiveAvatarAvatar(strictAvatar) ||
             isSensetimeAvatar(strictAvatar) ||
+            isSpatiusAvatar(strictAvatar) ||
             isAkoolAvatar(strictAvatar) ||
             isAnamAvatar(strictAvatar) ||
             isGenericAvatar(strictAvatar)
@@ -421,6 +423,7 @@ export class AgentSession {
             isHeyGenAvatar(strictAvatar) ||
             isLiveAvatarAvatar(strictAvatar) ||
             isSensetimeAvatar(strictAvatar) ||
+            isSpatiusAvatar(strictAvatar) ||
             isAkoolAvatar(strictAvatar) ||
             isAnamAvatar(strictAvatar) ||
             isGenericAvatar(strictAvatar)
