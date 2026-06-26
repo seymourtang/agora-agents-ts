@@ -59,6 +59,7 @@ void main();
 2. `Agent` holds reusable pipeline configuration such as vendors, turn detection, and greeting settings.
 3. `createSession({ name, ... })` sets the unique session instance name sent to the Agora API.
 4. Vendor classes on the builder select the ASR, LLM, and TTS stack. Leave vendor credentials unset for supported Agora-managed global models, or provide keys when you want BYOK. CN MiniMax TTS always requires `key`.
+   If you omit `.withStt()`, AgentKit still sends a default ASR vendor: `fengming` for `Area.CN`, otherwise `ares`.
 5. `session.start()` generates the required auth tokens and returns the unique agent session ID.
 
 ## When to use BYOK instead

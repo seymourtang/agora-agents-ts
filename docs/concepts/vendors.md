@@ -128,7 +128,10 @@ See [MLLM Flow Guide](../guides/mllm-flow.md) for full examples.
 
 ## CN vendors (Chinese mainland)
 
-CN vendor classes use the same builder methods (`.withLlm()`, `.withStt()`, `.withTts()`, `.withAvatar()`). `client.area` controls API routing only and does not restrict which vendor classes you can pass.
+CN vendor classes use the same builder methods (`.withLlm()`, `.withStt()`, `.withTts()`, `.withAvatar()`). `client.area` does not restrict which explicit vendor classes you can pass, and it also affects the default ASR vendor when `.withStt()` is omitted:
+
+- `Area.CN` defaults to `FengmingSTT`
+- all other areas default to `AresSTT`
 
 | Category | Examples |
 |---|---|

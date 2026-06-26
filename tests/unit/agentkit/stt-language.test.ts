@@ -19,6 +19,12 @@ const TEST_AGENT_CLIENT = new AgoraClient({
     appCertificate: "test-app-certificate",
 });
 
+const TEST_CN_AGENT_CLIENT = new AgoraClient({
+    area: Area.CN,
+    appId: "test-app-id",
+    appCertificate: "test-app-certificate",
+});
+
 function baseAgent() {
     return new Agent({ client: TEST_AGENT_CLIENT })
         .withLlm(
@@ -139,7 +145,7 @@ describe("STT language serialization", () => {
         ).toThrow("Invalid turnDetection.language: xx");
     });
 
-    test("sends default interaction language when STT is omitted", () => {
+    test("defaults to ares and keeps default interaction language outside CN when STT is omitted", () => {
         const properties = baseAgent().toProperties({
             channel: "channel",
             token: "token",
@@ -149,6 +155,34 @@ describe("STT language serialization", () => {
 
         expect(properties.asr).toEqual({ vendor: "ares", language: "en-US" });
         expect(properties.turn_detection).toEqual({ language: "en-US" });
+    });
+
+    test("defaults to fengming and keeps turn detection language for CN clients when STT is omitted", () => {
+        const properties = new Agent({ client: TEST_CN_AGENT_CLIENT, turnDetection: { language: "zh-CN" } })
+            .withLlm(
+                new OpenAI({
+                    apiKey: "llm-key",
+                    model: "gpt-4o-mini",
+                    url: "https://api.openai.com/v1/chat/completions",
+                }),
+            )
+            .withTts(
+                new ElevenLabsTTS({
+                    key: "tts-key",
+                    voiceId: "voice",
+                    modelId: "eleven_flash_v2_5",
+                    baseUrl: "wss://api.elevenlabs.io/v1",
+                }),
+            )
+            .toProperties({
+                channel: "channel",
+                token: "token",
+                agentUid: "1001",
+                remoteUids: ["1002"],
+            });
+
+        expect(properties.asr).toEqual({ vendor: "fengming", language: "zh-CN" });
+        expect(properties.turn_detection).toEqual({ language: "zh-CN" });
     });
 
     test("serializes documented provider params without promoting provider language", () => {
