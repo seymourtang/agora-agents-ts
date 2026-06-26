@@ -947,9 +947,6 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
 
     private _resolveAsrConfig(turnDetectionConfig: TurnDetectionConfig): SttConfig | undefined {
         const asrConfig = { ...(this._stt ?? {}) } as SttConfig & { language?: string };
-        if (this._stt === undefined) {
-            asrConfig.vendor = "ares";
-        }
         asrConfig.language = turnDetectionConfig.language;
 
         return Object.keys(asrConfig).length > 0 ? asrConfig : undefined;

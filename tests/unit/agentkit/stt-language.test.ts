@@ -139,7 +139,7 @@ describe("STT language serialization", () => {
         ).toThrow("Invalid turnDetection.language: xx");
     });
 
-    test("sends default interaction language when STT is omitted", () => {
+    test("keeps default interaction language in turn detection when STT is omitted", () => {
         const properties = baseAgent().toProperties({
             channel: "channel",
             token: "token",
@@ -147,7 +147,7 @@ describe("STT language serialization", () => {
             remoteUids: ["1002"],
         });
 
-        expect(properties.asr).toEqual({ vendor: "ares", language: "en-US" });
+        expect(properties.asr).toEqual({ language: "en-US" });
         expect(properties.turn_detection).toEqual({ language: "en-US" });
     });
 

@@ -768,14 +768,13 @@ describe("ASR vendor coverage", () => {
         expect((p.asr?.params as Record<string, unknown>)?.api_key).toBe("sarvam-key");
     });
 
-    test("Default ASR (no STT set) produces ares vendor with language", () => {
+    test("ASR keeps language when no STT is set", () => {
         const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(STUB_TTS)
             .toProperties({ ...SESSION_OPTS });
 
-        expect(p.asr?.vendor).toBe("ares");
-        expect(p.asr?.language).toBe("en-US");
+        expect(p.asr).toEqual({ language: "en-US" });
     });
 });
 
