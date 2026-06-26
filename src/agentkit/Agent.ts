@@ -8,6 +8,7 @@
 
 import type { AgoraClient } from "../AgoraPoolClient.js";
 import type * as Agora from "../api/index.js";
+import { Area } from "../core/domain/index.js";
 import { AgentSession } from "./AgentSession.js";
 import type { AgoraArea } from "./area.js";
 import { AudioScenario } from "./constants.js";
@@ -946,7 +947,12 @@ export class Agent<TTSSampleRate extends number = number, TArea extends AgoraAre
     }
 
     private _resolveAsrConfig(turnDetectionConfig: TurnDetectionConfig): SttConfig | undefined {
-        const asrConfig = { ...(this._stt ?? {}) } as SttConfig & { language?: string };
+        const asrConfig =
+            this._stt !== undefined
+                ? ({ ...this._stt } as SttConfig & { language?: string })
+                : ({
+                      vendor: this._client.area === Area.CN ? "fengming" : "ares",
+                  } as SttConfig & { language?: string });
         asrConfig.language = turnDetectionConfig.language;
 
         return Object.keys(asrConfig).length > 0 ? asrConfig : undefined;

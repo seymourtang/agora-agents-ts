@@ -768,13 +768,30 @@ describe("ASR vendor coverage", () => {
         expect((p.asr?.params as Record<string, unknown>)?.api_key).toBe("sarvam-key");
     });
 
-    test("ASR keeps language when no STT is set", () => {
+    test("ASR defaults to ares outside CN when no STT is set", () => {
         const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(STUB_LLM)
             .withTts(STUB_TTS)
             .toProperties({ ...SESSION_OPTS });
 
-        expect(p.asr).toEqual({ language: "en-US" });
+        expect(p.asr).toEqual({ vendor: "ares", language: "en-US" });
+    });
+
+    test("session start sends fengming by default for CN clients when no STT is set", async () => {
+        const { client, start } = createClient();
+        const cnClient = Object.assign(client, {
+            area: Area.CN,
+        }) as AgoraClient;
+
+        const agent = new Agent({ client: cnClient, turnDetection: { language: "zh-CN" } })
+            .withLlm(STUB_LLM)
+            .withTts(STUB_TTS);
+
+        const session = agent.createSession({ ...SESSION_OPTS });
+        await session.start();
+
+        const request = start.mock.calls[0]?.[0] as Agora.StartAgentsRequest;
+        expect(request.properties.asr).toEqual({ vendor: "fengming", language: "zh-CN" });
     });
 });
 

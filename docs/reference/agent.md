@@ -76,6 +76,8 @@ Set the TTS vendor. The sample rate type `SR` is captured and tracked for avatar
 
 Set the STT vendor. Accepts global classes (`DeepgramSTT`, `SpeechmaticsSTT`, …) and CN classes (`FengmingSTT`, `TencentSTT`, `MicrosoftCNSTT`, `XfyunSTT`, …).
 
+If you omit `withStt()`, AgentKit still sends an ASR config automatically based on `client.area`: `fengming` for `Area.CN`, otherwise `ares`.
+
 ### `withMllm(vendor: BaseMLLM): Agent<TTSSampleRate, TArea>`
 
 Set the MLLM vendor for multimodal mode. Pass `OpenAIRealtime`, `GeminiLive`, `VertexAI`, or `XaiGrok`. Calling `withMllm()` automatically sets `mllm.enable = true`. MLLM mode does not require `withTts()` / `withLlm()` / `withStt()`.
@@ -242,6 +244,8 @@ If you provide your own vendor API key for those same models, AgentKit keeps the
 Low-level method to convert the agent config to the Fern request format. Used internally by `AgentSession.start()`. You typically don't need to call this directly unless building custom request bodies.
 
 `opts` requires `channel`, `agentUid`, and `remoteUids`, plus either a pre-built `token` or `appId` + `appCertificate` for automatic token generation. Optional fields include `idleTimeout`, `enableStringUid`, `expiresIn`, `skipVendorValidationCategories`, and `allowMissingVendorCategories` (`ReadonlySet<PresetCategory>`).
+
+In the cascading pipeline, `toProperties()` also fills in a default `asr` block when no STT vendor has been configured. The default wire vendor is `fengming` for `Area.CN` clients and `ares` for all other areas.
 
 ## Type aliases
 

@@ -10,6 +10,8 @@ description: AgoraClient constructor options and public methods.
 
 Pass `appId` and `appCertificate` only for the recommended app-credentials mode. The SDK mints fresh REST tokens per request and generates RTC join tokens at session start.
 
+`area` selects both the API routing region and the default cascading-pipeline ASR vendor used when an `Agent` omits `.withStt()` (`Area.CN` → `fengming`, all other areas → `ares`).
+
 <!-- snippet: fragment -->
 ```typescript
 import { AgoraClient, Area } from 'agora-agents';

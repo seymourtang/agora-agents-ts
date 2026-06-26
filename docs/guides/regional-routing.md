@@ -35,13 +35,16 @@ const client = new AgoraClient({
 
 ## Vendor classes
 
-Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and `.withTts()`. `client.area` controls API routing only and does not restrict provider choice.
+Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and `.withTts()`. `client.area` does not restrict explicit provider choice, and it also determines the default ASR vendor when `.withStt()` is omitted:
+
+- `Area.CN` defaults to `FengmingSTT`
+- all other areas default to `AresSTT`
 
 | Typical global providers | Typical CN providers |
 |---|---|
 | `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, … |
 
-See the tables below for the full catalog. You may combine any vendor with any `client.area`.
+See the tables below for the full catalog. You may combine any explicit vendor with any `client.area`.
 
 Global client example:
 

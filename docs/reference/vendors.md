@@ -10,7 +10,10 @@ All vendor classes are imported from `agora-agents`.
 
 ## Vendor classes
 
-Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and `.withTts()`. `client.area` controls API routing only and does not restrict provider choice.
+Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and `.withTts()`. `client.area` does not restrict explicit provider choice, and it also determines the default ASR vendor when `.withStt()` is omitted:
+
+- `Area.CN` defaults to `FengmingSTT`
+- all other areas default to `AresSTT`
 
 | Global-oriented classes | CN-oriented classes |
 |---|---|
@@ -328,6 +331,8 @@ For `nova-2` and `nova-3`, omit `apiKey` to use Agora-managed credentials. For a
 ### Other STT vendors
 
 Use `turnDetection.language` for Agora interaction language; it defaults to `en-US`. Provider-specific language values stay under `asr.params` and may use a different format. AgentKit populates REST `asr.language` from `turnDetection.language`.
+
+When `.withStt()` is omitted, AgentKit now selects the wire ASR vendor from `client.area`: `fengming` for `Area.CN`, otherwise `ares`.
 
 | Class | Key params |
 |---|---|
