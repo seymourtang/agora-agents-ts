@@ -857,7 +857,7 @@ describe("LLM vendor coverage", () => {
         expect((p.llm?.headers as Record<string, string>)?.["anthropic-version"]).toBe("2023-06-01");
     });
 
-    test("Gemini serializes api_key, url, style=gemini, model in params", () => {
+    test("Gemini serializes full url, style=gemini, and model in params", () => {
         const p = new Agent({ client: TEST_AGENT_CLIENT })
             .withLlm(
                 new Gemini({
@@ -867,8 +867,10 @@ describe("LLM vendor coverage", () => {
             )
             .toProperties({ ...SESSION_OPTS, ...ALLOW_ALL });
 
-        expect(p.llm?.api_key).toBe("gemini-key");
-        expect(p.llm?.url).toBe("https://generativelanguage.googleapis.com/v1beta/models");
+        expect(p.llm?.api_key).toBeUndefined();
+        expect(p.llm?.url).toBe(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:streamGenerateContent?alt=sse&key=gemini-key",
+        );
         expect(p.llm?.style).toBe("gemini");
         expect(p.llm?.params?.model).toBe("gemini-pro");
     });

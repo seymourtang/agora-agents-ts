@@ -58,6 +58,39 @@ describe("LLM vendor helpers", () => {
         });
     });
 
+    test("Gemini builds the official stream URL and omits top-level api_key", () => {
+        const config = new Gemini({
+            apiKey: "google-key",
+            model: "gemini-2.0-flash",
+        }).toConfig();
+
+        expect(config).toMatchObject({
+            url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=google-key",
+            style: "gemini",
+            params: {
+                model: "gemini-2.0-flash",
+            },
+        });
+        expect((config as Record<string, unknown>)?.api_key).toBeUndefined();
+    });
+
+    test("Gemini preserves explicit URL overrides without emitting api_key", () => {
+        const config = new Gemini({
+            apiKey: "google-key",
+            model: "gemini-2.0-flash",
+            url: "https://custom.example.com/gemini?key=override",
+        }).toConfig();
+
+        expect(config).toMatchObject({
+            url: "https://custom.example.com/gemini?key=override",
+            style: "gemini",
+            params: {
+                model: "gemini-2.0-flash",
+            },
+        });
+        expect((config as Record<string, unknown>)?.api_key).toBeUndefined();
+    });
+
     test("VertexAILLM builds correct URL and excludes project routing from params", () => {
         const config = new VertexAILLM({
             apiKey: "vertex-token",
@@ -158,7 +191,13 @@ describe("LLM vendor helpers", () => {
                     maxTokens: 1024,
                 } as never),
         ).toThrow("Anthropic requires model");
-        expect(() => new Gemini({ apiKey: "google-key" } as never)).toThrow("Gemini requires model");
+        expect(
+            () =>
+                new Gemini({
+                    apiKey: "google-key",
+                } as never),
+        ).toThrow("Gemini requires model");
+        expect(() => new Gemini({ model: "gemini-2.0-flash" } as never)).toThrow("Gemini requires apiKey");
         expect(
             () => new Groq({ apiKey: "groq-key", url: "https://api.groq.com/openai/v1/chat/completions" } as never),
         ).toThrow("Groq requires model");

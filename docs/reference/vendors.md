@@ -175,7 +175,7 @@ new Gemini(options: GeminiOptions)
 |---|---|---|---|
 | `apiKey` | `string` | Yes | Google API key |
 | `model` | `string` | Yes | Model name (e.g., `'gemini-pro'`) |
-| `url` | `string` | No | API endpoint URL (default: `https://generativelanguage.googleapis.com/v1beta/models`) |
+| `url` | `string` | No | Optional full Gemini stream endpoint URL override. By default, AgentKit builds the official Gemini URL from `model` and `apiKey` |
 | `maxHistory` | `number` | No | Max conversation history to cache |
 | `systemMessages` | `Record<string, unknown>[]` | No | System messages |
 | `greetingMessage` | `string` | No | Agent greeting message |

@@ -379,7 +379,7 @@ export interface GeminiOptions extends BaseLlmOptions {
     apiKey: string;
     /** Model name (e.g., 'gemini-pro', 'gemini-pro-vision') */
     model: string;
-    /** API endpoint URL (defaults to Google's generativelanguage endpoint) */
+    /** Optional full API endpoint URL override. When omitted, AgentKit builds the official Gemini stream URL. */
     url?: string;
     /** Maximum number of conversation history messages to cache */
     maxHistory?: number;
@@ -423,6 +423,9 @@ export class Gemini extends BaseLLM {
         super(options);
         requireString(options.apiKey, "apiKey", "Gemini");
         requireString(options.model, "model", "Gemini");
+        if (options.url !== undefined) {
+            requireString(options.url, "url", "Gemini");
+        }
         this.options = options;
     }
 
@@ -444,9 +447,10 @@ export class Gemini extends BaseLLM {
             headers,
         } = this.options;
 
+        const defaultUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${encodeURIComponent(apiKey)}`;
+
         return {
-            url: url ?? "https://generativelanguage.googleapis.com/v1beta/models",
-            api_key: apiKey,
+            url: url ?? defaultUrl,
             // model is the default; params entries extend it; named fields win.
             params: {
                 model,
