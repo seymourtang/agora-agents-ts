@@ -193,7 +193,7 @@ export class GeminiLive extends BaseMLLM {
         return {
             vendor: "gemini",
             api_key: apiKey,
-            ...(url && { url }),
+            url: url ?? "",
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
@@ -305,7 +305,7 @@ export class VertexAI extends BaseMLLM {
 
         return {
             vendor: "vertexai",
-            ...(url && { url }),
+            url: url ?? "",
             project_id: projectId,
             location,
             adc_credentials_string: adcCredentialsString,

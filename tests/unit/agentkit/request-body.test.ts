@@ -643,6 +643,7 @@ describe("Scenario 8 — MLLM mode", () => {
         expect(properties.mllm?.vendor).toBe("gemini");
         expect(properties.mllm?.enable).toBe(true);
         expect((properties.mllm as Record<string, unknown>)?.api_key).toBe("gemini-key");
+        expect((properties.mllm as Record<string, unknown>)?.url).toBe("");
         expect((properties.mllm as Record<string, unknown>)?.params).toMatchObject({
             model: "gemini-live-2.5-flash",
             voice: "Aoede",
@@ -664,6 +665,7 @@ describe("Scenario 8 — MLLM mode", () => {
         const properties = agent.toProperties({ ...SESSION_OPTS });
         expect(properties.mllm?.vendor).toBe("vertexai");
         expect(properties.mllm?.enable).toBe(true);
+        expect((properties.mllm as Record<string, unknown>)?.url).toBe("");
         expect((properties.mllm as Record<string, unknown>)?.project_id).toBe("my-project");
         expect((properties.mllm as Record<string, unknown>)?.location).toBe("us-central1");
         expect((properties.mllm as Record<string, unknown>)?.adc_credentials_string).toBe('{"type":"service_account"}');
@@ -1261,6 +1263,7 @@ describe("MLLM vendor coverage", () => {
 
         expect(config.vendor).toBe("gemini");
         expect((config as Record<string, unknown>)?.api_key).toBe("gemini-key");
+        expect((config as Record<string, unknown>)?.url).toBe("");
         expect((config as Record<string, unknown>)?.params).toMatchObject({ model: "gemini-live-2.5-flash" });
     });
 
@@ -1273,6 +1276,7 @@ describe("MLLM vendor coverage", () => {
         }).toConfig();
 
         expect(config.vendor).toBe("vertexai");
+        expect((config as Record<string, unknown>)?.url).toBe("");
         expect((config as Record<string, unknown>)?.project_id).toBe("my-proj");
         expect((config as Record<string, unknown>)?.location).toBe("us-central1");
         expect((config as Record<string, unknown>)?.adc_credentials_string).toBe("{}");
