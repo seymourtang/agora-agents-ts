@@ -147,8 +147,8 @@ export interface SensetimeAvatarConfig {
         appId: string;
         /** SenseTime application key (required) */
         app_key: string;
-        /** SenseTime scene configuration list (required) */
-        sceneList: SensetimeAvatarParams.SceneList.Item[];
+        /** SenseTime scene configuration list (optional) */
+        sceneList?: SensetimeAvatarParams.SceneList.Item[];
         [key: string]: unknown;
     };
 }
@@ -315,8 +315,8 @@ export function validateAvatarConfig(
         if (!config.params.app_key) {
             throw new Error("SenseTime avatar requires app_key");
         }
-        if (!Array.isArray(config.params.sceneList) || config.params.sceneList.length === 0) {
-            throw new Error("SenseTime avatar requires a non-empty sceneList");
+        if (config.params.sceneList !== undefined && !Array.isArray(config.params.sceneList)) {
+            throw new Error("SenseTime avatar sceneList must be an array when provided");
         }
     } else if (isSpatiusAvatar(config)) {
         if (!config.params.agora_uid) {

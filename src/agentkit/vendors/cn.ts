@@ -601,7 +601,7 @@ export interface SensetimeAvatarOptions {
     agoraToken?: string;
     appId: string;
     appKey: string;
-    sceneList: Record<string, unknown>[];
+    sceneList?: Record<string, unknown>[];
     enable?: boolean;
     additionalParams?: Record<string, unknown>;
 }
@@ -627,7 +627,7 @@ export class SensetimeAvatar extends BaseCNAvatar<number> {
                 ...(agoraToken && { agora_token: agoraToken }),
                 appId,
                 app_key: appKey,
-                sceneList,
+                ...(sceneList !== undefined && { sceneList }),
             },
         };
     }

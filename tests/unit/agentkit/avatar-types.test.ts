@@ -72,10 +72,22 @@ describe("SensetimeAvatarConfig", () => {
         expect(() => validateAvatarConfig(config)).toThrow("SenseTime avatar requires appId");
     });
 
-    it("validateAvatarConfig rejects empty sceneList", () => {
+    it("validateAvatarConfig accepts empty sceneList", () => {
         const config = validSensetimeConfig();
         config.params.sceneList = [];
-        expect(() => validateAvatarConfig(config)).toThrow("SenseTime avatar requires a non-empty sceneList");
+        expect(() => validateAvatarConfig(config)).not.toThrow();
+    });
+
+    it("validateAvatarConfig accepts missing sceneList", () => {
+        const config = validSensetimeConfig();
+        delete (config.params as { sceneList?: SensetimeAvatarConfig["params"]["sceneList"] }).sceneList;
+        expect(() => validateAvatarConfig(config)).not.toThrow();
+    });
+
+    it("validateAvatarConfig rejects non-array sceneList when provided", () => {
+        const config = validSensetimeConfig();
+        (config.params as { sceneList?: unknown }).sceneList = {} as never;
+        expect(() => validateAvatarConfig(config)).toThrow("SenseTime avatar sceneList must be an array when provided");
     });
 });
 

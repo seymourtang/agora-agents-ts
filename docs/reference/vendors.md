@@ -596,5 +596,5 @@ CN TTS helpers reuse shared vendor names where possible. `MiniMaxCNTTS` and `Mic
 
 | Class | Key options |
 |---|---|
-| `SensetimeAvatar` | `agoraUid`, `appId`, `appKey`, `sceneList`; optional `agoraToken`, `enable`, `additionalParams` |
+| `SensetimeAvatar` | `agoraUid`, `appId`, `appKey`; optional `sceneList`, `agoraToken`, `enable`, `additionalParams` |
 | `SpatiusAvatar` | `spatiusApiKey`, `spatiusAppId`, `spatiusAvatarId`, `agoraUid`; optional `agoraToken`, `region`, `sampleRate`, `sessionExpireMinutes`, `enable`, `additionalParams` |
