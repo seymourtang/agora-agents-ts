@@ -279,8 +279,8 @@ export class HeyGenAvatar extends BaseAvatar<HeyGenSampleRate> {
 export interface AnamAvatarOptions {
     /** Anam API key */
     apiKey: string;
-    /** Anam persona ID */
-    personaId?: string;
+    /** Anam avatar ID */
+    avatarId?: string;
     /** Enable avatar (default: true) */
     enable?: boolean;
     /** Additional vendor-specific parameters */
@@ -296,7 +296,7 @@ export interface AnamAvatarOptions {
  *
  * const avatar = new AnamAvatar({
  *   apiKey: process.env.ANAM_API_KEY,
- *   personaId: 'persona-id',
+ *   avatarId: 'avatar-id',
  * });
  *
  * const client = new AgoraClient({ area: Area.US, appId: '...', appCertificate: '...' });
@@ -325,7 +325,7 @@ export class AnamAvatar extends BaseAvatar<number> {
     }
 
     toConfig(): AvatarConfig {
-        const { apiKey, personaId, enable = true, additionalParams } = this.options;
+        const { apiKey, avatarId, enable = true, additionalParams } = this.options;
 
         return {
             enable,
@@ -333,7 +333,7 @@ export class AnamAvatar extends BaseAvatar<number> {
             params: {
                 ...additionalParams,
                 api_key: apiKey,
-                ...(personaId && { persona_id: personaId }),
+                ...(avatarId && { avatar_id: avatarId }),
             },
         };
     }

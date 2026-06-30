@@ -2,6 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 import { AgoraClient } from "../../../src/AgoraPoolClient.js";
 import { Agent } from "../../../src/agentkit/Agent.js";
 import { AudioScenario } from "../../../src/agentkit/constants.js";
+import { AnamAvatar } from "../../../src/agentkit/vendors/avatar.js";
 import { SpatiusAvatar } from "../../../src/agentkit/vendors/cn.js";
 import {
     AmazonBedrock,
@@ -293,6 +294,29 @@ describe("New OpenAPI high-level adapters", () => {
             },
         });
         expect((request.properties.avatar?.params as Record<string, unknown>)?.agora_token).toEqual(expect.any(String));
+    });
+
+    test("AnamAvatar serializes avatar_id", () => {
+        const properties = new Agent({ client: TEST_AGENT_CLIENT })
+            .withStt(STUB_STT)
+            .withLlm(STUB_LLM)
+            .withTts(STUB_TTS)
+            .withAvatar(
+                new AnamAvatar({
+                    apiKey: "anam-key",
+                    avatarId: "avatar-id",
+                }),
+            )
+            .toProperties({ ...SESSION_OPTS });
+
+        expect(properties.avatar).toMatchObject({
+            vendor: "anam",
+            params: {
+                api_key: "anam-key",
+                avatar_id: "avatar-id",
+            },
+        });
+        expect((properties.avatar?.params as Record<string, unknown>)?.persona_id).toBeUndefined();
     });
 });
 
