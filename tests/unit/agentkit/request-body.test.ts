@@ -651,7 +651,7 @@ describe("Scenario 8 — MLLM mode", () => {
         });
     });
 
-    test("8c: VertexAI MLLM toProperties has project_id, location, adc_credentials_string at top level", () => {
+    test("8c: VertexAI MLLM toProperties places project_id, location, adc_credentials_string in params", () => {
         const agent = new Agent({ client: TEST_AGENT_CLIENT }).withMllm(
             new VertexAI({
                 model: "gemini-live-2.5-flash-preview-native-audio-09-2025",
@@ -666,11 +666,11 @@ describe("Scenario 8 — MLLM mode", () => {
         expect(properties.mllm?.vendor).toBe("vertexai");
         expect(properties.mllm?.enable).toBe(true);
         expect((properties.mllm as Record<string, unknown>)?.url).toBe("");
-        expect((properties.mllm as Record<string, unknown>)?.project_id).toBe("my-project");
-        expect((properties.mllm as Record<string, unknown>)?.location).toBe("us-central1");
-        expect((properties.mllm as Record<string, unknown>)?.adc_credentials_string).toBe('{"type":"service_account"}');
         expect((properties.mllm as Record<string, unknown>)?.params).toMatchObject({
             model: "gemini-live-2.5-flash-preview-native-audio-09-2025",
+            project_id: "my-project",
+            location: "us-central1",
+            adc_credentials_string: '{"type":"service_account"}',
             voice: "Aoede",
         });
     });
@@ -1267,7 +1267,7 @@ describe("MLLM vendor coverage", () => {
         expect((config as Record<string, unknown>)?.params).toMatchObject({ model: "gemini-live-2.5-flash" });
     });
 
-    test("VertexAI toConfig has vendor=vertexai with project_id and location at top level", () => {
+    test("VertexAI toConfig has vendor=vertexai with project_id, location, adc_credentials_string in params", () => {
         const config = new VertexAI({
             model: "gemini-live-2.5-flash-preview-native-audio-09-2025",
             projectId: "my-proj",
@@ -1277,9 +1277,9 @@ describe("MLLM vendor coverage", () => {
 
         expect(config.vendor).toBe("vertexai");
         expect((config as Record<string, unknown>)?.url).toBe("");
-        expect((config as Record<string, unknown>)?.project_id).toBe("my-proj");
-        expect((config as Record<string, unknown>)?.location).toBe("us-central1");
-        expect((config as Record<string, unknown>)?.adc_credentials_string).toBe("{}");
+        expect((config.params as Record<string, unknown>)?.project_id).toBe("my-proj");
+        expect((config.params as Record<string, unknown>)?.location).toBe("us-central1");
+        expect((config.params as Record<string, unknown>)?.adc_credentials_string).toBe("{}");
     });
 
     test("XaiGrok toConfig has vendor=xai, api_key, and default url", () => {

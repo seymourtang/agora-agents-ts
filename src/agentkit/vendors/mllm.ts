@@ -306,13 +306,13 @@ export class VertexAI extends BaseMLLM {
         return {
             vendor: "vertexai",
             url: url ?? "",
-            project_id: projectId,
-            location,
-            adc_credentials_string: adcCredentialsString,
             params: {
                 // additionalParams spread first so that explicit fields always win.
                 ...additionalParams,
                 model,
+                project_id: projectId,
+                location,
+                adc_credentials_string: adcCredentialsString,
                 ...(instructions && { instructions }),
                 ...(voice && { voice }),
                 ...(affectiveDialog !== undefined && { affective_dialog: affectiveDialog }),
