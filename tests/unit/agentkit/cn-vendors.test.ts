@@ -494,6 +494,13 @@ describe("CN vendor helpers", () => {
             ],
         }).toConfig();
         expect(withoutToken.params).not.toHaveProperty("agora_token");
+
+        const withoutSceneList = new SensetimeAvatar({
+            agoraUid: "1234",
+            appId: "sensetime-app-id",
+            appKey: "sensetime-app-key",
+        }).toConfig();
+        expect(withoutSceneList.params).not.toHaveProperty("sceneList");
     });
 
     test("enforces CN LLM required url and model", () => {
