@@ -503,20 +503,13 @@ Requires TTS at **16,000 Hz**. See [Avatar Integration](../guides/avatars.md).
 
 <!-- snippet: fragment -->
 ```typescript
-new GenericAvatar(options: GenericAvatarOptions)
+new AnamAvatar(options: AnamAvatarOptions)
 ```
-
-Generic avatars can omit `agoraAppId`, `agoraChannel`, and `agoraToken`. AgentKit fills them from the session at `start()`.
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `apiKey` | `string` | Yes | Custom avatar provider API key |
-| `apiBaseUrl` | `string` | Yes | Avatar provider API base URL |
-| `avatarId` | `string` | Yes | Avatar ID |
-| `agoraUid` | `string` | Yes | RTC UID for the avatar stream |
-| `agoraAppId` | `string` | No | Agora App ID override |
-| `agoraChannel` | `string` | No | Agora channel override |
-| `agoraToken` | `string` | No | Avatar token override |
+| `apiKey` | `string` | Yes | Anam API key |
+| `avatarId` | `string` | No | Anam avatar ID |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
 
 ### SpatiusAvatar
@@ -538,17 +531,6 @@ new SpatiusAvatar(options: SpatiusAvatarOptions)
 | `region` | `string` | No | Spatius service region (for example, `cn-beijing`) |
 | `sampleRate` | `16000 \| 24000` | No | Audio sample rate in Hz |
 | `sessionExpireMinutes` | `number` | No | Spatius session validity duration in minutes |
-| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
-
-<!-- snippet: fragment -->
-```typescript
-new AnamAvatar(options: AnamAvatarOptions)
-```
-
-| Option | Type | Required | Description |
-|---|---|---|---|
-| `apiKey` | `string` | Yes | Anam API key |
-| `personaId` | `string` | No | Anam persona ID |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
 
 ### GenericAvatar

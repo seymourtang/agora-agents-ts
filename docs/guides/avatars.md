@@ -265,28 +265,7 @@ await session.start();
 | Option | Type | Required | Description |
 |---|---|---|---|
 | `apiKey` | `string` | Yes | Anam API key |
-| `personaId` | `string` | No | Anam persona ID |
-| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
-
-## GenericAvatar constructor options
-
-| Option | Type | Required | Description |
-|---|---|---|---|
-| `apiKey` | `string` | Yes | Custom avatar provider API key |
-| `apiBaseUrl` | `string` | Yes | Avatar provider API base URL |
-| `avatarId` | `string` | Yes | Avatar ID |
-| `agoraUid` | `string` | Yes | RTC UID for the avatar stream |
-| `agoraAppId` | `string` | No | Omit to use the session App ID |
-| `agoraChannel` | `string` | No | Omit to use the session channel |
-| `agoraToken` | `string` | No | Avatar token override. Omit to auto-generate at `session.start()` |
-| `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
-
-## AnamAvatar constructor options
-
-| Option | Type | Required | Description |
-|---|---|---|---|
-| `apiKey` | `string` | Yes | Anam API key |
-| `personaId` | `string` | No | Anam persona ID |
+| `avatarId` | `string` | No | Anam avatar ID |
 | `enable` | `boolean` | No | Enable/disable the avatar (default: true) |
 
 ## GenericAvatar constructor options

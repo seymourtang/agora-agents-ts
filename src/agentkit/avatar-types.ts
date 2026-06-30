@@ -79,8 +79,8 @@ export interface AnamAvatarConfig {
     params: {
         /** API key for Anam authentication (required) */
         api_key: string;
-        /** Anam persona ID (optional) */
-        persona_id?: string;
+        /** Anam avatar ID (optional) */
+        avatar_id?: string;
         [key: string]: unknown;
     };
 }
