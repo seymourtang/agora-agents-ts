@@ -5,12 +5,12 @@ import type * as Agora from "../index.js";
 /**
  * Generic OpenAI-compatible Text-to-Speech configuration.
  */
-export interface GenericTts {
+export interface GenericHttpTts {
     /** Callback address of the generic TTS service. */
     url: string;
     /** Custom headers to include in requests to the generic TTS service. */
-    headers: Record<string, string>;
-    params: Agora.GenericTtsParams;
+    headers?: Record<string, string>;
+    params: Agora.GenericHttpTtsParams;
     /** Controls whether the TTS module skips bracketed content when reading LLM response text. */
     skip_patterns?: number[];
 }

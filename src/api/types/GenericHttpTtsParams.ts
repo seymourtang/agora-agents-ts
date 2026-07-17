@@ -3,13 +3,13 @@
 /**
  * Generic TTS configuration parameters.
  */
-export interface GenericTtsParams {
+export interface GenericHttpTtsParams {
     /** API key for the generic TTS service. */
     api_key?: string;
     /** TTS model name. */
-    model: string;
+    model?: string;
     /** Voice name. */
-    voice: string;
+    voice?: string;
     /** Speech rate. */
     speed?: number;
     /** Output audio sample rate in Hz. */
