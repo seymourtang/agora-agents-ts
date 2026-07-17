@@ -6,5 +6,37 @@ generations:
     timestamp: 2026-06-24T07:54:19.395Z
     cli_version: unknown
     generator_versions: {}
-current_generation: fd23783fbdcb5ba4fc1af4ac87e352558e1d5c9d
-patches: []
+  - commit_sha: fcf89c020c8a76c0cb25424be8b102efa950d335
+    tree_hash: 49fb576d389cea0e31d8de5abf8aea5eb6bd68c9
+    timestamp: 2026-07-17T09:40:17.800Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-typescript-node-sdk: 3.31.1
+current_generation: fcf89c020c8a76c0cb25424be8b102efa950d335
+patches:
+  - id: patch-fee3d812
+    content_hash: sha256:a682f317c80be32b9fa689ae5d3584b7c9b1b2ada52a1560dcf51b0f3f82fbb7
+    original_commit: fee3d8126a03bf95cb09c6b33ab2c32911ce8cf2
+    original_message: "fix: update Anam avatar configuration to require avatar_id instead of persona_id"
+    original_author: seymourtang <tangxianmeng@live.com>
+    base_generation: fcf89c020c8a76c0cb25424be8b102efa950d335
+    files:
+      - pnpm-workspace.yaml
+    patch_content: |
+      diff --git a/pnpm-workspace.yaml b/pnpm-workspace.yaml
+      index 6e4c395..64cc0da 100644
+      --- a/pnpm-workspace.yaml
+      +++ b/pnpm-workspace.yaml
+      @@ -1 +1,4 @@
+      -packages: ['.']
+      \ No newline at end of file
+      +packages: [ '.' ]
+      +allowBuilds:
+      +  esbuild: set this to true or false
+      +  msw: set this to true or false
+    theirs_snapshot:
+      pnpm-workspace.yaml: |
+        packages: [ '.' ]
+        allowBuilds:
+          esbuild: set this to true or false
+          msw: set this to true or false

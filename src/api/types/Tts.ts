@@ -17,7 +17,7 @@ export type Tts =
     | Agora.Tts.Google
     | Agora.Tts.Amazon
     | Agora.Tts.Sarvam
-    | Agora.Tts.Generic
+    | Agora.Tts.GenericHttp
     | Agora.Tts.Xai
     | Agora.Tts.Deepgram
     | Agora.Tts.Cosyvoice
@@ -81,8 +81,8 @@ export namespace Tts {
         vendor: "sarvam";
     }
 
-    export interface Generic extends Agora.GenericTts {
-        vendor: "generic";
+    export interface GenericHttp extends Agora.GenericHttpTts {
+        vendor: "generic_http";
     }
 
     export interface Xai extends Agora.XAiTts {
