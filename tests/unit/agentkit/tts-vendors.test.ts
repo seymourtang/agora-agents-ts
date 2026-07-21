@@ -15,6 +15,7 @@ import {
     RimeTTS,
     SarvamTTS,
 } from "../../../src/agentkit/vendors/tts.js";
+import { CredentialMode, type CredentialMode as CredentialModeType } from "../../../src/index.js";
 
 describe("TTS vendor helpers", () => {
     test("serializes provider params using the generated core shapes", () => {
@@ -235,11 +236,11 @@ describe("TTS vendor helpers", () => {
         expect(
             () =>
                 new RimeTTS({
-                    credentialMode: "managed",
+                    credentialMode: CredentialMode.Managed,
                     baseUrl: "wss://users.rime.ai/ws",
                 } as never),
         ).toThrow("RimeTTS requires modelId");
-        expect(() => new RimeTTS({ credentialMode: "managed", modelId: "mist" } as never)).toThrow(
+        expect(() => new RimeTTS({ credentialMode: CredentialMode.Managed, modelId: "mist" } as never)).toThrow(
             "RimeTTS requires baseUrl",
         );
         expect(() => new RimeTTS({ key: "rime-key", speaker: "speaker" } as never)).toThrow("RimeTTS requires modelId");
@@ -248,9 +249,11 @@ describe("TTS vendor helpers", () => {
     });
 
     test("serializes Rime credential modes", () => {
+        const managedMode: CredentialModeType = CredentialMode.Managed;
+
         expect(
             new RimeTTS({
-                credentialMode: "managed",
+                credentialMode: managedMode,
                 modelId: "mist",
                 baseUrl: "wss://users.rime.ai/ws",
             }).toConfig(),
@@ -262,7 +265,7 @@ describe("TTS vendor helpers", () => {
 
         expect(
             new RimeTTS({
-                credentialMode: "byok",
+                credentialMode: CredentialMode.Byok,
                 key: "rime-key",
                 speaker: "speaker",
                 modelId: "mist",

@@ -245,6 +245,7 @@ export {
     BytedanceTTS,
     CartesiaTTS,
     CosyVoiceTTS,
+    CredentialMode,
     CustomLLM,
     DataChannel,
     DeepgramSTT,

@@ -291,24 +291,26 @@ new RimeTTS(options: RimeTTSOptions)
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `credentialMode` | `'managed' \| 'byok'` | No | Credential mode. Defaults to BYOK when omitted. |
+| `credentialMode` | `CredentialMode` | No | Credential mode. Defaults to BYOK when omitted. |
 | `key` | `string` | BYOK | Rime API key; optional in managed mode |
 | `speaker` | `string` | BYOK | Rime speaker ID; optional in managed mode |
 | `modelId` | `string` | Yes | Rime model ID |
 | `baseUrl` | `string` | Managed | WebSocket URL for the Rime streaming API; optional in BYOK mode |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
-Use Agora-managed credentials by setting `credentialMode: 'managed'` and providing `baseUrl` and `modelId`:
+Use Agora-managed credentials by setting `credentialMode: CredentialMode.Managed` and providing `baseUrl` and `modelId`:
 
 ```typescript
+import { CredentialMode, RimeTTS } from 'agora-agents';
+
 const tts = new RimeTTS({
-  credentialMode: 'managed',
+  credentialMode: CredentialMode.Managed,
   baseUrl: 'wss://users.rime.ai/ws',
   modelId: 'mist',
 });
 ```
 
-For BYOK, omit `credentialMode` or set it to `'byok'`, and provide `key`, `speaker`, and `modelId`.
+For BYOK, omit `credentialMode` or set it to `CredentialMode.Byok`, and provide `key`, `speaker`, and `modelId`.
 
 ### Other TTS vendors
 

@@ -57,6 +57,7 @@ export {
 // Type-safe constants
 export {
     AudioScenario,
+    CredentialMode,
     DataChannel,
     FillerWordsSelectionRule,
     Geofence,

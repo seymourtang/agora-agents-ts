@@ -9,6 +9,14 @@ import { SpeakAgentsRequest as SpeakAgentsRequestNS } from "../api/resources/age
 import { StartAgentsRequest as StartAgentsRequestNS } from "../api/resources/agents/client/requests/StartAgentsRequest.js";
 import { MllmTurnDetection as MllmTurnDetectionNS } from "../api/types/MllmTurnDetection.js";
 
+/** Credential source for vendors that support Agora-managed credentials and BYOK. */
+export const CredentialMode = {
+    Managed: "managed",
+    Byok: "byok",
+} as const;
+
+export type CredentialMode = (typeof CredentialMode)[keyof typeof CredentialMode];
+
 /** Data channel: `"rtm"` | `"datastream"` */
 export const DataChannel: typeof StartAgentsRequestNS.Properties.Parameters.DataChannel =
     StartAgentsRequestNS.Properties.Parameters.DataChannel;
