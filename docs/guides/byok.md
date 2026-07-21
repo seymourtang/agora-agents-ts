@@ -85,3 +85,18 @@ void main();
 
 - Builder without vendor keys: supported Agora-managed global models
 - BYOK: your keys and full vendor control
+
+Rime TTS uses an explicit `credentialMode` when needed. Omit it or set it to `CredentialMode.Byok` when providing your own `key`, `speaker`, and `modelId`:
+
+```typescript
+import { CredentialMode, RimeTTS } from 'agora-agents';
+
+const tts = new RimeTTS({
+  credentialMode: CredentialMode.Byok,
+  key: process.env.RIME_API_KEY!,
+  speaker: 'speaker-id',
+  modelId: 'mist',
+});
+```
+
+Set `credentialMode: CredentialMode.Managed` to use Agora-managed credentials; that mode requires `baseUrl` and `modelId` instead.

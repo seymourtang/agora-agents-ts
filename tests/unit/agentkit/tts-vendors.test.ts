@@ -15,6 +15,7 @@ import {
     RimeTTS,
     SarvamTTS,
 } from "../../../src/agentkit/vendors/tts.js";
+import { CredentialMode, type CredentialMode as CredentialModeType } from "../../../src/index.js";
 
 describe("TTS vendor helpers", () => {
     test("serializes provider params using the generated core shapes", () => {
@@ -232,5 +233,47 @@ describe("TTS vendor helpers", () => {
                     voiceId: "voice",
                 } as never),
         ).toThrow("MiniMaxTTS requires url");
+        expect(
+            () =>
+                new RimeTTS({
+                    credentialMode: CredentialMode.Managed,
+                    baseUrl: "wss://users.rime.ai/ws",
+                } as never),
+        ).toThrow("RimeTTS requires modelId");
+        expect(() => new RimeTTS({ credentialMode: CredentialMode.Managed, modelId: "mist" } as never)).toThrow(
+            "RimeTTS requires baseUrl",
+        );
+        expect(() => new RimeTTS({ key: "rime-key", speaker: "speaker" } as never)).toThrow("RimeTTS requires modelId");
+        expect(() => new RimeTTS({ modelId: "mist" } as never)).toThrow("RimeTTS requires key");
+        expect(() => new RimeTTS({ key: "rime-key", modelId: "mist" } as never)).toThrow("RimeTTS requires speaker");
+    });
+
+    test("serializes Rime credential modes", () => {
+        const managedMode: CredentialModeType = CredentialMode.Managed;
+
+        expect(
+            new RimeTTS({
+                credentialMode: managedMode,
+                modelId: "mist",
+                baseUrl: "wss://users.rime.ai/ws",
+            }).toConfig(),
+        ).toEqual({
+            vendor: "rime",
+            credential_mode: "managed",
+            params: { modelId: "mist", base_url: "wss://users.rime.ai/ws" },
+        });
+
+        expect(
+            new RimeTTS({
+                credentialMode: CredentialMode.Byok,
+                key: "rime-key",
+                speaker: "speaker",
+                modelId: "mist",
+            }).toConfig(),
+        ).toEqual({
+            vendor: "rime",
+            credential_mode: "byok",
+            params: { api_key: "rime-key", speaker: "speaker", modelId: "mist" },
+        });
     });
 });

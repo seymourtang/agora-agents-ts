@@ -282,6 +282,36 @@ new CartesiaTTS<SR extends CartesiaSampleRate>(options: CartesiaTTSOptions<SR>)
 | `sampleRate` | `8000 \| 16000 \| 22050 \| 24000 \| 44100 \| 48000` | No | Audio sample rate in Hz |
 | `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
 
+### RimeTTS
+
+<!-- snippet: fragment -->
+```typescript
+new RimeTTS(options: RimeTTSOptions)
+```
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `credentialMode` | `CredentialMode` | No | Credential mode. Defaults to BYOK when omitted. |
+| `key` | `string` | BYOK | Rime API key; optional in managed mode |
+| `speaker` | `string` | BYOK | Rime speaker ID; optional in managed mode |
+| `modelId` | `string` | Yes | Rime model ID |
+| `baseUrl` | `string` | Managed | WebSocket URL for the Rime streaming API; optional in BYOK mode |
+| `skipPatterns` | `number[]` | No | Skip patterns for bracketed content |
+
+Use Agora-managed credentials by setting `credentialMode: CredentialMode.Managed` and providing `baseUrl` and `modelId`:
+
+```typescript
+import { CredentialMode, RimeTTS } from 'agora-agents';
+
+const tts = new RimeTTS({
+  credentialMode: CredentialMode.Managed,
+  baseUrl: 'wss://users.rime.ai/ws',
+  modelId: 'mist',
+});
+```
+
+For BYOK, omit `credentialMode` or set it to `CredentialMode.Byok`, and provide `key`, `speaker`, and `modelId`.
+
 ### Other TTS vendors
 
 The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts` for the full constructor options:
@@ -293,7 +323,6 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `additionalParams?` |
 | `GenericTTS` | `url`, `headers?`, `apiKey?`, `model?`, `voice?`, `speed?`, `sampleRate?`, `responseFormat?`, `instruction?`, `additionalParams?`, `skipPatterns?` |
 | `HumeAITTS` | `key`, `voiceId`, `provider`, `configId?`, `baseUrl?`, `speed?`, `trailingSilence?` |
-| `RimeTTS` | `key`, `speaker`, `modelId`, `baseUrl?` |
 | `FishAudioTTS` | `key`, `referenceId`, `backend` |
 | `MiniMaxTTS` | `key?`, `groupId?`, `model`, `voiceId?`, `url?` |
 | `MurfTTS` | `key`, `voiceId?`, `baseUrl?`, `locale?`, `rate?`, `pitch?`, `model?`, `sampleRate?` |
