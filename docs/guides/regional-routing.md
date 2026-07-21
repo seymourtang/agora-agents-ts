@@ -42,9 +42,10 @@ Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and
 
 | Typical global providers | Typical CN providers |
 |---|---|
-| `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, … |
+| `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, `GenericTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, `GenericTTS`, … |
 
 See the tables below for the full catalog. You may combine any explicit vendor with any `client.area`.
+`GenericTTS` is included in both the exported `GlobalTtsVendor` and `CNTtsVendor` types.
 
 Global client example:
 

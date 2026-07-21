@@ -1,10 +1,11 @@
 import { AgoraClient } from "../../AgoraPoolClient.js";
 import { Area } from "../../core/domain/index.js";
 import { Agent } from "../Agent.js";
+import type { CNTtsVendor, GlobalTtsVendor } from "../region-vendors.js";
 import { AliyunLLM, FengmingSTT, MiniMaxCNTTS } from "../vendors/cn.js";
 import { OpenAI } from "../vendors/llm.js";
 import { DeepgramSTT } from "../vendors/stt.js";
-import { MiniMaxTTS } from "../vendors/tts.js";
+import { GenericTTS, MiniMaxTTS } from "../vendors/tts.js";
 
 const client = new AgoraClient({
     area: Area.US,
@@ -31,6 +32,8 @@ new Agent({ client }).withLlm(
 new Agent({ client }).withTts(
     new MiniMaxCNTTS({ key: "minimax-key", model: "speech-01-turbo", voiceSetting: { voice_id: "female-shaonv" } }),
 );
+const globalGenericTts: GlobalTtsVendor = new GenericTTS({ url: "https://tts.example.com/v1/audio/speech" });
+new Agent({ client }).withTts(globalGenericTts);
 
 {
     const client = new AgoraClient({
@@ -67,6 +70,8 @@ new Agent({ client }).withTts(
     new Agent({ client }).withTts(
         new MiniMaxTTS({ model: "speech-2.6-turbo", voiceId: "English_captivating_female1" }),
     );
+    const cnGenericTts: CNTtsVendor = new GenericTTS({ url: "https://tts.example.cn/v1/audio/speech" });
+    new Agent({ client }).withTts(cnGenericTts);
 }
 
 new Agent({ client }).withStt(new DeepgramSTT({ model: "nova-3", language: "en-US" }));

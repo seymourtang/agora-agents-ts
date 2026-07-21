@@ -17,7 +17,9 @@ Import any supported vendor class and pass it to `.withStt()`, `.withLlm()`, and
 
 | Global-oriented classes | CN-oriented classes |
 |---|---|
-| `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, `GenericTTS`, `XAiSTT`, `XAiTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, `SensetimeAvatar`, `SpatiusAvatar`, … |
+| `DeepgramSTT`, `OpenAI`, `MiniMaxTTS`, `ElevenLabsTTS`, `GenericTTS`, `XAiSTT`, `XAiTTS`, … | `FengmingSTT`, `AliyunLLM`, `MiniMaxCNTTS`, `TencentTTS`, `GenericTTS`, `SensetimeAvatar`, `SpatiusAvatar`, … |
+
+`GenericTTS` is shared by the Global and CN AgentKit surfaces and is included in both `GlobalTtsVendor` and `CNTtsVendor`.
 
 Global example:
 
@@ -289,7 +291,7 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `GoogleTTS` | `key`, `voiceName`, `languageCode?`, `sampleRate?` |
 | `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId`, `engine` |
 | `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `additionalParams?` |
-| `GenericTTS` | `url`, `headers`, `apiKey?`, `model`, `voice`, `speed?`, `sampleRate?`, `responseFormat?`, `instruction?`, `additionalParams?` |
+| `GenericTTS` | `url`, `headers?`, `apiKey?`, `model?`, `voice?`, `speed?`, `sampleRate?`, `responseFormat?`, `instruction?`, `additionalParams?`, `skipPatterns?` |
 | `HumeAITTS` | `key`, `voiceId`, `provider`, `configId?`, `baseUrl?`, `speed?`, `trailingSilence?` |
 | `RimeTTS` | `key`, `speaker`, `modelId`, `baseUrl?` |
 | `FishAudioTTS` | `key`, `referenceId`, `backend` |
@@ -297,6 +299,8 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `MurfTTS` | `key`, `voiceId?`, `baseUrl?`, `locale?`, `rate?`, `pitch?`, `model?`, `sampleRate?` |
 | `SarvamTTS` | `key`, `speaker`, `targetLanguageCode`, `pitch?`, `pace?`, `loudness?`, `sampleRate?` |
 | `XAiTTS` | `apiKey`, `language`, `voiceId?`, `sampleRate?`, `additionalParams?` |
+
+`GenericTTS` is the public AgentKit wrapper for generic TTS integrations. It currently accepts only absolute HTTP(S) URLs and serializes them with the wire vendor `generic_http`. WebSocket URLs are rejected until the generated API exposes a corresponding WebSocket TTS vendor; AgentKit can then route the same public wrapper by URL protocol.
 
 For `MiniMaxTTS`, `key` is optional only for Agora-managed models:
 
@@ -569,7 +573,7 @@ All CN LLM helpers share the OpenAI-compatible shape and require `url` + `model`
 
 ### CN TTS vendors
 
-CN TTS helpers reuse shared vendor names where possible. `MiniMaxCNTTS` and `MicrosoftCNTTS` are the CN-specific classes; `MiniMaxTTS` and `MicrosoftTTS` remain the global helpers.
+CN TTS helpers reuse shared vendor names where possible. `GenericTTS` is available in both CN and Global vendor types. `MiniMaxCNTTS` and `MicrosoftCNTTS` are the CN-specific classes; `MiniMaxTTS` and `MicrosoftTTS` remain the global helpers.
 
 | Class | Key options |
 |---|---|
