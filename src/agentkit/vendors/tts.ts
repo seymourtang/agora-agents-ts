@@ -552,26 +552,58 @@ export class HumeAITTS extends BaseTTS {
 
 /**
  * Constructor options for Rime TTS.
+ *
+ * - `credentialMode: "managed"` requires `baseUrl` and `modelId`
+ * - omitted / `"byok"` requires `key`, `speaker`, and `modelId`
  */
-export interface RimeTTSOptions {
-    /** Rime API key */
-    key: string;
-    /** Speaker ID */
-    speaker: string;
-    /** Model ID */
-    modelId: string;
-    /** WebSocket URL for the Rime streaming API */
-    baseUrl?: string;
+type RimeTTSCommonOptions = {
     /** Skip patterns for bracketed content */
     skipPatterns?: number[];
-}
+};
+
+export type RimeTTSOptions =
+    | (RimeTTSCommonOptions & {
+          /** Use Agora-managed Rime credentials */
+          credentialMode: "managed";
+          /** Model ID */
+          modelId: string;
+          /** WebSocket URL for the Rime streaming API */
+          baseUrl: string;
+          /** Rime API key (optional for managed credentials) */
+          key?: string;
+          /** Speaker ID (optional for managed credentials) */
+          speaker?: string;
+      })
+    | (RimeTTSCommonOptions & {
+          /** Bring-your-own Rime credentials (default when omitted) */
+          credentialMode?: "byok";
+          /** Rime API key */
+          key: string;
+          /** Speaker ID */
+          speaker: string;
+          /** Model ID */
+          modelId: string;
+          /** WebSocket URL for the Rime streaming API */
+          baseUrl?: string;
+      });
 
 /**
  * Rime TTS vendor.
  *
  * @example
+ * Agora-managed credentials:
  * ```typescript
- * const tts = new RimeTTS({
+ * const managedTts = new RimeTTS({
+ *   credentialMode: 'managed',
+ *   baseUrl: 'wss://users.rime.ai/ws',
+ *   modelId: 'mist',
+ * });
+ * ```
+ *
+ * @example
+ * Bring your own credentials (the default mode):
+ * ```typescript
+ * const byokTts = new RimeTTS({
  *   key: process.env.RIME_API_KEY,
  *   speaker: 'speaker-id',
  *   modelId: 'mist',
@@ -583,14 +615,36 @@ export class RimeTTS extends BaseTTS {
 
     constructor(options: RimeTTSOptions) {
         super();
+        requireString(options.modelId, "modelId", "RimeTTS");
+        if (options.credentialMode === "managed") {
+            requireString(options.baseUrl, "baseUrl", "RimeTTS");
+        } else {
+            requireString(options.key, "key", "RimeTTS");
+            requireString(options.speaker, "speaker", "RimeTTS");
+        }
         this.options = options;
     }
 
     toConfig(): TtsConfig {
-        const { key, speaker, modelId, baseUrl, skipPatterns } = this.options;
+        const { key, speaker, modelId, baseUrl, skipPatterns, credentialMode } = this.options;
+
+        if (credentialMode === "managed") {
+            return {
+                vendor: "rime",
+                credential_mode: "managed",
+                params: {
+                    modelId,
+                    base_url: baseUrl,
+                    ...(key !== undefined && { api_key: key }),
+                    ...(speaker !== undefined && { speaker }),
+                },
+                ...(skipPatterns && { skip_patterns: skipPatterns }),
+            };
+        }
 
         return {
             vendor: "rime",
+            ...(credentialMode !== undefined && { credential_mode: credentialMode }),
             params: {
                 api_key: key,
                 speaker,

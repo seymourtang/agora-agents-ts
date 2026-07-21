@@ -232,5 +232,45 @@ describe("TTS vendor helpers", () => {
                     voiceId: "voice",
                 } as never),
         ).toThrow("MiniMaxTTS requires url");
+        expect(
+            () =>
+                new RimeTTS({
+                    credentialMode: "managed",
+                    baseUrl: "wss://users.rime.ai/ws",
+                } as never),
+        ).toThrow("RimeTTS requires modelId");
+        expect(() => new RimeTTS({ credentialMode: "managed", modelId: "mist" } as never)).toThrow(
+            "RimeTTS requires baseUrl",
+        );
+        expect(() => new RimeTTS({ key: "rime-key", speaker: "speaker" } as never)).toThrow("RimeTTS requires modelId");
+        expect(() => new RimeTTS({ modelId: "mist" } as never)).toThrow("RimeTTS requires key");
+        expect(() => new RimeTTS({ key: "rime-key", modelId: "mist" } as never)).toThrow("RimeTTS requires speaker");
+    });
+
+    test("serializes Rime credential modes", () => {
+        expect(
+            new RimeTTS({
+                credentialMode: "managed",
+                modelId: "mist",
+                baseUrl: "wss://users.rime.ai/ws",
+            }).toConfig(),
+        ).toEqual({
+            vendor: "rime",
+            credential_mode: "managed",
+            params: { modelId: "mist", base_url: "wss://users.rime.ai/ws" },
+        });
+
+        expect(
+            new RimeTTS({
+                credentialMode: "byok",
+                key: "rime-key",
+                speaker: "speaker",
+                modelId: "mist",
+            }).toConfig(),
+        ).toEqual({
+            vendor: "rime",
+            credential_mode: "byok",
+            params: { api_key: "rime-key", speaker: "speaker", modelId: "mist" },
+        });
     });
 });
