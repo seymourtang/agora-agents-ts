@@ -6,7 +6,18 @@ import type * as Agora from "../index.js";
  * Rime Text-to-Speech configuration (Beta).
  */
 export interface RimeTts {
+    /** Credential mode. When provided, must be "managed" (Agora managed mode) or "byok" (BYOK mode). */
+    credential_mode?: RimeTts.CredentialMode;
     params: Agora.RimeTtsParams;
     /** Controls whether the TTS module skips bracketed content when reading LLM response text. */
     skip_patterns?: number[];
+}
+
+export namespace RimeTts {
+    /** Credential mode. When provided, must be "managed" (Agora managed mode) or "byok" (BYOK mode). */
+    export const CredentialMode = {
+        Managed: "managed",
+        Byok: "byok",
+    } as const;
+    export type CredentialMode = (typeof CredentialMode)[keyof typeof CredentialMode];
 }
