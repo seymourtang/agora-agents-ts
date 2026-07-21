@@ -220,7 +220,7 @@ describe("New OpenAPI high-level adapters", () => {
             .toProperties({ ...SESSION_OPTS });
 
         expect(properties.tts).toMatchObject({
-            vendor: "generic",
+            vendor: "generic_http",
             url: "https://tts.example.com/v1/audio/speech",
             headers: { Authorization: "Bearer tts-token" },
             params: {

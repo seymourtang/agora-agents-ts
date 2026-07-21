@@ -856,20 +856,37 @@ export class MurfTTS extends BaseTTS {
     }
 }
 
+function requireGenericTtsHttpUrl(url: unknown): asserts url is string {
+    requireString(url, "url", "GenericTTS");
+
+    let protocol: string;
+    try {
+        protocol = new URL(url).protocol;
+    } catch {
+        throw new Error("GenericTTS requires url to be a valid absolute URL");
+    }
+
+    if (protocol === "http:" || protocol === "https:") {
+        return;
+    }
+
+    throw new Error(`GenericTTS does not support the ${protocol} protocol`);
+}
+
 /**
  * Constructor options for Generic OpenAI-compatible TTS.
  */
 export interface GenericTTSOptions {
-    /** Callback address of the generic TTS service */
+    /** HTTP(S) endpoint of the generic TTS service */
     url: string;
     /** Custom headers to include in requests to the generic TTS service */
-    headers: Record<string, string>;
+    headers?: Record<string, string>;
     /** API key for the generic TTS service */
     apiKey?: string;
     /** TTS model name */
-    model: string;
+    model?: string;
     /** Voice name */
-    voice: string;
+    voice?: string;
     /** Speech rate */
     speed?: number;
     /** Output audio sample rate in Hz */
@@ -892,10 +909,7 @@ export class GenericTTS extends BaseTTS {
 
     constructor(options: GenericTTSOptions) {
         super();
-        requireString(options.url, "url", "GenericTTS");
-        requireRecord(options.headers, "headers", "GenericTTS");
-        requireString(options.model, "model", "GenericTTS");
-        requireString(options.voice, "voice", "GenericTTS");
+        requireGenericTtsHttpUrl(options.url);
         this.options = options;
     }
 
@@ -915,14 +929,14 @@ export class GenericTTS extends BaseTTS {
         } = this.options;
 
         return {
-            vendor: "generic",
+            vendor: "generic_http",
             url,
-            headers,
+            ...(headers && { headers }),
             params: {
                 ...additionalParams,
                 ...(apiKey !== undefined && { api_key: apiKey }),
-                model,
-                voice,
+                ...(model !== undefined && { model }),
+                ...(voice !== undefined && { voice }),
                 ...(speed !== undefined && { speed }),
                 ...(sampleRate !== undefined && { sample_rate: sampleRate }),
                 ...(responseFormat !== undefined && { response_format: responseFormat }),

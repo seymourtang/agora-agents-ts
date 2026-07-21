@@ -50,9 +50,11 @@ const llm = new OpenAI({
 | `MiniMaxTTS`    | MiniMax          | `model` for supported Agora-managed models; BYOK accepts `key`, `groupId`, `model`, `voiceId`, and `url` |
 | `MurfTTS`       | Murf             | Configurable                            |
 | `DeepgramTTS`   | Deepgram         | Configurable                            |
-| `GenericTTS`    | Generic OpenAI-compatible TTS | Configurable                     |
+| `GenericTTS`    | Generic OpenAI-compatible HTTP TTS | Configurable                  |
 | `SarvamTTS`     | Sarvam AI        | Configurable                            |
 | `XAiTTS`        | xAI              | Configurable                            |
+
+AgentKit exposes generic synthesis through `GenericTTS`. The current implementation accepts HTTP(S) endpoints and emits the generated `generic_http` wire vendor. WebSocket endpoints are not yet supported.
 
 <!-- snippet: executable -->
 
@@ -137,7 +139,7 @@ CN vendor classes use the same builder methods (`.withLlm()`, `.withStt()`, `.wi
 |---|---|
 | LLM | `AliyunLLM`, `BytedanceLLM`, `DeepSeekLLM`, `TencentLLM`, `CustomLLM` |
 | STT | `FengmingSTT`, `TencentSTT`, `MicrosoftCNSTT`, `XfyunSTT`, `XfyunBigModelSTT`, `XfyunDialectSTT` |
-| TTS | `MiniMaxCNTTS`, `MicrosoftCNTTS`, `TencentTTS`, `CosyVoiceTTS`, `BytedanceDuplexTTS`, `StepFunTTS` |
+| TTS | `GenericTTS` (shared with Global), `MiniMaxCNTTS`, `MicrosoftCNTTS`, `TencentTTS`, `CosyVoiceTTS`, `BytedanceDuplexTTS`, `StepFunTTS` |
 | Avatar | `SensetimeAvatar`, `SpatiusAvatar` |
 
 See [Regional Routing](../guides/regional-routing.md) and [Vendor Reference](../reference/vendors.md) for constructor options.

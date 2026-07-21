@@ -5,6 +5,7 @@ import {
     DeepgramTTS,
     ElevenLabsTTS,
     FishAudioTTS,
+    GenericTTS,
     GoogleTTS,
     HumeAITTS,
     MicrosoftTTS,
@@ -195,6 +196,21 @@ describe("TTS vendor helpers", () => {
         expect(new MurfTTS({ key: "murf-key" }).toConfig().params).toEqual({
             api_key: "murf-key",
         });
+    });
+
+    test("routes GenericTTS HTTP URLs and rejects unsupported protocols", () => {
+        expect(new GenericTTS({ url: "https://tts.example.com/v1/audio/speech" }).toConfig()).toEqual({
+            vendor: "generic_http",
+            url: "https://tts.example.com/v1/audio/speech",
+            params: {},
+        });
+
+        expect(() => new GenericTTS({ url: "wss://tts.example.com/v1/audio/speech" })).toThrow(
+            "GenericTTS does not support the wss: protocol",
+        );
+        expect(() => new GenericTTS({ url: "tts.example.com/v1/audio/speech" })).toThrow(
+            "GenericTTS requires url to be a valid absolute URL",
+        );
     });
 
     test("rejects invalid managed and BYOK TTS shapes at runtime", () => {
