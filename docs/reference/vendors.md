@@ -321,6 +321,8 @@ The following vendors share a similar pattern. See `src/agentkit/vendors/tts.ts`
 | `GoogleTTS` | `key`, `voiceName`, `languageCode?`, `sampleRate?` |
 | `AmazonTTS` | `accessKey`, `secretKey`, `region`, `voiceId`, `engine` |
 | `DeepgramTTS` | `apiKey`, `model`, `baseUrl?`, `sampleRate?`, `additionalParams?` |
+| `GradiumTTS` | `apiKey`, `url?`, `modelName?`, `voiceId?`, `sampleRate?`, `additionalParams?` |
+| `MistralTTS` | `apiKey`, `model?`, `voice?`, `additionalParams?` |
 | `GenericTTS` | `url`, `headers?`, `apiKey?`, `model?`, `voice?`, `speed?`, `sampleRate?`, `responseFormat?`, `instruction?`, `additionalParams?`, `skipPatterns?` |
 | `HumeAITTS` | `key`, `voiceId`, `provider`, `configId?`, `baseUrl?`, `speed?`, `trailingSilence?` |
 | `FishAudioTTS` | `key`, `referenceId`, `backend` |

@@ -50,6 +50,8 @@ const llm = new OpenAI({
 | `MiniMaxTTS`    | MiniMax          | `model` for supported Agora-managed models; BYOK accepts `key`, `groupId`, `model`, `voiceId`, and `url` |
 | `MurfTTS`       | Murf             | Configurable                            |
 | `DeepgramTTS`   | Deepgram         | Configurable                            |
+| `GradiumTTS`    | Gradium          | Configurable                            |
+| `MistralTTS`    | Mistral          | Not configurable                        |
 | `GenericTTS`    | Generic OpenAI-compatible HTTP TTS | Configurable                  |
 | `SarvamTTS`     | Sarvam AI        | Configurable                            |
 | `XAiTTS`        | xAI              | Configurable                            |

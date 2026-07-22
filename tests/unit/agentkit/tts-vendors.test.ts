@@ -7,9 +7,11 @@ import {
     FishAudioTTS,
     GenericTTS,
     GoogleTTS,
+    GradiumTTS,
     HumeAITTS,
     MicrosoftTTS,
     MiniMaxTTS,
+    MistralTTS,
     MurfTTS,
     OpenAITTS,
     RimeTTS,
@@ -104,6 +106,48 @@ describe("TTS vendor helpers", () => {
             base_url: "wss://api.deepgram.com/v1/speak",
             sample_rate: 24000,
             encoding: "linear16",
+        });
+
+        expect(
+            new GradiumTTS({
+                apiKey: "gradium-key",
+                url: "wss://api.gradium.ai/api/speech/tts",
+                modelName: "default",
+                voiceId: "voice",
+                sampleRate: 24000,
+                additionalParams: { output_format: "pcm" },
+                skipPatterns: [1, 2],
+            }).toConfig(),
+        ).toEqual({
+            vendor: "gradium",
+            params: {
+                output_format: "pcm",
+                api_key: "gradium-key",
+                url: "wss://api.gradium.ai/api/speech/tts",
+                model_name: "default",
+                voice_id: "voice",
+                sample_rate: 24000,
+            },
+            skip_patterns: [1, 2],
+        });
+
+        expect(
+            new MistralTTS({
+                apiKey: "mistral-key",
+                model: "voxtral-mini-tts-2603",
+                voice: "voice",
+                additionalParams: { response_format: "pcm" },
+                skipPatterns: [1],
+            }).toConfig(),
+        ).toEqual({
+            vendor: "mistral",
+            params: {
+                response_format: "pcm",
+                api_key: "mistral-key",
+                model: "voxtral-mini-tts-2603",
+                voice: "voice",
+            },
+            skip_patterns: [1],
         });
 
         expect(
@@ -215,6 +259,8 @@ describe("TTS vendor helpers", () => {
     });
 
     test("rejects invalid managed and BYOK TTS shapes at runtime", () => {
+        expect(() => new GradiumTTS({ apiKey: "" })).toThrow("GradiumTTS requires apiKey");
+        expect(() => new MistralTTS({ apiKey: "" })).toThrow("MistralTTS requires apiKey");
         expect(() => new OpenAITTS({ voice: "alloy", model: "tts-1-hd" } as never)).toThrow(
             "OpenAITTS requires apiKey unless using the Agora-managed tts-1 model",
         );
