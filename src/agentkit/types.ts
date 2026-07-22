@@ -22,6 +22,8 @@ import type {
     GetTurnsAgentsResponse,
     GoogleTtsParams as GoogleTtsParamsType,
     GoogleTts as GoogleTtsType,
+    GradiumTtsParams as GradiumTtsParamsType,
+    GradiumTts as GradiumTtsType,
     HumeAiTtsParams as HumeAiTtsParamsType,
     HumeAiTts as HumeAiTtsType,
     ListAgentsResponse,
@@ -30,6 +32,8 @@ import type {
     MicrosoftTts as MicrosoftTtsType,
     MinimaxTtsParams as MinimaxTtsParamsType,
     MinimaxTts as MinimaxTtsType,
+    MistralTtsParams as MistralTtsParamsType,
+    MistralTts as MistralTtsType,
     Mllm,
     MllmTurnDetection,
     MllmTurnDetection as MllmTurnDetectionNS,
@@ -685,10 +689,14 @@ export type GenericTts = GenericTtsType;
 export type GenericTtsParams = GenericTtsParamsType;
 export type GoogleTts = GoogleTtsType;
 export type GoogleTtsParams = GoogleTtsParamsType;
+export type GradiumTts = GradiumTtsType;
+export type GradiumTtsParams = GradiumTtsParamsType;
 export type AmazonTts = AmazonTtsType;
 export type AmazonTtsParams = AmazonTtsParamsType;
 export type MinimaxTts = MinimaxTtsType;
 export type MinimaxTtsParams = MinimaxTtsParamsType;
+export type MistralTts = MistralTtsType;
+export type MistralTtsParams = MistralTtsParamsType;
 export type MurfTts = MurfTtsType;
 export type MurfTtsParams = MurfTtsParamsType;
 export type SarvamTts = SarvamTtsType;

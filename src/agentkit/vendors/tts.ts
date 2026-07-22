@@ -490,6 +490,92 @@ export class DeepgramTTS extends BaseTTS {
     }
 }
 
+/** Constructor options for Gradium TTS. */
+export interface GradiumTTSOptions {
+    /** Gradium API key */
+    apiKey: string;
+    /** WebSocket endpoint for streaming TTS output */
+    url?: string;
+    /** Gradium TTS model name (e.g., 'default') */
+    modelName?: string;
+    /** Gradium voice identifier */
+    voiceId?: string;
+    /** Audio sample rate in Hz */
+    sampleRate?: number;
+    /** Additional vendor-specific parameters */
+    additionalParams?: Record<string, unknown>;
+    /** Skip patterns for bracketed content */
+    skipPatterns?: number[];
+}
+
+/** Gradium TTS vendor. */
+export class GradiumTTS extends BaseTTS {
+    private readonly options: GradiumTTSOptions;
+
+    constructor(options: GradiumTTSOptions) {
+        super();
+        requireString(options.apiKey, "apiKey", "GradiumTTS");
+        this.options = options;
+    }
+
+    toConfig(): TtsConfig {
+        const { apiKey, url, modelName, voiceId, sampleRate, additionalParams, skipPatterns } = this.options;
+
+        return {
+            vendor: "gradium",
+            params: {
+                ...additionalParams,
+                api_key: apiKey,
+                ...(url !== undefined && { url }),
+                ...(modelName !== undefined && { model_name: modelName }),
+                ...(voiceId !== undefined && { voice_id: voiceId }),
+                ...(sampleRate !== undefined && { sample_rate: sampleRate }),
+            },
+            ...(skipPatterns && { skip_patterns: skipPatterns }),
+        };
+    }
+}
+
+/** Constructor options for Mistral TTS. */
+export interface MistralTTSOptions {
+    /** Mistral API key */
+    apiKey: string;
+    /** Mistral TTS model name (e.g., 'voxtral-mini-tts-2603') */
+    model?: string;
+    /** Mistral voice identifier */
+    voice?: string;
+    /** Additional vendor-specific parameters */
+    additionalParams?: Record<string, unknown>;
+    /** Skip patterns for bracketed content */
+    skipPatterns?: number[];
+}
+
+/** Mistral TTS vendor. */
+export class MistralTTS extends BaseTTS {
+    private readonly options: MistralTTSOptions;
+
+    constructor(options: MistralTTSOptions) {
+        super();
+        requireString(options.apiKey, "apiKey", "MistralTTS");
+        this.options = options;
+    }
+
+    toConfig(): TtsConfig {
+        const { apiKey, model, voice, additionalParams, skipPatterns } = this.options;
+
+        return {
+            vendor: "mistral",
+            params: {
+                ...additionalParams,
+                api_key: apiKey,
+                ...(model !== undefined && { model }),
+                ...(voice !== undefined && { voice }),
+            },
+            ...(skipPatterns && { skip_patterns: skipPatterns }),
+        };
+    }
+}
+
 /**
  * Constructor options for Hume AI TTS.
  */
