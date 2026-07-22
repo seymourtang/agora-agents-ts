@@ -18,14 +18,20 @@ generations:
     cli_version: unknown
     generator_versions:
       fernapi/fern-typescript-node-sdk: 3.31.1
-current_generation: e0d1a3d4c873f49defe0497f385bdf5a51489160
+  - commit_sha: 94a1f2704cc7c8dac7d47c76af87a8fdd92e0326
+    tree_hash: 79cd3cfa313be8463df7078128b07d184def93d1
+    timestamp: 2026-07-22T07:53:55.139Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-typescript-node-sdk: 3.31.1
+current_generation: 94a1f2704cc7c8dac7d47c76af87a8fdd92e0326
 patches:
   - id: patch-fee3d812
     content_hash: sha256:a682f317c80be32b9fa689ae5d3584b7c9b1b2ada52a1560dcf51b0f3f82fbb7
     original_commit: fee3d8126a03bf95cb09c6b33ab2c32911ce8cf2
     original_message: "fix: update Anam avatar configuration to require avatar_id instead of persona_id"
     original_author: seymourtang <tangxianmeng@live.com>
-    base_generation: e0d1a3d4c873f49defe0497f385bdf5a51489160
+    base_generation: 94a1f2704cc7c8dac7d47c76af87a8fdd92e0326
     files:
       - pnpm-workspace.yaml
     patch_content: |

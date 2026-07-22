@@ -22,7 +22,9 @@ export type Tts =
     | Agora.Tts.Deepgram
     | Agora.Tts.Cosyvoice
     | Agora.Tts.BytedanceDuplex
-    | Agora.Tts.Stepfun;
+    | Agora.Tts.Stepfun
+    | Agora.Tts.Gradium
+    | Agora.Tts.Mistral;
 
 export namespace Tts {
     export interface Tencent extends Agora.TencentTts {
@@ -103,5 +105,13 @@ export namespace Tts {
 
     export interface Stepfun extends Agora.StepfunTts {
         vendor: "stepfun";
+    }
+
+    export interface Gradium extends Agora.GradiumTts {
+        vendor: "gradium";
+    }
+
+    export interface Mistral extends Agora.MistralTts {
+        vendor: "mistral";
     }
 }
